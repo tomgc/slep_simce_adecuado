@@ -1,0 +1,2150 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Motor de comparación SIMCE — % en nivel Adecuado</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+/* ============================================================
+   SLEP Costa Central — colores y tipografía (sin @font-face;
+   los .otf gobCL/Museo Sans no están versionados, así que se
+   usa el stack system como fallback).
+   ============================================================ */
+
+:root {
+  /* Mark colors */
+  --mark-red:    #EE2D49;
+  --mark-pink:   #F8A0AE;
+  --mark-yellow: #FFC92E;
+  --mark-green:  #9BC93E;
+  --mark-blue:   #2A8FD9;
+
+  /* Brand palette */
+  --plum:        #4A2746;
+  --cream:       #FFF6E0;
+  --ocean:       #0062A0;
+  --slate:       #747474;
+  --olive:       #75924E;
+  --sand:        #BCA493;
+  --coral:       #E88663;
+
+  /* Neutrals derivados */
+  --ink:         #1C1212;
+  --ink-2:       #2E2230;
+  --paper:       #FFFFFF;
+  --cream-50:    #FFFBEF;
+  --cream-200:   #F4E9CC;
+  --line:        #E7DFC9;
+  --line-strong: #C8BDA0;
+  --plum-80:     #66394F;
+  --plum-20:     #EEDCE5;
+  --ocean-80:    #00558A;
+  --ocean-20:    #D4E4F1;
+
+  /* Semánticos */
+  --fg-1: var(--ink);
+  --fg-2: var(--ink-2);
+  --fg-3: var(--slate);
+  --fg-on-dark: var(--cream);
+  --fg-on-plum: var(--cream);
+  --fg-link: var(--ocean);
+  --bg-1: var(--cream);
+  --bg-2: var(--paper);
+  --bg-3: var(--cream-50);
+  --bg-inverse: var(--plum);
+  --accent: var(--coral);
+  --success: var(--olive);
+  --info: var(--ocean);
+  --warning: var(--mark-yellow);
+  --danger: var(--mark-red);
+  --border-1: var(--line);
+  --border-2: var(--line-strong);
+  --border-strong: var(--plum);
+
+  /* Spacing */
+  --space-0: 0;     --space-1: 4px;   --space-2: 8px;   --space-3: 12px;
+  --space-4: 16px;  --space-5: 24px;  --space-6: 32px;  --space-7: 48px;
+  --space-8: 64px;  --space-9: 96px;
+
+  /* Radii */
+  --radius-0: 0; --radius-1: 2px; --radius-2: 4px; --radius-3: 8px;
+  --radius-full: 9999px;
+
+  /* Elevation */
+  --shadow-1: 0 1px 0 rgba(28, 18, 18, 0.05);
+  --shadow-2: 0 2px 8px rgba(74, 39, 70, 0.08);
+  --shadow-3: 0 8px 24px rgba(74, 39, 70, 0.12);
+
+  /* Type families — fallback al stack system. Cuando se versionen los
+     .otf de gobCL/Museo Sans, agregar @font-face antes y usarlos arriba. */
+  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body:    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:    ui-monospace, "SF Mono", "Menlo", monospace;
+
+  /* Type scale */
+  --fs-display-1: clamp(48px, 6vw, 88px);
+  --fs-display-2: clamp(36px, 4.5vw, 64px);
+  --fs-h1: clamp(32px, 3.4vw, 44px);
+  --fs-h2: 28px;
+  --fs-h3: 22px;
+  --fs-h4: 18px;
+  --fs-body: 16px;
+  --fs-body-lg: 18px;
+  --fs-caption: 14px;
+  --fs-overline: 12px;
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.2;
+  --lh-normal: 1.5;
+  --lh-loose: 1.65;
+
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.06em;
+  --tracking-overline: 0.12em;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg-1);
+  color: var(--fg-1);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--mark-yellow); color: var(--ink); }
+
+/* ============================================================
+   App layout
+   ============================================================ */
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.app.is-compact { font-size: 14px; }
+.app.is-comfy   { font-size: 15px; }
+.app.is-compact .control-group { gap: 8px; }
+.app.is-compact .entities-bar { padding: 16px 32px; }
+.app.is-compact .results-section { padding: 20px 32px; }
+.app.is-compact .table-section { padding: 20px 32px; }
+
+/* Header */
+.app-header {
+  background: #0A3A5C;
+  color: var(--fg-on-plum);
+  padding: 28px 40px 26px;
+  border-bottom: 4px solid var(--coral);
+}
+.is-compact .app-header { padding: 20px 32px 18px; }
+.app-header-inner {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; max-width: 1600px; margin: 0 auto;
+}
+.app-header-left { min-width: 0; }
+.app-header-right { display: flex; align-items: center; gap: 8px; }
+.brand-lockup { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.brand-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--cream);
+  opacity: 0.9;
+}
+.brand-eyebrow-muted { opacity: 0.6; font-weight: 400; }
+.brand-divider { color: var(--cream); opacity: 0.4; }
+.app-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.005em;
+  color: var(--cream);
+  line-height: 1.1;
+  margin: 0 0 6px 0;
+}
+.app-title-sub { font-weight: 400; font-size: 22px; color: var(--cream); opacity: 0.78; }
+.is-compact .app-title { font-size: 24px; }
+.is-compact .app-title-sub { font-size: 18px; }
+.app-subtitle {
+  font-family: var(--font-body);
+  color: var(--cream); opacity: 0.75;
+  margin: 0; font-size: 13px; line-height: 1.5;
+}
+
+/* Main */
+.app-main { flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
+
+/* Controles */
+.controls-bar {
+  display: flex; align-items: center; gap: 28px;
+  padding: 18px 40px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-1);
+  flex-wrap: wrap;
+}
+.is-compact .controls-bar { padding: 12px 32px; gap: 20px; }
+.control-group { display: flex; align-items: center; gap: 12px; }
+.control-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+}
+.segmented {
+  display: inline-flex;
+  background: var(--cream-200);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-2);
+  padding: 2px;
+}
+.segmented-btn {
+  background: transparent; border: 0;
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--fg-2);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.segmented-btn:hover { color: var(--fg-1); }
+.segmented-btn.is-active {
+  background: var(--paper);
+  color: var(--plum);
+  font-weight: 700;
+  box-shadow: var(--shadow-1);
+}
+.select, .input {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--fg-1);
+  background: var(--paper);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-2);
+  padding: 6px 28px 6px 10px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23747474' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px 14px;
+  cursor: pointer;
+  min-width: 140px;
+}
+.select:focus, .input:focus {
+  outline: 2px solid var(--ocean);
+  outline-offset: 1px;
+  border-color: var(--ocean);
+}
+.input {
+  background-image: none; padding-right: 10px;
+  cursor: text; min-width: 0; width: 100%;
+}
+.controls-spacer { flex: 1; }
+.loading-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 12px;
+  background: var(--ocean-20); color: var(--ocean-80);
+  border-radius: var(--radius-full);
+  font-size: 12px; font-weight: 500;
+}
+.loading-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--ocean);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Entities */
+.entities-bar {
+  padding: 20px 40px 22px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border-1);
+}
+.entities-head {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 12px;
+}
+.section-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+  margin: 0;
+}
+.entities-count { font-size: 12px; color: var(--fg-3); font-weight: 500; }
+.entities-list { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.entity-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 8px 6px 10px;
+  background: var(--paper);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-2);
+  transition: border-color 120ms ease;
+}
+.entity-chip:hover { border-color: var(--plum); }
+.entity-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.entity-text { display: flex; flex-direction: column; line-height: 1.1; }
+.entity-name {
+  font-family: var(--font-body);
+  font-weight: 700; font-size: 13px; color: var(--fg-1);
+}
+.entity-meta { font-size: 11px; color: var(--fg-3); margin-top: 2px; font-weight: 500; }
+.entity-btn {
+  background: transparent; border: 0;
+  padding: 4px; color: var(--fg-3); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-1);
+}
+.entity-btn:hover { background: var(--cream-200); color: var(--fg-1); }
+.entity-btn-remove:hover { background: #fce7e7; color: var(--mark-red); }
+.entity-btn .icon { width: 14px; height: 14px; }
+.entities-actions {
+  display: inline-flex; align-items: center; gap: 8px; margin-left: 4px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid transparent;
+  padding: 7px 14px;
+  border-radius: var(--radius-2);
+  font-family: var(--font-body);
+  font-weight: 500; font-size: 13px;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease, transform 80ms ease;
+  text-decoration: none;
+}
+.btn:active { transform: translateY(1px); }
+.btn .icon { width: 14px; height: 14px; }
+.btn-small { padding: 5px 10px; font-size: 12px; }
+.btn-primary { background: var(--ocean); color: var(--cream); border-color: var(--ocean); }
+.btn-primary:hover { background: var(--ocean-80); border-color: var(--ocean-80); }
+.btn-ghost { background: transparent; color: var(--fg-1); border-color: var(--border-2); }
+.btn-ghost:hover { background: var(--cream-200); border-color: var(--plum); }
+.app-header-right .btn-ghost {
+  background: rgba(255,246,224,0.06);
+  color: var(--cream);
+  border-color: rgba(255,246,224,0.2);
+}
+.app-header-right .btn-ghost:hover {
+  background: rgba(255,246,224,0.12);
+  border-color: rgba(255,246,224,0.4);
+}
+.icon-btn {
+  background: transparent; border: 0;
+  padding: 6px; cursor: pointer;
+  color: var(--fg-2); border-radius: var(--radius-1);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.icon-btn:hover { background: var(--cream-200); color: var(--fg-1); }
+.icon-btn .icon { width: 18px; height: 18px; }
+.icon { display: inline-block; vertical-align: middle; }
+
+/* Results */
+.results-section { padding: 28px 40px 8px; }
+.results-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.section-actions {
+  display: flex; align-items: center; gap: 14px;
+  flex-wrap: wrap; justify-content: flex-end;
+}
+.icon-export {
+  display: inline-flex; align-items: center; gap: 0;
+  height: 32px; padding: 0 8px;
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-2);
+  color: var(--fg-2); cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 500; font-size: 13px;
+  overflow: hidden; max-width: 36px; white-space: nowrap;
+  transition: max-width 240ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease, gap 240ms ease;
+}
+.icon-export:hover, .icon-export:focus-visible {
+  max-width: 220px; gap: 8px;
+  background: var(--paper); border-color: #0A3A5C; color: #0A3A5C;
+}
+.icon-export .icon { width: 16px; height: 16px; flex-shrink: 0; }
+.icon-export-label {
+  opacity: 0; transform: translateX(-4px);
+  transition: opacity 200ms ease 80ms, transform 200ms ease 80ms;
+}
+.icon-export:hover .icon-export-label,
+.icon-export:focus-visible .icon-export-label {
+  opacity: 1; transform: translateX(0);
+}
+
+.chart-hints {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 14px; font-size: 12px;
+}
+.hint-item { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-1); }
+.hint-muted { color: var(--fg-3); font-size: 11px; }
+.hint-empty-box {
+  display: inline-block; width: 14px; height: 12px;
+  background: #FFFFFF; border: 1px solid #C8BDA0; border-radius: 1px;
+}
+.hint-low-n {
+  display: inline-block; width: 14px; height: 12px;
+  background: #0A3A5C; opacity: 0.45; border-radius: 1px;
+}
+.hint-asterisk {
+  display: inline-flex; align-items: center;
+  font-weight: 900; color: var(--ocean); font-size: 15px;
+  line-height: 0.6; width: 14px; justify-content: center;
+}
+
+.supergrid { display: grid; gap: 10px 12px; align-items: stretch; }
+.supergrid-entity-head {
+  display: flex; flex-direction: column;
+  gap: 4px; padding: 4px 4px 6px;
+  border-bottom: 2px solid var(--border-strong);
+}
+.supergrid-entity-head .entity-swatch { width: 16px; height: 16px; border-radius: 2px; }
+.sg-ent-name {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 17px;
+  color: var(--fg-1);
+  letter-spacing: -0.005em; line-height: 1.1;
+}
+.sg-ent-meta { font-size: 11px; color: var(--fg-3); font-weight: 500; }
+.supergrid-gse-label {
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 6px 6px 6px 0;
+  border-right: 1px solid var(--border-1);
+}
+.sg-gse-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 10px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+}
+.sg-gse-name {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 18px;
+  color: #0A3A5C;
+  letter-spacing: -0.005em; line-height: 1.1; margin-top: 2px;
+}
+
+.chart-cell {
+  background: var(--paper);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-3);
+  padding: 10px 10px 6px;
+  box-shadow: var(--shadow-1);
+  display: flex; flex-direction: column;
+  gap: 4px; min-width: 0;
+}
+.chart-cell-head { display: flex; align-items: baseline; gap: 5px; margin-bottom: 2px; }
+.chart-cell-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 9px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+}
+.chart-cell-title {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 13px;
+  letter-spacing: -0.005em;
+  color: #0A3A5C;
+}
+.sub-section { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.sub-section-bars { padding-top: 6px; margin-top: 2px; border-top: 1px dashed var(--border-1); }
+.sub-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 9px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+  padding-left: 2px; margin-bottom: 2px;
+}
+.sparkline-svg, .bars-svg, .chart-svg { width: 100%; height: auto; display: block; }
+.results-title {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 24px;
+  letter-spacing: -0.005em;
+  color: var(--fg-1);
+  margin: 4px 0 0 0; line-height: 1.2;
+}
+.results-title-year { color: var(--ocean); }
+
+/* Tooltip */
+.tooltip {
+  position: absolute; pointer-events: none; z-index: 9999;
+  background: var(--paper); color: var(--fg-1);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-3);
+  padding: 10px 12px;
+  font-size: 12px;
+  min-width: 200px; max-width: 280px;
+  transform: translate(-50%, -100%);
+}
+.tt-row { display: flex; align-items: center; gap: 6px; }
+.tt-head { margin-bottom: 4px; }
+.tt-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.tt-ent {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 12px;
+  letter-spacing: 0.01em; color: var(--plum);
+}
+.tt-gse { font-size: 11px; color: var(--fg-3); margin-bottom: 6px; }
+.tt-pct {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 20px;
+  color: var(--ink); line-height: 1;
+  letter-spacing: -0.01em; margin-bottom: 6px;
+}
+.tt-segments {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 6px 0; margin-bottom: 4px;
+  border-bottom: 1px solid var(--border-1);
+}
+.tt-seg {
+  display: grid; grid-template-columns: 10px 1fr auto;
+  gap: 6px; align-items: center; font-size: 12px;
+}
+.tt-seg-sw { width: 10px; height: 10px; border-radius: 2px; }
+.tt-seg-sw-empty {
+  background: var(--paper) !important;
+  border: 1px solid #C8BDA0;
+  width: 9px; height: 9px;
+}
+.tt-seg-lbl { color: var(--fg-2); }
+.tt-seg-val {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 13px;
+  color: var(--ink); letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.tt-meta {
+  display: flex; flex-direction: column; gap: 2px;
+  font-size: 11px; color: var(--fg-2);
+  padding-top: 6px; border-top: 1px solid var(--border-1);
+}
+.tt-meta b { font-weight: 700; color: var(--ink); }
+.tt-warn {
+  margin-top: 6px; padding: 4px 6px;
+  background: var(--cream-200); color: var(--ink-2);
+  font-size: 10px;
+  border-radius: var(--radius-1);
+  border-left: 2px solid var(--coral);
+}
+
+/* Tabla */
+.table-section { padding: 28px 40px; }
+.table-head {
+  display: flex; align-items: baseline; gap: 16px;
+  margin-bottom: 6px; flex-wrap: wrap;
+}
+.table-head-titles { display: flex; flex-direction: column; gap: 2px; }
+.table-title {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 24px;
+  letter-spacing: -0.005em;
+  color: var(--fg-1); margin: 0; line-height: 1.2;
+}
+.table-meta { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.table-meta-item { font-size: 12px; color: var(--fg-3); }
+.table-wrap {
+  background: var(--paper);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-3);
+  overflow: auto; max-height: 540px;
+  box-shadow: var(--shadow-1);
+  position: relative;
+}
+.data-table {
+  border-collapse: collapse; width: 100%;
+  font-size: 13px; min-width: 1000px;
+}
+.data-table thead th {
+  position: sticky; top: 0; z-index: 3;
+  background: var(--cream-200);
+  color: var(--fg-1);
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 11px;
+  letter-spacing: var(--tracking-overline);
+  text-align: right;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--border-2);
+  white-space: nowrap;
+}
+.data-table thead th.th-ent,
+.data-table thead th.th-gse { text-align: left; }
+.data-table thead th.th-ent { left: 0; z-index: 4; min-width: 200px; }
+.data-table thead th.th-gse { left: 200px; z-index: 4; min-width: 110px; }
+.data-table thead th.th-prelim { color: var(--ocean-80); }
+.prelim-mark { color: var(--ocean); font-weight: 900; }
+.data-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-1);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.data-table tbody td.td-ent,
+.data-table tbody td.td-gse { text-align: left; }
+.data-table tbody td.td-ent {
+  position: sticky; left: 0; z-index: 2;
+  background: var(--paper);
+  min-width: 200px;
+  border-right: 1px solid var(--border-1);
+}
+.data-table tbody td.td-gse {
+  position: sticky; left: 200px; z-index: 2;
+  background: var(--paper); min-width: 110px;
+  border-right: 1px solid var(--border-1);
+  color: var(--fg-2);
+}
+.data-table tbody tr.row-ent-start td { border-top: 2px solid var(--border-2); }
+.data-table tbody tr.row-ent-start:first-child td { border-top: 0; }
+.data-table tbody td.td-cell { position: relative; }
+.data-table tbody tr:hover td:not(.td-ent):not(.td-gse) {
+  outline: 1px solid var(--plum); outline-offset: -1px;
+}
+.ent-cell { display: inline-flex; align-items: center; gap: 8px; }
+.ent-name { font-weight: 700; color: var(--fg-1); }
+.td-pct { font-family: var(--font-body); font-weight: 700; color: var(--fg-1); }
+.td-n { font-size: 11px; color: var(--fg-3); margin-left: 2px; }
+.td-empty { color: var(--border-2); }
+.td-prelim { background: rgba(0,98,160,0.04); }
+.td-prelim .td-pct { color: var(--ocean-80); }
+.td-prelim .td-pct::after { content: " *"; color: var(--ocean); font-weight: 900; }
+.td-alert-dot {
+  display: inline-block; margin-left: 6px;
+  font-size: 9px; color: var(--mark-red);
+  font-weight: 900; vertical-align: middle;
+}
+.td-alert .td-pct { color: #8B1A1A; }
+
+.heat-legend {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.2fr) minmax(320px, 1.6fr);
+  gap: 24px; align-items: center;
+  margin: 6px 0 16px;
+  padding: 16px 20px;
+  background: var(--paper);
+  border: 1px solid var(--border-1);
+  border-left: 3px solid var(--coral);
+  border-radius: var(--radius-2);
+}
+@media (max-width: 900px) { .heat-legend { grid-template-columns: 1fr; } }
+.heat-legend-text { min-width: 0; }
+.heat-legend-title {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 13px;
+  color: var(--fg-1); margin-bottom: 4px;
+}
+.heat-legend-text p { margin: 0; font-size: 12.5px; color: var(--fg-2); line-height: 1.5; max-width: 56ch; }
+.heat-legend-scale { display: flex; flex-direction: column; gap: 6px; }
+.heat-scale-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: flex-end; gap: 6px;
+  font-size: 11px; color: var(--fg-2);
+}
+.heat-tick { display: flex; flex-direction: column; gap: 1px; }
+.heat-tick b { font-size: 12px; font-weight: 700; }
+.heat-tick small { font-size: 10.5px; color: var(--fg-3); line-height: 1.3; }
+.heat-tick-left { text-align: left; }
+.heat-tick-left b { color: #8B1A1A; }
+.heat-tick-mid { text-align: center; }
+.heat-tick-mid b { color: var(--fg-2); }
+.heat-tick-right { text-align: right; }
+.heat-tick-right b { color: var(--ocean-80); }
+.heat-ramp {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 10px; border-radius: 2px;
+  overflow: hidden; border: 1px solid var(--border-1);
+}
+.heat-ramp-bar { width: 100%; height: 100%; }
+.heat-ramp-coral { background: linear-gradient(to right, rgba(232,134,99,0.55), rgba(232,134,99,0)); }
+.heat-ramp-mid { background: var(--cream-50); }
+.heat-ramp-ocean { background: linear-gradient(to right, rgba(10,58,92,0), rgba(10,58,92,0.55)); }
+.table-legend {
+  display: flex; gap: 24px; align-items: center;
+  margin-top: 10px; font-size: 12px; color: var(--fg-3);
+}
+.table-legend code {
+  font-size: 11px; background: var(--cream-200); padding: 1px 4px;
+}
+.dot-prelim { color: var(--ocean); font-weight: 900; font-size: 14px; }
+
+/* Footer */
+.app-footer { padding: 18px 40px 48px; margin-top: 20px; }
+.notes-toggle {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-2);
+  padding: 10px 14px;
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 12px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-1); cursor: pointer;
+}
+.notes-toggle:hover { background: var(--cream-200); border-color: var(--plum); }
+.notes-toggle .icon { width: 16px; height: 16px; }
+.notes-toggle .chev { margin-left: 4px; transition: transform 200ms ease; }
+.notes-toggle .chev .icon { width: 14px; height: 14px; }
+.notes-toggle.is-open .chev { transform: rotate(180deg); }
+.notes-body {
+  margin-top: 14px;
+  background: var(--paper);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-3);
+  padding: 28px; box-shadow: var(--shadow-1);
+}
+.notes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 36px; }
+@media (max-width: 900px) { .notes-grid { grid-template-columns: 1fr; } }
+.note h4 {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 13px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--plum); margin: 0 0 8px;
+}
+.note p { font-size: 13px; color: var(--fg-2); line-height: 1.55; margin: 0 0 8px; max-width: 60ch; }
+.note p b { color: var(--ink); font-weight: 700; }
+.formula {
+  display: inline-block;
+  background: var(--cream-200);
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px; margin: 4px 0 8px;
+  border-radius: var(--radius-1);
+}
+.notes-sources {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--border-1);
+  font-size: 12px; color: var(--fg-3);
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(28, 18, 18, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10000; padding: 20px;
+  animation: fadeIn 140ms ease-out;
+}
+.modal {
+  background: var(--paper);
+  border-radius: var(--radius-3);
+  box-shadow: var(--shadow-3);
+  width: 100%; max-width: 540px; max-height: 88vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  animation: lift 180ms cubic-bezier(.2,.7,.2,1);
+}
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes lift { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border-1);
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 18px;
+  letter-spacing: -0.005em; margin: 0; color: var(--plum);
+}
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-1);
+  padding: 0 22px;
+}
+.modal-tab {
+  background: transparent; border: 0;
+  padding: 12px 0; margin-right: 24px;
+  font-family: var(--font-body);
+  font-weight: 500; font-size: 13px;
+  color: var(--fg-3); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.modal-tab:hover { color: var(--fg-1); }
+.modal-tab.is-active {
+  color: var(--plum); font-weight: 700;
+  border-bottom-color: var(--ocean);
+}
+.modal-body { padding: 22px; overflow-y: auto; flex: 1; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-full { grid-column: 1 / -1; }
+.field-label {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 11px;
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+  display: flex; justify-content: space-between;
+}
+.field-hint { font-weight: 500; font-size: 11px; color: var(--ocean); }
+.input-search { background-image: none; margin-bottom: 8px; }
+.color-preview {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  background: var(--cream-50);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-2);
+}
+.color-preview .entity-swatch { width: 16px; height: 16px; }
+.color-note { font-size: 12px; color: var(--fg-3); }
+.comuna-checklist {
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-2);
+  max-height: 220px; overflow-y: auto;
+  background: var(--cream-50);
+}
+.check-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-1);
+}
+.check-row:last-child { border-bottom: 0; }
+.check-row:hover { background: var(--cream-200); }
+.check-row input[type="checkbox"] { accent-color: var(--ocean); }
+.check-name { font-size: 13px; font-weight: 500; color: var(--fg-1); flex: 1; }
+.check-region { font-size: 11px; color: var(--fg-3); }
+.empty-state { padding: 16px; text-align: center; color: var(--fg-3); font-size: 13px; }
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border-1);
+  background: var(--cream-50);
+}
+
+code {
+  font-family: var(--font-mono);
+  background: var(--cream-200);
+  padding: 1px 5px; border-radius: var(--radius-1);
+  font-size: 0.92em;
+}
+
+/* TweaksPanel (versión standalone) */
+.twk-panel {
+  position: fixed; right: 16px; bottom: 16px; z-index: 2147483646;
+  width: 280px; max-height: calc(100vh - 32px);
+  display: flex; flex-direction: column;
+  background: rgba(250,249,247,.95);
+  color: #29261b;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 12px 40px rgba(0,0,0,.18);
+  font: 11.5px/1.4 var(--font-body);
+  overflow: hidden;
+}
+.twk-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 8px 10px 14px;
+  user-select: none;
+  background: rgba(0,0,0,.04);
+}
+.twk-hd b { font-size: 12px; font-weight: 600; letter-spacing: .01em; }
+.twk-x {
+  appearance: none; border: 0; background: transparent;
+  color: rgba(41,38,27,.55);
+  width: 22px; height: 22px; border-radius: 6px;
+  cursor: pointer; font-size: 13px; line-height: 1;
+}
+.twk-x:hover { background: rgba(0,0,0,.06); color: #29261b; }
+.twk-body {
+  padding: 8px 14px 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  overflow-y: auto; overflow-x: hidden; min-height: 0;
+}
+.twk-row { display: flex; flex-direction: column; gap: 5px; }
+.twk-row-h { flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
+.twk-lbl {
+  display: flex; justify-content: space-between; align-items: baseline;
+  color: rgba(41,38,27,.72);
+}
+.twk-lbl > span:first-child { font-weight: 500; }
+.twk-sect {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: rgba(41,38,27,.45);
+  padding: 10px 0 0;
+}
+.twk-sect:first-child { padding-top: 0; }
+.twk-seg {
+  position: relative; display: flex; padding: 2px;
+  border-radius: 8px;
+  background: rgba(0,0,0,.06);
+}
+.twk-seg button {
+  appearance: none; position: relative; z-index: 1; flex: 1; border: 0;
+  background: transparent; color: inherit;
+  font: inherit; font-weight: 500;
+  min-height: 22px; border-radius: 6px;
+  cursor: pointer; padding: 4px 6px;
+  line-height: 1.2;
+}
+.twk-seg button.on {
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+}
+.twk-toggle {
+  position: relative; width: 32px; height: 18px;
+  border: 0; border-radius: 999px;
+  background: rgba(0,0,0,.15);
+  transition: background .15s;
+  cursor: pointer; padding: 0;
+}
+.twk-toggle[data-on="1"] { background: #34c759; }
+.twk-toggle i {
+  position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.25);
+  transition: transform .15s;
+}
+.twk-toggle[data-on="1"] i { transform: translateX(14px); }
+.twk-btn {
+  appearance: none; height: 26px; padding: 0 12px;
+  border: 0; border-radius: 7px;
+  background: rgba(0,0,0,.78); color: #fff;
+  font: inherit; font-weight: 500;
+  cursor: pointer;
+}
+.twk-btn:hover { background: rgba(0,0,0,.88); }
+.twk-btn.secondary { background: rgba(0,0,0,.06); color: inherit; }
+.twk-btn.secondary:hover { background: rgba(0,0,0,.1); }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="global-tooltip" class="tooltip" style="display:none"></div>
+
+  <!-- React + Babel desde CDN -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+
+  <!-- D3 inline -->
+  <script>__D3_INLINE__</script>
+
+  <!-- Datos reales del pipeline R -->
+  <script>const DATA = __JSON_DATA__;</script>
+
+  <!-- Aplicación React (JSX, compilado por Babel en el cliente) -->
+  <script type="text/babel" data-presets="env,react">
+    "use strict";
+
+    // ============================================================
+    // SimceData — adaptador de datos reales (reemplaza data.js)
+    // ============================================================
+    const SimceData = (function () {
+      const M = DATA.meta;
+      const D = DATA.datos;
+
+      // Diccionarios inversos: label JSX → código JSON
+      const GSE_LABEL_TO_COD = {};
+      Object.entries(M.gse_labels).forEach(([cod, label]) => { GSE_LABEL_TO_COD[label] = cod; });
+      const NIVEL_LABEL_TO_COD = {};
+      Object.entries(M.niveles).forEach(([cod, label]) => { NIVEL_LABEL_TO_COD[label] = cod; });
+      const PRUEBA_LABEL_TO_COD = {};
+      Object.entries(M.pruebas).forEach(([cod, label]) => { PRUEBA_LABEL_TO_COD[label] = cod; });
+
+      const YEARS = M.anios.slice().sort((a, b) => a - b);
+      const GAP_YEARS = M.anios_sin_simce.slice();
+      const PRELIMINAR_YEARS = M.anios_preliminar.slice();
+      // GSE_LEVELS en orden: Bajo, Medio bajo, Medio, Medio alto, Alto
+      const GSE_LEVELS = M.gse.map(c => M.gse_labels[c]);
+
+      // Cache de índices por (nivel, prueba, cod_grupo)
+      const CACHE_IX = new Map();
+      function indicesPCG(nivel, prueba, codGrupo) {
+        const k = nivel + "|" + prueba + "|" + codGrupo;
+        if (!CACHE_IX.has(k)) {
+          const ix = [];
+          for (let i = 0; i < D.nivel.length; i++) {
+            if (D.nivel[i] === nivel && D.prueba[i] === prueba && D.cod_grupo[i] === codGrupo) {
+              ix.push(i);
+            }
+          }
+          CACHE_IX.set(k, ix);
+        }
+        return CACHE_IX.get(k);
+      }
+
+      // generateSeries: filtra DATA.datos y agrega ponderado por comunas.
+      // Devuelve serie de 9 años con { year, pct, n_eval, n_estab, preliminar }.
+      function generateSeries({ entityName, comunas, gse, nivel, prueba }) {
+        const cg = GSE_LABEL_TO_COD[gse];
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        if (!cg || !nv || !pr) {
+          // mapping faltante — devolver vacío para los 9 años
+          return YEARS.map(y => ({
+            year: y, pct: null, n_eval: null, n_estab: null,
+            preliminar: PRELIMINAR_YEARS.includes(y),
+          }));
+        }
+        const ix = indicesPCG(nv, pr, cg);
+        const setCom = new Set(comunas || []);
+        const porAnio = new Map();
+        for (const i of ix) {
+          if (!setCom.has(D.cod_com[i])) continue;
+          const y = D.anio[i];
+          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
+          if (p == null || n == null || n === 0) continue;
+          let acc = porAnio.get(y);
+          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          acc.num += (p * n) / 100;
+          acc.den += n;
+          acc.n_estab += e;
+        }
+        return YEARS.map(year => {
+          const acc = porAnio.get(year);
+          const preliminar = PRELIMINAR_YEARS.includes(year);
+          if (acc && acc.den > 0) {
+            return {
+              year,
+              pct: Math.round((acc.num / acc.den) * 1000) / 10,
+              n_eval: acc.den,
+              n_estab: acc.n_estab,
+              preliminar,
+            };
+          }
+          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+        });
+      }
+
+      // REGIONES: agrupar DATA.comunas por cod_reg
+      const REGIONES = (function () {
+        const byReg = new Map();
+        DATA.comunas.forEach(c => {
+          if (!byReg.has(c.cod_reg)) {
+            byReg.set(c.cod_reg, {
+              nombre: c.nom_reg || ("Región " + c.cod_reg),
+              cod_reg: c.cod_reg,
+              comunas: [],
+            });
+          }
+          byReg.get(c.cod_reg).comunas.push({
+            cod_com: c.cod,
+            nombre: c.nom,
+          });
+        });
+        return Array.from(byReg.values())
+          .sort((a, b) => parseInt(a.cod_reg) - parseInt(b.cod_reg))
+          .map(r => ({
+            ...r,
+            comunas: r.comunas.sort((a, b) => a.nombre.localeCompare(b.nombre, "es")),
+          }));
+      })();
+
+      // PRESETS — Costa Central
+      const PRESETS = {
+        "SLEP Costa Central": ["5103", "5105", "5107", "5109"],
+      };
+
+      // Look up de comuna por código
+      const COMUNA_BY_COD = new Map(DATA.comunas.map(c => [c.cod, c]));
+
+      return {
+        YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
+        generateSeries, REGIONES, PRESETS, COMUNA_BY_COD,
+      };
+    })();
+
+    // ============================================================
+    // Utilidades de formato chileno
+    // ============================================================
+    function fmtPct(v) {
+      if (v == null) return "—";
+      return v.toFixed(1).replace(".", ",") + "%";
+    }
+    function fmtPctShort(v) {
+      if (v == null) return "—";
+      return Math.round(v) + "%";
+    }
+    function fmtInt(v) {
+      if (v == null) return "—";
+      return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // ============================================================
+    // Icon component
+    // ============================================================
+    function Icon({ name }) {
+      const paths = {
+        plus: <><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></>,
+        x: <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>,
+        edit: <><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></>,
+        download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></>,
+        image: <><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></>,
+        layers: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>,
+        chevron: <><polyline points="6 9 12 15 18 9" /></>,
+        info: <><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></>,
+        gear: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
+      };
+      return (
+        <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {paths[name]}
+        </svg>
+      );
+    }
+
+    // ============================================================
+    // Paleta de entidades
+    // ============================================================
+    const ENTITY_PALETTE = [
+      "#0A3A5C", "#C45A3E", "#1F4A1F", "#8A5A8E",
+      "#B89530", "#4A6FA5", "#A35A6F", "#5C8A6E",
+    ];
+    const MAX_ENTIDADES = 6;
+
+    // INITIAL_ENTITIES: 4 comunas Costa Central con códigos reales
+    function buildInitialEntities() {
+      const seedCodigos = [
+        { cod: "5103", colorIdx: 0 },  // Concón
+        { cod: "5105", colorIdx: 1 },  // Puchuncaví
+        { cod: "5107", colorIdx: 2 },  // Quintero
+        { cod: "5109", colorIdx: 3 },  // Viña del Mar
+      ];
+      return seedCodigos.map((s, i) => {
+        const c = SimceData.COMUNA_BY_COD.get(s.cod);
+        return {
+          id: "e" + (i + 1),
+          name: c ? c.nom : ("Comuna " + s.cod),
+          kind: "comuna",
+          comunas: [s.cod],
+          color: ENTITY_PALETTE[s.colorIdx],
+        };
+      });
+    }
+
+    // ============================================================
+    // Header — banner azul institucional
+    // ============================================================
+    function Header({ onOpenTweaks }) {
+      return (
+        <header className="app-header">
+          <div className="app-header-inner">
+            <div className="app-header-left">
+              <div className="brand-lockup">
+                <span className="brand-eyebrow">Agencia de Calidad de la Educación</span>
+                <span className="brand-divider">·</span>
+                <span className="brand-eyebrow brand-eyebrow-muted">Mineduc</span>
+              </div>
+              <h1 className="app-title">
+                Motor de comparación SIMCE
+                <span className="app-title-sub"> — % ponderado en nivel Adecuado</span>
+              </h1>
+              <p className="app-subtitle">
+                Datos 2014–2025 · Resultados segmentados por grupo socioeconómico (GSE)
+              </p>
+            </div>
+            <div className="app-header-right">
+              <button className="btn btn-ghost btn-small" onClick={onOpenTweaks} title="Ajustes">
+                <Icon name="gear" />
+                <span>Ajustes</span>
+              </button>
+            </div>
+          </div>
+        </header>
+      );
+    }
+
+    function Segmented({ value, options, onChange }) {
+      const opts = options.map(o => typeof o === "string" ? { value: o, label: o } : o);
+      return (
+        <div className="segmented" role="tablist">
+          {opts.map(o => (
+            <button
+              key={o.value}
+              role="tab"
+              aria-selected={value === o.value}
+              className={"segmented-btn" + (value === o.value ? " is-active" : "")}
+              onClick={() => onChange(o.value)}
+            >{o.label}</button>
+          ))}
+        </div>
+      );
+    }
+
+    function ControlsBar({ nivel, setNivel, prueba, setPrueba, loading }) {
+      const niveles = Object.values(DATA.meta.niveles);
+      const pruebas = Object.values(DATA.meta.pruebas);
+      return (
+        <section className="controls-bar">
+          <div className="control-group">
+            <span className="control-label">Nivel</span>
+            <Segmented value={nivel} options={niveles} onChange={setNivel} />
+          </div>
+          <div className="control-group">
+            <span className="control-label">Prueba</span>
+            <Segmented value={prueba} options={pruebas} onChange={setPrueba} />
+          </div>
+          <div className="controls-spacer" />
+          {loading && (
+            <div className="loading-pill">
+              <span className="loading-dot" />
+              <span>Recalculando…</span>
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    function EntityChip({ entity, onRemove, onEdit }) {
+      const isGroup = entity.kind === "group";
+      return (
+        <div className="entity-chip">
+          <span className="entity-swatch" style={{ background: entity.color }} />
+          <span className="entity-text">
+            <span className="entity-name">{entity.name}</span>
+            <span className="entity-meta">
+              {isGroup ? `Grupo · ${entity.comunas.length} comunas` : "Comuna"}
+            </span>
+          </span>
+          <button className="entity-btn" onClick={onEdit} title="Editar">
+            <Icon name="edit" />
+          </button>
+          <button className="entity-btn entity-btn-remove" onClick={onRemove} title="Eliminar">
+            <Icon name="x" />
+          </button>
+        </div>
+      );
+    }
+
+    function EntitiesBar({ entities, setEntities, openModal, openPresetMenu }) {
+      function removeEntity(id) { setEntities(entities.filter(e => e.id !== id)); }
+      return (
+        <section className="entities-bar">
+          <div className="entities-head">
+            <h2 className="section-eyebrow">Entidades a comparar</h2>
+            <span className="entities-count">{entities.length} de {MAX_ENTIDADES} activas</span>
+          </div>
+          <div className="entities-list">
+            {entities.map(e => (
+              <EntityChip
+                key={e.id}
+                entity={e}
+                onRemove={() => removeEntity(e.id)}
+                onEdit={() => openModal(e)}
+              />
+            ))}
+            {entities.length < MAX_ENTIDADES && (
+              <div className="entities-actions">
+                <button className="btn btn-primary" onClick={() => openModal(null)}>
+                  <Icon name="plus" /> Agregar entidad
+                </button>
+                <button className="btn btn-ghost btn-small" onClick={openPresetMenu}>
+                  <Icon name="layers" /> Preset SLEP
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    // ============================================================
+    // Modal de agregar/editar entidad
+    // ============================================================
+    function AddEntityModal({ editing, onSave, onCancel, takenColors }) {
+      const [tab, setTab] = React.useState(editing?.kind === "group" ? "group" : "comuna");
+      const [region, setRegion] = React.useState(
+        editing?.kind === "comuna" && editing.comunas.length > 0
+          ? (SimceData.COMUNA_BY_COD.get(editing.comunas[0])?.cod_reg || SimceData.REGIONES[0].cod_reg)
+          : SimceData.REGIONES[0].cod_reg
+      );
+      const [comunaCod, setComunaCod] = React.useState(
+        editing?.kind === "comuna" ? editing.comunas[0] : ""
+      );
+      const [groupName, setGroupName] = React.useState(editing?.kind === "group" ? editing.name : "");
+      const [groupComunas, setGroupComunas] = React.useState(
+        editing?.kind === "group" ? editing.comunas : []
+      );
+      const [search, setSearch] = React.useState("");
+
+      const availableColor = React.useMemo(() => {
+        return ENTITY_PALETTE.find(c => !takenColors.includes(c)) || ENTITY_PALETTE[0];
+      }, [takenColors]);
+
+      const currentRegion = SimceData.REGIONES.find(r => r.cod_reg === region) || SimceData.REGIONES[0];
+
+      // Lista plana para tab de grupo, con filtro
+      const allComunas = SimceData.REGIONES.flatMap(r =>
+        r.comunas.map(c => ({ cod_com: c.cod_com, nombre: c.nombre, region: r.nombre }))
+      );
+      const filtered = allComunas.filter(({ nombre, region }) => {
+        if (!search) return true;
+        const s = search.toLowerCase();
+        return nombre.toLowerCase().includes(s) || region.toLowerCase().includes(s);
+      });
+
+      function handleSave() {
+        if (tab === "comuna") {
+          if (!comunaCod) return;
+          const c = SimceData.COMUNA_BY_COD.get(comunaCod);
+          if (!c) return;
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: c.nom,
+            kind: "comuna",
+            comunas: [comunaCod],
+            color: editing?.color || availableColor,
+          });
+        } else {
+          if (!groupName || groupComunas.length === 0) return;
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: groupName,
+            kind: "group",
+            comunas: groupComunas,
+            color: editing?.color || availableColor,
+          });
+        }
+      }
+
+      return (
+        <div className="modal-backdrop" onClick={onCancel}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">{editing ? "Editar entidad" : "Agregar entidad"}</h3>
+              <button className="icon-btn" onClick={onCancel} aria-label="Cerrar">
+                <Icon name="x" />
+              </button>
+            </div>
+            <div className="modal-tabs">
+              <button className={"modal-tab" + (tab === "comuna" ? " is-active" : "")} onClick={() => setTab("comuna")}>
+                Comuna individual
+              </button>
+              <button className={"modal-tab" + (tab === "group" ? " is-active" : "")} onClick={() => setTab("group")}>
+                Grupo custom (ej. SLEP)
+              </button>
+            </div>
+            <div className="modal-body">
+              {tab === "comuna" ? (
+                <div className="form-grid">
+                  <label className="field">
+                    <span className="field-label">Región</span>
+                    <select className="select" value={region} onChange={e => { setRegion(e.target.value); setComunaCod(""); }}>
+                      {SimceData.REGIONES.map(r => (
+                        <option key={r.cod_reg} value={r.cod_reg}>{r.nombre}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="field">
+                    <span className="field-label">Comuna</span>
+                    <select className="select" value={comunaCod} onChange={e => setComunaCod(e.target.value)}>
+                      <option value="">Selecciona una comuna…</option>
+                      {currentRegion.comunas.map(c => (
+                        <option key={c.cod_com} value={c.cod_com}>{c.nombre}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="field field-full">
+                    <span className="field-label">Color asignado</span>
+                    <div className="color-preview">
+                      <span className="entity-swatch" style={{ background: editing?.color || availableColor }} />
+                      <span className="color-note">Asignado automáticamente desde la paleta.</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="form-grid">
+                  <label className="field field-full">
+                    <span className="field-label">Nombre del grupo</span>
+                    <input className="input" type="text" placeholder="Ej. SLEP Costa Central"
+                      value={groupName} onChange={e => setGroupName(e.target.value)} />
+                  </label>
+                  <label className="field field-full">
+                    <span className="field-label">
+                      Comunas en el grupo
+                      <span className="field-hint">{groupComunas.length} seleccionadas</span>
+                    </span>
+                    <input className="input input-search" type="text" placeholder="Buscar comuna…"
+                      value={search} onChange={e => setSearch(e.target.value)} />
+                    <div className="comuna-checklist">
+                      {filtered.map(({ cod_com, nombre, region }) => (
+                        <label key={cod_com} className="check-row">
+                          <input
+                            type="checkbox"
+                            checked={groupComunas.includes(cod_com)}
+                            onChange={e => {
+                              if (e.target.checked) setGroupComunas([...groupComunas, cod_com]);
+                              else setGroupComunas(groupComunas.filter(c => c !== cod_com));
+                            }}
+                          />
+                          <span className="check-name">{nombre}</span>
+                          <span className="check-region">{region}</span>
+                        </label>
+                      ))}
+                      {filtered.length === 0 && (
+                        <div className="empty-state">Sin resultados para "{search}"</div>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
+              <button className="btn btn-primary" onClick={handleSave}>
+                {editing ? "Guardar cambios" : "Agregar al análisis"}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================
+    // Tooltip compartido
+    // ============================================================
+    function makeTooltip(entity, gse) {
+      function show(e, s, yr) {
+        const tip = document.getElementById("global-tooltip");
+        tip.style.display = "block";
+        tip.innerHTML = `
+          <div class="tt-row tt-head">
+            <span class="tt-swatch" style="background:${entity.color}"></span>
+            <span class="tt-ent"></span>
+          </div>
+          <div class="tt-gse"></div>
+          <div class="tt-segments">
+            <div class="tt-seg">
+              <span class="tt-seg-sw" style="background:${entity.color}"></span>
+              <span class="tt-seg-lbl">Adecuado</span>
+              <span class="tt-seg-val tt-adec"></span>
+            </div>
+            <div class="tt-seg">
+              <span class="tt-seg-sw tt-seg-sw-empty"></span>
+              <span class="tt-seg-lbl">Elemental + Insuficiente</span>
+              <span class="tt-seg-val tt-rest"></span>
+            </div>
+          </div>
+          <div class="tt-meta">
+            <span>N evaluados: <b class="tt-n-eval"></b></span>
+            <span>N establecimientos: <b class="tt-n-estab"></b></span>
+          </div>
+        `;
+        // Insertar valores por textContent (encoding seguro)
+        tip.querySelector(".tt-ent").textContent = entity.name;
+        tip.querySelector(".tt-gse").textContent = "GSE " + gse + " · " + yr + (s.preliminar ? " *" : "");
+        tip.querySelector(".tt-adec").textContent = fmtPct(s.pct);
+        tip.querySelector(".tt-rest").textContent = s.pct == null ? "—" : fmtPct(100 - s.pct);
+        tip.querySelector(".tt-n-eval").textContent = fmtInt(s.n_eval);
+        tip.querySelector(".tt-n-estab").textContent = fmtInt(s.n_estab);
+
+        if (s.n_estab === 1) {
+          const warn = document.createElement("div");
+          warn.className = "tt-warn";
+          warn.textContent = "Baja representatividad — un solo establecimiento";
+          tip.appendChild(warn);
+        }
+        if (s.preliminar) {
+          const warn = document.createElement("div");
+          warn.className = "tt-warn";
+          warn.textContent = "* Dato preliminar 2025";
+          tip.appendChild(warn);
+        }
+        tip.style.left = (e.clientX + window.scrollX + 12) + "px";
+        tip.style.top  = (e.clientY + window.scrollY - 12) + "px";
+      }
+      function hide() {
+        document.getElementById("global-tooltip").style.display = "none";
+      }
+      return { show, hide };
+    }
+
+    // ============================================================
+    // Sparkline — trayectoria histórica
+    // ============================================================
+    function SparklineSubchart({ entity, gse, nivel, prueba }) {
+      const ref = React.useRef(null);
+      React.useEffect(() => {
+        const svg = d3.select(ref.current);
+        svg.selectAll("*").remove();
+        const W = 320, H = 90;
+        const M = { top: 16, right: 12, bottom: 22, left: 12 };
+        const iw = W - M.left - M.right;
+        const ih = H - M.top - M.bottom;
+        const g = svg
+          .attr("viewBox", `0 0 ${W} ${H}`)
+          .attr("preserveAspectRatio", "xMidYMid meet")
+          .append("g")
+          .attr("transform", `translate(${M.left},${M.top})`);
+
+        const series = SimceData.generateSeries({
+          entityName: entity.name,
+          comunas: entity.comunas,
+          gse, nivel, prueba,
+        });
+        const valid = series.filter(s => s.pct != null);
+        const x = d3.scaleLinear().domain([2014, 2025]).range([0, iw]);
+        const y = d3.scaleLinear().domain([0, 100]).range([ih, 0]);
+
+        // Banda 2019-2021
+        const gap = SimceData.GAP_YEARS;
+        if (gap.length > 0) {
+          g.append("rect")
+            .attr("x", x(Math.min(...gap))).attr("y", 0)
+            .attr("width", x(Math.max(...gap)) - x(Math.min(...gap))).attr("height", ih)
+            .attr("fill", "#0A3A5C").attr("opacity", 0.03);
+        }
+
+        const lineGen = d3.line()
+          .defined(d => d.pct != null)
+          .x(d => x(d.year)).y(d => y(d.pct))
+          .curve(d3.curveMonotoneX);
+
+        const pre = series.filter(s => s.year <= 2018);
+        const post = series.filter(s => s.year >= 2022);
+        [pre, post].forEach(seg => {
+          const v = seg.filter(s => s.pct != null);
+          if (v.length < 2) return;
+          g.append("path")
+            .attr("d", lineGen(seg))
+            .attr("fill", "none")
+            .attr("stroke", entity.color)
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round");
+        });
+
+        const tt = makeTooltip(entity, gse);
+        valid.forEach(s => {
+          const cx = x(s.year);
+          const cy = y(s.pct);
+          const isLowN = s.n_estab === 1;
+          const opacity = isLowN ? 0.45 : 1;
+          g.append("circle")
+            .attr("cx", cx).attr("cy", cy)
+            .attr("r", 2.2)
+            .attr("fill", entity.color)
+            .attr("opacity", opacity)
+            .style("cursor", "pointer")
+            .on("mouseenter", e => tt.show(e, s, s.year))
+            .on("mouseleave", tt.hide);
+          const labelY = Math.max(8, cy - 6);
+          g.append("text")
+            .attr("x", cx).attr("y", labelY)
+            .attr("text-anchor", "middle")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", 8.5)
+            .attr("font-weight", 600)
+            .attr("fill", entity.color)
+            .attr("opacity", opacity * 0.9)
+            .style("pointer-events", "none")
+            .text(Math.round(s.pct) + "%");
+          g.append("text")
+            .attr("x", cx).attr("y", ih + 13)
+            .attr("text-anchor", "middle")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", 8)
+            .attr("fill", "#747474")
+            .text(s.year);
+          if (s.preliminar) {
+            g.append("text")
+              .attr("x", cx + 7).attr("y", labelY - 1)
+              .attr("font-family", "system-ui, sans-serif")
+              .attr("font-size", 9)
+              .attr("font-weight", 900)
+              .attr("fill", "#0062A0")
+              .text("*");
+          }
+        });
+      }, [entity.id, entity.color, entity.name, entity.comunas.join(","), gse, nivel, prueba]);
+      return <svg ref={ref} className="sparkline-svg" />;
+    }
+
+    // ============================================================
+    // Bar chart — últimas 3 aplicaciones
+    // ============================================================
+    function RecentBarsSubchart({ entity, gse, nivel, prueba, showElemInsuf, yScale, recentN = 3 }) {
+      const ref = React.useRef(null);
+      React.useEffect(() => {
+        const svg = d3.select(ref.current);
+        svg.selectAll("*").remove();
+        const W = 320, H = 165;
+        const M = { top: 14, right: 10, bottom: 24, left: 28 };
+        const iw = W - M.left - M.right;
+        const ih = H - M.top - M.bottom;
+        const g = svg
+          .attr("viewBox", `0 0 ${W} ${H}`)
+          .attr("preserveAspectRatio", "xMidYMid meet")
+          .append("g")
+          .attr("transform", `translate(${M.left},${M.top})`);
+
+        const series = SimceData.generateSeries({
+          entityName: entity.name,
+          comunas: entity.comunas,
+          gse, nivel, prueba,
+        });
+        const recent = series.filter(s => s.pct != null).slice(-recentN);
+
+        let yMax = 100;
+        if (yScale === "auto" && !showElemInsuf) {
+          const peak = d3.max(recent, d => d.pct) || 0;
+          yMax = Math.min(100, Math.max(20, Math.ceil((peak + 8) / 10) * 10));
+        }
+        const y = d3.scaleLinear().domain([0, yMax]).range([ih, 0]);
+        const yTicks = [0, 25, 50, 75, 100].filter(v => v <= yMax);
+        if (yMax !== 100 && !yTicks.includes(yMax)) yTicks.push(yMax);
+        g.append("g")
+          .selectAll("line")
+          .data(yTicks)
+          .join("line")
+          .attr("x1", 0).attr("x2", iw)
+          .attr("y1", d => y(d)).attr("y2", d => y(d))
+          .attr("stroke", "#E7DFC9")
+          .attr("stroke-dasharray", d => d === 0 ? "0" : "2,3")
+          .attr("stroke-width", 1);
+
+        g.append("g")
+          .call(
+            d3.axisLeft(y)
+              .tickValues(yTicks)
+              .tickFormat(d => d + "%")
+              .tickSize(0)
+              .tickPadding(6)
+          )
+          .call(s => s.select(".domain").remove())
+          .call(s => s.selectAll("text")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", 9.5)
+            .attr("fill", "#747474"));
+
+        const x = d3.scaleBand()
+          .domain(recent.map(s => s.year))
+          .range([0, iw])
+          .padding(0.18);
+
+        const tt = makeTooltip(entity, gse);
+        recent.forEach(s => {
+          const xPos = x(s.year);
+          if (xPos == null) return;
+          const bw = x.bandwidth();
+          const isLowN = s.n_estab === 1;
+          const opacity = isLowN ? 0.45 : 1;
+
+          if (showElemInsuf && s.pct < 100) {
+            const restTopY = y(Math.min(yMax, 100));
+            const restBottomY = y(s.pct);
+            const h = restBottomY - restTopY;
+            if (h > 0) {
+              g.append("rect")
+                .attr("x", xPos + 0.5).attr("y", restTopY + 0.5)
+                .attr("width", bw - 1).attr("height", h - 1)
+                .attr("fill", "#FFFFFF")
+                .attr("stroke", "#C8BDA0")
+                .attr("stroke-width", 1)
+                .attr("opacity", opacity)
+                .style("cursor", "pointer")
+                .on("mouseenter", e => tt.show(e, s, s.year))
+                .on("mouseleave", tt.hide);
+            }
+          }
+
+          const yAdec = y(s.pct);
+          const hAdec = ih - yAdec;
+          g.append("rect")
+            .attr("x", xPos).attr("y", yAdec)
+            .attr("width", bw).attr("height", hAdec)
+            .attr("fill", entity.color)
+            .attr("opacity", opacity)
+            .style("cursor", "pointer")
+            .on("mouseenter", e => tt.show(e, s, s.year))
+            .on("mouseleave", tt.hide);
+
+          const insideMin = 22;
+          let labelY, fill;
+          if (hAdec > insideMin) { labelY = yAdec + 14; fill = "#FFFFFF"; }
+          else                   { labelY = yAdec - 4;  fill = entity.color; }
+          g.append("text")
+            .attr("x", xPos + bw / 2).attr("y", labelY)
+            .attr("text-anchor", "middle")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", 12)
+            .attr("font-weight", 700)
+            .attr("fill", fill)
+            .attr("opacity", isLowN ? 0.7 : 1)
+            .style("pointer-events", "none")
+            .text(fmtPctShort(s.pct));
+
+          g.append("text")
+            .attr("x", xPos + bw / 2).attr("y", ih + 14)
+            .attr("text-anchor", "middle")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", 10.5)
+            .attr("font-weight", 500)
+            .attr("fill", "#2E2230")
+            .text(s.year);
+
+          if (s.preliminar) {
+            g.append("text")
+              .attr("x", xPos + bw / 2).attr("y", -3)
+              .attr("text-anchor", "middle")
+              .attr("font-family", "system-ui, sans-serif")
+              .attr("font-size", 13)
+              .attr("font-weight", 900)
+              .attr("fill", "#0062A0")
+              .text("*");
+          }
+        });
+      }, [entity.id, entity.color, entity.name, entity.comunas.join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
+      return <svg ref={ref} className="bars-svg" />;
+    }
+
+    function ChartCell(props) {
+      const { gse } = props;
+      return (
+        <div className="chart-cell">
+          <div className="chart-cell-head">
+            <span className="chart-cell-eyebrow">GSE</span>
+            <span className="chart-cell-title">{gse}</span>
+          </div>
+          <div className="sub-section">
+            <span className="sub-eyebrow">Trayectoria histórica</span>
+            <SparklineSubchart {...props} />
+          </div>
+          <div className="sub-section sub-section-bars">
+            <span className="sub-eyebrow">Últimas 3 aplicaciones</span>
+            <RecentBarsSubchart {...props} />
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================
+    // Tabla con heat map
+    // ============================================================
+    function ResultsTable({ entities, nivel, prueba }) {
+      const YEARS = SimceData.YEARS;
+      const GSE_LEVELS = SimceData.GSE_LEVELS;
+
+      const rowsRaw = [];
+      entities.forEach(ent => {
+        GSE_LEVELS.forEach((gse, gi) => {
+          const series = SimceData.generateSeries({
+            entityName: ent.name, comunas: ent.comunas, gse, nivel, prueba,
+          });
+          rowsRaw.push({ ent, gse, gseFirst: gi === 0, series });
+        });
+      });
+
+      const scaleByGse = {};
+      GSE_LEVELS.forEach(gse => {
+        const vals = [];
+        rowsRaw.forEach(r => {
+          if (r.gse !== gse) return;
+          r.series.forEach(s => { if (s.pct != null) vals.push(s.pct); });
+        });
+        if (vals.length === 0) { scaleByGse[gse] = { lo: 0, mid: 50, hi: 100 }; return; }
+        vals.sort((a, b) => a - b);
+        const q = p => vals[Math.min(vals.length - 1, Math.max(0, Math.floor(p * (vals.length - 1))))];
+        let lo = q(0.10), hi = q(0.90);
+        const mid = q(0.50);
+        const span = Math.max(8, hi - lo);
+        lo = mid - span / 2;
+        hi = mid + span / 2;
+        scaleByGse[gse] = { lo, mid, hi };
+      });
+
+      function cellBg(pct, gse) {
+        if (pct == null) return null;
+        const { lo, mid, hi } = scaleByGse[gse];
+        let t;
+        if (pct <= mid) t = -1 + (pct - lo) / (mid - lo || 1);
+        else            t = (pct - mid) / (hi - mid || 1);
+        t = Math.max(-1, Math.min(1, t));
+        const alphaMax = 0.55;
+        const alpha = Math.abs(t) * alphaMax;
+        const c = t < 0 ? [232, 134, 99] : [10, 58, 92];
+        return `rgba(${c[0]},${c[1]},${c[2]},${alpha.toFixed(3)})`;
+      }
+      function isAlert(pct, gse) {
+        if (pct == null) return false;
+        const { lo, mid } = scaleByGse[gse];
+        const span = mid - lo;
+        if (span <= 0) return false;
+        return pct < (lo + span * 0.3);
+      }
+
+      return (
+        <div className="table-wrap">
+          <table className="data-table data-table-heat">
+            <thead>
+              <tr>
+                <th className="th-ent">Entidad</th>
+                <th className="th-gse">GSE</th>
+                {YEARS.map(y => (
+                  <th key={y} className={SimceData.PRELIMINAR_YEARS.includes(y) ? "th-year th-prelim" : "th-year"}>
+                    {y}{SimceData.PRELIMINAR_YEARS.includes(y) && <span className="prelim-mark"> *</span>}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rowsRaw.map((r, i) => {
+                const prevEnt = i > 0 ? rowsRaw[i - 1].ent : null;
+                const startsEnt = !prevEnt || prevEnt.id !== r.ent.id;
+                return (
+                  <tr key={i} className={startsEnt ? "row-ent-start" : ""}>
+                    <td className="td-ent">
+                      {startsEnt && (
+                        <span className="ent-cell">
+                          <span className="ent-swatch entity-swatch" style={{ background: r.ent.color }} />
+                          <span className="ent-name">{r.ent.name}</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="td-gse">{r.gse}</td>
+                    {r.series.map(s => {
+                      const bg = cellBg(s.pct, r.gse);
+                      const alert = isAlert(s.pct, r.gse);
+                      let cls = "td-cell";
+                      if (s.preliminar) cls += " td-prelim";
+                      if (alert) cls += " td-alert";
+                      return (
+                        <td key={s.year} className={cls} style={bg ? { background: bg } : null}>
+                          {s.pct == null ? (
+                            <span className="td-empty">—</span>
+                          ) : (
+                            <>
+                              <span className="td-pct">{s.pct.toFixed(1).replace(".", ",")}%</span>
+                              <span className="td-n"> ({fmtInt(s.n_eval)})</span>
+                              {alert && <span className="td-alert-dot" title="Bajo el rango típico de este GSE">▼</span>}
+                            </>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    function HeatLegend() {
+      return (
+        <div className="heat-legend">
+          <div className="heat-legend-text">
+            <span className="heat-legend-title">Cómo leer los colores</span>
+            <p>Cada columna GSE tiene su propia escala: el color compara cada celda contra el rango típico de ese GSE, no contra valores absolutos. Una entidad puede estar en alerta dentro de su GSE aunque su % parezca alto en otra columna.</p>
+          </div>
+          <div className="heat-legend-scale">
+            <div className="heat-scale-bar">
+              <span className="heat-tick heat-tick-left"><b>▼ Alerta</b><small>Bajo el rango típico del GSE</small></span>
+              <span className="heat-tick heat-tick-mid"><b>En rango</b><small>Cercano a la mediana del GSE</small></span>
+              <span className="heat-tick heat-tick-right"><b>Sobre rango ▲</b><small>Por encima del rango típico</small></span>
+            </div>
+            <div className="heat-ramp">
+              <span className="heat-ramp-bar heat-ramp-coral" />
+              <span className="heat-ramp-bar heat-ramp-mid" />
+              <span className="heat-ramp-bar heat-ramp-ocean" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ChartHints({ showElemInsuf }) {
+      return (
+        <div className="chart-hints">
+          {showElemInsuf && (
+            <span className="hint-item">
+              <span className="hint-empty-box" />
+              <span>Elemental + Insuficiente</span>
+            </span>
+          )}
+          <span className="hint-item hint-muted">
+            <span className="hint-low-n" />
+            <span>Baja representatividad (un solo establecimiento)</span>
+          </span>
+          <span className="hint-item hint-muted">
+            <span className="hint-asterisk">*</span>
+            <span>2025 preliminar</span>
+          </span>
+        </div>
+      );
+    }
+
+    function IconExport({ label, icon }) {
+      return (
+        <button className="icon-export" title={label} aria-label={label} onClick={() => alert("Export pendiente: " + label)}>
+          <Icon name={icon} />
+          <span className="icon-export-label">{label}</span>
+        </button>
+      );
+    }
+
+    // ============================================================
+    // TweaksPanel — simplificado para standalone
+    // ============================================================
+    function TweaksPanel({ open, onClose, title, children }) {
+      if (!open) return null;
+      return (
+        <div className="twk-panel">
+          <div className="twk-hd">
+            <b>{title || "Ajustes"}</b>
+            <button className="twk-x" onClick={onClose} aria-label="Cerrar ajustes">✕</button>
+          </div>
+          <div className="twk-body">{children}</div>
+        </div>
+      );
+    }
+    function TweakSection({ label, children }) {
+      return <><div className="twk-sect">{label}</div>{children}</>;
+    }
+    function TweakRow({ label, value, children, inline = false }) {
+      return (
+        <div className={inline ? "twk-row twk-row-h" : "twk-row"}>
+          <div className="twk-lbl">
+            <span>{label}</span>
+            {value != null && <span className="twk-val">{value}</span>}
+          </div>
+          {children}
+        </div>
+      );
+    }
+    function TweakToggle({ label, value, onChange }) {
+      return (
+        <div className="twk-row twk-row-h">
+          <div className="twk-lbl"><span>{label}</span></div>
+          <button type="button" className="twk-toggle" data-on={value ? "1" : "0"}
+            role="switch" aria-checked={!!value} onClick={() => onChange(!value)}>
+            <i />
+          </button>
+        </div>
+      );
+    }
+    function TweakRadio({ label, value, options, onChange }) {
+      const opts = options.map(o => typeof o === "object" ? o : { value: o, label: o });
+      return (
+        <TweakRow label={label}>
+          <div className="twk-seg" role="radiogroup">
+            {opts.map(o => (
+              <button key={o.value} type="button"
+                className={o.value === value ? "on" : ""}
+                onClick={() => onChange(o.value)}>
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </TweakRow>
+      );
+    }
+    function TweakButton({ label, onClick, secondary = false }) {
+      return (
+        <button type="button" className={secondary ? "twk-btn secondary" : "twk-btn"} onClick={onClick}>
+          {label}
+        </button>
+      );
+    }
+
+    // ============================================================
+    // App principal
+    // ============================================================
+    function App() {
+      const niveles = Object.values(DATA.meta.niveles);
+      const pruebas = Object.values(DATA.meta.pruebas);
+
+      const [nivel, setNivel] = React.useState(niveles.find(n => n.includes("Básico")) || niveles[0]);
+      const [prueba, setPrueba] = React.useState(pruebas[0]);
+      const [entities, setEntities] = React.useState(buildInitialEntities);
+      const [modal, setModal] = React.useState(null);
+      const [loading, setLoading] = React.useState(false);
+      const [notesOpen, setNotesOpen] = React.useState(false);
+      const [tweaksOpen, setTweaksOpen] = React.useState(false);
+
+      // Tweaks
+      const [showElemInsuf, setShowElemInsuf] = React.useState(true);
+      const [yScale, setYScale] = React.useState("100");
+      const [density, setDensity] = React.useState("comoda");
+
+      const firstRender = React.useRef(true);
+      React.useEffect(() => {
+        if (firstRender.current) { firstRender.current = false; return; }
+        setLoading(true);
+        const id = setTimeout(() => setLoading(false), 420);
+        return () => clearTimeout(id);
+      }, [nivel, prueba]);
+
+      function saveEntity(ent) {
+        setEntities(prev => {
+          const idx = prev.findIndex(p => p.id === ent.id);
+          if (idx >= 0) {
+            const next = [...prev]; next[idx] = ent; return next;
+          }
+          if (prev.length >= MAX_ENTIDADES) return prev;
+          return [...prev, ent];
+        });
+        setModal(null);
+      }
+
+      function applyPreset() {
+        const preset = SimceData.PRESETS["SLEP Costa Central"];
+        const entidades = preset.map((cod, i) => {
+          const c = SimceData.COMUNA_BY_COD.get(cod);
+          return {
+            id: "preset-" + i,
+            name: c ? c.nom : ("Comuna " + cod),
+            kind: "comuna",
+            comunas: [cod],
+            color: ENTITY_PALETTE[i % ENTITY_PALETTE.length],
+          };
+        });
+        // Agregar también el grupo agregado SLEP
+        const grupoEnt = {
+          id: "preset-grupo",
+          name: "SLEP Costa Central (agregado)",
+          kind: "group",
+          comunas: preset,
+          color: ENTITY_PALETTE[entidades.length % ENTITY_PALETTE.length],
+        };
+        setEntities([grupoEnt, ...entidades].slice(0, MAX_ENTIDADES));
+      }
+
+      const containerClass = "app " + (density === "compacta" ? "is-compact " : "is-comfy ");
+
+      return (
+        <div className={containerClass}>
+          <Header onOpenTweaks={() => setTweaksOpen(true)} />
+          <main className="app-main">
+            <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba} loading={loading} />
+            <EntitiesBar entities={entities} setEntities={setEntities}
+              openModal={(ent) => setModal({ editing: ent })} openPresetMenu={applyPreset} />
+
+            <section className="results-section">
+              <div className="results-head">
+                <div>
+                  <span className="section-eyebrow">Resultados por GSE</span>
+                  <h2 className="results-title">% ponderado en nivel Adecuado — {prueba}, {nivel}</h2>
+                </div>
+                <div className="section-actions">
+                  <ChartHints showElemInsuf={showElemInsuf} />
+                  <IconExport label="Exportar gráficos" icon="image" />
+                </div>
+              </div>
+              <div className="supergrid" style={{ gridTemplateColumns: `repeat(${entities.length || 1}, minmax(0, 1fr))` }}>
+                {entities.map(ent => (
+                  <div key={ent.id} className="supergrid-entity-head">
+                    <span className="entity-swatch" style={{ background: ent.color }} />
+                    <span className="sg-ent-name">{ent.name}</span>
+                    <span className="sg-ent-meta">
+                      {ent.kind === "group" ? `Grupo de ${ent.comunas.length} comunas` : "Comuna"}
+                    </span>
+                  </div>
+                ))}
+                {SimceData.GSE_LEVELS.map(gse => (
+                  <React.Fragment key={gse}>
+                    {entities.map(ent => (
+                      <ChartCell key={ent.id + "|" + gse} entity={ent} gse={gse}
+                        showElemInsuf={showElemInsuf} yScale={yScale}
+                        nivel={nivel} prueba={prueba} />
+                    ))}
+                  </React.Fragment>
+                ))}
+              </div>
+            </section>
+
+            <section className="table-section">
+              <div className="table-head">
+                <div className="table-head-titles">
+                  <span className="section-eyebrow">Tabla de resultados</span>
+                  <h2 className="table-title">Entidad × GSE × Año</h2>
+                </div>
+                <div className="section-actions">
+                  <IconExport label="Exportar CSV" icon="download" />
+                </div>
+              </div>
+              <HeatLegend />
+              <ResultsTable entities={entities} nivel={nivel} prueba={prueba} />
+              <div className="table-legend">
+                <span><b className="dot dot-prelim">*</b> Dato preliminar 2025</span>
+                <span>Formato: <code>XX,X% (N evaluados)</code> · — sin datos</span>
+              </div>
+            </section>
+
+            <footer className="app-footer">
+              <button className={"notes-toggle" + (notesOpen ? " is-open" : "")} onClick={() => setNotesOpen(!notesOpen)}>
+                <Icon name="info" />
+                <span>Notas metodológicas</span>
+                <span className="chev"><Icon name="chevron" /></span>
+              </button>
+              {notesOpen && (
+                <div className="notes-body">
+                  <div className="notes-grid">
+                    <article className="note">
+                      <h4>Fórmula de agregación ponderada</h4>
+                      <p>Para cada entidad, GSE y año, el % en nivel Adecuado se calcula como el promedio ponderado por número de estudiantes evaluados:</p>
+                      <code className="formula">%adec = Σ(pct_estab × n_eval_estab) / Σ(n_eval_estab)</code>
+                      <p>Para grupos custom (ej. un SLEP), la ponderación se aplica sobre todas las comunas seleccionadas.</p>
+                    </article>
+                    <article className="note">
+                      <h4>Regla GSE dinámico</h4>
+                      <p>El GSE de cada establecimiento se toma del año correspondiente. <b>No se imputa entre años</b>: si un establecimiento cambia de GSE entre 2018 y 2022, aparece en la categoría vigente cada año.</p>
+                    </article>
+                    <article className="note">
+                      <h4>Gap 2019–2021</h4>
+                      <p>La prueba SIMCE no se aplicó en 2019, 2020 ni 2021 debido al estallido social y la pandemia. En los gráficos aparece una banda sombreada y las líneas no se conectan a través del gap.</p>
+                    </article>
+                    <article className="note">
+                      <h4>Datos preliminares 2025</h4>
+                      <p>Los resultados de 2025 son <b>preliminares</b> y están sujetos a revisión por la Agencia de Calidad de la Educación. Se marcan con asterisco (*) en todos los gráficos y tablas.</p>
+                    </article>
+                  </div>
+                  <div className="notes-sources">
+                    <span>Fuente: Agencia de Calidad de la Educación · Bases SIMCE 2014–2025. Procesamiento: SLEP Costa Central.</span>
+                  </div>
+                </div>
+              )}
+            </footer>
+          </main>
+
+          {modal && (
+            <AddEntityModal
+              editing={modal.editing}
+              takenColors={entities.map(e => e.color)}
+              onSave={saveEntity}
+              onCancel={() => setModal(null)}
+            />
+          )}
+
+          <TweaksPanel open={tweaksOpen} onClose={() => setTweaksOpen(false)} title="Ajustes">
+            <TweakSection label="Visualización" />
+            <TweakToggle label="Mostrar Elemental + Insuficiente"
+              value={showElemInsuf} onChange={setShowElemInsuf} />
+            <TweakRadio label="Escala Y" value={yScale}
+              options={[{ value: "100", label: "Fijo 0–100%" }, { value: "auto", label: "Auto" }]}
+              onChange={setYScale} />
+            <TweakSection label="Apariencia" />
+            <TweakRadio label="Densidad" value={density}
+              options={[{ value: "comoda", label: "Cómoda" }, { value: "compacta", label: "Compacta" }]}
+              onChange={setDensity} />
+            <TweakSection label="Acciones rápidas" />
+            <TweakButton label="Preset SLEP Costa Central" onClick={applyPreset} />
+            <TweakButton label="Restablecer (4 seeds)" onClick={() => setEntities(buildInitialEntities())} secondary />
+          </TweaksPanel>
+        </div>
+      );
+    }
+
+    // Render
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
