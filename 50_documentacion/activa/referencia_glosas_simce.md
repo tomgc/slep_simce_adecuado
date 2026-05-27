@@ -133,6 +133,45 @@ glosa):
 (coincidencia con `simce4b2018_*`) y reescribir los sufijos `_2m_` a
 `_4b_` antes de proseguir con la normalización general.
 
+### A4 — `cod_com_rbd` pre-Ñuble en 2014, 2016, 2017
+
+Antes de septiembre 2017 (Ley 21.033), las 21 comunas que hoy forman la
+Región de Ñuble (código 16) eran parte de la Región del Bío Bío (8) con
+códigos `8401-8421`. Desde 2018 se identifican como `16101-16207`.
+
+Los xlsx SIMCE 2014, 2016 y 2017 traen los códigos antiguos
+`8401-8421`. Esto rompe el join con el directorio oficial 2025, donde
+solo existen los códigos `16xxx`.
+
+**Decisión metodológica:** retroaplicar el código nuevo a todos los
+años. Chillán en 2014 aparece bajo Región 16 (Ñuble) aunque
+administrativamente en 2014 era Región 8 (Bío Bío). Esto permite
+series históricas sin saltos artificiales.
+
+**Implementación en `31_leer_normalizar.R`:** vector nombrado
+`mapa_pre_nuble` con los 21 pares (`8401→16101`, `8402→16102`, ...,
+`8421→16109`). Se aplica en `leer_un_xlsx()` después del fix A3.
+Importante: el indexing usa `as.character()` explícito sobre el
+cod_com_rbd antes de mirar el mapa nombrado (sino R indexa por
+posición y devuelve NA).
+
+**Sutilezas ortográficas:** dos nombres cambiaron entre las dos eras:
+- `RÁNQUIL` (con tilde, pre-2018) → `RANQUIL` (sin tilde, post-2018).
+- `TREGUACO` (pre-2018) → `TREHUACO` (post-2018).
+
+Por eso el mapping debe ser explícito por código, no por nombre.
+
+**RBDs afectados por archivo:**
+- `simce2m2014`: 81 RBDs (162 filas).
+- `simce2m2016`: 89 RBDs (178 filas).
+- `simce2m2017`: 91 RBDs (182 filas).
+- `simce4b2014`: 317 RBDs (634 filas).
+- `simce4b2016`: 314 RBDs (628 filas).
+- (`simce4b2017` no aparece porque entra primero a A3 — la corrección
+  vía directorio ya entrega códigos canónicos `16xxx`.)
+
+Total: ~892 RBDs remapeados, ~1,784 filas afectadas.
+
 ### A3 — `cod_com_rbd` con formato no canónico en 3 archivos
 
 En tres xlsx, la columna `cod_com_rbd` viene con valores de 1-2 dígitos

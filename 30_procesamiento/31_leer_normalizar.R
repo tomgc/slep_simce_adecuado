@@ -60,6 +60,43 @@ message(sprintf("    OK: %d RBDs en el mapa.", length(mapa_rbd_comuna)))
 
 
 # ============================================================================
+# Bloque 0b — Mapping pre-Ñuble (anomalía A4)
+# ============================================================================
+# Antes de septiembre 2017 (Ley 21.033), las 21 comunas de la actual
+# Región de Ñuble (16) eran parte de la Región del Bío Bío (8) con
+# códigos 8401-8421. Desde 2018 se identifican como 16101-16207.
+# Los xlsx de SIMCE 2014, 2016, 2017 traen los códigos antiguos.
+# Decisión metodológica (A4): retroaplicar el código nuevo en todos los
+# años para preservar series históricas sin saltos.
+
+mapa_pre_nuble <- c(
+  "8401" = "16101",  # CHILLÁN
+  "8402" = "16102",  # BULNES
+  "8403" = "16202",  # COBQUECURA
+  "8404" = "16203",  # COELEMU
+  "8405" = "16302",  # COIHUECO
+  "8406" = "16103",  # CHILLÁN VIEJO
+  "8407" = "16104",  # EL CARMEN
+  "8408" = "16204",  # NINHUE
+  "8409" = "16303",  # ÑIQUÉN
+  "8410" = "16105",  # PEMUCO
+  "8411" = "16106",  # PINTO
+  "8412" = "16205",  # PORTEZUELO
+  "8413" = "16107",  # QUILLÓN
+  "8414" = "16201",  # QUIRIHUE
+  "8415" = "16206",  # RANQUIL (era RÁNQUIL pre-2018)
+  "8416" = "16301",  # SAN CARLOS
+  "8417" = "16304",  # SAN FABIÁN
+  "8418" = "16108",  # SAN IGNACIO
+  "8419" = "16305",  # SAN NICOLÁS
+  "8420" = "16207",  # TREHUACO (era TREGUACO pre-2018)
+  "8421" = "16109"   # YUNGAY
+)
+
+message(sprintf("    Mapa pre-Ñuble cargado: %d comunas.", length(mapa_pre_nuble)))
+
+
+# ============================================================================
 # Bloque 1 — Manifiesto de archivos esperados
 # ============================================================================
 
@@ -214,6 +251,28 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
       100 * n_recuperados / nrow(df_raw)
     ))
     df_raw$cod_com_rbd <- cod_com_recuperado
+  }
+
+  # --- Anomalía A4: cod_com_rbd pre-Ñuble ---
+  # Códigos 8401-8421 (Ñuble cuando era provincia de Bío Bío) se remapean
+  # a 16101-16207 para coherencia con la geografía actual.
+  # Importante: cod_com_rbd viene como double desde readxl. Convertir a
+  # character antes de indexar el mapa nombrado (sino R indexa por posición
+  # y devuelve NA).
+  cod_com_chr_a4 <- as.character(df_raw$cod_com_rbd)
+  cod_com_pre_nuble <- cod_com_chr_a4 %in% names(mapa_pre_nuble)
+  n_pre_nuble <- sum(cod_com_pre_nuble, na.rm = TRUE)
+  if (n_pre_nuble > 0) {
+    message(sprintf(
+      "    A4: %s tiene %d RBDs con cod_com_rbd pre-Ñuble. Remapeando a 16xxx.",
+      archivo, n_pre_nuble
+    ))
+    # Asignación: si df_raw$cod_com_rbd es numérico, la coerción implícita
+    # convertirá el vector a character (los códigos quedarán como string).
+    df_raw$cod_com_rbd <- cod_com_chr_a4
+    df_raw$cod_com_rbd[cod_com_pre_nuble] <- unname(
+      mapa_pre_nuble[cod_com_chr_a4[cod_com_pre_nuble]]
+    )
   }
 
   # --- Cross-check: año interno vs año del nombre de archivo ---
