@@ -34,6 +34,32 @@ library(fs)
 
 
 # ============================================================================
+# Bloque 0 — Mapa RBD → cod_com_rbd canónico (para anomalía A3)
+# ============================================================================
+# Algunos xlsx (2015/2m, 2017/4b) traen cod_com_rbd con basura — códigos de
+# 1-2 dígitos en vez del formato canónico 4-5 dígitos. Se recupera el código
+# correcto vía join contra directorio_oficial_ee.csv (snapshot 2025).
+# Asunción: un RBD no cambia de comuna entre años (general, no validado).
+
+message("[0] Cargando mapa RBD → cod_com_rbd desde directorio oficial...")
+
+dir_oficial <- readr::read_delim(
+  here::here("20_insumos", "auxiliares", "directorio_oficial_ee.csv"),
+  delim = ";",
+  locale = readr::locale(encoding = "UTF-8", decimal_mark = ","),
+  show_col_types = FALSE, progress = FALSE
+)
+names(dir_oficial) <- enc2utf8(names(dir_oficial))
+
+mapa_rbd_comuna <- setNames(
+  as.character(dir_oficial$COD_COM_RBD),
+  as.character(dir_oficial$RBD)
+)
+
+message(sprintf("    OK: %d RBDs en el mapa.", length(mapa_rbd_comuna)))
+
+
+# ============================================================================
 # Bloque 1 — Manifiesto de archivos esperados
 # ============================================================================
 
@@ -170,6 +196,25 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
     cod_grupo_chr == "Alto"       ~ "5",
     TRUE                          ~ cod_grupo_chr
   )
+
+  # --- Anomalía A3: cod_com_rbd con formato no canónico ---
+  # En 2015/2m y 2017/4b la columna trae valores de 1-2 dígitos en lugar
+  # de los códigos canónicos de 4-5 dígitos. Se recupera desde el mapa
+  # RBD → comuna del directorio oficial 2025.
+  cod_com_chr <- as.character(df_raw$cod_com_rbd)
+  prop_cortos <- mean(nchar(cod_com_chr) < 4, na.rm = TRUE)
+  if (!is.nan(prop_cortos) && prop_cortos > 0.5) {
+    rbd_chr <- as.character(df_raw$rbd)
+    cod_com_recuperado <- unname(mapa_rbd_comuna[rbd_chr])
+    n_recuperados <- sum(!is.na(cod_com_recuperado))
+    message(sprintf(
+      "    A3: %s tiene cod_com_rbd anómalo (%.0f%% < 4 dígitos). Recuperados %d/%d (%.1f%%) desde directorio.",
+      archivo, 100 * prop_cortos,
+      n_recuperados, nrow(df_raw),
+      100 * n_recuperados / nrow(df_raw)
+    ))
+    df_raw$cod_com_rbd <- cod_com_recuperado
+  }
 
   # --- Cross-check: año interno vs año del nombre de archivo ---
   if ("agno" %in% names(df_raw)) {

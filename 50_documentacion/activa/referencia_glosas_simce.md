@@ -133,6 +133,35 @@ glosa):
 (coincidencia con `simce4b2018_*`) y reescribir los sufijos `_2m_` a
 `_4b_` antes de proseguir con la normalización general.
 
+### A3 — `cod_com_rbd` con formato no canónico en 3 archivos
+
+En tres xlsx, la columna `cod_com_rbd` viene con valores de 1-2 dígitos
+(ej. `1, 2, 4, 5, 7`) en lugar del formato canónico de 4-5 dígitos
+`RPCC` (ej. `5109` para Viña del Mar):
+
+- `simce2m2015_rbd_final.xlsx` — 100% de valores con < 4 dígitos.
+- `simce4b2015_rbd_final.xlsx` — 100% de valores con < 4 dígitos.
+- `simce4b2017_rbd_final.xlsx` — 100% de valores con < 4 dígitos.
+
+Las columnas `rbd` y `nom_com_rbd` están bien pobladas en los mismos
+archivos — el problema es específico al campo de código.
+
+**Detección y remediación en `31_leer_normalizar.R`:** se detecta cuando
+más del 50% de los valores tiene menos de 4 dígitos. En esos casos se
+recupera `cod_com_rbd` haciendo lookup contra el directorio oficial
+(`20_insumos/auxiliares/directorio_oficial_ee.csv`, snapshot 2025) usando
+`rbd` como llave. Los tres archivos recuperan al 100% de sus RBDs.
+
+**Asunción operativa:** un mismo RBD no cambia de comuna entre años. Es
+cierto en general (la comuna del establecimiento no suele cambiar);
+pueden existir excepciones por reubicaciones administrativas raras pero
+no se validan en este pipeline.
+
+**Impacto:** sin esta remediación, las agregaciones comuna × GSE en los
+años afectados colapsan dramáticamente (de ~800 a ~240 grupos por
+año/nivel/prueba). Con la remediación, la cobertura queda alineada con
+los años baseline (~800-1000 grupos).
+
 ### A2 — `marca_eda_*` solo disponible en 2014 (pregunta abierta)
 
 El briefing original del proyecto define el filtro de exclusión como
