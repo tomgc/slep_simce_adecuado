@@ -170,6 +170,13 @@ body {
   color: var(--cream); opacity: 0.75;
   margin: 0; font-size: 13px; line-height: 1.5;
 }
+.app-objective {
+  font-family: var(--font-body);
+  color: var(--cream); opacity: 0.82;
+  margin: 8px 0 0 0; font-size: 12px; line-height: 1.6;
+  max-width: 820px;
+}
+.app-objective strong { font-weight: 700; opacity: 1; }
 
 /* Main */
 .app-main { flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
@@ -467,7 +474,7 @@ body {
   color: var(--fg-3);
   padding-left: 2px; margin-bottom: 2px;
 }
-.sparkline-svg, .bars-svg, .chart-svg { width: 100%; height: auto; display: block; }
+.sparkline-svg, .bars-svg, .chart-svg { width: 100%; height: auto; display: block; overflow: visible; }
 .results-title {
   font-family: var(--font-display);
   font-weight: 800; font-size: 24px;
@@ -1061,6 +1068,8 @@ code {
       // Diccionarios inversos: label JSX → código JSON
       const GSE_LABEL_TO_COD = {};
       Object.entries(M.gse_labels).forEach(([cod, label]) => { GSE_LABEL_TO_COD[label] = cod; });
+      // Diccionario directo: código → label
+      const GSE_LABELS = M.gse_labels;
       const NIVEL_LABEL_TO_COD = {};
       Object.entries(M.niveles).forEach(([cod, label]) => { NIVEL_LABEL_TO_COD[label] = cod; });
       const PRUEBA_LABEL_TO_COD = {};
@@ -1263,12 +1272,73 @@ code {
         });
       }
 
+      // generateSeries por establecimiento (RBD único)
+      // Fuente: DATA.simce_rbd (formato columnar: rbd, nivel, prueba, cod_grupo, anio, nalu, palu, cod_depe2)
+      // gse aquí es el GSE del establecimiento en el año más reciente — se ignora como filtro
+      // porque un RBD pertenece a un solo GSE por año; mostramos todos los años disponibles.
+      function generateSeriesByEstab({ rbd, gse, nivel, prueba }) {
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        if (!nv || !pr || !DATA.simce_rbd) {
+          return YEARS.map(y => ({ year: y, pct: null, n_eval: null, n_estab: 1, preliminar: PRELIMINAR_YEARS.includes(y) }));
+        }
+        const D2 = DATA.simce_rbd;
+        const porAnio = new Map();
+        for (let i = 0; i < D2.rows; i++) {
+          if (D2.rbd[i] !== rbd) continue;
+          if (D2.nivel[i] !== nv) continue;
+          if (D2.prueba[i] !== pr) continue;
+          const y = D2.anio[i];
+          const n = D2.nalu[i];
+          const p = D2.palu[i];
+          if (n == null || n === 0 || p == null) continue;
+          let acc = porAnio.get(y);
+          if (!acc) { acc = { num: 0, den: 0 }; porAnio.set(y, acc); }
+          acc.num += (p * n) / 100;
+          acc.den += n;
+        }
+        return YEARS.map(year => {
+          const acc = porAnio.get(year);
+          const preliminar = PRELIMINAR_YEARS.includes(year);
+          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: 1, preliminar };
+          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+        });
+      }
+
+      // GSE del establecimiento por año más reciente (para mostrar en qué fila aparece)
+      // Devuelve el cod_grupo del año más reciente con dato para ese RBD × nivel × prueba
+      function gseActualDeEstab({ rbd, nivel, prueba }) {
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        if (!nv || !pr || !DATA.simce_rbd) return GSE_LEVELS[0];
+        const D2 = DATA.simce_rbd;
+        let maxAnio = -1, gse = GSE_LEVELS[0];
+        for (let i = 0; i < D2.rows; i++) {
+          if (D2.rbd[i] !== rbd || D2.nivel[i] !== nv || D2.prueba[i] !== pr) continue;
+          if (D2.anio[i] > maxAnio) { maxAnio = D2.anio[i]; gse = D2.cod_grupo[i]; }
+        }
+        return gse;
+      }
+
+      // Catálogo de establecimientos para búsqueda en modal (nombre + rbd + comuna)
+      const ESTAB_LIST = DATA.establecimientos
+        ? DATA.establecimientos.map(r => ({
+            rbd: r.rbd,
+            nom: r.nom_rbd,
+            com: r.nom_com_rbd,
+            cod_com: r.cod_com_rbd,
+            depe2: r.cod_depe2,
+          }))
+        : [];
+
       return {
         YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
         generateSeries, generateSeriesByRbd, generateSeriesByDepe,
+        generateSeriesByEstab, gseActualDeEstab, ESTAB_LIST,
         REGIONES, PRESETS, COMUNA_BY_COD,
         SLEPS, DEPE2_LABELS, DEPE2_CODES,
         NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
+        GSE_LABELS,
       };
     })();
 
@@ -1356,6 +1426,9 @@ code {
               </h1>
               <p className="app-subtitle">
                 Datos 2014–2025 · Resultados segmentados por grupo socioeconómico (GSE)
+              </p>
+              <p className="app-objective">
+                El objetivo de esta herramienta de análisis interno del <strong>SLEP Costa Central</strong> es visualizar la proporción de estudiantes cuyo desempeño en los <strong>Estándares de Aprendizaje</strong>, medidos por el Simce, se encuentra en el <strong>nivel Adecuado</strong>. Su diseño permite comparar diversas "entidades", las cuales pueden ser establecimientos, comunas, SLEPs o regiones completas. Los resultados se presentan siempre segmentados por <strong>Grupo Socioeconómico (GSE)</strong>, siguiendo las normas de la <strong>Agencia de Calidad de la Educación</strong>.
               </p>
             </div>
             <div className="app-header-right">
@@ -1582,7 +1655,7 @@ code {
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove();
         const W = 320, H = 90;
-        const M = { top: 16, right: 12, bottom: 22, left: 12 };
+        const M = { top: 28, right: 12, bottom: 22, left: 12 };
         const iw = W - M.left - M.right;
         const ih = H - M.top - M.bottom;
         const g = svg
@@ -1593,6 +1666,8 @@ code {
 
         const series = entity.kind === "slep"
           ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
+          : entity.kind === "estab"
+          ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
           : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
         const valid = series.filter(s => s.pct != null);
         const x = d3.scaleLinear().domain([2014, 2025]).range([0, iw]);
@@ -1692,6 +1767,8 @@ code {
 
         const series = entity.kind === "slep"
           ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
+          : entity.kind === "estab"
+          ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
           : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
         const recent = series.filter(s => s.pct != null).slice(-recentN);
 
@@ -1811,6 +1888,8 @@ code {
       // Verificar si hay algún dato para esta celda
       const series = entity.kind === "slep"
         ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
+        : entity.kind === "estab"
+        ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
         : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
       const hasData = series.some(s => s.pct != null);
       if (!hasData) return <div className="chart-cell is-empty" />;
@@ -1849,7 +1928,7 @@ code {
     }
     function isAlert(pct) { return pct != null && pct <= 25; }
 
-    function ResultsTable({ entities, nivel, prueba, gseFilter }) {
+    function ResultsTable({ entities, nivel, prueba, gseFilter, onCellClick }) {
       const YEARS = SimceData.YEARS.slice().reverse();
       const GSE_LEVELS = gseFilter
         ? SimceData.GSE_LEVELS.filter(g => g === gseFilter)
@@ -1861,6 +1940,9 @@ code {
         if (ent.kind === "slep") {
           return SimceData.generateSeriesByRbd({ rbds: ent.rbds, gse, nivel, prueba });
         }
+        if (ent.kind === "estab") {
+          return SimceData.generateSeriesByEstab({ rbd: ent.rbd, gse, nivel, prueba });
+        }
         return SimceData.generateSeriesByDepe({
           comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
         });
@@ -1868,10 +1950,18 @@ code {
 
       const rowsRaw = [];
       entities.forEach(ent => {
-        GSE_LEVELS.forEach(gse => {
-          const series = getSeries(ent, gse).slice().reverse();
-          rowsRaw.push({ ent, gse, series });
-        });
+        if (ent.kind === "estab") {
+          // Establecimiento: una sola fila en el GSE del año más reciente
+          const gseActual = SimceData.gseActualDeEstab({ rbd: ent.rbd, nivel, prueba });
+          const gseLabel = SimceData.GSE_LABELS[gseActual] || gseActual;
+          const series = getSeries(ent, gseLabel).slice().reverse();
+          rowsRaw.push({ ent, gse: gseLabel, series });
+        } else {
+          GSE_LEVELS.forEach(gse => {
+            const series = getSeries(ent, gse).slice().reverse();
+            rowsRaw.push({ ent, gse, series });
+          });
+        }
       });
 
       const tableClass = "data-table data-table-heat" + (focusYear ? " has-year-focus" : "");
@@ -1924,7 +2014,12 @@ code {
                       if (alert) cls += " td-alert";
                       if (isFocused) cls += " td-focused-year";
                       return (
-                        <td key={s.year} className={cls}>
+                        <td key={s.year} className={cls}
+                          style={s.pct != null ? { cursor: "pointer" } : undefined}
+                          onClick={s.pct != null && onCellClick
+                            ? (ev) => onCellClick({ entity: r.ent, gse: r.gse, ev })
+                            : undefined}
+                        >
                           {s.pct == null ? (
                             <span className="td-empty">—</span>
                           ) : (
@@ -2019,6 +2114,9 @@ code {
         if (ent.kind === "slep") {
           return SimceData.generateSeriesByRbd({ rbds: ent.rbds, gse, nivel, prueba });
         }
+        if (ent.kind === "estab") {
+          return SimceData.generateSeriesByEstab({ rbd: ent.rbd, gse, nivel, prueba });
+        }
         return SimceData.generateSeriesByDepe({
           comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
         });
@@ -2079,7 +2177,13 @@ code {
     // ============================================================
     // EstabPopup — lista de establecimientos de una entidad
     // ============================================================
-    function EstabPopup({ entity, nivel, prueba, onClose }) {
+    // Props:
+    //   entity   — entidad (kind, comunas, depe2, rbds, name, _popupPos)
+    //   nivel    — label de nivel activo
+    //   prueba   — label de prueba activo
+    //   onClose  — callback cierre
+    //   gse      — (opcional) código GSE; si viene, filtra por ese GSE
+    function EstabPopup({ entity, nivel, prueba, onClose, gse }) {
       const ref = React.useRef(null);
       React.useEffect(() => {
         function handleClick(e) {
@@ -2099,7 +2203,18 @@ code {
           .forEach(r => rbdsNP.add(String(r.rbd)));
       }
 
-      // Obtener establecimientos: comunas de la entidad + depe2 + rindió nivel×prueba
+      // Si se filtra por GSE: construir Set de RBDs que tienen dato en ese GSE
+      // Fuente: DATA.rbd_gse (distinct rbd × nivel × prueba × cod_grupo)
+      let rbdsGSE = null;
+      if (gse && DATA.rbd_gse) {
+        rbdsGSE = new Set(
+          DATA.rbd_gse
+            .filter(r => String(r.cod_grupo) === String(gse) && r.nivel === nv && r.prueba === pr)
+            .map(r => String(r.rbd))
+        );
+      }
+
+      // Obtener establecimientos: comunas de la entidad + depe2 + rindió nivel×prueba [+ GSE]
       let items = [];
       if (DATA.establecimientos) {
         const setCom = new Set(entity.comunas || []);
@@ -2111,12 +2226,15 @@ code {
             } else if (entity.depe2) {
               if (String(r.cod_depe2) !== String(entity.depe2)) return false;
             }
-            return rbdsNP.has(String(r.rbd));
+            if (!rbdsNP.has(String(r.rbd))) return false;
+            if (rbdsGSE !== null && !rbdsGSE.has(String(r.rbd))) return false;
+            return true;
           })
           .map(r => ({ rbd: r.rbd, nom: r.nom_rbd, com: r.nom_com_rbd }));
       }
 
-      const title = entity.name;
+      const gseLabel = gse ? (SimceData.GSE_LABELS[gse] || gse) : null;
+      const title = entity.name + (gseLabel ? ` — GSE ${gseLabel}` : "");
       const pos = entity._popupPos || {};
 
       return (
@@ -2147,11 +2265,15 @@ code {
     }
 
     // ============================================================
-    // Modal agregar entidad — v2 con tabs: Comuna | SLEP | Grupo
+    // Modal agregar entidad — v2 con tabs: Comuna | SLEP | Región | Establecimiento | Grupo
     // ============================================================
     function AddEntityModal({ editing, onSave, onCancel, takenColors }) {
       const [tab, setTab] = React.useState(
-        editing?.kind === "slep" ? "slep" : editing?.kind === "group" ? "group" : "comuna"
+        editing?.kind === "slep" ? "slep"
+          : editing?.kind === "region" ? "region"
+          : editing?.kind === "estab" ? "estab"
+          : editing?.kind === "group" ? "group"
+          : "estab"
       );
       // Tab comuna
       const [region, setRegion] = React.useState(
@@ -2167,6 +2289,18 @@ code {
       const [slepSearch, setSlepSearch] = React.useState("");
       const [selectedSlep, setSelectedSlep] = React.useState(
         editing?.kind === "slep" ? editing.cod_slep : ""
+      );
+      // Tab región
+      const [selectedRegion, setSelectedRegion] = React.useState(
+        editing?.kind === "region" ? (editing.cod_reg || "") : ""
+      );
+      const [regionSearch, setRegionSearch] = React.useState("");
+      // Tab establecimiento
+      const [estabSearch, setEstabSearch] = React.useState(
+        editing?.kind === "estab" ? editing.name : ""
+      );
+      const [selectedEstab, setSelectedEstab] = React.useState(
+        editing?.kind === "estab" ? { rbd: editing.rbd, nom: editing.name, com: editing.com } : null
       );
       // Tab grupo
       const [groupName, setGroupName] = React.useState(editing?.kind === "group" ? editing.name : "");
@@ -2206,6 +2340,31 @@ code {
             depe2: depe2 || null,
             color,
           });
+        } else if (tab === "region") {
+          if (!selectedRegion) return;
+          const reg = SimceData.REGIONES.find(r => r.cod_reg === selectedRegion);
+          if (!reg) return;
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: reg.nombre + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
+            kind: "region",
+            cod_reg: reg.cod_reg,
+            comunas: reg.comunas.map(c => c.cod_com),
+            depe2: depe2 || null,
+            color,
+          });
+        } else if (tab === "estab") {
+          if (!selectedEstab) return;
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: selectedEstab.nom,
+            kind: "estab",
+            rbd: selectedEstab.rbd,
+            com: selectedEstab.com,
+            comunas: [selectedEstab.cod_com],
+            depe2: selectedEstab.depe2 || null,
+            color,
+          });
         } else if (tab === "slep") {
           if (!selectedSlep) return;
           const slep = SimceData.SLEPS.find(s => s.cod_slep === selectedSlep);
@@ -2241,11 +2400,101 @@ code {
               <button className="icon-btn" onClick={onCancel}><Icon name="x" /></button>
             </div>
             <div className="modal-tabs">
+              <button className={"modal-tab" + (tab === "estab" ? " is-active" : "")} onClick={() => setTab("estab")}>Establecimiento</button>
               <button className={"modal-tab" + (tab === "comuna" ? " is-active" : "")} onClick={() => setTab("comuna")}>Comuna</button>
               <button className={"modal-tab" + (tab === "slep" ? " is-active" : "")} onClick={() => setTab("slep")}>SLEP</button>
-              <button className={"modal-tab" + (tab === "group" ? " is-active" : "")} onClick={() => setTab("group")}>Grupo custom</button>
+              <button className={"modal-tab" + (tab === "region" ? " is-active" : "")} onClick={() => setTab("region")}>Región</button>
+              <button className={"modal-tab" + (tab === "group" ? " is-active" : "")} onClick={() => setTab("group")}>Grupo personalizado</button>
             </div>
             <div className="modal-body">
+              {tab === "estab" && (() => {
+                const filtered = estabSearch.length >= 3
+                  ? SimceData.ESTAB_LIST.filter(e =>
+                      e.nom.toLowerCase().includes(estabSearch.toLowerCase()) ||
+                      e.rbd.includes(estabSearch)
+                    ).slice(0, 20)
+                  : [];
+                return (
+                  <div className="form-grid">
+                    <label className="field field-full">
+                      <span className="field-label">Buscar establecimiento</span>
+                      <span className="field-hint" style={{ fontSize: 11, color: "var(--fg-3)" }}>
+                        Escribe al menos 3 caracteres (nombre o RBD)
+                      </span>
+                      <input
+                        className="input input-search"
+                        type="text"
+                        placeholder="Ej. Liceo Bicentenario, 5103…"
+                        value={estabSearch}
+                        onChange={e => { setEstabSearch(e.target.value); setSelectedEstab(null); }}
+                      />
+                      {filtered.length > 0 && !selectedEstab && (
+                        <div className="comuna-checklist" style={{ maxHeight: 260, marginTop: 4 }}>
+                          {filtered.map(e => (
+                            <label key={e.rbd}
+                              className="check-row"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => { setSelectedEstab(e); setEstabSearch(e.nom); }}>
+                              <span style={{ fontWeight: 500 }}>{e.nom}</span>
+                              <span style={{ fontSize: 11, color: "var(--fg-3)", marginLeft: "auto" }}>
+                                RBD {e.rbd} · {e.com}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                      {selectedEstab && (
+                        <div className="check-row is-selected" style={{ marginTop: 4 }}>
+                          <span style={{ fontWeight: 500 }}>{selectedEstab.nom}</span>
+                          <span style={{ fontSize: 11, color: "var(--fg-3)", marginLeft: "auto" }}>
+                            RBD {selectedEstab.rbd} · {selectedEstab.com}
+                          </span>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                );
+              })()}
+              {tab === "region" && (
+                <div className="form-grid">
+                  <label className="field field-full">
+                    <span className="field-label">Región</span>
+                    <input
+                      className="input input-search"
+                      type="text"
+                      placeholder="Buscar región…"
+                      value={regionSearch}
+                      onChange={e => { setRegionSearch(e.target.value); setSelectedRegion(""); }}
+                    />
+                    <div className="comuna-checklist" style={{ maxHeight: 260, marginTop: 4 }}>
+                      {SimceData.REGIONES
+                        .filter(r => !regionSearch || r.nombre.toLowerCase().includes(regionSearch.toLowerCase()))
+                        .map(r => (
+                          <label key={r.cod_reg}
+                            className={"check-row" + (selectedRegion === r.cod_reg ? " is-selected" : "")}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => { setSelectedRegion(r.cod_reg); setRegionSearch(r.nombre); }}>
+                            <input type="radio" name="region" value={r.cod_reg}
+                              checked={selectedRegion === r.cod_reg}
+                              onChange={() => { setSelectedRegion(r.cod_reg); setRegionSearch(r.nombre); }} />
+                            <span className="check-name">{r.nombre}</span>
+                            <span className="check-region">{r.comunas.length} comunas</span>
+                          </label>
+                        ))
+                      }
+                    </div>
+                  </label>
+                  <label className="field field-full">
+                    <span className="field-label">Dependencia</span>
+                    <select className="select" value={depe2} onChange={e => setDepe2(e.target.value)}>
+                      <option value="">Todas las dependencias</option>
+                      {SimceData.DEPE2_CODES.map(d => (
+                        <option key={d} value={d}>{SimceData.DEPE2_LABELS[d]}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              )}
               {tab === "comuna" && (
                 <div className="form-grid">
                   <label className="field field-full">
@@ -2433,6 +2682,7 @@ code {
       const [tweaksOpen, setTweaksOpen] = React.useState(false);
       const [gseFilter, setGseFilter] = React.useState("");
       const [estabPopup, setEstabPopup] = React.useState(null); // { entity, pos }
+      const [cellPopup, setCellPopup] = React.useState(null);   // { entity, gse, pos }
 
       // Tweaks
       const [showElemInsuf, setShowElemInsuf] = React.useState(true);
@@ -2505,6 +2755,8 @@ code {
                     <span className="sg-ent-name">{ent.name}</span>
                     <span className="sg-ent-meta">
                       {ent.kind === "slep" ? `SLEP · ${ent.comunas.length} comunas`
+                        : ent.kind === "region" ? `Región · ${ent.comunas.length} comunas`
+                        : ent.kind === "estab" ? `RBD ${ent.rbd} · ${ent.com}`
                         : ent.kind === "group" ? `Grupo · ${ent.comunas.length} comunas`
                         : ent.depe2 ? SimceData.DEPE2_LABELS[ent.depe2] : "Comuna"}
                     </span>
@@ -2515,11 +2767,18 @@ code {
                 ))}
                 {SimceData.GSE_LEVELS.map(gse => (
                   <React.Fragment key={gse}>
-                    {entities.map(ent => (
-                      <ChartCell key={ent.id + "|" + gse} entity={ent} gse={gse}
-                        showElemInsuf={showElemInsuf} yScale={yScale}
-                        nivel={nivel} prueba={prueba} />
-                    ))}
+                    {entities.map(ent => {
+                      if (ent.kind === "estab") {
+                        const gseActual = SimceData.gseActualDeEstab({ rbd: ent.rbd, nivel, prueba });
+                        const gseActualLabel = SimceData.GSE_LABELS[gseActual] || gseActual;
+                        if (gse !== gseActualLabel) return <div key={ent.id + "|" + gse} />;
+                      }
+                      return (
+                        <ChartCell key={ent.id + "|" + gse} entity={ent} gse={gse}
+                          showElemInsuf={showElemInsuf} yScale={yScale}
+                          nivel={nivel} prueba={prueba} />
+                      );
+                    })}
                     {Array.from({ length: Math.max(0, 4 - entities.length) }).map((_, i) => (
                       <div key={"ph-" + gse + "-" + i} />
                     ))}
@@ -2540,7 +2799,11 @@ code {
                 </div>
               </div>
               <HeatLegend />
-              <ResultsTable entities={entities} nivel={nivel} prueba={prueba} gseFilter={gseFilter} />
+              <ResultsTable entities={entities} nivel={nivel} prueba={prueba} gseFilter={gseFilter}
+                onCellClick={({ entity, gse, ev }) => setCellPopup({
+                  entity: { ...entity, _popupPos: { top: ev.clientY + window.scrollY + 8, left: ev.clientX + window.scrollX - 100 } },
+                  gse,
+                })} />
               <div className="table-legend">
                 <span><b className="dot dot-prelim">*</b> Dato preliminar 2025</span>
                 <span>Formato: <code>XX,X% (N evaluados)</code> · — sin datos</span>
@@ -2559,8 +2822,8 @@ code {
                     <article className="note">
                       <h4>Fórmula de agregación ponderada</h4>
                       <p>Para cada entidad, GSE y año, el % en nivel Adecuado se calcula como el promedio ponderado por número de estudiantes evaluados:</p>
-                      <code className="formula">%adec = Σ(pct_estab × n_eval_estab) / Σ(n_eval_estab)</code>
-                      <p>Para grupos custom (ej. un SLEP), la ponderación se aplica sobre todas las comunas seleccionadas.</p>
+                      <code className="formula">%adec = Σ(nalu × palu_eda_ade / 100) / Σ(nalu) × 100</code>
+                      <p>Donde <code>nalu</code> es el número de estudiantes evaluados y <code>palu_eda_ade</code> el % en nivel Adecuado, ambos por combinación de establecimiento × prueba × nivel. Este método garantiza que un establecimiento con 200 estudiantes evaluados tenga el doble de peso que uno con 100, independientemente del nivel de agrupación (comuna, SLEP, región).</p>
                     </article>
                     <article className="note">
                       <h4>Regla GSE dinámico</h4>
@@ -2589,6 +2852,16 @@ code {
               nivel={nivel}
               prueba={prueba}
               onClose={() => setEstabPopup(null)}
+            />
+          )}
+
+          {cellPopup && (
+            <EstabPopup
+              entity={cellPopup.entity}
+              nivel={nivel}
+              prueba={prueba}
+              gse={cellPopup.gse}
+              onClose={() => setCellPopup(null)}
             />
           )}
 

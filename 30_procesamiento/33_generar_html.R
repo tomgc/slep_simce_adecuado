@@ -151,6 +151,42 @@ df_rbd_np <- arrow::read_parquet(
   dplyr::mutate(rbd = as.character(rbd)) |>
   dplyr::arrange(nivel, prueba, rbd)
 
+# --- RBDs por nivel × prueba × GSE (para filtro GSE en popup de celda) ---
+# Distinct de rbd × nivel × prueba × cod_grupo. Se usa en EstabPopup cuando
+# se abre desde una celda de la tabla (P7) para mostrar solo los establecimientos
+# del GSE clicado. ~15-20k filas vs 185k del parquet completo.
+df_rbd_gse <- arrow::read_parquet(
+  here::here("40_salidas", "intermedios", "simce_rbd.parquet")
+) |>
+  dplyr::distinct(rbd, nivel, prueba, cod_grupo) |>
+  dplyr::mutate(rbd = as.character(rbd)) |>
+  dplyr::arrange(nivel, prueba, cod_grupo, rbd)
+
+# --- Datos por establecimiento (para entidades tipo establecimiento) ---
+# 8 columnas necesarias para graficar; excluye marca, nom_com_rbd, preliminar
+# (recuperables desde otros catálogos). Formato columnar para compacidad.
+df_simce_rbd <- arrow::read_parquet(
+  here::here("40_salidas", "intermedios", "simce_rbd.parquet")
+) |>
+  dplyr::select(rbd, nivel, prueba, cod_grupo, anio, nalu, palu_eda_ade, cod_depe2) |>
+  dplyr::mutate(
+    rbd       = as.character(rbd),
+    palu_eda_ade = round(palu_eda_ade, 2)
+  ) |>
+  dplyr::arrange(rbd, nivel, prueba, anio, cod_grupo)
+
+simce_rbd_lst <- list(
+  rows       = nrow(df_simce_rbd),
+  rbd        = df_simce_rbd$rbd,
+  nivel      = df_simce_rbd$nivel,
+  prueba     = df_simce_rbd$prueba,
+  cod_grupo  = df_simce_rbd$cod_grupo,
+  anio       = as.integer(df_simce_rbd$anio),
+  nalu       = as.integer(df_simce_rbd$nalu),
+  palu       = df_simce_rbd$palu_eda_ade,
+  cod_depe2  = df_simce_rbd$cod_depe2
+)
+
 # --- Catálogo de SLEPs (una fila por SLEP × RBD) ---
 sleps_lst <- df_sleps |>
   dplyr::transmute(
@@ -171,7 +207,9 @@ json_root <- list(
   datos            = datos_lst,
   sleps            = sleps_lst,
   establecimientos = establecimientos_lst,
-  rbds_por_nivel   = df_rbd_np
+  rbds_por_nivel   = df_rbd_np,
+  rbd_gse          = df_rbd_gse,
+  simce_rbd        = simce_rbd_lst
 )
 
 # Serialización: auto_unbox=TRUE para que escalares (anios_preliminar=2025L)
@@ -249,6 +287,14 @@ message(sprintf("    OK: %s (%.0f KB)",
                 fs::path_rel(ruta_salida, here::here()),
                 tamano_kb))
 
+# Guardar métricas del resumen antes de liberar objetos grandes.
+n_simce_rbd <- nrow(df_simce_rbd)
+
+# Liberar objetos grandes antes del GC automático para evitar C stack overflow.
+# json_str y html pueden superar 14 MB combinados en memoria.
+rm(json_str, html, d3_code, plantilla, simce_rbd_lst, df_simce_rbd)
+gc(verbose = FALSE)
+
 
 # ============================================================================
 # Bloque 5 — Resumen
@@ -262,6 +308,8 @@ message(sprintf("  Regiones:      %d", nrow(regiones_lst)))
 message(sprintf("  SLEPs:         %d (%d RBDs)", dplyr::n_distinct(sleps_lst$cod_slep), nrow(sleps_lst)))
 message(sprintf("  Establec.:     %d RBDs distintos", nrow(establecimientos_lst)))
 message(sprintf("  RBDs×nivel:    %d filas (catálogo popup)", nrow(df_rbd_np)))
+message(sprintf("  RBDs×GSE:      %d filas (catálogo popup celda)", nrow(df_rbd_gse)))
+message(sprintf("  simce_rbd:     %d filas (datos por establecimiento)", n_simce_rbd))
 message(sprintf("  Años:          %d (%s)", length(meta$anios),
                 paste(meta$anios, collapse = ", ")))
 message(sprintf("  Peso HTML:     %.1f KB", tamano_kb))

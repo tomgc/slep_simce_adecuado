@@ -161,13 +161,37 @@ message(sprintf(
 
 message("[3] Construyendo comunas_chile.parquet...")
 
+# Tabla de nombres oficiales de región (fuente: abreviaturas del CSV MINEDUC)
+nombres_region <- c(
+  "1"  = "Tarapacá",
+  "2"  = "Antofagasta",
+  "3"  = "Atacama",
+  "4"  = "Coquimbo",
+  "5"  = "Valparaíso",
+  "6"  = "O'Higgins",
+  "7"  = "Maule",
+  "8"  = "Biobío",
+  "9"  = "La Araucanía",
+  "10" = "Los Lagos",
+  "11" = "Aysén",
+  "12" = "Magallanes",
+  "13" = "Metropolitana",
+  "14" = "Los Ríos",
+  "15" = "Arica y Parinacota",
+  "16" = "Ñuble"
+)
+
 df_comunas <- df_dir_raw |>
   dplyr::filter(.data$ESTADO_ESTAB == 1, .data$MATRICULA == 1) |>
   dplyr::transmute(
     cod_com_rbd = as.character(COD_COM_RBD),
     nom_com_rbd = NOM_COM_RBD,
     cod_reg_rbd = as.character(COD_REG_RBD),
-    nom_reg_rbd = NOM_REG_RBD_A
+    nom_reg_rbd = dplyr::recode(
+      as.character(COD_REG_RBD),
+      !!!nombres_region,
+      .default = NOM_REG_RBD_A
+    )
   ) |>
   dplyr::distinct()
 
