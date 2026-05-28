@@ -494,7 +494,11 @@ body {
   padding: 10px 12px;
   font-size: 12px;
   min-width: 200px; max-width: 280px;
-  transform: translate(-50%, -100%);
+}
+.tooltip.is-pinned {
+  pointer-events: auto;
+  border-color: var(--ocean);
+  box-shadow: var(--shadow-3), 0 0 0 2px var(--ocean-20);
 }
 .tt-row { display: flex; align-items: center; gap: 6px; }
 .tt-head { margin-bottom: 4px; }
@@ -546,6 +550,18 @@ body {
   border-radius: var(--radius-1);
   border-left: 2px solid var(--coral);
 }
+.tt-estab-link {
+  display: block; width: 100%;
+  margin-top: 8px; padding: 5px 8px;
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-1);
+  color: var(--ocean); font-size: 11px; font-weight: 600;
+  text-align: left; cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 100ms ease, border-color 100ms ease;
+}
+.tt-estab-link:hover { background: var(--ocean-20); border-color: var(--ocean); }
 
 /* Tabla */
 .table-section { padding: 28px 40px; }
@@ -715,6 +731,7 @@ body {
   padding: 28px; box-shadow: var(--shadow-1);
 }
 .notes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 36px; }
+.notes-grid .note-full { grid-column: 1 / -1; }
 @media (max-width: 900px) { .notes-grid { grid-template-columns: 1fr; } }
 .note h4 {
   font-family: var(--font-display);
@@ -1042,6 +1059,7 @@ code {
 <body>
   <div id="root"></div>
   <div id="global-tooltip" class="tooltip" style="display:none"></div>
+  <div id="tooltip-overlay" style="display:none;position:fixed;inset:0;z-index:9998;"></div>
 
   <!-- React + Babel desde CDN -->
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
@@ -1338,7 +1356,7 @@ code {
         REGIONES, PRESETS, COMUNA_BY_COD,
         SLEPS, DEPE2_LABELS, DEPE2_CODES,
         NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
-        GSE_LABELS,
+        GSE_LABELS, GSE_LABEL_TO_COD,
       };
     })();
 
@@ -1572,10 +1590,13 @@ code {
     // ============================================================
     // Tooltip compartido
     // ============================================================
+    // Estado global del tooltip: el tooltip es un singleton en el DOM.
+    // isPinned = true cuando el usuario hizo clic en un punto; en ese
+    // estado no se oculta con mouseleave y muestra el botón de establecimientos.
+    const _tt = { pinned: false };
+
     function makeTooltip(entity, gse, nivel, prueba) {
-      function show(e, s, yr) {
-        const tip = document.getElementById("global-tooltip");
-        tip.style.display = "block";
+      function populate(tip, s, yr, pinned) {
         tip.innerHTML = `
           <div class="tt-row tt-head">
             <span class="tt-swatch" style="background:${entity.color}"></span>
@@ -1599,7 +1620,6 @@ code {
             <span>N establecimientos: <b class="tt-n-estab"></b></span>
           </div>
         `;
-        // Insertar valores por textContent (encoding seguro)
         tip.querySelector(".tt-ent").textContent = entity.name;
         tip.querySelector(".tt-gse").textContent = "GSE " + gse + " · " + yr + (s.preliminar ? " *" : "");
         tip.querySelector(".tt-adec").textContent = fmtPct(s.pct);
@@ -1637,13 +1657,80 @@ code {
           warn.textContent = "* Dato preliminar 2025";
           tip.appendChild(warn);
         }
-        tip.style.left = (e.clientX + window.scrollX + 12) + "px";
-        tip.style.top  = (e.clientY + window.scrollY - 12) + "px";
+
+        // Botón "Ver establecimientos" — solo en estado pinned
+        if (pinned && s.n_estab != null && s.n_estab > 0) {
+          const btn = document.createElement("button");
+          btn.className = "tt-estab-link";
+          btn.textContent = `Ver establecimientos (${fmtInt(s.n_estab)}) ▸`;
+          btn.addEventListener("click", (ev) => {
+            const tipRect = tip.getBoundingClientRect();
+            _tt.pinned = false;
+            tip.classList.remove("is-pinned");
+            tip.style.display = "none";
+            const overlay = document.getElementById("tooltip-overlay");
+            overlay.style.display = "none";
+            overlay.onclick = null;
+            if (typeof window.__openChartEstabPopup === "function") {
+              window.__openChartEstabPopup({
+                entity, gse, nivel, prueba, year: yr,
+                clientX: tipRect.left + tipRect.width / 2,
+                clientY: tipRect.top,
+              });
+            }
+          });
+          tip.appendChild(btn);
+        }
       }
+
+      function show(e, s, yr, svgEl) {
+        // Si hay otro tooltip pinned de otra entidad/punto, no lo sobreescribir con hover
+        if (_tt.pinned) return;
+        const tip = document.getElementById("global-tooltip");
+        tip.classList.remove("is-pinned");
+
+        // Posición anclada al punto del SVG (no sigue al cursor)
+        const svgRect = svgEl.getBoundingClientRect();
+        const ptX = svgRect.left + (e.offsetX !== undefined ? e.offsetX : e.layerX);
+        const ptY = svgRect.top  + (e.offsetY !== undefined ? e.offsetY : e.layerY);
+        tip.style.display = "block";
+        tip.style.left = (ptX + window.scrollX + 14) + "px";
+        tip.style.top  = (ptY + window.scrollY - 14) + "px";
+
+        populate(tip, s, yr, false);
+      }
+
+      function pin(e, s, yr, svgEl) {
+        _tt.pinned = true;
+        const tip = document.getElementById("global-tooltip");
+        const overlay = document.getElementById("tooltip-overlay");
+        tip.classList.add("is-pinned");
+
+        const svgRect = svgEl.getBoundingClientRect();
+        const ptX = svgRect.left + (e.offsetX !== undefined ? e.offsetX : e.layerX);
+        const ptY = svgRect.top  + (e.offsetY !== undefined ? e.offsetY : e.layerY);
+        tip.style.display = "block";
+        tip.style.left = (ptX + window.scrollX + 14) + "px";
+        tip.style.top  = (ptY + window.scrollY - 14) + "px";
+
+        // Overlay: clic fuera cierra el tooltip
+        overlay.style.display = "block";
+        overlay.onclick = () => {
+          _tt.pinned = false;
+          tip.classList.remove("is-pinned");
+          tip.style.display = "none";
+          overlay.style.display = "none";
+          overlay.onclick = null;
+        };
+
+        populate(tip, s, yr, true);
+      }
+
       function hide() {
+        if (_tt.pinned) return; // no ocultar si está pinned
         document.getElementById("global-tooltip").style.display = "none";
       }
-      return { show, hide };
+      return { show, hide, pin };
     }
 
     // ============================================================
@@ -1713,8 +1800,9 @@ code {
             .attr("fill", entity.color)
             .attr("opacity", opacity)
             .style("cursor", "pointer")
-            .on("mouseenter", e => tt.show(e, s, s.year))
-            .on("mouseleave", tt.hide);
+            .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
+            .on("mouseleave", tt.hide)
+            .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
           const labelY = Math.max(8, cy - 6);
           g.append("text")
             .attr("x", cx).attr("y", labelY)
@@ -1830,8 +1918,9 @@ code {
                 .attr("stroke-width", 1)
                 .attr("opacity", opacity)
                 .style("cursor", "pointer")
-                .on("mouseenter", e => tt.show(e, s, s.year))
-                .on("mouseleave", tt.hide);
+                .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
+                .on("mouseleave", tt.hide)
+                .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
             }
           }
 
@@ -1843,8 +1932,9 @@ code {
             .attr("fill", entity.color)
             .attr("opacity", opacity)
             .style("cursor", "pointer")
-            .on("mouseenter", e => tt.show(e, s, s.year))
-            .on("mouseleave", tt.hide);
+            .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
+            .on("mouseleave", tt.hide)
+            .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
 
           const labelY = yAdec - 5;
           const fill = entity.color;
@@ -1892,9 +1982,9 @@ code {
         ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
         : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
       const hasData = series.some(s => s.pct != null);
-      if (!hasData) return <div className="chart-cell is-empty" />;
+      if (!hasData) return <div className="chart-cell is-empty" data-entity-id={entity.id} data-gse={gse} />;
       return (
-        <div className="chart-cell">
+        <div className="chart-cell" data-entity-id={entity.id} data-gse={gse}>
           <div className="chart-cell-head">
             <span className="chart-cell-eyebrow">GSE</span>
             <span className="chart-cell-title">{gse}</span>
@@ -2158,6 +2248,212 @@ code {
 
 
     // ============================================================
+    // exportarGraficos — SVG compuesto del supergrid
+    // ============================================================
+    function exportarGraficos({ entities, nivel, prueba }) {
+      const GSE_LEVELS = SimceData.GSE_LEVELS;
+
+      // Dimensiones de cada SVG fuente (deben coincidir con viewBox de cada subchart)
+      const SPARK_W = 320, SPARK_H = 90;
+      const BARS_W  = 320, BARS_H  = 165;
+
+      // Layout del SVG compuesto
+      const COL_GSE   = 110;   // ancho columna etiqueta GSE
+      const CELL_W    = 340;   // ancho de cada celda de entidad
+      const CELL_H    = SPARK_H + BARS_H + 30; // sparkline + barras + cabecera celda
+      const HEADER_H  = 72;   // fila de encabezados de entidad
+      const TITLE_H   = 56;   // fila de título del SVG
+      const PAD       = 20;   // padding general
+      const COL_GAP   = 10;   // gap entre columnas
+
+      const nEnts   = entities.length;
+      const totalW  = PAD + COL_GSE + nEnts * CELL_W + (nEnts - 1) * COL_GAP + PAD;
+      const totalH  = TITLE_H + HEADER_H + GSE_LEVELS.length * CELL_H + PAD * 2;
+
+      const NS = "http://www.w3.org/2000/svg";
+
+      function el(tag, attrs = {}, parent) {
+        const node = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+        if (parent) parent.appendChild(node);
+        return node;
+      }
+
+      function txt(content, attrs = {}, parent) {
+        const node = el("text", attrs, parent);
+        node.textContent = content;
+        return node;
+      }
+
+      // SVG raíz
+      const root = el("svg", {
+        xmlns: NS,
+        width: totalW,
+        height: totalH,
+        viewBox: `0 0 ${totalW} ${totalH}`,
+      });
+
+      // Fondo
+      el("rect", { x: 0, y: 0, width: totalW, height: totalH, fill: "#FFF6E0" }, root);
+
+      // Título
+      const titleG = el("g", { transform: `translate(${PAD}, 0)` }, root);
+      txt(`Motor Simce — Adecuado · ${prueba} · ${nivel}`, {
+        x: 0, y: 34,
+        "font-family": "system-ui, sans-serif",
+        "font-size": 18, "font-weight": 800,
+        fill: "#0A3A5C",
+      }, titleG);
+      const exportDate = new Date().toLocaleDateString("es-CL", { day: "2-digit", month: "long", year: "numeric" });
+      txt(`SLEP Costa Central · Exportado el ${exportDate}`, {
+        x: 0, y: 52,
+        "font-family": "system-ui, sans-serif",
+        "font-size": 11, fill: "#747474",
+      }, titleG);
+
+      // Encabezados de entidad
+      entities.forEach((ent, ei) => {
+        const cx = PAD + COL_GSE + ei * (CELL_W + COL_GAP);
+        const gy = TITLE_H;
+        const g = el("g", { transform: `translate(${cx}, ${gy})` }, root);
+
+        // Swatch de color
+        el("rect", { x: 0, y: 10, width: 14, height: 14, rx: 2, fill: ent.color }, g);
+
+        // Nombre
+        txt(ent.name, {
+          x: 20, y: 22,
+          "font-family": "system-ui, sans-serif",
+          "font-size": 14, "font-weight": 800,
+          fill: "#1C1212",
+        }, g);
+
+        // Meta
+        const meta = ent.kind === "slep"   ? `SLEP · ${ent.comunas.length} comunas`
+          : ent.kind === "region" ? `Región · ${ent.comunas.length} comunas`
+          : ent.kind === "estab"  ? `RBD ${ent.rbd}`
+          : ent.kind === "group"  ? `Grupo · ${ent.comunas.length} comunas`
+          : ent.depe2 ? (SimceData.DEPE2_LABELS[ent.depe2] || ent.depe2) : "Comuna";
+        txt(meta, {
+          x: 20, y: 38,
+          "font-family": "system-ui, sans-serif",
+          "font-size": 10, fill: "#747474",
+        }, g);
+
+        // Línea separadora bajo encabezado
+        el("line", {
+          x1: 0, y1: HEADER_H - 4, x2: CELL_W, y2: HEADER_H - 4,
+          stroke: "#4A2746", "stroke-width": 2,
+        }, g);
+      });
+
+      // Filas GSE
+      GSE_LEVELS.forEach((gse, gi) => {
+        const rowY = TITLE_H + HEADER_H + gi * CELL_H;
+
+        // Etiqueta GSE columna izquierda
+        const gseG = el("g", { transform: `translate(${PAD}, ${rowY})` }, root);
+        el("rect", { x: 0, y: 0, width: COL_GSE - 8, height: CELL_H,
+          fill: gi % 2 === 0 ? "#FFFBEF" : "#F4E9CC", rx: 4 }, gseG);
+        txt("GSE", {
+          x: (COL_GSE - 8) / 2, y: CELL_H / 2 - 10,
+          "text-anchor": "middle",
+          "font-family": "system-ui, sans-serif",
+          "font-size": 9, "font-weight": 700,
+          "letter-spacing": "0.1em",
+          fill: "#747474",
+        }, gseG);
+        txt(gse, {
+          x: (COL_GSE - 8) / 2, y: CELL_H / 2 + 8,
+          "text-anchor": "middle",
+          "font-family": "system-ui, sans-serif",
+          "font-size": 13, "font-weight": 800,
+          fill: "#0A3A5C",
+        }, gseG);
+
+        // Celdas de entidad
+        entities.forEach((ent, ei) => {
+          const cx = PAD + COL_GSE + ei * (CELL_W + COL_GAP);
+
+          // Fondo de celda
+          const cellG = el("g", { transform: `translate(${cx}, ${rowY})` }, root);
+          el("rect", { x: 0, y: 0, width: CELL_W, height: CELL_H,
+            fill: "#FFFFFF", rx: 6,
+            stroke: "#E7DFC9", "stroke-width": 1 }, cellG);
+
+          // Buscar el div .chart-cell con los data-attrs correspondientes
+          const cellDiv = document.querySelector(
+            `.chart-cell[data-entity-id="${ent.id}"][data-gse="${gse}"]`
+          );
+          if (!cellDiv || cellDiv.classList.contains("is-empty")) {
+            // Celda vacía — mensaje
+            txt("Sin datos", {
+              x: CELL_W / 2, y: CELL_H / 2,
+              "text-anchor": "middle",
+              "font-family": "system-ui, sans-serif",
+              "font-size": 11, fill: "#BCA493",
+            }, cellG);
+            return;
+          }
+
+          // Subcabecera dentro de la celda
+          txt("Trayectoria histórica", {
+            x: 8, y: 16,
+            "font-family": "system-ui, sans-serif",
+            "font-size": 8, "font-weight": 700,
+            "letter-spacing": "0.08em", fill: "#747474",
+          }, cellG);
+
+          // Clonar sparkline SVG
+          const sparkSvg = cellDiv.querySelector(".sparkline-svg");
+          if (sparkSvg) {
+            const sparkClone = sparkSvg.cloneNode(true);
+            sparkClone.setAttribute("x", 0);
+            sparkClone.setAttribute("y", 20);
+            sparkClone.setAttribute("width", CELL_W);
+            sparkClone.setAttribute("height", SPARK_H);
+            sparkClone.setAttribute("viewBox", `0 0 ${SPARK_W} ${SPARK_H}`);
+            sparkClone.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            // Remover event listeners del clon (son funciones en el original, no se copian)
+            cellG.appendChild(sparkClone);
+          }
+
+          txt("Últimas 3 aplicaciones", {
+            x: 8, y: SPARK_H + 32,
+            "font-family": "system-ui, sans-serif",
+            "font-size": 8, "font-weight": 700,
+            "letter-spacing": "0.08em", fill: "#747474",
+          }, cellG);
+
+          // Clonar bars SVG
+          const barsSvg = cellDiv.querySelector(".bars-svg");
+          if (barsSvg) {
+            const barsClone = barsSvg.cloneNode(true);
+            barsClone.setAttribute("x", 0);
+            barsClone.setAttribute("y", SPARK_H + 36);
+            barsClone.setAttribute("width", CELL_W);
+            barsClone.setAttribute("height", BARS_H);
+            barsClone.setAttribute("viewBox", `0 0 ${BARS_W} ${BARS_H}`);
+            barsClone.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            cellG.appendChild(barsClone);
+          }
+        });
+      });
+
+      // Serializar y descargar
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(root);
+      const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const fname = `simce_adecuado_${nivel.replace(/[^a-zA-Z0-9]/g, "_")}_${prueba.replace(/[^a-zA-Z0-9]/g, "_")}.svg`;
+      a.download = fname;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ============================================================
     // GseFilter — selector de GSE para tabla
     // ============================================================
     function GseFilter({ gseFilter, setGseFilter }) {
@@ -2183,7 +2479,7 @@ code {
     //   prueba   — label de prueba activo
     //   onClose  — callback cierre
     //   gse      — (opcional) código GSE; si viene, filtra por ese GSE
-    function EstabPopup({ entity, nivel, prueba, onClose, gse }) {
+    function EstabPopup({ entity, nivel, prueba, onClose, gse, year }) {
       const ref = React.useRef(null);
       React.useEffect(() => {
         function handleClick(e) {
@@ -2193,9 +2489,10 @@ code {
         return () => document.removeEventListener("mousedown", handleClick);
       }, []);
 
-      // RBDs que rindieron el nivel × prueba activos
       const nv = SimceData.NIVEL_LABEL_TO_COD[nivel];
       const pr = SimceData.PRUEBA_LABEL_TO_COD[prueba];
+
+      // RBDs que rindieron el nivel × prueba activos
       const rbdsNP = new Set();
       if (DATA.rbds_por_nivel) {
         DATA.rbds_por_nivel
@@ -2203,15 +2500,35 @@ code {
           .forEach(r => rbdsNP.add(String(r.rbd)));
       }
 
-      // Si se filtra por GSE: construir Set de RBDs que tienen dato en ese GSE
-      // Fuente: DATA.rbd_gse (distinct rbd × nivel × prueba × cod_grupo)
+      // Filtro GSE: si viene year, usar DATA.simce_rbd (misma fuente que n_estab, umbral aplicado)
+      // Si no viene year, usar DATA.rbd_gse (todos los años)
       let rbdsGSE = null;
-      if (gse && DATA.rbd_gse) {
-        rbdsGSE = new Set(
-          DATA.rbd_gse
-            .filter(r => String(r.cod_grupo) === String(gse) && r.nivel === nv && r.prueba === pr)
-            .map(r => String(r.rbd))
-        );
+      if (gse) {
+        const gseCod = SimceData.GSE_LABEL_TO_COD[gse] != null
+          ? String(SimceData.GSE_LABEL_TO_COD[gse])
+          : String(gse);
+
+        if (year != null && DATA.simce_rbd) {
+          // Fuente exacta: establecimientos con dato en ese año × GSE × nivel × prueba
+          const D2 = DATA.simce_rbd;
+          rbdsGSE = new Set();
+          for (let i = 0; i < D2.rbd.length; i++) {
+            if (
+              String(D2.cod_grupo[i]) === gseCod &&
+              D2.nivel[i] === nv &&
+              D2.prueba[i] === pr &&
+              D2.anio[i] === year
+            ) {
+              rbdsGSE.add(String(D2.rbd[i]));
+            }
+          }
+        } else if (DATA.rbd_gse) {
+          rbdsGSE = new Set(
+            DATA.rbd_gse
+              .filter(r => String(r.cod_grupo) === gseCod && r.nivel === nv && r.prueba === pr)
+              .map(r => String(r.rbd))
+          );
+        }
       }
 
       // Obtener establecimientos: comunas de la entidad + depe2 + rindió nivel×prueba [+ GSE]
@@ -2233,8 +2550,9 @@ code {
           .map(r => ({ rbd: r.rbd, nom: r.nom_rbd, com: r.nom_com_rbd }));
       }
 
-      const gseLabel = gse ? (SimceData.GSE_LABELS[gse] || gse) : null;
-      const title = entity.name + (gseLabel ? ` — GSE ${gseLabel}` : "");
+      const gseLabel = gse || null;
+      const yearLabel = year != null ? ` · ${year}` : "";
+      const title = entity.name + (gseLabel ? ` — GSE ${gseLabel}` : "") + yearLabel;
       const pos = entity._popupPos || {};
 
       return (
@@ -2276,11 +2594,6 @@ code {
           : "estab"
       );
       // Tab comuna
-      const [region, setRegion] = React.useState(
-        editing?.kind === "comuna" && editing.comunas?.length > 0
-          ? (SimceData.COMUNA_BY_COD.get(editing.comunas[0])?.cod_reg || SimceData.REGIONES[0].cod_reg)
-          : SimceData.REGIONES[0].cod_reg
-      );
       const [comunaCod, setComunaCod] = React.useState(
         editing?.kind === "comuna" ? (editing.comunas?.[0] || "") : ""
       );
@@ -2311,7 +2624,6 @@ code {
         return ENTITY_PALETTE.find(c => !takenColors.includes(c)) || ENTITY_PALETTE[0];
       }, [takenColors]);
 
-      const currentRegion = SimceData.REGIONES.find(r => r.cod_reg === region) || SimceData.REGIONES[0];
       const allComunas = SimceData.REGIONES.flatMap(r =>
         r.comunas.map(c => ({ cod_com: c.cod_com, nombre: c.nombre, region: r.nombre }))
       );
@@ -2683,6 +2995,7 @@ code {
       const [gseFilter, setGseFilter] = React.useState("");
       const [estabPopup, setEstabPopup] = React.useState(null); // { entity, pos }
       const [cellPopup, setCellPopup] = React.useState(null);   // { entity, gse, pos }
+      const [chartPopup, setChartPopup] = React.useState(null); // { entity, gse } desde tooltip gráfico
 
       // Tweaks
       const [showElemInsuf, setShowElemInsuf] = React.useState(true);
@@ -2696,6 +3009,25 @@ code {
         const id = setTimeout(() => setLoading(false), 420);
         return () => clearTimeout(id);
       }, [nivel, prueba]);
+
+      // Exponer función global para que makeTooltip (imperativo) pueda abrir el popup
+      React.useEffect(() => {
+        window.__openChartEstabPopup = function(detail) {
+          const { entity, gse, year } = detail;
+          setChartPopup({
+            entity: {
+              ...entity,
+              _popupPos: {
+                top: Math.max(60, (window.innerHeight / 2) - 200),
+                left: Math.max(20, (window.innerWidth / 2) - 150),
+              }
+            },
+            gse,
+            year,
+          });
+        };
+        return () => { window.__openChartEstabPopup = null; };
+      }, []);
 
       function saveEntity(ent) {
         setEntities(prev => {
@@ -2745,7 +3077,7 @@ code {
                 </div>
                 <div className="section-actions">
                   <ChartHints showElemInsuf={showElemInsuf} />
-                  <IconExport label="Exportar gráficos" icon="chart" />
+                  <IconExport label="Exportar gráficos" icon="chart" onExport={() => exportarGraficos({ entities, nivel, prueba })} />
                 </div>
               </div>
               <div className="supergrid" style={{ gridTemplateColumns: `repeat(4, minmax(0, 1fr))` }}>
@@ -2819,6 +3151,14 @@ code {
               {notesOpen && (
                 <div className="notes-body">
                   <div className="notes-grid">
+                    <article className="note note-full">
+                      <h4>Estándares de Aprendizaje</h4>
+                      <p>Los Estándares de Aprendizaje son referentes definidos por el Ministerio de Educación que describen lo que los estudiantes deben saber y poder hacer para demostrar determinados niveles de logro de los Objetivos de Aprendizaje de las Bases Curriculares, medidos a través del Simce. Buscan responder qué tan adecuados son los aprendizajes de un estudiante en los cursos y asignaturas evaluados nacionalmente.</p>
+                      <p>Comprenden tres niveles:</p>
+                      <p><b>Adecuado:</b> Estudiantes que han logrado lo exigido en el currículum de manera satisfactoria, demostrando las habilidades y conocimientos básicos estipulados para el periodo evaluado.</p>
+                      <p><b>Elemental:</b> Estudiantes que han logrado lo exigido en el currículum de manera parcial, demostrando solo las habilidades y conocimientos más elementales estipulados para el periodo evaluado.</p>
+                      <p><b>Insuficiente:</b> Estudiantes que no logran demostrar consistentemente las habilidades y conocimientos más elementales estipulados para el periodo evaluado.</p>
+                    </article>
                     <article className="note">
                       <h4>Fórmula de agregación ponderada</h4>
                       <p>Para cada entidad, GSE y año, el % en nivel Adecuado se calcula como el promedio ponderado por número de estudiantes evaluados:</p>
@@ -2845,6 +3185,17 @@ code {
               )}
             </footer>
           </main>
+
+          {chartPopup && (
+            <EstabPopup
+              entity={chartPopup.entity}
+              nivel={nivel}
+              prueba={prueba}
+              gse={chartPopup.gse}
+              year={chartPopup.year}
+              onClose={() => setChartPopup(null)}
+            />
+          )}
 
           {estabPopup && (
             <EstabPopup

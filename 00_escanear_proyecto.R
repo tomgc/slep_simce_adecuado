@@ -2,9 +2,11 @@
 # ----------------------------------------------------------------------------
 # Escáner canónico de la estructura del proyecto.
 #
-# Genera un snapshot markdown del árbol de archivos versionados (excluye
-# .git, insumos xlsx crudos y binarios pesados) en:
-#   50_documentacion/estructura/estructura_actual.md
+# Genera cuatro archivos en 50_documentacion/estructura/:
+#   estructura_actual.md              — alias, siempre el más reciente
+#   estructura_actual.txt             — ídem en .txt
+#   YYYYMMDD_HHMMSS_estructura.md     — snapshot histórico
+#   YYYYMMDD_HHMMSS_estructura.txt    — snapshot histórico en .txt
 #
 # Uso:
 #   source(here::here("00_escanear_proyecto.R"))
@@ -12,8 +14,7 @@
 
 library(here)
 
-raiz   <- here::here()
-salida <- here::here("50_documentacion", "estructura", "estructura_actual.md")
+raiz <- here::here()
 
 # ============================================================================
 # Árbol con fs::dir_tree() — excluye carpetas problemáticas
@@ -65,7 +66,8 @@ git_log <- tryCatch(
 # Construir markdown
 # ============================================================================
 
-fecha <- format(Sys.time(), "%Y-%m-%d %H:%M")
+fecha     <- format(Sys.time(), "%Y-%m-%d %H:%M")
+timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
 
 md <- c(
   "# Estructura actual — slep_simce_adecuado",
@@ -124,8 +126,24 @@ if (length(git_log) > 0) {
   )
 }
 
-writeLines(md, con = salida, useBytes = FALSE)
+dir_estructura <- here::here("50_documentacion", "estructura")
 
-message(sprintf("00_escanear_proyecto.R: OK -> %s",
-                fs::path_rel(salida, raiz)))
+# Aliases — siempre apuntan al escaneo más reciente
+salida_md  <- file.path(dir_estructura, "estructura_actual.md")
+salida_txt <- file.path(dir_estructura, "estructura_actual.txt")
+
+# Snapshots con timestamp — histórico navegable
+snap_md  <- file.path(dir_estructura, paste0(timestamp, "_estructura.md"))
+snap_txt <- file.path(dir_estructura, paste0(timestamp, "_estructura.txt"))
+
+writeLines(md, con = salida_md,  useBytes = FALSE)
+writeLines(md, con = salida_txt, useBytes = FALSE)
+writeLines(md, con = snap_md,    useBytes = FALSE)
+writeLines(md, con = snap_txt,   useBytes = FALSE)
+
+message("00_escanear_proyecto.R: OK")
+message(sprintf("    Alias   : %s", fs::path_rel(salida_md,  raiz)))
+message(sprintf("    Alias   : %s", fs::path_rel(salida_txt, raiz)))
+message(sprintf("    Snapshot: %s", fs::path_rel(snap_md,    raiz)))
+message(sprintf("    Snapshot: %s", fs::path_rel(snap_txt,   raiz)))
 message(sprintf("    Parquets en disco: %d", length(parquets)))
