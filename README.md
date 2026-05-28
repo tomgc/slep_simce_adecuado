@@ -20,32 +20,49 @@ embebido) que permite comparar entre comunas y SLEPs.
 00_build.R                       # Orquestador del pipeline
 00_escanear_proyecto.R           # Escáner canónico de estructura
 10_utils/10_utils.R              # Funciones reutilizables
+10_utils/d3.min.js               # D3 v7 minificado (incrustado en el HTML)
 20_insumos/
   simce/4b/                      # xlsx por año (4° Básico)
   simce/2m/                      # xlsx por año (2° Medio)
-  auxiliares/                    # comunas, sleps
+  auxiliares/                    # directorio oficial, listado SLEP, etc.
 30_procesamiento/
-  31_leer_normalizar.R           # xlsx -> parquet largo normalizado
+  30_construir_auxiliares.R      # xlsx auxiliares -> parquets de catálogo
+  31_leer_normalizar.R           # xlsx SIMCE -> simce_rbd.parquet
   32_agregar_comunal.R           # Agregación comuna × GSE × prueba × año
   33_generar_html.R              # JSON + HTML final
+  33_motor_template.html         # Plantilla React/D3 del motor
 40_salidas/
-  intermedios/                   # parquet generados
-  motor_comparacion.html         # Producto final
+  intermedios/                   # parquets generados (no versionados)
+  motor_comparacion.html         # Producto final (no versionado)
 50_documentacion/
 ```
 
 ## Datos de entrada
 
-Los xlsx provienen del portal
-[informacionestadistica.agenciaeducacion.cl](https://informacionestadistica.agenciaeducacion.cl).
-Cada archivo corresponde a un nivel (4B o 2M) y un año (2023, 2024, 2025) en
-formato `_rbd` (unidad establecimiento).
+Los xlsx de SIMCE provienen del portal
+[informacionestadistica.agenciaeducacion.cl](https://informacionestadistica.agenciaeducacion.cl)
+y se versionan en el repo junto al código (son datos públicos, < 25 MB en total).
+No se requiere configuración adicional de rutas.
 
-Los xlsx **no se versionan** en el repo (ver `.gitignore`). Deben copiarse
-manualmente a:
+## Cómo correr en una máquina nueva
 
-- `20_insumos/simce/4b/`
-- `20_insumos/simce/2m/`
+1. Clonar el repo:
+   ```bash
+   git clone <url-del-repo>
+   cd slep_simce_adecuado
+   ```
+2. Abrir `slep_simce_adecuado.Rproj` en Positron. Esto ancla `here::here()`
+   a la raíz del proyecto automáticamente.
+3. Instalar los paquetes necesarios (una sola vez):
+   ```r
+   install.packages(c("here", "readxl", "readr", "dplyr", "tidyr",
+                      "purrr", "arrow", "jsonlite", "fs", "tibble"))
+   ```
+4. Correr el pipeline:
+   ```r
+   source("00_build.R")
+   ```
+5. El producto final queda en `40_salidas/motor_comparacion.html`.
 
 ## Reglas de cálculo
 
@@ -61,14 +78,6 @@ manualmente a:
   bajo / Medio / Medio alto / Alto).
 - **No se mezclan** pruebas (Lectura / Matemática) ni niveles (4B / 2M)
   entre sí.
-
-## Cómo correr
-
-```r
-source("00_build.R")
-```
-
-(El orquestador irá descomentando pasos a medida que se implementen.)
 
 ## Documentación
 
