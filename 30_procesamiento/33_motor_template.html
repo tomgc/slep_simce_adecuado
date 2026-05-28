@@ -1323,6 +1323,34 @@ code {
         });
       }
 
+      // generateSeries nacional — agrega todos los establecimientos del país
+      // sin filtro de comunas. Misma fuente y lógica que generateSeriesByDepe.
+      function generateSeriesByNacional({ gse, nivel, prueba, depe2 }) {
+        const cg = GSE_LABEL_TO_COD[gse];
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        if (!cg || !nv || !pr) return YEARS.map(y => ({ year: y, pct: null, n_eval: null, n_estab: null, preliminar: PRELIMINAR_YEARS.includes(y) }));
+        const ix = indicesPCG(nv, pr, cg);
+        const porAnio = new Map();
+        for (const i of ix) {
+          if (depe2 && D.cod_depe2 && D.cod_depe2[i] !== depe2) continue;
+          const y = D.anio[i];
+          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
+          if (p == null || n == null || n === 0) continue;
+          let acc = porAnio.get(y);
+          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          acc.num += (p * n) / 100;
+          acc.den += n;
+          acc.n_estab += e;
+        }
+        return YEARS.map(year => {
+          const acc = porAnio.get(year);
+          const preliminar = PRELIMINAR_YEARS.includes(year);
+          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
+          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+        });
+      }
+
       // GSE del establecimiento por año más reciente (para mostrar en qué fila aparece)
       // Devuelve el cod_grupo del año más reciente con dato para ese RBD × nivel × prueba
       function gseActualDeEstab({ rbd, nivel, prueba }) {
@@ -1352,7 +1380,7 @@ code {
       return {
         YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
         generateSeries, generateSeriesByRbd, generateSeriesByDepe,
-        generateSeriesByEstab, gseActualDeEstab, ESTAB_LIST,
+        generateSeriesByEstab, generateSeriesByNacional, gseActualDeEstab, ESTAB_LIST,
         REGIONES, PRESETS, COMUNA_BY_COD,
         SLEPS, DEPE2_LABELS, DEPE2_CODES,
         NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
@@ -1528,6 +1556,8 @@ code {
         : null;
       const meta = entity.kind === "slep"
         ? `SLEP · ${entity.comunas.length} comunas · ${nEstabSlep !== null ? nEstabSlep : "…"} establecimientos`
+        : entity.kind === "nacional"
+        ? `Nacional · ${entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] : "Todas las dependencias"}`
         : entity.kind === "group"
         ? `Grupo · ${entity.comunas.length} comunas`
         : entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] : "Comuna";
@@ -1755,6 +1785,8 @@ code {
           ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
           : entity.kind === "estab"
           ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
+          : entity.kind === "nacional"
+          ? SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 })
           : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
         const valid = series.filter(s => s.pct != null);
         const x = d3.scaleLinear().domain([2014, 2025]).range([0, iw]);
@@ -1831,7 +1863,7 @@ code {
               .text("*");
           }
         });
-      }, [entity.id, entity.color, entity.name, entity.comunas.join(","), gse, nivel, prueba]);
+      }, [entity.id, entity.color, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba]);
       return <svg ref={ref} className="sparkline-svg" />;
     }
 
@@ -1857,6 +1889,8 @@ code {
           ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
           : entity.kind === "estab"
           ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
+          : entity.kind === "nacional"
+          ? SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 })
           : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
         const recent = series.filter(s => s.pct != null).slice(-recentN);
 
@@ -1969,7 +2003,7 @@ code {
               .text("*");
           }
         });
-      }, [entity.id, entity.color, entity.name, entity.comunas.join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
+      }, [entity.id, entity.color, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
       return <svg ref={ref} className="bars-svg" />;
     }
 
@@ -1980,6 +2014,8 @@ code {
         ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
         : entity.kind === "estab"
         ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
+        : entity.kind === "nacional"
+        ? SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 })
         : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
       const hasData = series.some(s => s.pct != null);
       if (!hasData) return <div className="chart-cell is-empty" data-entity-id={entity.id} data-gse={gse} />;
@@ -2032,6 +2068,9 @@ code {
         }
         if (ent.kind === "estab") {
           return SimceData.generateSeriesByEstab({ rbd: ent.rbd, gse, nivel, prueba });
+        }
+        if (ent.kind === "nacional") {
+          return SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: ent.depe2 });
         }
         return SimceData.generateSeriesByDepe({
           comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
@@ -2206,6 +2245,9 @@ code {
         }
         if (ent.kind === "estab") {
           return SimceData.generateSeriesByEstab({ rbd: ent.rbd, gse, nivel, prueba });
+        }
+        if (ent.kind === "nacional") {
+          return SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: ent.depe2 });
         }
         return SimceData.generateSeriesByDepe({
           comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
@@ -2535,9 +2577,10 @@ code {
       let items = [];
       if (DATA.establecimientos) {
         const setCom = new Set(entity.comunas || []);
+        const isNacional = entity.kind === "nacional";
         items = DATA.establecimientos
           .filter(r => {
-            if (!setCom.has(String(r.cod_com_rbd))) return false;
+            if (!isNacional && !setCom.has(String(r.cod_com_rbd))) return false;
             if (entity.kind === "slep") {
               if (String(r.cod_depe2) !== "5") return false;
             } else if (entity.depe2) {
@@ -2589,6 +2632,7 @@ code {
       const [tab, setTab] = React.useState(
         editing?.kind === "slep" ? "slep"
           : editing?.kind === "region" ? "region"
+          : editing?.kind === "nacional" ? "nacional"
           : editing?.kind === "estab" ? "estab"
           : editing?.kind === "group" ? "group"
           : "estab"
@@ -2691,8 +2735,15 @@ code {
             anio_traspaso: slep.anio_traspaso,
             color,
           });
+        } else if (tab === "nacional") {
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: "Chile" + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
+            kind: "nacional",
+            depe2: depe2 || null,
+            color,
+          });
         } else {
-          if (!groupName || groupComunas.length === 0) return;
           onSave({
             id: editing?.id || ("e" + Date.now()),
             name: groupName,
@@ -2716,6 +2767,7 @@ code {
               <button className={"modal-tab" + (tab === "comuna" ? " is-active" : "")} onClick={() => setTab("comuna")}>Comuna</button>
               <button className={"modal-tab" + (tab === "slep" ? " is-active" : "")} onClick={() => setTab("slep")}>SLEP</button>
               <button className={"modal-tab" + (tab === "region" ? " is-active" : "")} onClick={() => setTab("region")}>Región</button>
+              <button className={"modal-tab" + (tab === "nacional" ? " is-active" : "")} onClick={() => setTab("nacional")}>Nacional</button>
               <button className={"modal-tab" + (tab === "group" ? " is-active" : "")} onClick={() => setTab("group")}>Grupo personalizado</button>
             </div>
             <div className="modal-body">
@@ -2870,6 +2922,26 @@ code {
                       ))}
                     </div>
                   </div>
+                </div>
+              )}
+              {tab === "nacional" && (
+                <div className="form-grid">
+                  <div className="field field-full">
+                    <span className="field-label">Entidad</span>
+                    <p style={{ fontSize: 13, color: "var(--fg-2)", margin: "4px 0 0" }}>
+                      Agrega <strong>Chile</strong> como entidad de referencia nacional.
+                      Incluye todos los establecimientos del país con datos disponibles en cada año.
+                    </p>
+                  </div>
+                  <label className="field field-full">
+                    <span className="field-label">Dependencia</span>
+                    <select className="select" value={depe2} onChange={e => setDepe2(e.target.value)}>
+                      <option value="">Todas las dependencias</option>
+                      {SimceData.DEPE2_CODES.map(d => (
+                        <option key={d} value={d}>{SimceData.DEPE2_LABELS[d]}</option>
+                      ))}
+                    </select>
+                  </label>
                 </div>
               )}
               {tab === "group" && (
@@ -3089,6 +3161,7 @@ code {
                       {ent.kind === "slep" ? `SLEP · ${ent.comunas.length} comunas`
                         : ent.kind === "region" ? `Región · ${ent.comunas.length} comunas`
                         : ent.kind === "estab" ? `RBD ${ent.rbd} · ${ent.com}`
+                        : ent.kind === "nacional" ? (ent.depe2 ? SimceData.DEPE2_LABELS[ent.depe2] : "Todas las dependencias")
                         : ent.kind === "group" ? `Grupo · ${ent.comunas.length} comunas`
                         : ent.depe2 ? SimceData.DEPE2_LABELS[ent.depe2] : "Comuna"}
                     </span>

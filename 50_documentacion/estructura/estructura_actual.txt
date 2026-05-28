@@ -1,6 +1,6 @@
 # Estructura actual — slep_simce_adecuado
 
-_Generado por `00_escanear_proyecto.R` el 2026-05-28 12:49._
+_Generado por `00_escanear_proyecto.R` el 2026-05-28 15:43._
 _Los `.parquet` y `.min.js` se omiten del árbol (binarios pesados)._
 
 ## Árbol de archivos versionados
@@ -69,6 +69,8 @@ _Los `.parquet` y `.min.js` se omiten del árbol (binarios pesados)._
 │   ├── estructura
 │   │   ├── 20260528_123807_estructura.md
 │   │   ├── 20260528_123807_estructura.txt
+│   │   ├── 20260528_124910_estructura.md
+│   │   ├── 20260528_124910_estructura.txt
 │   │   ├── estructura_actual.md
 │   │   ├── estructura_actual.txt
 │   │   ├── estructura_proyecto.md
@@ -77,7 +79,8 @@ _Los `.parquet` y `.min.js` se omiten del árbol (binarios pesados)._
 │       ├── traspaso_cierre_v01.md
 │       ├── traspaso_cierre_v02.md
 │       ├── traspaso_cierre_v03.md
-│       └── traspaso_cierre_v04.md
+│       ├── traspaso_cierre_v04.md
+│       └── traspaso_cierre_v05.md
 ├── CLAUDE.md
 ├── POLITICA_PROYECTO.md
 └── README.md
@@ -103,10 +106,10 @@ _Salidas HTML en `40_salidas/`:_
 ## Últimos 5 commits
 
 ```
+1cb39be feat: exportar SVG supergrid, tooltip pinned + ver establecimientos por año, nota estándares, escáner 4 outputs
 3cc9edb feat: P4 orquestador, P6 región+establecimiento, P7 popup GSE, bugs UI sesión 4
 775a107 feat: orquestador 00_build.R completo, CLAUDE.md post-sesión 3, motor_template v3
 2042ffd feat: cod_depe2 en pipeline, sleps_chile.parquet, UI v3 — sesión 2
 4bb41f0 Cierre sesión 1 — traspaso v01 y escáner actualizado
-40d15d4 Actualizar CLAUDE.md con estado post-v2
 ```
 
