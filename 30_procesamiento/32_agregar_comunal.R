@@ -6,7 +6,7 @@
 #
 # Salida: 40_salidas/intermedios/simce_comunal.parquet
 #
-# Esquema final (11 columnas):
+# Esquema final (12 columnas):
 #   anio          integer
 #   nivel         character    "4b" | "2m"
 #   prueba        character    "lect" | "mate"
@@ -15,6 +15,7 @@
 #   cod_reg_rbd   character    (join)
 #   nom_reg_rbd   character    (join)
 #   cod_grupo     character    GSE "1".."5"  (filas con NA excluidas)
+#   cod_depe2     character    dependencia agrupada "1".."5"
 #   pct_adecuado  double       % ponderado adecuado
 #   n_evaluados   integer      sum(nalu) tras filtros MINEDUC
 #   n_estab       integer      n establecimientos en la agregación
@@ -58,7 +59,7 @@ message(sprintf("    comunas_chile.parquet: %d comunas, %d columnas",
 
 # Validar columnas requeridas.
 cols_rbd_req <- c("anio", "nivel", "prueba", "rbd",
-                  "cod_com_rbd", "cod_grupo",
+                  "cod_com_rbd", "cod_grupo", "cod_depe2",
                   "nalu", "palu_eda_ade", "marca")
 faltan_rbd <- setdiff(cols_rbd_req, names(df_rbd))
 if (length(faltan_rbd) > 0) {
@@ -89,7 +90,7 @@ message(sprintf("    Filas con cod_grupo NA excluidas: %d (%.2f%%)",
 
 df_agg <- agregar_ponderado(
   df_rbd_filt,
-  group_vars = c("anio", "nivel", "prueba", "cod_com_rbd", "cod_grupo")
+  group_vars = c("anio", "nivel", "prueba", "cod_com_rbd", "cod_grupo", "cod_depe2")
 )
 
 message(sprintf("    Filas agregadas: %d", nrow(df_agg)))
@@ -134,11 +135,11 @@ if (n_cod_na > 0) {
 
 # 4.2 — Sin duplicados en la llave de agregación.
 n_dups <- df_comunal |>
-  dplyr::count(anio, nivel, prueba, cod_com_rbd, cod_grupo, name = "n_dup") |>
+  dplyr::count(anio, nivel, prueba, cod_com_rbd, cod_depe2, cod_grupo, name = "n_dup") |>
   dplyr::filter(n_dup > 1) |>
   nrow()
 if (n_dups > 0) {
-  warning(sprintf("    %d combinaciones duplicadas en (anio,nivel,prueba,cod_com_rbd,cod_grupo).",
+  warning(sprintf("    %d combinaciones duplicadas en (anio,nivel,prueba,cod_com_rbd,cod_depe2,cod_grupo).",
                   n_dups))
 } else {
   message("    OK: sin duplicados en llave de agregación.")
@@ -155,10 +156,10 @@ df_comunal <- df_comunal |>
   dplyr::select(
     anio, nivel, prueba,
     cod_com_rbd, nom_com_rbd, cod_reg_rbd, nom_reg_rbd,
-    cod_grupo,
+    cod_grupo, cod_depe2,
     pct_adecuado, n_evaluados, n_estab
   ) |>
-  dplyr::arrange(anio, nivel, prueba, cod_com_rbd, cod_grupo)
+  dplyr::arrange(anio, nivel, prueba, cod_com_rbd, cod_depe2, cod_grupo)
 
 ruta_salida <- here::here(
   "40_salidas", "intermedios", "simce_comunal.parquet"
@@ -198,6 +199,6 @@ print(cc, n = Inf, width = 200)
 
 message("")
 message(sprintf(
-  "32_agregar_comunal.R: OK. Total %d filas en simce_comunal.parquet.",
+  "32_agregar_comunal.R: OK. Total %d filas en simce_comunal.parquet (12 columnas).",
   nrow(df_comunal)
 ))

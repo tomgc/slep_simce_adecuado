@@ -12,7 +12,7 @@
 #        operativos con matrícula).
 #
 #   3. sleps_chile.parquet
-#        PENDIENTE. Fuente a proveer por el titular.
+#        Desde 202602_Listado_SLEP_2026_vf.xlsx + directorio oficial.
 #
 # Uso:
 #   source(here::here("30_procesamiento", "30_construir_auxiliares.R"))
@@ -137,9 +137,10 @@ df_dir_raw <- readr::read_delim(
 
 # Validación de columnas requeridas para los parquets aguas abajo.
 cols_csv_esperadas <- c(
-  "AGNO", "RBD",
+  "AGNO", "RBD", "NOM_RBD",
   "COD_COM_RBD", "NOM_COM_RBD",
   "COD_REG_RBD", "NOM_REG_RBD_A",
+  "COD_DEPE2",
   "MATRICULA", "ESTADO_ESTAB"
 )
 faltan_csv <- setdiff(cols_csv_esperadas, names(df_dir_raw))
@@ -182,38 +183,175 @@ message(sprintf(
 
 
 # ============================================================================
-# Bloque 4 — sleps_chile.parquet  [PENDIENTE]
+# Bloque 4 — sleps_chile.parquet
 # ============================================================================
-# El CSV directorio_oficial_ee.csv NO contiene columna NOMBRE_SLEP (verificado:
-# las 58 columnas del archivo no incluyen ninguna que matchee 'slep'). El
-# diccionario_territorios.xlsx tampoco. Esperando archivo fuente del titular.
+# Fuente: 202602_Listado_SLEP_2026_vf.xlsx (hoja "Listado SLEP"), provisto
+# por el titular. Contiene una fila por SLEP x comuna, con COD_COM_RBD ya
+# disponible. Se joineara con el directorio oficial para obtener los RBDs
+# que pertenecen a cada SLEP.
 #
-# Esqueleto previsto (completar cuando llegue la fuente):
+# Esquema del parquet resultante (8 columnas):
+#   cod_slep      character   codigo numerico del SLEP (ej. "503")
+#   nombre_slep   character   nombre formateado (ej. "Costa Central")
+#   anio_traspaso integer     anio en que el SLEP tomo cargo de la educacion
+#   cod_com_rbd   character   codigo de comuna
+#   nom_com_rbd   character   nombre de la comuna
+#   rbd           character   RBD del establecimiento
+#   nom_rbd       character   nombre del establecimiento
+# (7 columnas: sin cod_depe — parquet contiene solo establecimientos SLEP)
 #
-#   df_sleps_raw <- readxl::read_excel(
-#     here::here("20_insumos", "auxiliares", "<archivo_sleps>.xlsx")
-#   )
-#
-#   df_sleps <- df_sleps_raw |>
-#     dplyr::transmute(
-#       nombre_slep = NOMBRE_SLEP,
-#       cod_com_rbd = as.character(<col_codigo_comuna>),
-#       nom_com_rbd = <col_nombre_comuna>
-#     ) |>
-#     dplyr::distinct()
-#
-#   arrow::write_parquet(
-#     df_sleps,
-#     here::here("40_salidas", "intermedios", "sleps_chile.parquet")
-#   )
-#
-#   message(sprintf(
-#     "    OK: %d filas (%d SLEPs únicos).",
-#     nrow(df_sleps),
-#     dplyr::n_distinct(df_sleps$nombre_slep)
-#   ))
+# Solo RBDs con COD_DEPE == 6 en directorio 2025. El join con SIMCE por RBD
+# garantiza cobertura historica: los mismos establecimientos existian con
+# COD_DEPE == 1 antes del traspaso.
 
-message("[4] sleps_chile.parquet: PENDIENTE — fuente a proveer por el titular.")
+message("[4] Construyendo sleps_chile.parquet...")
+
+# ---- 4.1 Leer hoja Listado SLEP ----
+ruta_sleps <- here::here(
+  "20_insumos", "auxiliares", "202602_Listado_SLEP_2026_vf.xlsx"
+)
+
+df_sleps_raw <- readxl::read_excel(
+  ruta_sleps,
+  sheet = "Listado SLEP",
+  col_types = "text"
+)
+
+cols_slep_req <- c(
+  "COD_SLEP", "NOMBRE_SLEP_FORMATO", "AGNO_TRASPASO_EDUC", "COD_COM_RBD"
+)
+faltan_slep <- setdiff(cols_slep_req, names(df_sleps_raw))
+stopifnot(
+  "Faltan columnas en 202602_Listado_SLEP_2026_vf.xlsx" =
+    length(faltan_slep) == 0
+)
+
+df_slep_comunas <- df_sleps_raw |>
+  dplyr::transmute(
+    cod_slep      = as.character(COD_SLEP),
+    nombre_slep   = NOMBRE_SLEP_FORMATO,
+    anio_traspaso = suppressWarnings(as.integer(AGNO_TRASPASO_EDUC)),
+    cod_com_rbd   = as.character(COD_COM_RBD)
+  ) |>
+  dplyr::distinct()
+
+message(sprintf(
+  "    Listado SLEP leido: %d SLEPs, %d combinaciones SLEP x comuna.",
+  dplyr::n_distinct(df_slep_comunas$cod_slep),
+  nrow(df_slep_comunas)
+))
+
+# ---- 4.2 Join con directorio para obtener RBDs ----
+# Usar df_dir_raw ya cargado en bloque 2.
+# Filtrar SOLO establecimientos con COD_DEPE == 6 (Servicio Local de Educacion),
+# funcionando y con matricula. Esto excluye privados y subvencionados de las
+# mismas comunas. El join con SIMCE se hara por RBD, por lo que la cobertura
+# historica previa al traspaso queda garantizada (esos RBDs existian con
+# COD_DEPE == 1 antes y son los mismos establecimientos).
+df_dir_slep <- df_dir_raw |>
+  dplyr::filter(
+    .data$ESTADO_ESTAB == 1,
+    .data$MATRICULA == 1,
+    .data$COD_DEPE == 6          # Solo establecimientos SLEP
+  ) |>
+  dplyr::transmute(
+    cod_com_rbd = as.character(COD_COM_RBD),
+    rbd         = as.character(RBD),
+    nom_rbd     = NOM_RBD
+  )
+
+# Expandir SLEP x comuna a SLEP x RBD mediante inner_join
+df_sleps <- dplyr::inner_join(
+  df_slep_comunas,
+  df_dir_slep,
+  by = "cod_com_rbd"
+) |>
+  dplyr::left_join(
+    dplyr::select(df_comunas, cod_com_rbd, nom_com_rbd),
+    by = "cod_com_rbd"
+  ) |>
+  dplyr::select(
+    cod_slep, nombre_slep, anio_traspaso,
+    cod_com_rbd, nom_com_rbd,
+    rbd, nom_rbd
+  ) |>
+  dplyr::arrange(cod_slep, cod_com_rbd, rbd)
+
+if (nrow(df_sleps) == 0) {
+  stop("Join SLEP x directorio devolvio 0 filas. Verificar cod_com_rbd.")
+}
+
+message(sprintf(
+  "    OK: %d SLEPs - %d comunas - %d establecimientos.",
+  dplyr::n_distinct(df_sleps$cod_slep),
+  dplyr::n_distinct(df_sleps$cod_com_rbd),
+  dplyr::n_distinct(df_sleps$rbd)
+))
+
+# Sanity check Costa Central
+cc_check <- df_sleps |>
+  dplyr::filter(nombre_slep == "Costa Central") |>
+  dplyr::distinct(nom_com_rbd)
+message(sprintf(
+  "    Costa Central: %d comunas (%s).",
+  nrow(cc_check),
+  paste(cc_check$nom_com_rbd, collapse = ", ")
+))
+
+# ---- 4.3 Escritura ----
+ruta_sleps_out <- here::here(
+  "40_salidas", "intermedios", "sleps_chile.parquet"
+)
+arrow::write_parquet(df_sleps, ruta_sleps_out)
+
+message(sprintf(
+  "    OK: %d filas escritas en %s.",
+  nrow(df_sleps),
+  fs::path_rel(ruta_sleps_out, here::here())
+))
+
+
+# ============================================================================
+# Bloque 5 — establecimientos_chile.parquet
+# ============================================================================
+# Catálogo completo de establecimientos con nombre, comuna y dependencia.
+# Fuente: directorio_oficial_ee.csv (df_dir_raw, ya cargado en Bloque 2).
+# Incluye todos los establecimientos operativos con matrícula,
+# independientemente de su dependencia. Se usa en el popup "ver
+# establecimientos" del motor de comparación HTML para cualquier entidad.
+#
+# Esquema (5 columnas):
+#   rbd           character   RBD del establecimiento
+#   nom_rbd       character   nombre del establecimiento
+#   cod_com_rbd   character   código de comuna
+#   nom_com_rbd   character   nombre de la comuna
+#   cod_depe2     character   dependencia agrupada (1–5)
+
+message("[5] Construyendo establecimientos_chile.parquet...")
+
+df_establecimientos <- df_dir_raw |>
+  dplyr::filter(.data$ESTADO_ESTAB == 1, .data$MATRICULA == 1) |>
+  dplyr::transmute(
+    rbd         = as.character(RBD),
+    nom_rbd     = NOM_RBD,
+    cod_com_rbd = as.character(COD_COM_RBD),
+    nom_com_rbd = NOM_COM_RBD,
+    cod_depe2   = as.character(COD_DEPE2)
+  ) |>
+  dplyr::distinct() |>
+  dplyr::arrange(cod_com_rbd, nom_rbd)
+
+ruta_estab_chile <- here::here(
+  "40_salidas", "intermedios", "establecimientos_chile.parquet"
+)
+arrow::write_parquet(df_establecimientos, ruta_estab_chile)
+
+message(sprintf(
+  "    OK: %d establecimientos (%d comunas, %d dependencias distintas).",
+  nrow(df_establecimientos),
+  dplyr::n_distinct(df_establecimientos$cod_com_rbd),
+  dplyr::n_distinct(df_establecimientos$cod_depe2)
+))
 
 
 # ============================================================================
@@ -224,6 +362,7 @@ message("")
 message("=== Resumen ===")
 message(sprintf("  slep_cc_establecimientos.parquet: %d filas", nrow(df_estab)))
 message(sprintf("  comunas_chile.parquet:            %d filas", nrow(df_comunas)))
-message("  sleps_chile.parquet:              PENDIENTE")
+message(sprintf("  sleps_chile.parquet:              %d filas", nrow(df_sleps)))
+message(sprintf("  establecimientos_chile.parquet:   %d filas", nrow(df_establecimientos)))
 message("")
-message("30_construir_auxiliares.R: OK (parcial).")
+message("30_construir_auxiliares.R: OK.")

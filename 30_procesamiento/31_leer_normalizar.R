@@ -6,7 +6,7 @@
 #
 #   40_salidas/intermedios/simce_rbd.parquet
 #
-# Esquema final (11 columnas):
+# Esquema final (12 columnas):
 #   anio          integer    2014-2018, 2022-2025
 #   nivel         character  "4b" | "2m"
 #   prueba        character  "lect" | "mate"
@@ -14,6 +14,7 @@
 #   cod_com_rbd   character
 #   nom_com_rbd   character
 #   cod_grupo     character  GSE "1".."5"
+#   cod_depe2     character  dependencia agrupada "1".."5"
 #   nalu          integer    n° evaluados
 #   palu_eda_ade  double     % en estándar adecuado
 #   marca         character  marca genérica de puntaje (decisión A2 opción a)
@@ -56,7 +57,15 @@ mapa_rbd_comuna <- setNames(
   as.character(dir_oficial$RBD)
 )
 
-message(sprintf("    OK: %d RBDs en el mapa.", length(mapa_rbd_comuna)))
+# Mapa RBD → COD_DEPE2 (dependencia agrupada):
+#   1: Municipal  2: Part. Subvencionado  3: Part. Pagado
+#   4: Corp. Admin. Delegada             5: Servicio Local de Educación
+mapa_rbd_depe2 <- setNames(
+  as.character(dir_oficial$COD_DEPE2),
+  as.character(dir_oficial$RBD)
+)
+
+message(sprintf("    OK: %d RBDs en el mapa (comuna + depe2).", length(mapa_rbd_comuna)))
 
 
 # ============================================================================
@@ -297,10 +306,14 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
   df_largo$nivel      <- nivel
   df_largo$preliminar <- (estado == "preliminar")
 
+  # --- cod_depe2: join desde mapa RBD → dependencia agrupada ---
+  # El directorio 2025 es la fuente de verdad; RBDs sin match quedan NA.
+  df_largo$cod_depe2 <- unname(mapa_rbd_depe2[df_largo$rbd])
+
   # Orden de columnas final.
   df_largo <- df_largo[, c(
     "anio", "nivel", "prueba", "rbd",
-    "cod_com_rbd", "nom_com_rbd", "cod_grupo",
+    "cod_com_rbd", "nom_com_rbd", "cod_grupo", "cod_depe2",
     "nalu", "palu_eda_ade", "marca", "preliminar"
   )]
 
@@ -368,7 +381,7 @@ if (nrow(rbds_anomalos) > 0) {
 
 # 5.3 — Conteo de NAs en columnas críticas.
 message("    NAs por columna crítica:")
-for (col in c("nalu", "palu_eda_ade", "marca", "cod_grupo")) {
+for (col in c("nalu", "palu_eda_ade", "marca", "cod_grupo", "cod_depe2")) {
   n_na <- sum(is.na(df_simce_rbd[[col]]))
   message(sprintf("      %-15s %6d NAs (%.1f%%)",
                   col, n_na, 100 * n_na / nrow(df_simce_rbd)))
@@ -402,6 +415,6 @@ print(resumen, n = Inf)
 
 message("")
 message(sprintf(
-  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet.",
+  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (12 columnas).",
   nrow(df_simce_rbd)
 ))

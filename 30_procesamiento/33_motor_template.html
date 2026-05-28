@@ -559,7 +559,7 @@ body {
   background: var(--paper);
   border: 1px solid var(--border-1);
   border-radius: var(--radius-3);
-  overflow: auto; max-height: 540px;
+  overflow: auto;
   box-shadow: var(--shadow-1);
   position: relative;
 }
@@ -922,6 +922,114 @@ code {
 .twk-btn:hover { background: rgba(0,0,0,.88); }
 .twk-btn.secondary { background: rgba(0,0,0,.06); color: inherit; }
 .twk-btn.secondary:hover { background: rgba(0,0,0,.1); }
+
+/* Popup establecimientos */
+.estab-popup-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: transparent; border: 1px solid var(--border-1);
+  border-radius: var(--radius-1); padding: 3px 8px;
+  font-size: 11px; color: var(--fg-3); cursor: pointer;
+  font-family: var(--font-body); font-weight: 500;
+  transition: border-color 120ms, color 120ms, background 120ms;
+}
+.estab-popup-btn:hover { border-color: var(--ocean); color: var(--ocean); background: var(--ocean-20); }
+.estab-popup {
+  position: fixed; z-index: 9000;
+  background: var(--paper); border: 1px solid var(--border-2);
+  border-radius: var(--radius-3); box-shadow: var(--shadow-3);
+  padding: 16px 20px; min-width: 280px; max-width: 420px; max-height: 400px;
+  display: flex; flex-direction: column; gap: 8px;
+  animation: lift 160ms cubic-bezier(.2,.7,.2,1);
+}
+.estab-popup-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border-1);
+}
+.estab-popup-title {
+  font-family: var(--font-display); font-weight: 800; font-size: 13px;
+  color: var(--plum); letter-spacing: var(--tracking-overline);
+}
+.estab-popup-list {
+  overflow-y: auto; flex: 1;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.estab-popup-item {
+  display: flex; align-items: baseline; gap: 8px;
+  font-size: 12px; padding: 3px 0;
+  border-bottom: 1px solid var(--cream-200);
+}
+.estab-popup-rbd { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); min-width: 40px; }
+.estab-popup-nom { color: var(--fg-1); font-weight: 500; }
+.estab-popup-com { font-size: 10px; color: var(--fg-3); margin-left: auto; }
+
+/* Filtro GSE */
+.gse-filter {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--fg-3);
+}
+.gse-filter-label { font-weight: 600; font-size: 11px; letter-spacing: 0.06em; }
+.gse-filter select {
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  color: var(--fg-1); background: var(--paper);
+  border: 1px solid var(--border-2); border-radius: var(--radius-1);
+  padding: 4px 22px 4px 8px; cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23747474' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat; background-position: right 5px center; background-size: 12px;
+}
+
+/* Foco año en tabla */
+.data-table.has-year-focus td.td-cell:not(.td-focused-year) { opacity: 0.25; }
+.data-table.has-year-focus th.th-year:not(.th-focused-year) { opacity: 0.35; }
+.data-table.has-year-focus td.td-ent,
+.data-table.has-year-focus td.td-gse { opacity: 1 !important; }
+
+/* Celda vacía GSE: sin recuadro, fondo transparente */
+.chart-cell.is-empty {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Heatmap fijo */
+.heat-band-1 { background: rgba(180,30,30,0.18); }
+.heat-band-2 { background: rgba(232,134,99,0.22); }
+.heat-band-3 { background: rgba(255,201,46,0.18); }
+.heat-band-4 { background: transparent; }
+
+/* Entities-bar: selector nueva estructura */
+.entity-selector-bar {
+  padding: 20px 40px 22px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border-1);
+}
+.entity-selector-inner {
+  display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+}
+.entity-selector-field { display: flex; flex-direction: column; gap: 5px; }
+.entity-selector-field .control-label { margin-bottom: 0; }
+.entity-selector-divider {
+  width: 1px; height: 36px; background: var(--border-1); margin: 0 4px; align-self: flex-end;
+}
+.entity-selector-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.entities-chips { padding: 12px 40px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.entities-chips-inner {
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border-1);
+  padding: 0 40px 16px;
+}
+.entities-chips-head {
+  display: flex; align-items: baseline; gap: 12px; padding: 16px 0 10px;
+}
+
+/* Estab popup trigger en entidad chip */
+.entity-estab-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--fg-3); cursor: pointer;
+  background: transparent; border: 0; padding: 0;
+  font-family: var(--font-body);
+}
+.entity-estab-btn:hover { color: var(--ocean); text-decoration: underline; }
+
 </style>
 </head>
 <body>
@@ -1025,11 +1133,14 @@ code {
 
       // REGIONES: agrupar DATA.comunas por cod_reg
       const REGIONES = (function () {
+        // Usar DATA.regiones para nombre completo de región
+        const nomRegPorCod = {};
+        DATA.regiones.forEach(r => { nomRegPorCod[r.cod] = r.nom; });
         const byReg = new Map();
         DATA.comunas.forEach(c => {
           if (!byReg.has(c.cod_reg)) {
             byReg.set(c.cod_reg, {
-              nombre: c.nom_reg || ("Región " + c.cod_reg),
+              nombre: nomRegPorCod[c.cod_reg] || c.nom_reg || ("Región " + c.cod_reg),
               cod_reg: c.cod_reg,
               comunas: [],
             });
@@ -1055,9 +1166,109 @@ code {
       // Look up de comuna por código
       const COMUNA_BY_COD = new Map(DATA.comunas.map(c => [c.cod, c]));
 
+      // Catálogo de SLEPs desde meta
+      const SLEPS = (function() {
+        if (!DATA.sleps) return [];
+        // Agrupar por cod_slep
+        const bySlep = new Map();
+        DATA.sleps.forEach(r => {
+          if (!bySlep.has(r.cod_slep)) {
+            bySlep.set(r.cod_slep, {
+              cod_slep: r.cod_slep,
+              nombre: r.nombre_slep,
+              anio_traspaso: r.anio_traspaso,
+              rbds: [],
+              comunas: [],
+            });
+          }
+          const s = bySlep.get(r.cod_slep);
+          s.rbds.push(r.rbd);
+          if (!s.comunas.includes(r.cod_com_rbd)) s.comunas.push(r.cod_com_rbd);
+        });
+        return Array.from(bySlep.values())
+          .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+      })();
+
+      // Catálogo de dependencias
+      const DEPE2_LABELS = M.depe2_labels || {
+        "1":"Municipal","2":"Part. Subvencionado","3":"Part. Pagado",
+        "4":"Corp. Admin. Delegada","5":"Servicio Local de Educación"
+      };
+      const DEPE2_CODES = M.depe2 || ["1","2","3","4","5"];
+
+      // generateSeries por RBDs (para SLEPs que operan por RBD, no por comunas+depe2)
+      function generateSeriesByRbd({ rbds, gse, nivel, prueba }) {
+        const cg = GSE_LABEL_TO_COD[gse];
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        if (!cg || !nv || !pr) return YEARS.map(y => ({ year: y, pct: null, n_eval: null, n_estab: null, preliminar: PRELIMINAR_YEARS.includes(y) }));
+        const ix = indicesPCG(nv, pr, cg);
+        // Índice RBD → comunas (necesitamos cod_com para filtrar DATA.datos)
+        // DATA.datos está agregado por cod_com × cod_depe2 × gse × año
+        // Para SLEPs: filtrar por comunas del SLEP Y cod_depe2 == "5"
+        const setCom = new Set();
+        if (DATA.sleps) {
+          rbds.forEach(rbd => {
+            const rec = DATA.sleps.find(r => r.rbd === rbd);
+            if (rec) setCom.add(rec.cod_com_rbd);
+          });
+        }
+        const porAnio = new Map();
+        for (const i of ix) {
+          if (!setCom.has(D.cod_com[i])) continue;
+          if (D.cod_depe2[i] !== "5") continue;
+          const y = D.anio[i];
+          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
+          if (p == null || n == null || n === 0) continue;
+          let acc = porAnio.get(y);
+          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          acc.num += (p * n) / 100;
+          acc.den += n;
+          acc.n_estab += e;
+        }
+        return YEARS.map(year => {
+          const acc = porAnio.get(year);
+          const preliminar = PRELIMINAR_YEARS.includes(year);
+          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
+          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+        });
+      }
+
+      // generateSeries por comunas + depe2
+      function generateSeriesByDepe({ comunas, depe2, gse, nivel, prueba }) {
+        const cg = GSE_LABEL_TO_COD[gse];
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        if (!cg || !nv || !pr) return YEARS.map(y => ({ year: y, pct: null, n_eval: null, n_estab: null, preliminar: PRELIMINAR_YEARS.includes(y) }));
+        const ix = indicesPCG(nv, pr, cg);
+        const setCom = new Set(comunas || []);
+        const porAnio = new Map();
+        for (const i of ix) {
+          if (!setCom.has(D.cod_com[i])) continue;
+          if (depe2 && D.cod_depe2 && D.cod_depe2[i] !== depe2) continue;
+          const y = D.anio[i];
+          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
+          if (p == null || n == null || n === 0) continue;
+          let acc = porAnio.get(y);
+          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          acc.num += (p * n) / 100;
+          acc.den += n;
+          acc.n_estab += e;
+        }
+        return YEARS.map(year => {
+          const acc = porAnio.get(year);
+          const preliminar = PRELIMINAR_YEARS.includes(year);
+          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
+          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+        });
+      }
+
       return {
         YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
-        generateSeries, REGIONES, PRESETS, COMUNA_BY_COD,
+        generateSeries, generateSeriesByRbd, generateSeriesByDepe,
+        REGIONES, PRESETS, COMUNA_BY_COD,
+        SLEPS, DEPE2_LABELS, DEPE2_CODES,
+        NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
       };
     })();
 
@@ -1087,6 +1298,7 @@ code {
         edit: <><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></>,
         download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></>,
         image: <><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></>,
+        chart: <><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></>,
         layers: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>,
         chevron: <><polyline points="6 9 12 15 18 9" /></>,
         info: <><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></>,
@@ -1143,7 +1355,7 @@ code {
               </div>
               <h1 className="app-title">
                 Motor de comparación SIMCE
-                <span className="app-title-sub"> — % ponderado en nivel Adecuado</span>
+                <span className="app-title-sub"> — % de estudiantes en nivel Adecuado</span>
               </h1>
               <p className="app-subtitle">
                 Datos 2014–2025 · Resultados segmentados por grupo socioeconómico (GSE)
@@ -1178,7 +1390,9 @@ code {
     }
 
     function ControlsBar({ nivel, setNivel, prueba, setPrueba, loading }) {
-      const niveles = Object.values(DATA.meta.niveles);
+      const niveles = Object.entries(DATA.meta.niveles)
+        .sort(([a], [b]) => a === "4b" ? -1 : 1)
+        .map(([,v]) => v);
       const pruebas = Object.values(DATA.meta.pruebas);
       return (
         <section className="controls-bar">
@@ -1201,28 +1415,32 @@ code {
       );
     }
 
-    function EntityChip({ entity, onRemove, onEdit }) {
-      const isGroup = entity.kind === "group";
+    function EntityChip({ entity, onRemove, onEdit, onShowEstab }) {
+      const meta = entity.kind === "slep"
+        ? `SLEP · ${entity.comunas.length} comunas`
+        : entity.kind === "group"
+        ? `Grupo · ${entity.comunas.length} comunas`
+        : entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] : "Comuna";
+      const hasEstabs = entity.comunas && entity.comunas.length > 0;
       return (
         <div className="entity-chip">
           <span className="entity-swatch" style={{ background: entity.color }} />
           <span className="entity-text">
             <span className="entity-name">{entity.name}</span>
-            <span className="entity-meta">
-              {isGroup ? `Grupo · ${entity.comunas.length} comunas` : "Comuna"}
-            </span>
+            <span className="entity-meta">{meta}</span>
+            {hasEstabs && (
+              <button className="entity-estab-btn" onClick={onShowEstab}>
+                ver establecimientos ▸
+              </button>
+            )}
           </span>
-          <button className="entity-btn" onClick={onEdit} title="Editar">
-            <Icon name="edit" />
-          </button>
-          <button className="entity-btn entity-btn-remove" onClick={onRemove} title="Eliminar">
-            <Icon name="x" />
-          </button>
+          <button className="entity-btn" onClick={onEdit} title="Editar"><Icon name="edit" /></button>
+          <button className="entity-btn entity-btn-remove" onClick={onRemove} title="Eliminar"><Icon name="x" /></button>
         </div>
       );
     }
 
-    function EntitiesBar({ entities, setEntities, openModal, openPresetMenu }) {
+    function EntitiesBar({ entities, setEntities, openModal, openPresetMenu, onShowEstab }) {
       function removeEntity(id) { setEntities(entities.filter(e => e.id !== id)); }
       return (
         <section className="entities-bar">
@@ -1237,6 +1455,7 @@ code {
                 entity={e}
                 onRemove={() => removeEntity(e.id)}
                 onEdit={() => openModal(e)}
+                onShowEstab={(ev) => onShowEstab(e, ev)}
               />
             ))}
             {entities.length < MAX_ENTIDADES && (
@@ -1254,157 +1473,7 @@ code {
       );
     }
 
-    // ============================================================
-    // Modal de agregar/editar entidad
-    // ============================================================
-    function AddEntityModal({ editing, onSave, onCancel, takenColors }) {
-      const [tab, setTab] = React.useState(editing?.kind === "group" ? "group" : "comuna");
-      const [region, setRegion] = React.useState(
-        editing?.kind === "comuna" && editing.comunas.length > 0
-          ? (SimceData.COMUNA_BY_COD.get(editing.comunas[0])?.cod_reg || SimceData.REGIONES[0].cod_reg)
-          : SimceData.REGIONES[0].cod_reg
-      );
-      const [comunaCod, setComunaCod] = React.useState(
-        editing?.kind === "comuna" ? editing.comunas[0] : ""
-      );
-      const [groupName, setGroupName] = React.useState(editing?.kind === "group" ? editing.name : "");
-      const [groupComunas, setGroupComunas] = React.useState(
-        editing?.kind === "group" ? editing.comunas : []
-      );
-      const [search, setSearch] = React.useState("");
 
-      const availableColor = React.useMemo(() => {
-        return ENTITY_PALETTE.find(c => !takenColors.includes(c)) || ENTITY_PALETTE[0];
-      }, [takenColors]);
-
-      const currentRegion = SimceData.REGIONES.find(r => r.cod_reg === region) || SimceData.REGIONES[0];
-
-      // Lista plana para tab de grupo, con filtro
-      const allComunas = SimceData.REGIONES.flatMap(r =>
-        r.comunas.map(c => ({ cod_com: c.cod_com, nombre: c.nombre, region: r.nombre }))
-      );
-      const filtered = allComunas.filter(({ nombre, region }) => {
-        if (!search) return true;
-        const s = search.toLowerCase();
-        return nombre.toLowerCase().includes(s) || region.toLowerCase().includes(s);
-      });
-
-      function handleSave() {
-        if (tab === "comuna") {
-          if (!comunaCod) return;
-          const c = SimceData.COMUNA_BY_COD.get(comunaCod);
-          if (!c) return;
-          onSave({
-            id: editing?.id || ("e" + Date.now()),
-            name: c.nom,
-            kind: "comuna",
-            comunas: [comunaCod],
-            color: editing?.color || availableColor,
-          });
-        } else {
-          if (!groupName || groupComunas.length === 0) return;
-          onSave({
-            id: editing?.id || ("e" + Date.now()),
-            name: groupName,
-            kind: "group",
-            comunas: groupComunas,
-            color: editing?.color || availableColor,
-          });
-        }
-      }
-
-      return (
-        <div className="modal-backdrop" onClick={onCancel}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">{editing ? "Editar entidad" : "Agregar entidad"}</h3>
-              <button className="icon-btn" onClick={onCancel} aria-label="Cerrar">
-                <Icon name="x" />
-              </button>
-            </div>
-            <div className="modal-tabs">
-              <button className={"modal-tab" + (tab === "comuna" ? " is-active" : "")} onClick={() => setTab("comuna")}>
-                Comuna individual
-              </button>
-              <button className={"modal-tab" + (tab === "group" ? " is-active" : "")} onClick={() => setTab("group")}>
-                Grupo custom (ej. SLEP)
-              </button>
-            </div>
-            <div className="modal-body">
-              {tab === "comuna" ? (
-                <div className="form-grid">
-                  <label className="field">
-                    <span className="field-label">Región</span>
-                    <select className="select" value={region} onChange={e => { setRegion(e.target.value); setComunaCod(""); }}>
-                      {SimceData.REGIONES.map(r => (
-                        <option key={r.cod_reg} value={r.cod_reg}>{r.nombre}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="field">
-                    <span className="field-label">Comuna</span>
-                    <select className="select" value={comunaCod} onChange={e => setComunaCod(e.target.value)}>
-                      <option value="">Selecciona una comuna…</option>
-                      {currentRegion.comunas.map(c => (
-                        <option key={c.cod_com} value={c.cod_com}>{c.nombre}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="field field-full">
-                    <span className="field-label">Color asignado</span>
-                    <div className="color-preview">
-                      <span className="entity-swatch" style={{ background: editing?.color || availableColor }} />
-                      <span className="color-note">Asignado automáticamente desde la paleta.</span>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="form-grid">
-                  <label className="field field-full">
-                    <span className="field-label">Nombre del grupo</span>
-                    <input className="input" type="text" placeholder="Ej. SLEP Costa Central"
-                      value={groupName} onChange={e => setGroupName(e.target.value)} />
-                  </label>
-                  <label className="field field-full">
-                    <span className="field-label">
-                      Comunas en el grupo
-                      <span className="field-hint">{groupComunas.length} seleccionadas</span>
-                    </span>
-                    <input className="input input-search" type="text" placeholder="Buscar comuna…"
-                      value={search} onChange={e => setSearch(e.target.value)} />
-                    <div className="comuna-checklist">
-                      {filtered.map(({ cod_com, nombre, region }) => (
-                        <label key={cod_com} className="check-row">
-                          <input
-                            type="checkbox"
-                            checked={groupComunas.includes(cod_com)}
-                            onChange={e => {
-                              if (e.target.checked) setGroupComunas([...groupComunas, cod_com]);
-                              else setGroupComunas(groupComunas.filter(c => c !== cod_com));
-                            }}
-                          />
-                          <span className="check-name">{nombre}</span>
-                          <span className="check-region">{region}</span>
-                        </label>
-                      ))}
-                      {filtered.length === 0 && (
-                        <div className="empty-state">Sin resultados para "{search}"</div>
-                      )}
-                    </div>
-                  </label>
-                </div>
-              )}
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleSave}>
-                {editing ? "Guardar cambios" : "Agregar al análisis"}
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
 
     // ============================================================
     // Tooltip compartido
@@ -1483,11 +1552,9 @@ code {
           .append("g")
           .attr("transform", `translate(${M.left},${M.top})`);
 
-        const series = SimceData.generateSeries({
-          entityName: entity.name,
-          comunas: entity.comunas,
-          gse, nivel, prueba,
-        });
+        const series = entity.kind === "slep"
+          ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
+          : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
         const valid = series.filter(s => s.pct != null);
         const x = d3.scaleLinear().domain([2014, 2025]).range([0, iw]);
         const y = d3.scaleLinear().domain([0, 100]).range([ih, 0]);
@@ -1584,11 +1651,9 @@ code {
           .append("g")
           .attr("transform", `translate(${M.left},${M.top})`);
 
-        const series = SimceData.generateSeries({
-          entityName: entity.name,
-          comunas: entity.comunas,
-          gse, nivel, prueba,
-        });
+        const series = entity.kind === "slep"
+          ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
+          : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
         const recent = series.filter(s => s.pct != null).slice(-recentN);
 
         let yMax = 100;
@@ -1665,10 +1730,8 @@ code {
             .on("mouseenter", e => tt.show(e, s, s.year))
             .on("mouseleave", tt.hide);
 
-          const insideMin = 22;
-          let labelY, fill;
-          if (hAdec > insideMin) { labelY = yAdec + 14; fill = "#FFFFFF"; }
-          else                   { labelY = yAdec - 4;  fill = entity.color; }
+          const labelY = yAdec - 5;
+          const fill = entity.color;
           g.append("text")
             .attr("x", xPos + bw / 2).attr("y", labelY)
             .attr("text-anchor", "middle")
@@ -1705,7 +1768,13 @@ code {
     }
 
     function ChartCell(props) {
-      const { gse } = props;
+      const { gse, entity, nivel, prueba } = props;
+      // Verificar si hay algún dato para esta celda
+      const series = entity.kind === "slep"
+        ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
+        : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
+      const hasData = series.some(s => s.pct != null);
+      if (!hasData) return <div className="chart-cell is-empty" />;
       return (
         <div className="chart-cell">
           <div className="chart-cell-head">
@@ -1727,70 +1796,69 @@ code {
     // ============================================================
     // Tabla con heat map
     // ============================================================
-    function ResultsTable({ entities, nivel, prueba }) {
-      const YEARS = SimceData.YEARS;
-      const GSE_LEVELS = SimceData.GSE_LEVELS;
+    // Umbrales fijos de heatmap
+    const HEAT_THRESHOLDS = [
+      { max: 25,  cls: "heat-band-1" },  // ≤25%  rojo
+      { max: 50,  cls: "heat-band-2" },  // 26-50% naranja
+      { max: 70,  cls: "heat-band-3" },  // 51-70% amarillo
+      { max: 100, cls: "heat-band-4" },  // >70%  sin color
+    ];
+    function heatClass(pct) {
+      if (pct == null) return "";
+      for (const t of HEAT_THRESHOLDS) { if (pct <= t.max) return t.cls; }
+      return "heat-band-4";
+    }
+    function isAlert(pct) { return pct != null && pct <= 25; }
+
+    function ResultsTable({ entities, nivel, prueba, gseFilter }) {
+      const YEARS = SimceData.YEARS.slice().reverse();
+      const GSE_LEVELS = gseFilter
+        ? SimceData.GSE_LEVELS.filter(g => g === gseFilter)
+        : SimceData.GSE_LEVELS;
+
+      const [focusYear, setFocusYear] = React.useState(null);
+
+      function getSeries(ent, gse) {
+        if (ent.kind === "slep") {
+          return SimceData.generateSeriesByRbd({ rbds: ent.rbds, gse, nivel, prueba });
+        }
+        return SimceData.generateSeriesByDepe({
+          comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
+        });
+      }
 
       const rowsRaw = [];
       entities.forEach(ent => {
-        GSE_LEVELS.forEach((gse, gi) => {
-          const series = SimceData.generateSeries({
-            entityName: ent.name, comunas: ent.comunas, gse, nivel, prueba,
-          });
-          rowsRaw.push({ ent, gse, gseFirst: gi === 0, series });
+        GSE_LEVELS.forEach(gse => {
+          const series = getSeries(ent, gse).slice().reverse();
+          rowsRaw.push({ ent, gse, series });
         });
       });
 
-      const scaleByGse = {};
-      GSE_LEVELS.forEach(gse => {
-        const vals = [];
-        rowsRaw.forEach(r => {
-          if (r.gse !== gse) return;
-          r.series.forEach(s => { if (s.pct != null) vals.push(s.pct); });
-        });
-        if (vals.length === 0) { scaleByGse[gse] = { lo: 0, mid: 50, hi: 100 }; return; }
-        vals.sort((a, b) => a - b);
-        const q = p => vals[Math.min(vals.length - 1, Math.max(0, Math.floor(p * (vals.length - 1))))];
-        let lo = q(0.10), hi = q(0.90);
-        const mid = q(0.50);
-        const span = Math.max(8, hi - lo);
-        lo = mid - span / 2;
-        hi = mid + span / 2;
-        scaleByGse[gse] = { lo, mid, hi };
-      });
-
-      function cellBg(pct, gse) {
-        if (pct == null) return null;
-        const { lo, mid, hi } = scaleByGse[gse];
-        let t;
-        if (pct <= mid) t = -1 + (pct - lo) / (mid - lo || 1);
-        else            t = (pct - mid) / (hi - mid || 1);
-        t = Math.max(-1, Math.min(1, t));
-        const alphaMax = 0.55;
-        const alpha = Math.abs(t) * alphaMax;
-        const c = t < 0 ? [232, 134, 99] : [10, 58, 92];
-        return `rgba(${c[0]},${c[1]},${c[2]},${alpha.toFixed(3)})`;
-      }
-      function isAlert(pct, gse) {
-        if (pct == null) return false;
-        const { lo, mid } = scaleByGse[gse];
-        const span = mid - lo;
-        if (span <= 0) return false;
-        return pct < (lo + span * 0.3);
-      }
+      const tableClass = "data-table data-table-heat" + (focusYear ? " has-year-focus" : "");
 
       return (
         <div className="table-wrap">
-          <table className="data-table data-table-heat">
+          <table className={tableClass}>
             <thead>
               <tr>
                 <th className="th-ent">Entidad</th>
                 <th className="th-gse">GSE</th>
-                {YEARS.map(y => (
-                  <th key={y} className={SimceData.PRELIMINAR_YEARS.includes(y) ? "th-year th-prelim" : "th-year"}>
-                    {y}{SimceData.PRELIMINAR_YEARS.includes(y) && <span className="prelim-mark"> *</span>}
-                  </th>
-                ))}
+                {YEARS.map(y => {
+                  const isPrelim = SimceData.PRELIMINAR_YEARS.includes(y);
+                  const isFocused = focusYear !== null && Number(focusYear) === Number(y);
+                  let cls = "th-year";
+                  if (isPrelim) cls += " th-prelim";
+                  if (isFocused) cls += " th-focused-year";
+                  return (
+                    <th key={y} className={cls}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setFocusYear(focusYear === y ? null : y)}
+                      title="Clic para enfocar este año">
+                      {y}{isPrelim && <span className="prelim-mark"> *</span>}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
@@ -1809,20 +1877,22 @@ code {
                     </td>
                     <td className="td-gse">{r.gse}</td>
                     {r.series.map(s => {
-                      const bg = cellBg(s.pct, r.gse);
-                      const alert = isAlert(s.pct, r.gse);
-                      let cls = "td-cell";
+                      const hc = heatClass(s.pct);
+                      const alert = isAlert(s.pct);
+                      const isFocused = focusYear !== null && Number(focusYear) === Number(s.year);
+                      let cls = "td-cell " + hc;
                       if (s.preliminar) cls += " td-prelim";
                       if (alert) cls += " td-alert";
+                      if (isFocused) cls += " td-focused-year";
                       return (
-                        <td key={s.year} className={cls} style={bg ? { background: bg } : null}>
+                        <td key={s.year} className={cls}>
                           {s.pct == null ? (
                             <span className="td-empty">—</span>
                           ) : (
                             <>
                               <span className="td-pct">{s.pct.toFixed(1).replace(".", ",")}%</span>
                               <span className="td-n"> ({fmtInt(s.n_eval)})</span>
-                              {alert && <span className="td-alert-dot" title="Bajo el rango típico de este GSE">▼</span>}
+                              {alert && <span className="td-alert-dot" title="Nivel crítico ≤25%">▼</span>}
                             </>
                           )}
                         </td>
@@ -1838,22 +1908,26 @@ code {
     }
 
     function HeatLegend() {
+      const bands = [
+        { cls: "heat-band-1", label: "≤ 25%",   desc: "Crítico" },
+        { cls: "heat-band-2", label: "26–50%",  desc: "Bajo" },
+        { cls: "heat-band-3", label: "51–70%",  desc: "Medio" },
+        { cls: "heat-band-4", label: "> 70%",   desc: "Adecuado" },
+      ];
       return (
         <div className="heat-legend">
           <div className="heat-legend-text">
             <span className="heat-legend-title">Cómo leer los colores</span>
-            <p>Cada columna GSE tiene su propia escala: el color compara cada celda contra el rango típico de ese GSE, no contra valores absolutos. Una entidad puede estar en alerta dentro de su GSE aunque su % parezca alto en otra columna.</p>
+            <p>El color refleja el % de estudiantes en nivel Adecuado usando umbrales fijos, independientemente del GSE o la entidad.</p>
           </div>
           <div className="heat-legend-scale">
-            <div className="heat-scale-bar">
-              <span className="heat-tick heat-tick-left"><b>▼ Alerta</b><small>Bajo el rango típico del GSE</small></span>
-              <span className="heat-tick heat-tick-mid"><b>En rango</b><small>Cercano a la mediana del GSE</small></span>
-              <span className="heat-tick heat-tick-right"><b>Sobre rango ▲</b><small>Por encima del rango típico</small></span>
-            </div>
-            <div className="heat-ramp">
-              <span className="heat-ramp-bar heat-ramp-coral" />
-              <span className="heat-ramp-bar heat-ramp-mid" />
-              <span className="heat-ramp-bar heat-ramp-ocean" />
+            <div className="heat-scale-bar" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+              {bands.map(b => (
+                <span key={b.cls} className={"heat-tick " + b.cls} style={{ padding: "4px 6px", borderRadius: 3, textAlign: "center" }}>
+                  <b style={{ fontSize: 12 }}>{b.label}</b>
+                  <small style={{ display: "block" }}>{b.desc}</small>
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -1881,12 +1955,349 @@ code {
       );
     }
 
-    function IconExport({ label, icon }) {
+    function IconExport({ label, icon, onExport }) {
       return (
-        <button className="icon-export" title={label} aria-label={label} onClick={() => alert("Export pendiente: " + label)}>
+        <button className="icon-export" title={label} aria-label={label}
+          onClick={onExport || (() => alert("Export pendiente: " + label))}>
           <Icon name={icon} />
           <span className="icon-export-label">{label}</span>
         </button>
+      );
+    }
+
+    // Genera y descarga un CSV con los datos actuales de la tabla
+    function exportarCSV({ entities, nivel, prueba, gseFilter }) {
+      const YEARS = SimceData.YEARS.slice().reverse();
+      const GSE_LEVELS = gseFilter
+        ? SimceData.GSE_LEVELS.filter(g => g === gseFilter)
+        : SimceData.GSE_LEVELS;
+
+      function getSeries(ent, gse) {
+        if (ent.kind === "slep") {
+          return SimceData.generateSeriesByRbd({ rbds: ent.rbds, gse, nivel, prueba });
+        }
+        return SimceData.generateSeriesByDepe({
+          comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
+        });
+      }
+
+      const rows = [["entidad", "nivel", "prueba", "gse", "gse_label", "anio", "pct_adecuado", "n_evaluados", "preliminar"]];
+      entities.forEach(ent => {
+        GSE_LEVELS.forEach(gse => {
+          const series = getSeries(ent, gse);
+          series.forEach(s => {
+            rows.push([
+              ent.name,
+              nivel,
+              prueba,
+              gse,
+              SimceData.GSE_LEVELS ? (DATA.meta.gse_labels[gse] || gse) : gse,
+              s.year,
+              s.pct != null ? String(s.pct).replace(".", ",") : "",
+              s.n_eval != null ? s.n_eval : "",
+              s.preliminar ? "1" : "0"
+            ]);
+          });
+        });
+      });
+
+      const csvContent = rows.map(r => r.map(v => {
+        const str = String(v);
+        return str.includes(";") || str.includes('"') ? '"' + str.replace(/"/g, '""') + '"' : str;
+      }).join(";")).join("\n");
+
+      const blob = new Blob(["﻿" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "simce_adecuado_" + nivel.replace(/[^a-zA-Z0-9]/g, "_") + "_" + prueba.replace(/[^a-zA-Z0-9]/g, "_") + ".csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+
+    // ============================================================
+    // GseFilter — selector de GSE para tabla
+    // ============================================================
+    function GseFilter({ gseFilter, setGseFilter }) {
+      return (
+        <div className="gse-filter">
+          <span className="gse-filter-label">GSE</span>
+          <select value={gseFilter} onChange={e => setGseFilter(e.target.value)}>
+            <option value="">Todos</option>
+            {SimceData.GSE_LEVELS.map(g => (
+              <option key={g} value={g}>{g}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    // ============================================================
+    // EstabPopup — lista de establecimientos de una entidad
+    // ============================================================
+    function EstabPopup({ entity, nivel, prueba, onClose }) {
+      const ref = React.useRef(null);
+      React.useEffect(() => {
+        function handleClick(e) {
+          if (ref.current && !ref.current.contains(e.target)) onClose();
+        }
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+      }, []);
+
+      // RBDs que rindieron el nivel × prueba activos
+      const nv = SimceData.NIVEL_LABEL_TO_COD[nivel];
+      const pr = SimceData.PRUEBA_LABEL_TO_COD[prueba];
+      const rbdsNP = new Set();
+      if (DATA.rbds_por_nivel) {
+        DATA.rbds_por_nivel
+          .filter(r => r.nivel === nv && r.prueba === pr)
+          .forEach(r => rbdsNP.add(String(r.rbd)));
+      }
+
+      // Obtener establecimientos: comunas de la entidad + depe2 + rindió nivel×prueba
+      let items = [];
+      if (DATA.establecimientos) {
+        const setCom = new Set(entity.comunas || []);
+        items = DATA.establecimientos
+          .filter(r => {
+            if (!setCom.has(String(r.cod_com_rbd))) return false;
+            if (entity.kind === "slep") {
+              if (String(r.cod_depe2) !== "5") return false;
+            } else if (entity.depe2) {
+              if (String(r.cod_depe2) !== String(entity.depe2)) return false;
+            }
+            return rbdsNP.has(String(r.rbd));
+          })
+          .map(r => ({ rbd: r.rbd, nom: r.nom_rbd, com: r.nom_com_rbd }));
+      }
+
+      const title = entity.name;
+      const pos = entity._popupPos || {};
+
+      return (
+        <div ref={ref} className="estab-popup" style={{
+          top: (pos.top || 100) + "px",
+          left: (pos.left || 100) + "px",
+        }}>
+          <div className="estab-popup-header">
+            <span className="estab-popup-title">{title}</span>
+            <button className="icon-btn" onClick={onClose}><Icon name="x" /></button>
+          </div>
+          <div style={{ fontSize: 11, color: "var(--fg-3)", marginBottom: 4 }}>
+            {items.length} establecimientos
+          </div>
+          <div className="estab-popup-list">
+            {items.length === 0 ? (
+              <div style={{ fontSize: 12, color: "var(--fg-3)" }}>Sin información de establecimientos.</div>
+            ) : items.map((it, i) => (
+              <div key={i} className="estab-popup-item">
+                <span className="estab-popup-rbd">{it.rbd}</span>
+                <span className="estab-popup-nom">{it.nom}</span>
+                <span className="estab-popup-com">{it.com}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================
+    // Modal agregar entidad — v2 con tabs: Comuna | SLEP | Grupo
+    // ============================================================
+    function AddEntityModal({ editing, onSave, onCancel, takenColors }) {
+      const [tab, setTab] = React.useState(
+        editing?.kind === "slep" ? "slep" : editing?.kind === "group" ? "group" : "comuna"
+      );
+      // Tab comuna
+      const [region, setRegion] = React.useState(
+        editing?.kind === "comuna" && editing.comunas?.length > 0
+          ? (SimceData.COMUNA_BY_COD.get(editing.comunas[0])?.cod_reg || SimceData.REGIONES[0].cod_reg)
+          : SimceData.REGIONES[0].cod_reg
+      );
+      const [comunaCod, setComunaCod] = React.useState(
+        editing?.kind === "comuna" ? (editing.comunas?.[0] || "") : ""
+      );
+      const [depe2, setDepe2] = React.useState(editing?.depe2 || "");
+      // Tab SLEP
+      const [slepSearch, setSlepSearch] = React.useState("");
+      const [selectedSlep, setSelectedSlep] = React.useState(
+        editing?.kind === "slep" ? editing.cod_slep : ""
+      );
+      // Tab grupo
+      const [groupName, setGroupName] = React.useState(editing?.kind === "group" ? editing.name : "");
+      const [groupComunas, setGroupComunas] = React.useState(editing?.kind === "group" ? editing.comunas : []);
+      const [search, setSearch] = React.useState("");
+
+      const availableColor = React.useMemo(() => {
+        return ENTITY_PALETTE.find(c => !takenColors.includes(c)) || ENTITY_PALETTE[0];
+      }, [takenColors]);
+
+      const currentRegion = SimceData.REGIONES.find(r => r.cod_reg === region) || SimceData.REGIONES[0];
+      const allComunas = SimceData.REGIONES.flatMap(r =>
+        r.comunas.map(c => ({ cod_com: c.cod_com, nombre: c.nombre, region: r.nombre }))
+      );
+      const filteredComunas = allComunas.filter(({ nombre, region: rn }) => {
+        if (!search) return true;
+        const s = search.toLowerCase();
+        return nombre.toLowerCase().includes(s) || rn.toLowerCase().includes(s);
+      });
+      const filteredSleps = SimceData.SLEPS.filter(s => {
+        if (!slepSearch) return true;
+        return s.nombre.toLowerCase().includes(slepSearch.toLowerCase());
+      });
+
+      function handleSave() {
+        const color = editing?.color || availableColor;
+        if (tab === "comuna") {
+          if (!comunaCod) return;
+          const c = SimceData.COMUNA_BY_COD.get(comunaCod);
+          if (!c) return;
+          const depe2Label = depe2 ? SimceData.DEPE2_LABELS[depe2] : "Todas las dependencias";
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: c.nom + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
+            kind: "comuna",
+            comunas: [comunaCod],
+            depe2: depe2 || null,
+            color,
+          });
+        } else if (tab === "slep") {
+          if (!selectedSlep) return;
+          const slep = SimceData.SLEPS.find(s => s.cod_slep === selectedSlep);
+          if (!slep) return;
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: "SLEP " + slep.nombre,
+            kind: "slep",
+            cod_slep: slep.cod_slep,
+            comunas: slep.comunas,
+            rbds: slep.rbds,
+            anio_traspaso: slep.anio_traspaso,
+            color,
+          });
+        } else {
+          if (!groupName || groupComunas.length === 0) return;
+          onSave({
+            id: editing?.id || ("e" + Date.now()),
+            name: groupName,
+            kind: "group",
+            comunas: groupComunas,
+            depe2: null,
+            color,
+          });
+        }
+      }
+
+      return (
+        <div className="modal-backdrop" onClick={onCancel}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">{editing ? "Editar entidad" : "Agregar entidad"}</h3>
+              <button className="icon-btn" onClick={onCancel}><Icon name="x" /></button>
+            </div>
+            <div className="modal-tabs">
+              <button className={"modal-tab" + (tab === "comuna" ? " is-active" : "")} onClick={() => setTab("comuna")}>Comuna</button>
+              <button className={"modal-tab" + (tab === "slep" ? " is-active" : "")} onClick={() => setTab("slep")}>SLEP</button>
+              <button className={"modal-tab" + (tab === "group" ? " is-active" : "")} onClick={() => setTab("group")}>Grupo custom</button>
+            </div>
+            <div className="modal-body">
+              {tab === "comuna" && (
+                <div className="form-grid">
+                  <label className="field">
+                    <span className="field-label">Región</span>
+                    <select className="select" value={region} onChange={e => { setRegion(e.target.value); setComunaCod(""); }}>
+                      {SimceData.REGIONES.map(r => <option key={r.cod_reg} value={r.cod_reg}>{r.nombre}</option>)}
+                    </select>
+                  </label>
+                  <label className="field">
+                    <span className="field-label">Comuna</span>
+                    <select className="select" value={comunaCod} onChange={e => setComunaCod(e.target.value)}>
+                      <option value="">Selecciona…</option>
+                      {currentRegion.comunas.map(c => <option key={c.cod_com} value={c.cod_com}>{c.nombre}</option>)}
+                    </select>
+                  </label>
+                  <label className="field field-full">
+                    <span className="field-label">Dependencia</span>
+                    <select className="select" value={depe2} onChange={e => setDepe2(e.target.value)}>
+                      <option value="">Todas las dependencias</option>
+                      {SimceData.DEPE2_CODES.map(d => (
+                        <option key={d} value={d}>{SimceData.DEPE2_LABELS[d]}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="field field-full">
+                    <span className="field-label">Color</span>
+                    <div className="color-preview">
+                      <span className="entity-swatch" style={{ background: editing?.color || availableColor }} />
+                      <span className="color-note">Asignado automáticamente.</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {tab === "slep" && (
+                <div className="form-grid">
+                  <label className="field field-full">
+                    <span className="field-label">Buscar SLEP</span>
+                    <input className="input input-search" type="text" placeholder="Nombre del SLEP…"
+                      value={slepSearch} onChange={e => setSlepSearch(e.target.value)} />
+                  </label>
+                  <div className="field field-full">
+                    <div className="comuna-checklist" style={{ maxHeight: 260 }}>
+                      {filteredSleps.map(s => (
+                        <label key={s.cod_slep} className={"check-row" + (selectedSlep === s.cod_slep ? " is-selected" : "")}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => setSelectedSlep(s.cod_slep)}>
+                          <input type="radio" name="slep" value={s.cod_slep}
+                            checked={selectedSlep === s.cod_slep}
+                            onChange={() => setSelectedSlep(s.cod_slep)} />
+                          <span className="check-name">{s.nombre}</span>
+                          <span className="check-region">{s.comunas.length} comunas · traspaso {s.anio_traspaso || "pendiente"}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {tab === "group" && (
+                <div className="form-grid">
+                  <label className="field field-full">
+                    <span className="field-label">Nombre del grupo</span>
+                    <input className="input" type="text" placeholder="Ej. Comunas costeras"
+                      value={groupName} onChange={e => setGroupName(e.target.value)} />
+                  </label>
+                  <label className="field field-full">
+                    <span className="field-label">
+                      Comunas <span className="field-hint">{groupComunas.length} seleccionadas</span>
+                    </span>
+                    <input className="input input-search" type="text" placeholder="Buscar comuna…"
+                      value={search} onChange={e => setSearch(e.target.value)} />
+                    <div className="comuna-checklist">
+                      {filteredComunas.map(({ cod_com, nombre, region: rn }) => (
+                        <label key={cod_com} className="check-row">
+                          <input type="checkbox" checked={groupComunas.includes(cod_com)}
+                            onChange={e => {
+                              if (e.target.checked) setGroupComunas([...groupComunas, cod_com]);
+                              else setGroupComunas(groupComunas.filter(c => c !== cod_com));
+                            }} />
+                          <span className="check-name">{nombre}</span>
+                          <span className="check-region">{rn}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </label>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
+              <button className="btn btn-primary" onClick={handleSave}>
+                {editing ? "Guardar cambios" : "Agregar al análisis"}
+              </button>
+            </div>
+          </div>
+        </div>
       );
     }
 
@@ -1958,16 +2369,19 @@ code {
     // App principal
     // ============================================================
     function App() {
-      const niveles = Object.values(DATA.meta.niveles);
+      const niveles = Object.entries(DATA.meta.niveles)
+        .sort(([a], [b]) => a === "4b" ? -1 : 1).map(([,v]) => v);
       const pruebas = Object.values(DATA.meta.pruebas);
 
-      const [nivel, setNivel] = React.useState(niveles.find(n => n.includes("Básico")) || niveles[0]);
+      const [nivel, setNivel] = React.useState(niveles[0]);
       const [prueba, setPrueba] = React.useState(pruebas[0]);
       const [entities, setEntities] = React.useState(buildInitialEntities);
       const [modal, setModal] = React.useState(null);
       const [loading, setLoading] = React.useState(false);
       const [notesOpen, setNotesOpen] = React.useState(false);
       const [tweaksOpen, setTweaksOpen] = React.useState(false);
+      const [gseFilter, setGseFilter] = React.useState("");
+      const [estabPopup, setEstabPopup] = React.useState(null); // { entity, pos }
 
       // Tweaks
       const [showElemInsuf, setShowElemInsuf] = React.useState(true);
@@ -1995,26 +2409,19 @@ code {
       }
 
       function applyPreset() {
-        const preset = SimceData.PRESETS["SLEP Costa Central"];
-        const entidades = preset.map((cod, i) => {
-          const c = SimceData.COMUNA_BY_COD.get(cod);
-          return {
-            id: "preset-" + i,
-            name: c ? c.nom : ("Comuna " + cod),
-            kind: "comuna",
-            comunas: [cod],
-            color: ENTITY_PALETTE[i % ENTITY_PALETTE.length],
-          };
-        });
-        // Agregar también el grupo agregado SLEP
-        const grupoEnt = {
-          id: "preset-grupo",
-          name: "SLEP Costa Central (agregado)",
-          kind: "group",
-          comunas: preset,
-          color: ENTITY_PALETTE[entidades.length % ENTITY_PALETTE.length],
-        };
-        setEntities([grupoEnt, ...entidades].slice(0, MAX_ENTIDADES));
+        const slep = SimceData.SLEPS.find(s => s.nombre === "Costa Central");
+        if (slep) {
+          setEntities([{
+            id: "preset-cc",
+            name: "SLEP Costa Central",
+            kind: "slep",
+            cod_slep: slep.cod_slep,
+            comunas: slep.comunas,
+            rbds: slep.rbds,
+            anio_traspaso: slep.anio_traspaso,
+            color: ENTITY_PALETTE[0],
+          }]);
+        }
       }
 
       const containerClass = "app " + (density === "compacta" ? "is-compact " : "is-comfy ");
@@ -2025,28 +2432,34 @@ code {
           <main className="app-main">
             <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba} loading={loading} />
             <EntitiesBar entities={entities} setEntities={setEntities}
-              openModal={(ent) => setModal({ editing: ent })} openPresetMenu={applyPreset} />
+              openModal={(ent) => setModal({ editing: ent })} openPresetMenu={applyPreset}
+              onShowEstab={(ent, ev) => setEstabPopup({ entity: { ...ent, _popupPos: { top: ev.clientY + window.scrollY + 8, left: ev.clientX + window.scrollX - 100 } } })} />
 
             <section className="results-section">
               <div className="results-head">
                 <div>
                   <span className="section-eyebrow">Resultados por GSE</span>
-                  <h2 className="results-title">% ponderado en nivel Adecuado — {prueba}, {nivel}</h2>
+                  <h2 className="results-title">% de estudiantes en nivel Adecuado — {prueba}, {nivel}</h2>
                 </div>
                 <div className="section-actions">
                   <ChartHints showElemInsuf={showElemInsuf} />
-                  <IconExport label="Exportar gráficos" icon="image" />
+                  <IconExport label="Exportar gráficos" icon="chart" />
                 </div>
               </div>
-              <div className="supergrid" style={{ gridTemplateColumns: `repeat(${entities.length || 1}, minmax(0, 1fr))` }}>
+              <div className="supergrid" style={{ gridTemplateColumns: `repeat(4, minmax(0, 1fr))` }}>
                 {entities.map(ent => (
                   <div key={ent.id} className="supergrid-entity-head">
                     <span className="entity-swatch" style={{ background: ent.color }} />
                     <span className="sg-ent-name">{ent.name}</span>
                     <span className="sg-ent-meta">
-                      {ent.kind === "group" ? `Grupo de ${ent.comunas.length} comunas` : "Comuna"}
+                      {ent.kind === "slep" ? `SLEP · ${ent.comunas.length} comunas`
+                        : ent.kind === "group" ? `Grupo · ${ent.comunas.length} comunas`
+                        : ent.depe2 ? SimceData.DEPE2_LABELS[ent.depe2] : "Comuna"}
                     </span>
                   </div>
+                ))}
+                {Array.from({ length: Math.max(0, 4 - entities.length) }).map((_, i) => (
+                  <div key={"ph-" + i} />
                 ))}
                 {SimceData.GSE_LEVELS.map(gse => (
                   <React.Fragment key={gse}>
@@ -2054,6 +2467,9 @@ code {
                       <ChartCell key={ent.id + "|" + gse} entity={ent} gse={gse}
                         showElemInsuf={showElemInsuf} yScale={yScale}
                         nivel={nivel} prueba={prueba} />
+                    ))}
+                    {Array.from({ length: Math.max(0, 4 - entities.length) }).map((_, i) => (
+                      <div key={"ph-" + gse + "-" + i} />
                     ))}
                   </React.Fragment>
                 ))}
@@ -2067,11 +2483,12 @@ code {
                   <h2 className="table-title">Entidad × GSE × Año</h2>
                 </div>
                 <div className="section-actions">
-                  <IconExport label="Exportar CSV" icon="download" />
+                  <GseFilter gseFilter={gseFilter} setGseFilter={setGseFilter} />
+                  <IconExport label="Exportar CSV" icon="download" onExport={() => exportarCSV({ entities, nivel, prueba, gseFilter })} />
                 </div>
               </div>
               <HeatLegend />
-              <ResultsTable entities={entities} nivel={nivel} prueba={prueba} />
+              <ResultsTable entities={entities} nivel={nivel} prueba={prueba} gseFilter={gseFilter} />
               <div className="table-legend">
                 <span><b className="dot dot-prelim">*</b> Dato preliminar 2025</span>
                 <span>Formato: <code>XX,X% (N evaluados)</code> · — sin datos</span>
@@ -2113,6 +2530,15 @@ code {
               )}
             </footer>
           </main>
+
+          {estabPopup && (
+            <EstabPopup
+              entity={estabPopup.entity}
+              nivel={nivel}
+              prueba={prueba}
+              onClose={() => setEstabPopup(null)}
+            />
+          )}
 
           {modal && (
             <AddEntityModal

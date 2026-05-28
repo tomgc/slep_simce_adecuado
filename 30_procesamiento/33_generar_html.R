@@ -30,9 +30,19 @@ df_comunal <- arrow::read_parquet(
 df_comunas <- arrow::read_parquet(
   here::here("40_salidas", "intermedios", "comunas_chile.parquet")
 )
+df_sleps <- arrow::read_parquet(
+  here::here("40_salidas", "intermedios", "sleps_chile.parquet")
+)
+df_rbd <- arrow::read_parquet(
+  here::here("40_salidas", "intermedios", "establecimientos_chile.parquet")
+)
 
 message(sprintf("    simce_comunal.parquet: %d filas", nrow(df_comunal)))
 message(sprintf("    comunas_chile.parquet: %d comunas", nrow(df_comunas)))
+message(sprintf("    sleps_chile.parquet:   %d filas (%d SLEPs)",
+                nrow(df_sleps), dplyr::n_distinct(df_sleps$cod_slep)))
+message(sprintf("    establecimientos_chile.parquet: %d establecimientos",
+                nrow(df_rbd)))
 
 
 # ============================================================================
@@ -94,6 +104,15 @@ meta <- list(
     "3" = "Medio",
     "4" = "Medio alto",
     "5" = "Alto"
+  ),
+  # Dependencia agrupada (COD_DEPE2 del directorio oficial MINEDUC).
+  depe2 = c("1", "2", "3", "4", "5"),
+  depe2_labels = list(
+    "1" = "Municipal",
+    "2" = "Particular Subvencionado",
+    "3" = "Particular Pagado",
+    "4" = "Corp. Admin. Delegada",
+    "5" = "Servicio Local de Educación"
   )
 )
 
@@ -108,18 +127,51 @@ datos_lst <- list(
   nivel       = df_ord$nivel,
   prueba      = df_ord$prueba,
   cod_grupo   = df_ord$cod_grupo,
+  cod_depe2   = df_ord$cod_depe2,
   anio        = as.integer(df_ord$anio),
   pct         = round(df_ord$pct_adecuado, 2),
   n_evaluados = as.integer(df_ord$n_evaluados),
   n_estab     = as.integer(df_ord$n_estab)
 )
 
+# --- Catálogo de establecimientos (RBDs únicos con nombre y dependencia) ---
+# Fuente: establecimientos_chile.parquet — todos los establecimientos
+# operativos del directorio oficial. Se usa en el popup "ver establecimientos"
+# del motor HTML para cualquier tipo de entidad.
+establecimientos_lst <- df_rbd |>
+  dplyr::select(rbd, nom_rbd, cod_com_rbd, nom_com_rbd, cod_depe2) |>
+  dplyr::arrange(cod_com_rbd, nom_rbd)
+
+# --- RBDs por nivel × prueba (para filtrar popup de establecimientos) ---
+# Fuente: simce_rbd.parquet — qué RBDs rindieron cada combinación nivel×prueba.
+df_rbd_np <- arrow::read_parquet(
+  here::here("40_salidas", "intermedios", "simce_rbd.parquet")
+) |>
+  dplyr::distinct(rbd, nivel, prueba) |>
+  dplyr::mutate(rbd = as.character(rbd)) |>
+  dplyr::arrange(nivel, prueba, rbd)
+
+# --- Catálogo de SLEPs (una fila por SLEP × RBD) ---
+sleps_lst <- df_sleps |>
+  dplyr::transmute(
+    cod_slep      = cod_slep,
+    nombre_slep   = nombre_slep,
+    anio_traspaso = as.integer(anio_traspaso),
+    cod_com_rbd   = cod_com_rbd,
+    nom_com_rbd   = nom_com_rbd,
+    rbd           = rbd,
+    nom_rbd       = nom_rbd
+  )
+
 # --- Estructura raíz ---
 json_root <- list(
-  meta     = meta,
-  regiones = regiones_lst,
-  comunas  = comunas_lst,
-  datos    = datos_lst
+  meta             = meta,
+  regiones         = regiones_lst,
+  comunas          = comunas_lst,
+  datos            = datos_lst,
+  sleps            = sleps_lst,
+  establecimientos = establecimientos_lst,
+  rbds_por_nivel   = df_rbd_np
 )
 
 # Serialización: auto_unbox=TRUE para que escalares (anios_preliminar=2025L)
@@ -145,7 +197,7 @@ message(sprintf("    JSON listo: %d caracteres (%.1f MB).",
 
 message("[3] Leyendo plantilla y D3...")
 
-plantilla_path <- here::here("30_procesamiento", "motor_template.html")
+plantilla_path <- here::here("30_procesamiento", "33_motor_template.html")
 d3_path        <- here::here("10_utils", "d3.min.js")
 
 if (!file.exists(plantilla_path)) {
@@ -207,6 +259,9 @@ message("=== Resumen ===")
 message(sprintf("  Filas en JSON: %d", datos_lst$rows))
 message(sprintf("  Comunas:       %d", nrow(comunas_lst)))
 message(sprintf("  Regiones:      %d", nrow(regiones_lst)))
+message(sprintf("  SLEPs:         %d (%d RBDs)", dplyr::n_distinct(sleps_lst$cod_slep), nrow(sleps_lst)))
+message(sprintf("  Establec.:     %d RBDs distintos", nrow(establecimientos_lst)))
+message(sprintf("  RBDs×nivel:    %d filas (catálogo popup)", nrow(df_rbd_np)))
 message(sprintf("  Años:          %d (%s)", length(meta$anios),
                 paste(meta$anios, collapse = ", ")))
 message(sprintf("  Peso HTML:     %.1f KB", tamano_kb))
