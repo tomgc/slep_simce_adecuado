@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<title>Motor de comparación SIMCE — % en nivel Adecuado</title>
+<title>Motor de comparación Simce — proporción de estudiantes en nivel Adecuado</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
 /* ============================================================
@@ -1318,7 +1318,7 @@ code {
       "#0A3A5C", "#C45A3E", "#1F4A1F", "#8A5A8E",
       "#B89530", "#4A6FA5", "#A35A6F", "#5C8A6E",
     ];
-    const MAX_ENTIDADES = 6;
+    const MAX_ENTIDADES = 4;
 
     // INITIAL_ENTITIES: 4 comunas Costa Central con códigos reales
     function buildInitialEntities() {
@@ -1335,6 +1335,7 @@ code {
           name: c ? c.nom : ("Comuna " + s.cod),
           kind: "comuna",
           comunas: [s.cod],
+          depe2: "5",
           color: ENTITY_PALETTE[s.colorIdx],
         };
       });
@@ -1348,14 +1349,10 @@ code {
         <header className="app-header">
           <div className="app-header-inner">
             <div className="app-header-left">
-              <div className="brand-lockup">
-                <span className="brand-eyebrow">Agencia de Calidad de la Educación</span>
-                <span className="brand-divider">·</span>
-                <span className="brand-eyebrow brand-eyebrow-muted">Mineduc</span>
-              </div>
+
               <h1 className="app-title">
-                Motor de comparación SIMCE
-                <span className="app-title-sub"> — % de estudiantes en nivel Adecuado</span>
+                Motor de comparación Simce
+                <span className="app-title-sub"> — proporción de estudiantes en nivel Adecuado</span>
               </h1>
               <p className="app-subtitle">
                 Datos 2014–2025 · Resultados segmentados por grupo socioeconómico (GSE)
@@ -1415,9 +1412,31 @@ code {
       );
     }
 
-    function EntityChip({ entity, onRemove, onEdit, onShowEstab }) {
+    function contarEstablecimientos(entity, nivel, prueba) {
+      if (!DATA.establecimientos || !entity.comunas || entity.comunas.length === 0) return null;
+      const nv = SimceData.NIVEL_LABEL_TO_COD[nivel];
+      const pr = SimceData.PRUEBA_LABEL_TO_COD[prueba];
+      const rbdsNP = new Set();
+      if (DATA.rbds_por_nivel) {
+        DATA.rbds_por_nivel
+          .filter(r => r.nivel === nv && r.prueba === pr)
+          .forEach(r => rbdsNP.add(String(r.rbd)));
+      }
+      const setCom = new Set(entity.comunas);
+      return DATA.establecimientos.filter(r => {
+        if (!setCom.has(String(r.cod_com_rbd))) return false;
+        if (entity.kind === "slep") { if (String(r.cod_depe2) !== "5") return false; }
+        else if (entity.depe2) { if (String(r.cod_depe2) !== String(entity.depe2)) return false; }
+        return rbdsNP.has(String(r.rbd));
+      }).length;
+    }
+
+    function EntityChip({ entity, onRemove, onEdit, onShowEstab, nivel, prueba }) {
+      const nEstabSlep = entity.kind === "slep" && DATA.establecimientos
+        ? DATA.establecimientos.filter(r => entity.comunas.includes(String(r.cod_com_rbd)) && String(r.cod_depe2) === "5").length
+        : null;
       const meta = entity.kind === "slep"
-        ? `SLEP · ${entity.comunas.length} comunas`
+        ? `SLEP · ${entity.comunas.length} comunas · ${nEstabSlep !== null ? nEstabSlep : "…"} establecimientos`
         : entity.kind === "group"
         ? `Grupo · ${entity.comunas.length} comunas`
         : entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] : "Comuna";
@@ -1430,7 +1449,7 @@ code {
             <span className="entity-meta">{meta}</span>
             {hasEstabs && (
               <button className="entity-estab-btn" onClick={onShowEstab}>
-                ver establecimientos ▸
+                {`ver establecimientos (${contarEstablecimientos(entity, nivel, prueba) ?? "…"}) ▸`}
               </button>
             )}
           </span>
@@ -1440,7 +1459,7 @@ code {
       );
     }
 
-    function EntitiesBar({ entities, setEntities, openModal, openPresetMenu, onShowEstab }) {
+    function EntitiesBar({ entities, setEntities, openModal, openPresetMenu, onShowEstab, nivel, prueba }) {
       function removeEntity(id) { setEntities(entities.filter(e => e.id !== id)); }
       return (
         <section className="entities-bar">
@@ -1456,6 +1475,8 @@ code {
                 onRemove={() => removeEntity(e.id)}
                 onEdit={() => openModal(e)}
                 onShowEstab={(ev) => onShowEstab(e, ev)}
+                nivel={nivel}
+                prueba={prueba}
               />
             ))}
             {entities.length < MAX_ENTIDADES && (
@@ -1478,7 +1499,7 @@ code {
     // ============================================================
     // Tooltip compartido
     // ============================================================
-    function makeTooltip(entity, gse) {
+    function makeTooltip(entity, gse, nivel, prueba) {
       function show(e, s, yr) {
         const tip = document.getElementById("global-tooltip");
         tip.style.display = "block";
@@ -1516,7 +1537,25 @@ code {
         if (s.n_estab === 1) {
           const warn = document.createElement("div");
           warn.className = "tt-warn";
-          warn.textContent = "Baja representatividad — un solo establecimiento";
+          let warnText = "Baja representatividad — un solo establecimiento";
+          if (DATA.establecimientos && DATA.rbds_por_nivel && nivel && prueba) {
+            const nv = SimceData.NIVEL_LABEL_TO_COD[nivel];
+            const pr = SimceData.PRUEBA_LABEL_TO_COD[prueba];
+            const rbdsNP = new Set(
+              DATA.rbds_por_nivel.filter(r => r.nivel === nv && r.prueba === pr).map(r => String(r.rbd))
+            );
+            const setCom = new Set(entity.comunas || []);
+            const candidatos = DATA.establecimientos.filter(r => {
+              if (!setCom.has(String(r.cod_com_rbd))) return false;
+              if (entity.kind === "slep") { if (String(r.cod_depe2) !== "5") return false; }
+              else if (entity.depe2) { if (String(r.cod_depe2) !== String(entity.depe2)) return false; }
+              return rbdsNP.has(String(r.rbd));
+            });
+            if (candidatos.length === 1) {
+              warnText = `Baja representatividad — un solo establecimiento (RBD ${candidatos[0].rbd})`;
+            }
+          }
+          warn.textContent = warnText;
           tip.appendChild(warn);
         }
         if (s.preliminar) {
@@ -1587,7 +1626,7 @@ code {
             .attr("stroke-linecap", "round");
         });
 
-        const tt = makeTooltip(entity, gse);
+        const tt = makeTooltip(entity, gse, nivel, prueba);
         valid.forEach(s => {
           const cx = x(s.year);
           const cy = y(s.pct);
@@ -1642,7 +1681,7 @@ code {
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove();
         const W = 320, H = 165;
-        const M = { top: 14, right: 10, bottom: 24, left: 28 };
+        const M = { top: 28, right: 10, bottom: 24, left: 28 };
         const iw = W - M.left - M.right;
         const ih = H - M.top - M.bottom;
         const g = svg
@@ -1693,7 +1732,7 @@ code {
           .range([0, iw])
           .padding(0.18);
 
-        const tt = makeTooltip(entity, gse);
+        const tt = makeTooltip(entity, gse, nivel, prueba);
         recent.forEach(s => {
           const xPos = x(s.year);
           if (xPos == null) return;
@@ -1892,7 +1931,7 @@ code {
                             <>
                               <span className="td-pct">{s.pct.toFixed(1).replace(".", ",")}%</span>
                               <span className="td-n"> ({fmtInt(s.n_eval)})</span>
-                              {alert && <span className="td-alert-dot" title="Nivel crítico ≤25%">▼</span>}
+
                             </>
                           )}
                         </td>
@@ -1919,6 +1958,10 @@ code {
           <div className="heat-legend-text">
             <span className="heat-legend-title">Cómo leer los colores</span>
             <p>El color refleja el % de estudiantes en nivel Adecuado usando umbrales fijos, independientemente del GSE o la entidad.</p>
+            <p style={{ marginTop: 6 }}>
+              <b>*</b> Dato preliminar (2025, sujeto a revisión). &nbsp;
+              <b>(N)</b> Número de estudiantes a los que corresponde ese porcentaje.
+            </p>
           </div>
           <div className="heat-legend-scale">
             <div className="heat-scale-bar" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
@@ -2119,7 +2162,7 @@ code {
       const [comunaCod, setComunaCod] = React.useState(
         editing?.kind === "comuna" ? (editing.comunas?.[0] || "") : ""
       );
-      const [depe2, setDepe2] = React.useState(editing?.depe2 || "");
+      const [depe2, setDepe2] = React.useState(editing?.depe2 || "5");
       // Tab SLEP
       const [slepSearch, setSlepSearch] = React.useState("");
       const [selectedSlep, setSelectedSlep] = React.useState(
@@ -2205,18 +2248,26 @@ code {
             <div className="modal-body">
               {tab === "comuna" && (
                 <div className="form-grid">
-                  <label className="field">
-                    <span className="field-label">Región</span>
-                    <select className="select" value={region} onChange={e => { setRegion(e.target.value); setComunaCod(""); }}>
-                      {SimceData.REGIONES.map(r => <option key={r.cod_reg} value={r.cod_reg}>{r.nombre}</option>)}
-                    </select>
-                  </label>
-                  <label className="field">
+                  <label className="field field-full">
                     <span className="field-label">Comuna</span>
-                    <select className="select" value={comunaCod} onChange={e => setComunaCod(e.target.value)}>
-                      <option value="">Selecciona…</option>
-                      {currentRegion.comunas.map(c => <option key={c.cod_com} value={c.cod_com}>{c.nombre}</option>)}
-                    </select>
+                    <input
+                      className="input input-search"
+                      type="text"
+                      placeholder="Buscar comuna…"
+                      value={search}
+                      onChange={e => { setSearch(e.target.value); setComunaCod(""); }}
+                    />
+                    {search && filteredComunas.length > 0 && !comunaCod && (
+                      <div className="comuna-checklist" style={{ maxHeight: 200, marginTop: 4 }}>
+                        {filteredComunas.slice(0, 30).map(c => (
+                          <label key={c.cod_com} className="check-row" style={{ cursor: "pointer" }}
+                            onClick={() => { setComunaCod(c.cod_com); setSearch(c.nombre); }}>
+                            <span style={{ fontWeight: 500 }}>{c.nombre}</span>
+                            <span style={{ fontSize: 11, color: "var(--fg-3)", marginLeft: "auto" }}>{c.region}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
                   </label>
                   <label className="field field-full">
                     <span className="field-label">Dependencia</span>
@@ -2402,7 +2453,7 @@ code {
           if (idx >= 0) {
             const next = [...prev]; next[idx] = ent; return next;
           }
-          if (prev.length >= MAX_ENTIDADES) return prev;
+          if (prev.length >= MAX_ENTIDADES) { alert("Máximo de comparación: 4 entidades. Elimina una antes de agregar otra."); return prev; }
           return [...prev, ent];
         });
         setModal(null);
@@ -2433,13 +2484,14 @@ code {
             <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba} loading={loading} />
             <EntitiesBar entities={entities} setEntities={setEntities}
               openModal={(ent) => setModal({ editing: ent })} openPresetMenu={applyPreset}
+              nivel={nivel} prueba={prueba}
               onShowEstab={(ent, ev) => setEstabPopup({ entity: { ...ent, _popupPos: { top: ev.clientY + window.scrollY + 8, left: ev.clientX + window.scrollX - 100 } } })} />
 
             <section className="results-section">
               <div className="results-head">
                 <div>
                   <span className="section-eyebrow">Resultados por GSE</span>
-                  <h2 className="results-title">% de estudiantes en nivel Adecuado — {prueba}, {nivel}</h2>
+                  <h2 className="results-title">Proporción de estudiantes en nivel Adecuado — {prueba}, {nivel}</h2>
                 </div>
                 <div className="section-actions">
                   <ChartHints showElemInsuf={showElemInsuf} />
