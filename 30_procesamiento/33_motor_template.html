@@ -1377,10 +1377,27 @@ code {
           }))
         : [];
 
+      // Función canónica de selección de series — único lugar donde vive esta lógica.
+      // Usar en lugar de los ternarios inline en ChartCell, SparklineSubchart,
+      // RecentBarsSubchart, ResultsTable y exportarCSV.
+      function getSeriesForEntity(entity, gse, nivel, prueba) {
+        if (entity.kind === "slep") {
+          return generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba });
+        }
+        if (entity.kind === "estab") {
+          return generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba });
+        }
+        if (entity.kind === "nacional") {
+          return generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 });
+        }
+        return generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
+      }
+
       return {
         YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
         generateSeries, generateSeriesByRbd, generateSeriesByDepe,
         generateSeriesByEstab, generateSeriesByNacional, gseActualDeEstab, ESTAB_LIST,
+        getSeriesForEntity,
         REGIONES, PRESETS, COMUNA_BY_COD,
         SLEPS, DEPE2_LABELS, DEPE2_CODES,
         NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
@@ -1781,13 +1798,7 @@ code {
           .append("g")
           .attr("transform", `translate(${M.left},${M.top})`);
 
-        const series = entity.kind === "slep"
-          ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
-          : entity.kind === "estab"
-          ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
-          : entity.kind === "nacional"
-          ? SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 })
-          : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
+        const series = SimceData.getSeriesForEntity(entity, gse, nivel, prueba);
         const valid = series.filter(s => s.pct != null);
         const x = d3.scaleLinear().domain([2014, 2025]).range([0, iw]);
         const y = d3.scaleLinear().domain([0, 100]).range([ih, 0]);
@@ -1885,13 +1896,7 @@ code {
           .append("g")
           .attr("transform", `translate(${M.left},${M.top})`);
 
-        const series = entity.kind === "slep"
-          ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
-          : entity.kind === "estab"
-          ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
-          : entity.kind === "nacional"
-          ? SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 })
-          : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
+        const series = SimceData.getSeriesForEntity(entity, gse, nivel, prueba);
         const recent = series.filter(s => s.pct != null).slice(-recentN);
 
         let yMax = 100;
@@ -2010,13 +2015,7 @@ code {
     function ChartCell(props) {
       const { gse, entity, nivel, prueba } = props;
       // Verificar si hay algún dato para esta celda
-      const series = entity.kind === "slep"
-        ? SimceData.generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba })
-        : entity.kind === "estab"
-        ? SimceData.generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba })
-        : entity.kind === "nacional"
-        ? SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 })
-        : SimceData.generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
+      const series = SimceData.getSeriesForEntity(entity, gse, nivel, prueba);
       const hasData = series.some(s => s.pct != null);
       if (!hasData) return <div className="chart-cell is-empty" data-entity-id={entity.id} data-gse={gse} />;
       return (
@@ -2062,32 +2061,16 @@ code {
 
       const [focusYear, setFocusYear] = React.useState(null);
 
-      function getSeries(ent, gse) {
-        if (ent.kind === "slep") {
-          return SimceData.generateSeriesByRbd({ rbds: ent.rbds, gse, nivel, prueba });
-        }
-        if (ent.kind === "estab") {
-          return SimceData.generateSeriesByEstab({ rbd: ent.rbd, gse, nivel, prueba });
-        }
-        if (ent.kind === "nacional") {
-          return SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: ent.depe2 });
-        }
-        return SimceData.generateSeriesByDepe({
-          comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
-        });
-      }
-
       const rowsRaw = [];
       entities.forEach(ent => {
         if (ent.kind === "estab") {
-          // Establecimiento: una sola fila en el GSE del año más reciente
           const gseActual = SimceData.gseActualDeEstab({ rbd: ent.rbd, nivel, prueba });
           const gseLabel = SimceData.GSE_LABELS[gseActual] || gseActual;
-          const series = getSeries(ent, gseLabel).slice().reverse();
+          const series = SimceData.getSeriesForEntity(ent, gseLabel, nivel, prueba).slice().reverse();
           rowsRaw.push({ ent, gse: gseLabel, series });
         } else {
           GSE_LEVELS.forEach(gse => {
-            const series = getSeries(ent, gse).slice().reverse();
+            const series = SimceData.getSeriesForEntity(ent, gse, nivel, prueba).slice().reverse();
             rowsRaw.push({ ent, gse, series });
           });
         }
@@ -2239,25 +2222,10 @@ code {
         ? SimceData.GSE_LEVELS.filter(g => g === gseFilter)
         : SimceData.GSE_LEVELS;
 
-      function getSeries(ent, gse) {
-        if (ent.kind === "slep") {
-          return SimceData.generateSeriesByRbd({ rbds: ent.rbds, gse, nivel, prueba });
-        }
-        if (ent.kind === "estab") {
-          return SimceData.generateSeriesByEstab({ rbd: ent.rbd, gse, nivel, prueba });
-        }
-        if (ent.kind === "nacional") {
-          return SimceData.generateSeriesByNacional({ gse, nivel, prueba, depe2: ent.depe2 });
-        }
-        return SimceData.generateSeriesByDepe({
-          comunas: ent.comunas, depe2: ent.depe2, gse, nivel, prueba,
-        });
-      }
-
       const rows = [["entidad", "nivel", "prueba", "gse", "gse_label", "anio", "pct_adecuado", "n_evaluados", "preliminar"]];
       entities.forEach(ent => {
         GSE_LEVELS.forEach(gse => {
-          const series = getSeries(ent, gse);
+          const series = SimceData.getSeriesForEntity(ent, gse, nivel, prueba);
           series.forEach(s => {
             rows.push([
               ent.name,
