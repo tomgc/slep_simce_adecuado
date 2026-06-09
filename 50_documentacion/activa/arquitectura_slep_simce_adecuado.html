@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitectura — slep_simce_adecuado</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --az: #0062A0;
+  --vd: #75924E;
+  --mr: #4A2746;
+  --gr: #747474;
+  --nj: #E88663;
+  --rj: #C2534D;
+  --bg-az: #EDF4FA;
+  --bg-vd: #F0F5EB;
+  --bg-mr: #F3EDF3;
+  --borde: #E2DEDA;
+  --ff: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --mono: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  --r: 7px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+body {
+  font-family: var(--ff);
+  background: #F7F6F4;
+  color: #1a1a1a;
+  padding: 48px 24px 64px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pg { max-width: 1100px; margin: 0 auto; }
+
+/* ── Header ── */
+.hdr { text-align: center; margin-bottom: 44px; }
+.hdr h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+.hdr p { font-size: 13px; color: var(--gr); margin-top: 5px; }
+
+/* ── Section label ── */
+.lbl {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+/* ── Track (flex row) ── */
+.trk { display: flex; gap: 10px; }
+.trk--col { flex-direction: column; }
+
+/* ── Card ── */
+.c {
+  flex: 1;
+  min-width: 0;
+  background: white;
+  border: 1px solid var(--borde);
+  border-radius: var(--r);
+  padding: 13px 15px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--borde);
+}
+.c--p { border-top-color: var(--az); }
+.c--s { border-top-color: var(--mr); }
+.c--o { border-top-color: var(--gr); }
+
+.c .t {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.c .d {
+  font-size: 11.5px;
+  color: var(--gr);
+  line-height: 1.65;
+}
+.c .d strong { color: #444; font-weight: 600; }
+
+.code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: #f0f0f0;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.code-sm {
+  font-family: var(--mono);
+  font-size: 10px;
+  background: #f0f0f0;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* ── Badge ── */
+.bg {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+.bg--xl { background: #FDF3E2; color: #A06D24; }
+.bg--csv { background: #E6EEFA; color: #3B6AAE; }
+.bg--pq { background: #E6F3E6; color: #3E7A32; }
+.bg--r { background: #EDEBF5; color: #6148A0; }
+.bg--html { background: #FBEAE9; color: #B0413C; }
+
+/* ── Methodological flags ── */
+.flags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--borde);
+}
+.flag {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8a5a00;
+  background: #FDF3E2;
+  border: 1px solid #F0DBB0;
+  border-radius: 4px;
+  padding: 3px 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.flag::before { content: "\2691"; font-size: 9px; }
+
+/* ── Decisiones metodológicas resueltas (anomalías de datos de origen) ── */
+.norm {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--borde);
+}
+.norm-h {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--vd);
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.norm-h::before { content: "\2714"; font-size: 10px; }
+.norm-row {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  font-size: 10.5px;
+  line-height: 1.55;
+  margin-bottom: 5px;
+}
+.norm-row:last-child { margin-bottom: 0; }
+.norm-id {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--vd);
+  background: var(--bg-vd);
+  border: 1px solid #C0D2AE;
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+.norm-tx { color: var(--gr); }
+.norm-tx strong { color: #444; font-weight: 600; }
+
+/* ── Flow arrows ── */
+.fl { padding: 7px 0; }
+.arr { display: flex; justify-content: center; }
+.arr-inner { display: flex; flex-direction: column; align-items: center; }
+.arr-line { width: 2px; height: 14px; background: #D0CBC6; }
+.arr-tip {
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #D0CBC6;
+}
+
+/* ── Auxiliar uses ── */
+.aux-uses {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.aux-use {
+  font-size: 10px;
+  color: #b0a8a0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.aux-use code {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  background: #F0EEEB;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #777;
+}
+
+/* ── Full-width output card ── */
+.app-wrap {
+  background: white;
+  border: 1px solid var(--borde);
+  border-radius: var(--r);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--mr);
+}
+.app-wrap .t { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.app-wrap .d { font-size: 12px; color: var(--gr); }
+
+.mods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+.mod {
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--mr);
+  background: var(--bg-mr);
+}
+.mod .mt { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.mod .md { font-size: 11px; color: var(--gr); line-height: 1.6; margin-bottom: 8px; }
+.tabs { display: flex; gap: 5px; flex-wrap: wrap; }
+.tab {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: white;
+  border: 1px solid var(--borde);
+  color: #666;
+}
+
+/* ── Outputs row ── */
+.outs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.out {
+  background: white;
+  border: 1px solid var(--borde);
+  border-radius: var(--r);
+  padding: 13px 12px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--gr);
+  text-align: center;
+}
+.out .t { font-size: 12px; font-weight: 700; margin-bottom: 2px; display: block; }
+.out .d { font-size: 10.5px; color: var(--gr); line-height: 1.5; }
+
+/* ── Execution block ── */
+.exec {
+  margin-top: 32px;
+  background: #262626;
+  color: #d4d4d4;
+  border-radius: var(--r);
+  padding: 18px 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+.exec .cm { color: var(--vd); }
+.exec .fn { color: #79C0FF; }
+.exec .str { color: #CE9178; }
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--borde);
+  flex-wrap: wrap;
+}
+.lg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--gr); }
+.lg-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* ── Footnote ── */
+.fn-note { text-align: center; margin-top: 16px; font-size: 10.5px; color: #bbb; }
+
+/* ── Print ── */
+@media print {
+  body { background: white; padding: 16px; font-size: 11px; }
+  .exec { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="pg">
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <h1>slep_simce_adecuado</h1>
+    <p>Motor de comparacion SIMCE &mdash; % de estudiantes en estandar Adecuado, ponderado y segmentado por GSE</p>
+    <p>Pipeline R (Positron) &rarr; HTML autocontenido (React + D3) &middot; datos publicos Agencia de Calidad &middot; publicado en GitHub Pages</p>
+  </header>
+
+  <!-- 1. INSUMOS -->
+  <div class="lbl">&#9312; Fuentes de datos (20_insumos/)</div>
+  <div class="trk">
+    <div class="c c--p">
+      <div class="t">SIMCE 4&deg; basico <span class="bg bg--xl">9 xlsx</span></div>
+      <div class="d">
+        Resultados RBD &middot; 2014&ndash;2018, 2022&ndash;2025<br>
+        <span class="code-sm">simce4bAAAA_rbd_final.xlsx</span><br>
+        2025 preliminar &middot; ponderacion por <span class="code-sm">nalu</span>
+      </div>
+    </div>
+    <div class="c c--p">
+      <div class="t">SIMCE 2&deg; medio <span class="bg bg--xl">9 xlsx</span></div>
+      <div class="d">
+        Resultados RBD &middot; 2014&ndash;2018, 2022&ndash;2025<br>
+        <span class="code-sm">simce2mAAAA_rbd_final.xlsx</span><br>
+        2025 preliminar &middot; misma estructura que 4b
+      </div>
+    </div>
+  </div>
+
+  <div class="fl"><div class="arr"><div class="arr-inner"><div class="arr-line"></div><div class="arr-tip"></div></div></div></div>
+
+  <!-- AUXILIARES -->
+  <div class="lbl" style="text-align:center">Tablas auxiliares (20_insumos/auxiliares/)</div>
+  <div class="trk" style="justify-content:center">
+    <div class="c c--s" style="flex:1;max-width:340px">
+      <div class="t">diccionario_territorios.xlsx <span class="bg bg--xl">xlsx</span></div>
+      <div class="d">Equivalencias comuna &middot; SLEP &middot; region<br>Catalogo de entidades territoriales</div>
+    </div>
+    <div class="c c--s" style="flex:1;max-width:340px">
+      <div class="t">caracterizacion_establecimientos.xlsx <span class="bg bg--xl">xlsx</span></div>
+      <div class="d">Atributos por RBD &middot; clasificacion GSE<br>dinamica por <span class="code-sm">[anio + nivel + rbd]</span></div>
+    </div>
+  </div>
+  <div class="aux-uses">
+    <span class="aux-use">&#8600; <code>30_construir_auxiliares.R</code> catalogos territoriales</span>
+    <span class="aux-use">&#8600; <code>31_leer_normalizar.R</code> asignacion GSE por RBD</span>
+    <span class="aux-use">&#8600; <code>directorio_oficial_ee.csv</code> resolucion de codigos comunales (A3)</span>
+  </div>
+
+  <div class="fl"><div class="arr"><div class="arr-inner"><div class="arr-line"></div><div class="arr-tip"></div></div></div></div>
+
+  <!-- 2. CONSTRUIR AUXILIARES -->
+  <div class="lbl">&#9313; Construccion de auxiliares (30_procesamiento/)</div>
+  <div class="trk">
+    <div class="c c--p" style="flex:1">
+      <div class="t"><span class="code">30_construir_auxiliares.R</span> <span class="bg bg--r">R</span></div>
+      <div class="d">
+        Lee diccionario de territorios y caracterizacion de establecimientos<br>
+        Construye catalogos de entidades: <strong>comuna &middot; SLEP &middot; region &middot; establecimiento &middot; Chile</strong><br>
+        Genera <span class="code-sm">comunas_chile.parquet</span> &middot; <span class="code-sm">sleps_chile.parquet</span> &middot; <span class="code-sm">establecimientos_chile.parquet</span> &middot; <span class="code-sm">slep_cc_establecimientos.parquet</span><br>
+        IDs numericos como <strong>character</strong> (preserva ceros a la izquierda)
+      </div>
+    </div>
+  </div>
+
+  <div class="fl"><div class="arr"><div class="arr-inner"><div class="arr-line"></div><div class="arr-tip"></div></div></div></div>
+
+  <!-- 3. LEER Y NORMALIZAR -->
+  <div class="lbl">&#9314; Lectura y normalizacion (30_procesamiento/)</div>
+  <div class="trk">
+    <div class="c c--p" style="flex:1">
+      <div class="t"><span class="code">31_leer_normalizar.R</span> <span class="bg bg--r">R</span></div>
+      <div class="d">
+        Lee los 18 xlsx (4b + 2m) por anio &middot; normaliza esquema a formato largo<br>
+        Asigna <strong>GSE</strong> por llave compuesta <span class="code-sm">[anio + nivel + rbd]</span><br>
+        Calcula % en estandar Adecuado por RBD &times; prueba &times; nivel<br>
+        Marca anios con vacio (2019&ndash;2021) y preliminar (2025)<br>
+        Escritura atomica &rarr; <strong>simce_rbd.parquet</strong> (~1,19 MB)
+      </div>
+      <div class="flags">
+        <span class="flag">GSE inviolable por vista</span>
+        <span class="flag">No mezclar pruebas ni niveles</span>
+        <span class="flag">nalu &ge; 10 (umbral MINEDUC)</span>
+        <span class="flag">cod_grupo NA excluido de agregacion</span>
+      </div>
+      <div class="norm">
+        <div class="norm-h">Normalizaciones de origen resueltas (datos crudos Agencia de Calidad)</div>
+        <div class="norm-row">
+          <span class="norm-id">A1</span>
+          <span class="norm-tx"><strong>2018 / 4&deg; basico:</strong> columnas <span class="code-sm">nalu</span>/<span class="code-sm">palu</span> traian sufijo <span class="code-sm">_2m_</span> en lugar de <span class="code-sm">_4b_</span>. Renombre por posicion al normalizar.</span>
+        </div>
+        <div class="norm-row">
+          <span class="norm-id">A2</span>
+          <span class="norm-tx"><strong>Solo 2014:</strong> la marca <span class="code-sm">marca_eda_*</span> existe unicamente en 2014. Se adopta marca generica homogenea en todos los anios.</span>
+        </div>
+        <div class="norm-row">
+          <span class="norm-id">A3</span>
+          <span class="norm-tx"><strong>2m2015, 4b2015, 4b2017:</strong> <span class="code-sm">cod_com_rbd</span> corrupto (codigos de 1&ndash;2 digitos). Resuelto con join al <span class="code-sm">directorio_oficial_ee.csv</span> por RBD.</span>
+        </div>
+        <div class="norm-row">
+          <span class="norm-id">A4</span>
+          <span class="norm-tx"><strong>2014, 2016, 2017:</strong> comunas de &Ntilde;uble con codigos pre-creacion de region (8401&ndash;8421). Remapeo explicito a codigos 2025 (16101&ndash;16207): coherencia geografica actual sobre precision historica.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fl"><div class="arr"><div class="arr-inner"><div class="arr-line"></div><div class="arr-tip"></div></div></div></div>
+
+  <!-- 4. AGREGAR COMUNAL -->
+  <div class="lbl">&#9315; Agregacion territorial (30_procesamiento/)</div>
+  <div class="trk">
+    <div class="c c--p" style="flex:1">
+      <div class="t"><span class="code">32_agregar_comunal.R</span> <span class="bg bg--r">R</span></div>
+      <div class="d">
+        Agrega <span class="code-sm">simce_rbd</span> a nivel comuna &middot; SLEP &middot; region &middot; Chile<br>
+        Ponderacion por <strong>nalu</strong>: <span class="code-sm">sum(nalu &times; palu_eda_ade / 100) / sum(nalu) &times; 100</span><br>
+        Para SLEP, excluye sus propios establecimientos del grupo de referencia<br>
+        <span class="code-sm">summarise</span> ponderado <strong>antes</strong> del <span class="code-sm">pivot_wider</span><br>
+        Escritura atomica &rarr; <strong>simce_comunal.parquet</strong> (~455 KB)
+      </div>
+      <div class="flags">
+        <span class="flag">Ponderado por nalu (nunca promedio simple)</span>
+        <span class="flag">SLEP excluye su propio universo</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fl"><div class="arr"><div class="arr-inner"><div class="arr-line"></div><div class="arr-tip"></div></div></div></div>
+
+  <!-- 5. GENERAR HTML -->
+  <div class="lbl">&#9316; Generacion del motor (30_procesamiento/)</div>
+  <div class="trk">
+    <div class="c c--p" style="flex:1">
+      <div class="t"><span class="code">33_generar_html.R</span> <span class="bg bg--r">R</span> + <span class="code">33_motor_template.html</span> <span class="bg bg--html">HTML</span></div>
+      <div class="d">
+        Serializa <span class="code-sm">simce_rbd</span> + <span class="code-sm">simce_comunal</span> + catalogos a <strong>JSON</strong> agregado<br>
+        Embebe el JSON en el template React + D3 (claves ordenadas, indentacion fija)<br>
+        Toda la logica de series pasa por <span class="code-sm">SimceData.getSeriesForEntity</span> (sin ternarios inline por <span class="code-sm">kind</span>)<br>
+        Escribe HTML autocontenido &rarr; <strong>motor_comparacion.html</strong> (~14,2 MB)
+      </div>
+      <div class="flags">
+        <span class="flag">JSON embebido (portabilidad total)</span>
+        <span class="flag">intToUtf8() para literales con acentos</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fl"><div class="arr"><div class="arr-inner"><div class="arr-line"></div><div class="arr-tip"></div></div></div></div>
+
+  <!-- 6. MOTOR HTML -->
+  <div class="lbl">&#9317; Motor de comparacion (salida principal)</div>
+  <div class="app-wrap">
+    <div class="t"><span class="code" style="font-size:13px">motor_comparacion.html</span> &mdash; HTML autocontenido (React 18 + D3 v7)</div>
+    <div class="d">
+      Seleccion de entidad via <span class="code-sm">SimceData.getSeriesForEntity</span> &middot; buscador con diacriticos &middot; tooltip clampeado al viewport &middot; segmentacion GSE en toda vista
+    </div>
+    <div class="mods">
+      <div class="mod">
+        <div class="mt">Comparacion por entidad</div>
+        <div class="md">
+          Comuna &middot; SLEP &middot; region &middot; establecimiento &middot; Chile &middot; grupos personalizados<br>
+          Series por anio con vacios 2019&ndash;2021 y preliminar 2025 explicitos
+        </div>
+        <div class="tabs">
+          <span class="tab">Serie temporal</span>
+          <span class="tab">Segmentacion GSE</span>
+          <span class="tab">Tabla</span>
+        </div>
+      </div>
+      <div class="mod">
+        <div class="mt">Despliegue</div>
+        <div class="md">
+          Copia a <span class="code-sm">docs/index.html</span> &middot; GitHub Pages branch <span class="code-sm">main</span> /docs<br>
+          Repo privado, solo /docs expuesto &middot; JSON 100% agregado publico
+        </div>
+        <div class="tabs">
+          <span class="tab">tomgc.github.io</span>
+          <span class="tab">gzip ~1,18 MB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fl"><div class="arr"><div class="arr-inner"><div class="arr-line"></div><div class="arr-tip"></div></div></div></div>
+
+  <!-- INTERMEDIOS -->
+  <div class="lbl">Datos intermedios (40_salidas/intermedios/)</div>
+  <div class="outs">
+    <div class="out">
+      <span class="t">simce_rbd.parquet</span>
+      <div class="d">% Adecuado por RBD<br>&times; prueba &times; nivel &times; anio<br>columna <span class="code-sm">n_evaluados</span></div>
+    </div>
+    <div class="out">
+      <span class="t">simce_comunal.parquet</span>
+      <div class="d">Agregado territorial<br>ponderado por nalu<br>comuna &middot; SLEP &middot; region &middot; Chile</div>
+    </div>
+    <div class="out">
+      <span class="t">Catalogos de entidades</span>
+      <div class="d">comunas &middot; sleps &middot; establecimientos<br>slep_cc_establecimientos<br>IDs como character</div>
+    </div>
+  </div>
+
+  <!-- EXECUTION -->
+  <div class="exec">
+    <span class="cm"># -- Ejecucion canonica: pipeline completo de principio a fin --</span><br>
+    <span class="fn">source</span>(<span class="str">"00_build.R"</span>)<br>
+    <br>
+    <span class="cm"># -- Pipeline interno orquestado (no se invoca directo): --</span><br>
+    <span class="cm">#   30_procesamiento/30_construir_auxiliares.R -> catalogos territoriales</span><br>
+    <span class="cm">#   30_procesamiento/31_leer_normalizar.R      -> simce_rbd.parquet (GSE + % Adecuado)</span><br>
+    <span class="cm">#   30_procesamiento/32_agregar_comunal.R      -> simce_comunal.parquet (ponderado)</span><br>
+    <span class="cm">#   30_procesamiento/33_generar_html.R         -> motor_comparacion.html</span><br>
+    <br>
+    <span class="cm"># -- Republicar en GitHub Pages tras el build --</span><br>
+    <span class="cm"># cp 40_salidas/motor_comparacion.html docs/index.html && git push</span>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="lg"><div class="lg-dot" style="background:var(--az)"></div> Pipeline R</div>
+    <div class="lg"><div class="lg-dot" style="background:var(--mr)"></div> Auxiliares / Motor</div>
+    <div class="lg"><div class="lg-dot" style="background:var(--gr)"></div> Datos intermedios</div>
+    <div class="lg"><div class="lg-dot" style="background:#A06D24"></div> &#10006; Decision metodologica</div>
+    <div class="lg"><div class="lg-dot" style="background:var(--vd)"></div> &#10004; Normalizacion de origen resuelta (A1&ndash;A4)</div>
+  </div>
+
+  <div class="fn-note">
+    slep_simce_adecuado &middot; SLEP Costa Central &middot; Datos publicos Agencia de Calidad de la Educacion &middot; Normalizaciones A1&ndash;A4 documentadas en referencia_glosas_simce.md
+  </div>
+
+</div>
+</body></html>

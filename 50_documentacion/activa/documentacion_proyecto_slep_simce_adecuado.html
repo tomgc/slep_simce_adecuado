@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentacion del proyecto — slep_simce_adecuado</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --az: #0062A0;
+  --vd: #75924E;
+  --mr: #4A2746;
+  --gr: #747474;
+  --nj: #E88663;
+  --rj: #C2534D;
+  --bg-az: #EDF4FA;
+  --bg-vd: #F0F5EB;
+  --bg-mr: #F3EDF3;
+  --borde: #E2DEDA;
+  --ff: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --mono: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  --r: 7px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+body {
+  font-family: var(--ff);
+  background: #F7F6F4;
+  color: #1a1a1a;
+  padding: 48px 24px 64px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pg { max-width: 820px; margin: 0 auto; }
+
+/* ── Header ── */
+.hdr { text-align: center; margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--borde); }
+.hdr h1 { font-size: 25px; font-weight: 700; letter-spacing: -0.3px; }
+.hdr .sub { font-size: 13px; color: var(--gr); margin-top: 6px; }
+
+/* ── Callout (qué es este documento + complementarios) ── */
+.callout {
+  background: white;
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--az);
+  border-radius: var(--r);
+  padding: 16px 20px;
+  margin-bottom: 36px;
+  box-shadow: var(--shadow);
+}
+.callout p { font-size: 12.5px; color: #555; }
+.callout p + p { margin-top: 8px; }
+.callout strong { color: #333; font-weight: 600; }
+.callout .ct { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--az); margin-bottom: 8px; }
+.callout ul { list-style: none; margin-top: 8px; }
+.callout li { font-size: 12.5px; color: #555; padding-left: 16px; position: relative; margin-bottom: 5px; }
+.callout li::before { content: "\2192"; position: absolute; left: 0; color: var(--az); }
+.callout code { font-family: var(--mono); font-size: 11px; background: #F0EEEB; padding: 1px 5px; border-radius: 3px; color: #555; }
+
+/* ── Section ── */
+section { margin-bottom: 34px; }
+.snum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; height: 26px;
+  background: var(--az);
+  color: white;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-right: 11px;
+  flex-shrink: 0;
+}
+h2 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mr);
+  margin-top: 20px;
+  margin-bottom: 7px;
+}
+p { font-size: 14px; color: #333; margin-bottom: 12px; }
+p strong { font-weight: 600; color: #111; }
+
+/* ── Skippable banner ── */
+.skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vd);
+  background: var(--bg-vd);
+  border: 1px solid #C0D2AE;
+  border-radius: 5px;
+  padding: 6px 12px;
+  margin-bottom: 14px;
+}
+.skip::before { content: "\21B7"; font-size: 13px; }
+
+/* ── Concept list ── */
+.terms { list-style: none; margin: 4px 0 12px; }
+.terms li { font-size: 14px; color: #333; padding: 7px 0 7px 16px; border-left: 2px solid var(--borde); margin-bottom: 6px; }
+.terms li strong { color: var(--mr); font-weight: 700; }
+
+/* ── Entity / decision cards ── */
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 12px; }
+.card {
+  background: white;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 11px 14px;
+  box-shadow: var(--shadow);
+}
+.card .ct { font-size: 13px; font-weight: 700; color: var(--az); margin-bottom: 2px; }
+.card .cd { font-size: 12px; color: var(--gr); line-height: 1.5; }
+
+/* ── Decision block ── */
+.dec {
+  background: white;
+  border: 1px solid var(--borde);
+  border-top: 3px solid var(--mr);
+  border-radius: var(--r);
+  padding: 15px 18px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.dec h3 { margin-top: 0; color: var(--mr); }
+.dec .why {
+  font-size: 13px;
+  color: #555;
+  background: var(--bg-mr);
+  border-radius: 5px;
+  padding: 9px 12px;
+  margin-top: 9px;
+}
+.dec .why strong { color: var(--mr); }
+
+/* ── Code block ── */
+pre {
+  background: #262626;
+  color: #d4d4d4;
+  border-radius: var(--r);
+  padding: 13px 16px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 10px 0 14px;
+}
+code.inl { font-family: var(--mono); font-size: 12.5px; background: #F0EEEB; padding: 1px 6px; border-radius: 3px; color: #555; }
+
+/* ── Anomaly list ── */
+.anoms { list-style: none; }
+.anoms li { font-size: 13.5px; color: #333; padding: 9px 0 9px 0; border-bottom: 1px dashed var(--borde); display: flex; gap: 11px; align-items: baseline; }
+.anoms li:last-child { border-bottom: none; }
+.anoms .aid {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--vd);
+  background: var(--bg-vd);
+  border: 1px solid #C0D2AE;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+/* ── Links section ── */
+.links { list-style: none; }
+.links li { font-size: 14px; color: #333; padding: 9px 0; border-bottom: 1px solid var(--borde); }
+.links li:last-child { border-bottom: none; }
+.links li strong { color: var(--az); font-weight: 600; }
+.links code { font-family: var(--mono); font-size: 12px; background: #F0EEEB; padding: 1px 6px; border-radius: 3px; color: #555; }
+
+/* ── Footnote ── */
+.fn-note { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--borde); font-size: 11.5px; color: #bbb; font-style: italic; }
+
+/* ── Print ── */
+@media print {
+  body { background: white; padding: 16px; font-size: 12px; }
+  pre, .dec, .card { break-inside: avoid; }
+}
+
+@media (max-width: 600px) {
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="pg">
+
+  <header class="hdr">
+    <h1>slep_simce_adecuado</h1>
+    <div class="sub">Documentacion del proyecto &mdash; presentacion conceptual</div>
+  </header>
+
+  <div class="callout">
+    <div class="ct">Que es este documento</div>
+    <p>Una presentacion conceptual del proyecto: que problema resuelve, que conceptos usa y que decisiones metodologicas lo gobiernan. Esta pensado para cualquier persona del equipo, con independencia de cuanto maneje SIMCE.</p>
+    <p><strong>Documentos complementarios:</strong></p>
+    <ul>
+      <li><code>arquitectura_slep_simce_adecuado.html</code> &mdash; diagrama visual del flujo de datos, etapa por etapa. Este documento explica el <em>que y el porque</em>; el diagrama muestra el <em>como fluye</em>. Se leen juntos.</li>
+      <li><code>README.md</code> &mdash; instrucciones de ejecucion (como correr el pipeline).</li>
+      <li><code>referencia_glosas_simce.md</code> &mdash; detalle tecnico de las anomalias de datos.</li>
+    </ul>
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <h2><span class="snum">1</span> Que es y para que</h2>
+    <p><code class="inl">slep_simce_adecuado</code> es una herramienta de analisis interno que permite <strong>comparar el desempeno SIMCE de distintos territorios y establecimientos</strong> a lo largo del tiempo, midiendo que porcentaje de estudiantes alcanza el nivel <strong>Adecuado</strong> de aprendizaje.</p>
+    <p>El problema que resuelve es concreto: los resultados SIMCE se publican por establecimiento, ano, prueba y nivel, en planillas dispersas y con formatos que cambian de un ano a otro. Responder una pregunta aparentemente simple &mdash;"&iquest;como le va a las comunas de Costa Central en 4&deg; basico Lectura comparadas con el resto de la region, controlando por nivel socioeconomico?"&mdash; exige consolidar casi una decada de planillas, homologar codigos que cambiaron en el tiempo y agregar correctamente. Esta herramienta hace ese trabajo y entrega el resultado en un unico archivo navegable.</p>
+    <p>El producto final es un <strong>archivo HTML autonomo</strong> (<code class="inl">motor_comparacion.html</code>): se abre en cualquier navegador, sin instalar nada, y permite explorar las comparaciones de forma interactiva. Esta publicado para consulta en linea.</p>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <h2><span class="snum">2</span> Conceptos SIMCE</h2>
+    <div class="skip">Esta seccion es saltable. Si ya manejas SIMCE, estandares de aprendizaje y GSE, pasa a la seccion 3.</div>
+    <p><strong>SIMCE</strong> (Sistema de Medicion de la Calidad de la Educacion) es la evaluacion estandarizada nacional que aplica la Agencia de Calidad de la Educacion. Mide aprendizajes en pruebas como Lectura y Matematica, en distintos niveles escolares. Este proyecto trabaja con dos niveles: <strong>4&deg; basico (4b)</strong> y <strong>2&deg; medio (2m)</strong>.</p>
+    <h3>Estandares de aprendizaje</h3>
+    <p>Mas alla del puntaje, la Agencia clasifica a cada estudiante en uno de tres estandares segun lo que demuestra saber:</p>
+    <ul class="terms">
+      <li><strong>Insuficiente</strong> &mdash; no logra los aprendizajes minimos del nivel.</li>
+      <li><strong>Elemental</strong> &mdash; logra los aprendizajes de forma parcial.</li>
+      <li><strong>Adecuado</strong> &mdash; logra los aprendizajes esperados para el nivel.</li>
+    </ul>
+    <p>Esta herramienta se concentra en el <strong>% de estudiantes en estandar Adecuado</strong>: es el indicador mas exigente y el mas informativo sobre cuantos estudiantes realmente alcanzan lo esperado.</p>
+    <h3>GSE (Grupo Socioeconomico)</h3>
+    <p>La Agencia clasifica cada establecimiento en uno de cinco grupos socioeconomicos &mdash;Bajo, Medio bajo, Medio, Medio alto, Alto&mdash; segun las caracteristicas de las familias que atiende. El GSE es decisivo para interpretar resultados con justicia: comparar el % Adecuado de un colegio de GSE Alto con uno de GSE Bajo, sin separarlos, mezcla el efecto de la escuela con el efecto del contexto socioeconomico. Por eso, en este proyecto, <strong>todo resultado se reporta segmentado por GSE</strong> (ver decision metodologica en 4.2).</p>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <h2><span class="snum">3</span> Que hace la herramienta</h2>
+    <p>El motor permite comparar el % de estudiantes en estandar Adecuado entre distintas <strong>entidades</strong>:</p>
+    <div class="cards">
+      <div class="card"><div class="ct">Comuna</div><div class="cd">Todos los establecimientos de una comuna.</div></div>
+      <div class="card"><div class="ct">SLEP</div><div class="cd">Agrupacion de las comunas de un Servicio Local.</div></div>
+      <div class="card"><div class="ct">Region</div><div class="cd">Agrupacion de todas las comunas de una region.</div></div>
+      <div class="card"><div class="ct">Establecimiento</div><div class="cd">Un RBD individual.</div></div>
+      <div class="card"><div class="ct">Nacional ("Chile")</div><div class="cd">El total pais.</div></div>
+      <div class="card"><div class="ct">Grupos personalizados</div><div class="cd">Conjuntos de establecimientos definidos a medida.</div></div>
+    </div>
+    <p>Para cualquier entidad seleccionada, la herramienta muestra la <strong>serie temporal</strong> del % Adecuado a lo largo de los anos disponibles, el resultado <strong>segmentado por GSE</strong> (nunca como un unico numero global) y una <strong>tabla</strong> detallada con el conteo de estudiantes evaluados por celda.</p>
+    <p>Todo dentro de una combinacion fija de <strong>prueba</strong> (Lectura o Matematica) y <strong>nivel</strong> (4&deg; basico o 2&deg; medio): el motor nunca mezcla pruebas ni niveles entre si (ver 4.3).</p>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <h2><span class="snum">4</span> Decisiones metodologicas y su porque</h2>
+    <p>Estas son las reglas que gobiernan todo calculo del proyecto. No son preferencias de estilo: cada una corrige una forma especifica de leer mal los datos.</p>
+
+    <div class="dec">
+      <h3>4.1 Ponderacion por numero de evaluados (nunca promedio simple)</h3>
+      <p>El % Adecuado de un territorio <strong>no</strong> es el promedio de los porcentajes de sus establecimientos. Es el porcentaje ponderado por cuantos estudiantes evaluo cada uno:</p>
+      <pre>% adecuado = sum(nalu * palu_eda_ade / 100) / sum(nalu) * 100</pre>
+      <div class="why"><strong>Por que.</strong> Un promedio simple le daria el mismo peso a un colegio de 15 estudiantes que a uno de 400, distorsionando el resultado. La ponderacion por <code class="inl">nalu</code> (numero de alumnos evaluados) hace que cada estudiante cuente igual, que es lo correcto cuando se habla de "que porcentaje de estudiantes alcanza Adecuado".</div>
+    </div>
+
+    <div class="dec">
+      <h3>4.2 Segmentacion por GSE inviolable</h3>
+      <p>Ningun resultado se muestra sin separar por GSE.</p>
+      <div class="why"><strong>Por que:</strong> ver seccion 2. Un numero agregado sin GSE invita a comparaciones injustas entre territorios con composicion socioeconomica distinta. La segmentacion es una salvaguarda metodologica, no una opcion de visualizacion.</div>
+    </div>
+
+    <div class="dec">
+      <h3>4.3 No mezclar pruebas ni niveles</h3>
+      <p>Lectura y Matematica, 4&deg; basico y 2&deg; medio, se analizan siempre por separado.</p>
+      <div class="why"><strong>Por que.</strong> Son mediciones de cosas distintas, en poblaciones distintas; combinarlas produce un numero sin interpretacion posible.</div>
+    </div>
+
+    <div class="dec">
+      <h3>4.4 El SLEP se compara contra el "resto", excluyendose a si mismo</h3>
+      <p>Cuando se compara un SLEP con su region, los establecimientos del propio SLEP se <strong>excluyen</strong> del grupo de referencia.</p>
+      <div class="why"><strong>Por que.</strong> Si el SLEP quedara incluido en el "resto de la region", se estaria comparando en parte consigo mismo, diluyendo cualquier diferencia real. Excluirlo deja la comparacion limpia: SLEP versus todo lo demas.</div>
+    </div>
+
+    <div class="dec">
+      <h3>4.5 Vacios y datos preliminares explicitos</h3>
+      <p>Entre <strong>2019 y 2021 no hubo SIMCE</strong> (estallido social y pandemia). Los datos de <strong>2025 son preliminares</strong>. Ambas situaciones se marcan visualmente en el motor.</p>
+      <div class="why"><strong>Por que.</strong> Un vacio que se dibuja como continuidad, o un dato preliminar que se presenta como definitivo, inducen a leer tendencias que no existen.</div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <h2><span class="snum">5</span> De donde salen los datos</h2>
+    <p>Todos los datos provienen de la <strong>Agencia de Calidad de la Educacion</strong> y son <strong>publicos</strong>. Se descargan del portal de informacion estadistica y se versionan junto al codigo en el repositorio (no hay datos individuales de estudiantes; solo agregados por establecimiento).</p>
+    <p>Los datos crudos traen particularidades de origen que el pipeline normaliza antes de cualquier calculo. Son cuatro, documentadas en detalle en <code class="inl">referencia_glosas_simce.md</code>:</p>
+    <ul class="anoms">
+      <li><span class="aid">A1</span> En 2018/4&deg; basico, ciertas columnas venian mal etiquetadas. Se corrigen al leer.</li>
+      <li><span class="aid">A2</span> Una marca de validez que solo existe en 2014. Se homologa a todos los anos.</li>
+      <li><span class="aid">A3</span> Codigos de comuna corruptos en algunos anos. Se reconstruyen cruzando con el directorio oficial de establecimientos.</li>
+      <li><span class="aid">A4</span> Comunas de &Ntilde;uble con codigos anteriores a la creacion de esa region (2017). Se remapean a los codigos actuales, para coherencia geografica.</li>
+    </ul>
+    <p>Estas correcciones <strong>no son errores del proyecto</strong>: son ajustes a inconsistencias de las planillas de origen, resueltos de forma trazable. El diagrama de arquitectura las muestra en su etapa correspondiente.</p>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <h2><span class="snum">6</span> Como se relaciona con el resto de la documentacion</h2>
+    <p>Esta presentacion es la puerta de entrada conceptual. Desde aqui:</p>
+    <ul class="links">
+      <li>Para <strong>entender el flujo de datos</strong> etapa por etapa (que script produce que, en que orden) &rarr; abre el diagrama <code>arquitectura_slep_simce_adecuado.html</code>.</li>
+      <li>Para <strong>correr el pipeline</strong> en tu propia maquina &rarr; sigue <code>README.md</code>.</li>
+      <li>Para el <strong>detalle tecnico de las anomalias A1&ndash;A4</strong> y las reglas de calculo &rarr; consulta <code>referencia_glosas_simce.md</code>.</li>
+      <li>Para <strong>convenciones de codigo y estado del proyecto</strong> &rarr; <code>CLAUDE.md</code>.</li>
+    </ul>
+  </section>
+
+  <div class="fn-note">
+    slep_simce_adecuado &middot; Area de Monitoreo y Seguimiento &middot; SLEP Costa Central &middot; Datos publicos de la Agencia de Calidad de la Educacion
+  </div>
+
+</div>
+</body></html>

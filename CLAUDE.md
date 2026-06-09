@@ -2,9 +2,10 @@
 
 ## Descripción
 
-Motor de comparación comunal de resultados SIMCE por estándares de aprendizaje
-(% ponderado de estudiantes en nivel Adecuado). Producto final:
-`motor_comparacion.html` standalone con JSON embebido.
+Motor de comparación de resultados SIMCE por estándares de aprendizaje
+(% ponderado de estudiantes en nivel Adecuado, segmentado por GSE). Producto
+final: `motor_comparacion.html` standalone con JSON embebido, publicado en
+GitHub Pages (`https://tomgc.github.io/slep_simce_adecuado/`).
 
 ## Stack tecnológico
 
@@ -23,29 +24,34 @@ Motor de comparación comunal de resultados SIMCE por estándares de aprendizaje
 
 ```
 00_build.R                              # Orquestador
-00_escanear_proyecto.R                  # Escáner canónico
+00_escanear_proyecto.R                  # Escáner canónico (auto-poda: retiene 2 sellos)
 10_utils/
   10_utils.R                            # agregar_ponderado()
   d3.min.js                             # D3.js v7.9.0 minificado (versionado)
-20_insumos/simce/{4b,2m}/*.xlsx         # Datos crudos (no versionados)
-20_insumos/auxiliares/                  # directorio_oficial_ee.csv, etc.
+20_insumos/simce/{4b,2m}/*.xlsx         # Datos crudos (versionados; públicos Agencia de Calidad)
+20_insumos/auxiliares/                  # directorio_oficial_ee.csv, diccionario_territorios.xlsx, etc.
 30_procesamiento/
   30_construir_auxiliares.R             # Parquets auxiliares (bloques 0-5 completos)
-  31_leer_normalizar.R                  # xlsx -> simce_rbd.parquet (185 378 filas)
-  32_agregar_comunal.R                  # simce_rbd -> simce_comunal.parquet (44 975 filas)
+  31_leer_normalizar.R                  # xlsx -> simce_rbd.parquet
+  32_agregar_comunal.R                  # simce_rbd -> simce_comunal.parquet
   33_generar_html.R                     # JSON + 33_motor_template.html -> motor_comparacion.html
-  33_motor_template.html                # Plantilla UI React/D3 (v3 post-sesión 3)
+  33_motor_template.html                # Plantilla UI React/D3
 40_salidas/
   intermedios/
     simce_rbd.parquet                   # Establecimiento × año × nivel × prueba × GSE
     simce_comunal.parquet               # Comuna × año × nivel × prueba × GSE
-    slep_cc_establecimientos.parquet    # 73 establecimientos SLEP Costa Central
-    comunas_chile.parquet               # 345 comunas con región
-    sleps_chile.parquet                 # 26 SLEPs × comunas × RBDs
-    establecimientos_chile.parquet      # Catálogo completo (~10 945 establecimientos)
-  motor_comparacion.html                # Producto final (no versionado)
+    slep_cc_establecimientos.parquet    # Establecimientos SLEP Costa Central
+    comunas_chile.parquet               # Comunas con región
+    sleps_chile.parquet                 # SLEPs × comunas × RBDs
+    establecimientos_chile.parquet      # Catálogo completo de establecimientos
+  motor_comparacion.html                # Producto final (no versionado; regenerable)
+docs/
+  index.html                            # Copia publicada en GitHub Pages (deploy desde main /docs)
 50_documentacion/
-  activa/referencia_glosas_simce.md    # Anomalías A1-A4 y reglas R1-R3
+  activa/
+    referencia_glosas_simce.md          # Anomalías A1-A4 y reglas
+    publicacion_github_pages.md         # Procedimiento de republicación
+    arquitectura_slep_simce_adecuado.html # Diagrama de arquitectura y flujo
 ```
 
 ## Convenciones del proyecto
@@ -65,18 +71,19 @@ Motor de comparación comunal de resultados SIMCE por estándares de aprendizaje
 - dplyr:: prefijado en todo (sin `library(dplyr)`). Ídem para demás paquetes.
 - Strings no-ASCII en R construidos con `intToUtf8()` para evitar bug de locale C.
 - Columnas con ñ/tildes renombradas por posición (no por nombre) en locale C.
+- Toda lógica de selección de series pasa por `SimceData.getSeriesForEntity`
+  en el motor HTML — sin ternarios inline por `kind` en componentes.
 
 ## Anomalías de datos resueltas
 
 Documentadas en `50_documentacion/activa/referencia_glosas_simce.md`:
 
-- **A1** — Bug de sufijo en 2018/4b: archivos xlsx etiquetados `_2m_` en lugar
-  de `_4b_`. Resuelto con `gsub("_2m_", "_4b_", ...)` al leer.
+- **A1** — Bug de sufijo en 2018/4b: columnas etiquetadas `_2m_` en lugar
+  de `_4b_`. Resuelto al normalizar en `31_leer_normalizar.R`.
 - **A2** — Columna `marca_eda_*` solo presente en 2014. Resto de años sin ella;
-  se trata como NA (sin exclusión adicional).
-- **A3** — `cod_com_rbd` corrupto en 2015/2m, 2015/4b y 2017/4b (>50% de
-  valores con <4 dígitos). Resuelto con join por RBD contra
-  `directorio_oficial_ee.csv`. Cobertura 100%.
+  se adopta marca genérica homogénea.
+- **A3** — `cod_com_rbd` corrupto en 2015/2m, 2015/4b y 2017/4b (valores con
+  <4 dígitos). Resuelto con join por RBD contra `directorio_oficial_ee.csv`.
 - **A4** — Códigos pre-Ñuble 8401–8421 en años anteriores a la Ley 21.033/2017.
   Remapeados a códigos actuales 16101–16207 con vector explícito.
 
@@ -85,45 +92,48 @@ Documentadas en `50_documentacion/activa/referencia_glosas_simce.md`:
 | # | Título | Prioridad | Tipo |
 |---|--------|-----------|------|
 | P2 | Exportación de gráficos como imagen (PNG/SVG desde DOM) | Medio | UI |
-| P5 | `00_escanear_proyecto.R` adaptado al proyecto | Bajo | Infraestructura |
-| P6 | Entidades tipo establecimiento y región | **Alto** | UI + Pipeline |
-| P7 | Clic en celda de tabla abre popup de establecimientos filtrado por GSE × nivel × prueba | **Alto** | UI |
+| P3 | Quitar botón de ajustes; densidad fija en "cómoda" | Medio | UI |
+| P4 | Párrafo de contacto con ofuscación anti-scraping (nivel B) | Bajo | UI |
+| P5 | Optimización del peso del HTML (separar JSON por fetch) | Diferido | UI |
 | D3 | Limpiar estado `region` sin uso en tab comuna del modal | Bajo | Deuda técnica |
-| — | Entidad tipo "nacional" | Diferido | UI + Pipeline |
 
-**Notas de diseño para P6:**
-- **Establecimiento**: datos desde `simce_rbd.parquet` (no desde `simce_comunal`).
-  El establecimiento aparece en la fila del GSE al que pertenece.
-  Agregación ponderada igual que cualquier otra entidad:
-  `sum(nalu × palu_eda_ade / 100) / sum(nalu) × 100`.
-- **Región**: agrupación de todas las comunas de una región, ponderada desde
-  `simce_comunal.parquet` usando `cod_reg_rbd`. No requiere nuevo parquet.
-- **Jerarquía completa**: establecimiento → comuna → SLEP → región.
-  "Nacional" diferido por complejidad.
-
-**Notas de diseño para P7:**
-- Reutiliza lógica de `contarOFiltrarEstablecimientos` ya existente.
-- Filtro adicional: `cod_grupo` (GSE) de la celda clicada.
-- El tooltip sigue mostrando solo el conteo (sin lista); la lista aparece al clic.
+**Notas para P3 y P4** (mismo archivo `33_motor_template.html`, agrupables;
+requieren redeploy a `/docs` tras el cambio):
+- **P3**: eliminar el panel de tweaks; densidad hardcodeada en "cómoda".
+  Limpiar estado React y handlers que el botón deje sin uso.
+- **P4**: agregar `**Contacto:**` + correo institucional al final del párrafo
+  de intro, ensamblado por JS (el correo no debe existir como string literal
+  completo en el HTML servido), `mailto:` clickeable.
 
 ## Últimos cambios
 
-**Sesión 3 (cambios 19–33):**
-1. `30_construir_auxiliares.R`: Bloque 5 añadido → `establecimientos_chile.parquet`
-   (catálogo completo ~10 945 establecimientos con `rbd`, `nom_rbd`, `cod_com_rbd`,
-   `nom_com_rbd`, `cod_depe2`).
-2. `33_generar_html.R`: carga `establecimientos_chile.parquet` y `simce_rbd.parquet`
-   (para `rbds_por_nivel`); ambos inyectados en `json_root`.
-3. `33_motor_template.html` v3: popup establecimientos universal (cualquier entidad),
-   filtrado por RBD × nivel × prueba, conteo `(N)` en chip, supergrid 4 columnas
-   fijas con placeholders, exportación CSV (`;` + BOM UTF-8), etiquetas de barras
-   siempre encima, semillas con `depe2="5"`, búsqueda libre de comuna en modal,
-   límite 4 entidades, corrección header y leyenda tabla.
+**Sesión 9 (despliegue y limpieza):**
+1. Motor publicado en GitHub Pages (`docs/index.html`, branch `main` /docs).
+2. `00_escanear_proyecto.R` reemplazado por versión con auto-poda de snapshots
+   (`RETENER_SNAPSHOTS = 2`).
+3. Limpieza del repo: eliminados 12 snapshots históricos, `sleps_chile_v2.xlsx`
+   y `estructura_proyecto.md` (consolidado en README).
+4. Diagrama de arquitectura HTML standalone en `50_documentacion/activa/`.
 
-**Sesión 2 (cambios 12–18):**
-4. `cod_depe2` añadido al pipeline completo; `sleps_chile.parquet` implementado.
-5. UI v2 → v3: rediseño basado en prototipo Claude Design, React 18 + D3 v7.
+**Sesión 8 (fixes UX):**
+5. Fix de tooltip: clamping al viewport en `33_motor_template.html`.
+6. Fix de warning `pivot_wider` en `32_agregar_comunal.R` (summarise ponderado
+   antes del pivot).
 
-**Sesión 1 (cambios 1–11):**
-6. Pipeline base: `31_leer_normalizar.R` → `32_agregar_comunal.R` →
-   `33_generar_html.R`. Motor HTML standalone con JSON embebido.
+**Sesiones 4-7 (entidades y portabilidad):**
+7. Cobertura completa de tipos de entidad: comuna, SLEP, región,
+   establecimiento, nacional ("Chile") y grupos personalizados.
+8. `SimceData.getSeriesForEntity` como punto de entrada único de la lógica
+   de series (sin ternarios inline por `kind`).
+9. Portabilidad cross-OS: `.Rproj` con UTF-8, `here::here()` exclusivo, xlsx
+   versionados en el repo. Verificado en macOS y Windows.
+
+**Sesión 3 (popup y supergrid):**
+10. `30_construir_auxiliares.R`: bloque 5 → `establecimientos_chile.parquet`.
+11. `33_motor_template.html`: popup de establecimientos universal filtrado por
+    RBD × nivel × prueba; supergrid; exportación CSV (`;` + BOM UTF-8);
+    semillas con `depe2="5"`.
+
+**Sesiones 1-2 (base):**
+12. Pipeline base 31 → 32 → 33; motor HTML standalone con JSON embebido;
+    `cod_depe2` en el pipeline; UI rediseñada (React 18 + D3 v7).
