@@ -2639,14 +2639,19 @@ code {
       const allComunas = SimceData.REGIONES.flatMap(r =>
         r.comunas.map(c => ({ cod_com: c.cod_com, nombre: c.nombre, region: r.nombre }))
       );
-      const filteredComunas = allComunas.filter(({ nombre, region: rn }) => {
-        if (!search) return true;
-        const s = search.toLowerCase();
-        return nombre.toLowerCase().includes(s) || rn.toLowerCase().includes(s);
-      });
+      const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const filteredComunas = (() => {
+        if (!search) return allComunas;
+        const s = norm(search);
+        const byNombre = allComunas.filter(({ nombre }) => norm(nombre).includes(s));
+        const byRegion = allComunas.filter(({ nombre, region: rn }) =>
+          !norm(nombre).includes(s) && norm(rn).includes(s)
+        );
+        return [...byNombre, ...byRegion];
+      })();
       const filteredSleps = SimceData.SLEPS.filter(s => {
         if (!slepSearch) return true;
-        return s.nombre.toLowerCase().includes(slepSearch.toLowerCase());
+        return norm(s.nombre).includes(norm(slepSearch));
       });
 
       function handleSave() {
@@ -2742,7 +2747,7 @@ code {
               {tab === "estab" && (() => {
                 const filtered = estabSearch.length >= 3
                   ? SimceData.ESTAB_LIST.filter(e =>
-                      e.nom.toLowerCase().includes(estabSearch.toLowerCase()) ||
+                      norm(e.nom).includes(norm(estabSearch)) ||
                       e.rbd.includes(estabSearch)
                     ).slice(0, 20)
                   : [];
@@ -2800,7 +2805,7 @@ code {
                     />
                     <div className="comuna-checklist" style={{ maxHeight: 260, marginTop: 4 }}>
                       {SimceData.REGIONES
-                        .filter(r => !regionSearch || r.nombre.toLowerCase().includes(regionSearch.toLowerCase()))
+                        .filter(r => !regionSearch || norm(r.nombre).includes(norm(regionSearch)))
                         .map(r => (
                           <label key={r.cod_reg}
                             className={"check-row" + (selectedRegion === r.cod_reg ? " is-selected" : "")}
@@ -2840,7 +2845,7 @@ code {
                     />
                     {search && filteredComunas.length > 0 && !comunaCod && (
                       <div className="comuna-checklist" style={{ maxHeight: 200, marginTop: 4 }}>
-                        {filteredComunas.slice(0, 30).map(c => (
+                        {filteredComunas.slice(0, 60).map(c => (
                           <label key={c.cod_com} className="check-row" style={{ cursor: "pointer" }}
                             onClick={() => { setComunaCod(c.cod_com); setSearch(c.nombre); }}>
                             <span style={{ fontWeight: 500 }}>{c.nombre}</span>
