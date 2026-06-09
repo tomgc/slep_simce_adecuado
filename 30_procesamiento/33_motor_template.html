@@ -1477,7 +1477,7 @@ code {
     // ============================================================
     // Header — banner azul institucional
     // ============================================================
-    function Header({ onOpenTweaks }) {
+    function Header() {
       return (
         <header className="app-header">
           <div className="app-header-inner">
@@ -1493,12 +1493,6 @@ code {
               <p className="app-objective">
                 El objetivo de esta herramienta de análisis interno del <strong>SLEP Costa Central</strong> es visualizar la proporción de estudiantes cuyo desempeño en los <strong>Estándares de Aprendizaje</strong>, medidos por el Simce, se encuentra en el <strong>nivel Adecuado</strong>. Su diseño permite comparar diversas "entidades", las cuales pueden ser establecimientos, comunas, SLEPs o regiones completas. Los resultados se presentan siempre segmentados por <strong>Grupo Socioeconómico (GSE)</strong>, siguiendo las normas de la <strong>Agencia de Calidad de la Educación</strong>.
               </p>
-            </div>
-            <div className="app-header-right">
-              <button className="btn btn-ghost btn-small" onClick={onOpenTweaks} title="Ajustes">
-                <Icon name="gear" />
-                <span>Ajustes</span>
-              </button>
             </div>
           </div>
         </header>
@@ -2959,70 +2953,6 @@ code {
     }
 
     // ============================================================
-    // TweaksPanel — simplificado para standalone
-    // ============================================================
-    function TweaksPanel({ open, onClose, title, children }) {
-      if (!open) return null;
-      return (
-        <div className="twk-panel">
-          <div className="twk-hd">
-            <b>{title || "Ajustes"}</b>
-            <button className="twk-x" onClick={onClose} aria-label="Cerrar ajustes">✕</button>
-          </div>
-          <div className="twk-body">{children}</div>
-        </div>
-      );
-    }
-    function TweakSection({ label, children }) {
-      return <><div className="twk-sect">{label}</div>{children}</>;
-    }
-    function TweakRow({ label, value, children, inline = false }) {
-      return (
-        <div className={inline ? "twk-row twk-row-h" : "twk-row"}>
-          <div className="twk-lbl">
-            <span>{label}</span>
-            {value != null && <span className="twk-val">{value}</span>}
-          </div>
-          {children}
-        </div>
-      );
-    }
-    function TweakToggle({ label, value, onChange }) {
-      return (
-        <div className="twk-row twk-row-h">
-          <div className="twk-lbl"><span>{label}</span></div>
-          <button type="button" className="twk-toggle" data-on={value ? "1" : "0"}
-            role="switch" aria-checked={!!value} onClick={() => onChange(!value)}>
-            <i />
-          </button>
-        </div>
-      );
-    }
-    function TweakRadio({ label, value, options, onChange }) {
-      const opts = options.map(o => typeof o === "object" ? o : { value: o, label: o });
-      return (
-        <TweakRow label={label}>
-          <div className="twk-seg" role="radiogroup">
-            {opts.map(o => (
-              <button key={o.value} type="button"
-                className={o.value === value ? "on" : ""}
-                onClick={() => onChange(o.value)}>
-                {o.label}
-              </button>
-            ))}
-          </div>
-        </TweakRow>
-      );
-    }
-    function TweakButton({ label, onClick, secondary = false }) {
-      return (
-        <button type="button" className={secondary ? "twk-btn secondary" : "twk-btn"} onClick={onClick}>
-          {label}
-        </button>
-      );
-    }
-
-    // ============================================================
     // App principal
     // ============================================================
     function App() {
@@ -3036,16 +2966,15 @@ code {
       const [modal, setModal] = React.useState(null);
       const [loading, setLoading] = React.useState(false);
       const [notesOpen, setNotesOpen] = React.useState(false);
-      const [tweaksOpen, setTweaksOpen] = React.useState(false);
       const [gseFilter, setGseFilter] = React.useState("");
       const [estabPopup, setEstabPopup] = React.useState(null); // { entity, pos }
       const [cellPopup, setCellPopup] = React.useState(null);   // { entity, gse, pos }
       const [chartPopup, setChartPopup] = React.useState(null); // { entity, gse } desde tooltip gráfico
 
-      // Tweaks
-      const [showElemInsuf, setShowElemInsuf] = React.useState(true);
-      const [yScale, setYScale] = React.useState("100");
-      const [density, setDensity] = React.useState("comoda");
+      // Parámetros de visualización fijos (antes configurables vía panel de ajustes,
+      // removido en sesión 10). Valores hardcodeados en su default original.
+      const showElemInsuf = true;
+      const yScale = "100";
 
       const firstRender = React.useRef(true);
       React.useEffect(() => {
@@ -3102,11 +3031,11 @@ code {
         }
       }
 
-      const containerClass = "app " + (density === "compacta" ? "is-compact " : "is-comfy ");
+      const containerClass = "app is-comfy ";
 
       return (
         <div className={containerClass}>
-          <Header onOpenTweaks={() => setTweaksOpen(true)} />
+          <Header />
           <main className="app-main">
             <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba} loading={loading} />
             <EntitiesBar entities={entities} setEntities={setEntities}
@@ -3182,10 +3111,6 @@ code {
                   entity: { ...entity, _popupPos: { top: ev.clientY + window.scrollY + 8, left: ev.clientX + window.scrollX - 100 } },
                   gse,
                 })} />
-              <div className="table-legend">
-                <span><b className="dot dot-prelim">*</b> Dato preliminar 2025</span>
-                <span>Formato: <code>XX,X% (N evaluados)</code> · — sin datos</span>
-              </div>
             </section>
 
             <footer className="app-footer">
@@ -3226,6 +3151,7 @@ code {
                   </div>
                   <div className="notes-sources">
                     <span>Fuente: Agencia de Calidad de la Educación · Bases SIMCE 2014–2025. Procesamiento: SLEP Costa Central.</span>
+                    <span>Área de Monitoreo y Seguimiento de Procesos y Resultados Educativos · Contacto: {["tomas", "gonzalez"].join(".") + String.fromCharCode(64) + ["slepcostacentral", "gob", "cl"].join(".")}</span>
                   </div>
                 </div>
               )}
@@ -3270,22 +3196,6 @@ code {
               onCancel={() => setModal(null)}
             />
           )}
-
-          <TweaksPanel open={tweaksOpen} onClose={() => setTweaksOpen(false)} title="Ajustes">
-            <TweakSection label="Visualización" />
-            <TweakToggle label="Mostrar Elemental + Insuficiente"
-              value={showElemInsuf} onChange={setShowElemInsuf} />
-            <TweakRadio label="Escala Y" value={yScale}
-              options={[{ value: "100", label: "Fijo 0–100%" }, { value: "auto", label: "Auto" }]}
-              onChange={setYScale} />
-            <TweakSection label="Apariencia" />
-            <TweakRadio label="Densidad" value={density}
-              options={[{ value: "comoda", label: "Cómoda" }, { value: "compacta", label: "Compacta" }]}
-              onChange={setDensity} />
-            <TweakSection label="Acciones rápidas" />
-            <TweakButton label="Preset SLEP Costa Central" onClick={applyPreset} />
-            <TweakButton label="Restablecer (4 seeds)" onClick={() => setEntities(buildInitialEntities())} secondary />
-          </TweaksPanel>
         </div>
       );
     }
