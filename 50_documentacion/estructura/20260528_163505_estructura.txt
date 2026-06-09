@@ -1,6 +1,6 @@
 # Estructura actual — slep_simce_adecuado
 
-_Generado por `00_escanear_proyecto.R` el 2026-06-08 21:50._
+_Generado por `00_escanear_proyecto.R` el 2026-05-28 16:35._
 _Los `.parquet` y `.min.js` se omiten del árbol (binarios pesados)._
 
 ## Árbol de archivos versionados
@@ -73,10 +73,6 @@ _Los `.parquet` y `.min.js` se omiten del árbol (binarios pesados)._
 │   │   ├── 20260528_124910_estructura.txt
 │   │   ├── 20260528_154331_estructura.md
 │   │   ├── 20260528_154331_estructura.txt
-│   │   ├── 20260528_163505_estructura.md
-│   │   ├── 20260528_163505_estructura.txt
-│   │   ├── 20260531_122705_estructura.md
-│   │   ├── 20260531_122705_estructura.txt
 │   │   ├── estructura_actual.md
 │   │   ├── estructura_actual.txt
 │   │   ├── estructura_proyecto.md
@@ -87,14 +83,11 @@ _Los `.parquet` y `.min.js` se omiten del árbol (binarios pesados)._
 │       ├── traspaso_cierre_v03.md
 │       ├── traspaso_cierre_v04.md
 │       ├── traspaso_cierre_v05.md
-│       ├── traspaso_cierre_v06.md
-│       └── traspaso_cierre_v07.md
+│       └── traspaso_cierre_v06.md
 ├── CLAUDE.md
 ├── POLITICA_PROYECTO.md
 ├── README.md
-├── _archivo
-│   └── auditoria_agregacion_comunal.R
-└── slep_simce_adecuado.Rproj
+└── auditoria_agregacion_comunal.R
 ```
 
 ## Intermedios en disco (no versionados)
@@ -117,10 +110,10 @@ _Salidas HTML en `40_salidas/`:_
 ## Últimos 5 commits
 
 ```
-0ed7871 refactor: extraer getSeriesForEntity en SimceData, eliminar lógica duplicada (DT6.1)
-e25ee59 chore: mover auditoria_agregacion_comunal.R a _archivo/ (DT6.2)
-3f74548 docs: actualizar README — xlsx versionados, instrucciones setup cross-OS
-a5e36a7 data: versionar xlsx SIMCE 2014-2025 (datos publicos Agencia)
-cedf4de chore: agregar .Rproj con Encoding UTF-8, sacar xlsx SIMCE del gitignore
+b47e1d5 feat: P8 entidad nacional, auditoría agregación, bugs B6.1-B6.3
+1cb39be feat: exportar SVG supergrid, tooltip pinned + ver establecimientos por año, nota estándares, escáner 4 outputs
+3cc9edb feat: P4 orquestador, P6 región+establecimiento, P7 popup GSE, bugs UI sesión 4
+775a107 feat: orquestador 00_build.R completo, CLAUDE.md post-sesión 3, motor_template v3
+2042ffd feat: cod_depe2 en pipeline, sleps_chile.parquet, UI v3 — sesión 2
 ```
 
