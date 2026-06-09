@@ -191,8 +191,12 @@ cc <- df_comunal |>
     prueba == "lect",
     cod_com_rbd %in% costa_central
   ) |>
-  dplyr::mutate(pct = round(pct_adecuado, 1)) |>
-  dplyr::select(nom_com_rbd, cod_grupo, anio, pct) |>
+  dplyr::summarise(
+    pct = sum(pct_adecuado * n_evaluados, na.rm = TRUE) /
+          sum(n_evaluados, na.rm = TRUE),
+    .by = c(nom_com_rbd, cod_grupo, anio)
+  ) |>
+  dplyr::mutate(pct = round(pct, 1)) |>
   tidyr::pivot_wider(names_from = anio, values_from = pct) |>
   dplyr::arrange(nom_com_rbd, cod_grupo)
 print(cc, n = Inf, width = 200)
