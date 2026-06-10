@@ -5,8 +5,9 @@
 # Flujo:
 #   1. Lee simce_comunal.parquet y comunas_chile.parquet.
 #   2. Construye el JSON con meta + catálogos + datos columnares.
-#   3. Lee la plantilla motor_template.html y el D3 minificado.
-#   4. Reemplaza placeholders __D3_INLINE__ y __JSON_DATA__.
+#   3. Comprime el JSON (gzip + base64); el template lo descomprime en cliente
+#      con pako.inflate. Lee la plantilla, el D3 minificado y pako.
+#   4. Reemplaza placeholders __D3_INLINE__, __PAKO_INLINE__ y __JSON_DATA__.
 #   5. Escribe 40_salidas/motor_comparacion.html (UTF-8).
 #
 # Salida: 40_salidas/motor_comparacion.html
@@ -147,6 +148,7 @@ establecimientos_lst <- df_rbd |>
 df_rbd_np <- arrow::read_parquet(
   here::here("40_salidas", "intermedios", "simce_rbd.parquet")
 ) |>
+  dplyr::filter(!is.na(.data$palu_eda_ade)) |>
   dplyr::distinct(rbd, nivel, prueba) |>
   dplyr::mutate(rbd = as.character(rbd)) |>
   dplyr::arrange(nivel, prueba, rbd)
@@ -155,9 +157,14 @@ df_rbd_np <- arrow::read_parquet(
 # Distinct de rbd × nivel × prueba × cod_grupo. Se usa en EstabPopup cuando
 # se abre desde una celda de la tabla (P7) para mostrar solo los establecimientos
 # del GSE clicado. ~15-20k filas vs 185k del parquet completo.
+# Solo combinaciones con dato publicable (palu_eda_ade no-NA): la Agencia suprime
+# el resultado de establecimientos con muy pocos alumnos (deja palu = NA aunque
+# nalu > 0). Esos RBDs no deben listarse en el popup, porque no tienen resultado
+# publicado en ese nivel × prueba × GSE.
 df_rbd_gse <- arrow::read_parquet(
   here::here("40_salidas", "intermedios", "simce_rbd.parquet")
 ) |>
+  dplyr::filter(!is.na(.data$palu_eda_ade)) |>
   dplyr::distinct(rbd, nivel, prueba, cod_grupo) |>
   dplyr::mutate(rbd = as.character(rbd)) |>
   dplyr::arrange(nivel, prueba, cod_grupo, rbd)
@@ -225,18 +232,35 @@ json_str <- jsonlite::toJSON(
 # Forzar encoding UTF-8 (necesario para que ñ/tildes se serialicen bien).
 json_str <- enc2utf8(json_str)
 
-message(sprintf("    JSON listo: %d caracteres (%.1f MB).",
-                nchar(json_str), nchar(json_str) / 1e6))
+bytes_plano <- nchar(json_str, type = "bytes")
+message(sprintf("    JSON listo: %d caracteres (%.1f MB sin comprimir).",
+                nchar(json_str), bytes_plano / 1e6))
+
+# --- Compresión gzip + base64 ---
+# El template descomprime en cliente: JSON.parse(pako.inflate(atob(...))).
+# memCompress(type="gzip") produce formato gzip que pako.inflate decodifica
+# byte a byte idéntico (validado contra zlib/pako). base64_enc evita romper
+# el string literal del HTML con comillas o caracteres de control del binario.
+json_gzip <- memCompress(charToRaw(json_str), type = "gzip")
+# base64_enc() emite formato MIME con saltos de línea cada 64 caracteres.
+# Esos \n literales romperían el string JS dentro de atob("..."), así que se
+# eliminan: el base64 queda en una sola línea continua.
+json_b64  <- gsub("\n", "", jsonlite::base64_enc(json_gzip), fixed = TRUE)
+
+bytes_b64 <- nchar(json_b64, type = "bytes")
+message(sprintf("    JSON comprimido: %.1f MB (gzip+base64, %.1f%% del plano).",
+                bytes_b64 / 1e6, 100 * bytes_b64 / bytes_plano))
 
 
 # ============================================================================
 # Bloque 3 — Cargar plantilla y D3
 # ============================================================================
 
-message("[3] Leyendo plantilla y D3...")
+message("[3] Leyendo plantilla, D3 y pako...")
 
 plantilla_path <- here::here("30_procesamiento", "33_motor_template.html")
 d3_path        <- here::here("10_utils", "d3.min.js")
+pako_path      <- here::here("10_utils", "pako.min.js")
 
 if (!file.exists(plantilla_path)) {
   stop("No existe la plantilla: ", plantilla_path)
@@ -246,15 +270,25 @@ if (!file.exists(d3_path)) {
        "\n  Descargar con: curl -fsSL https://d3js.org/d3.v7.min.js -o ",
        "10_utils/d3.min.js")
 }
+if (!file.exists(pako_path)) {
+  stop("No existe pako.min.js: ", pako_path,
+       "\n  Descargar con: curl -fsSL ",
+       "https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js -o ",
+       "10_utils/pako.min.js")
+}
 
 plantilla <- paste(readLines(plantilla_path, encoding = "UTF-8"),
                    collapse = "\n")
 d3_code <- paste(readLines(d3_path, encoding = "UTF-8"),
                  collapse = "\n")
+pako_code <- paste(readLines(pako_path, encoding = "UTF-8"),
+                   collapse = "\n")
 
 message(sprintf("    Plantilla: %d caracteres", nchar(plantilla)))
 message(sprintf("    D3:        %d caracteres (%.0f KB)",
                 nchar(d3_code), nchar(d3_code) / 1024))
+message(sprintf("    pako:      %d caracteres (%.0f KB)",
+                nchar(pako_code), nchar(pako_code) / 1024))
 
 
 # ============================================================================
@@ -267,14 +301,19 @@ message("[4] Construyendo HTML final...")
 if (!grepl("__D3_INLINE__", plantilla, fixed = TRUE)) {
   stop("La plantilla no contiene el placeholder __D3_INLINE__.")
 }
+if (!grepl("__PAKO_INLINE__", plantilla, fixed = TRUE)) {
+  stop("La plantilla no contiene el placeholder __PAKO_INLINE__.")
+}
 if (!grepl("__JSON_DATA__", plantilla, fixed = TRUE)) {
   stop("La plantilla no contiene el placeholder __JSON_DATA__.")
 }
 
 # Reemplazo. Usar sub() con fixed=TRUE para evitar interpretación regex
 # (los nombres de comuna pueden contener caracteres que regex confundiría).
-html <- sub("__D3_INLINE__", d3_code, plantilla, fixed = TRUE)
-html <- sub("__JSON_DATA__", json_str, html, fixed = TRUE)
+# json_b64 es ASCII puro (base64), seguro dentro del literal "__JSON_DATA__".
+html <- sub("__D3_INLINE__",   d3_code,   plantilla, fixed = TRUE)
+html <- sub("__PAKO_INLINE__", pako_code, html,      fixed = TRUE)
+html <- sub("__JSON_DATA__",   json_b64,  html,      fixed = TRUE)
 
 # Escribir como UTF-8.
 ruta_salida <- here::here("40_salidas", "motor_comparacion.html")
@@ -291,8 +330,9 @@ message(sprintf("    OK: %s (%.0f KB)",
 n_simce_rbd <- nrow(df_simce_rbd)
 
 # Liberar objetos grandes antes del GC automático para evitar C stack overflow.
-# json_str y html pueden superar 14 MB combinados en memoria.
-rm(json_str, html, d3_code, plantilla, simce_rbd_lst, df_simce_rbd)
+# json_str, json_b64 y html pueden superar 14 MB combinados en memoria.
+rm(json_str, json_gzip, json_b64, html, d3_code, pako_code, plantilla,
+   simce_rbd_lst, df_simce_rbd)
 gc(verbose = FALSE)
 
 

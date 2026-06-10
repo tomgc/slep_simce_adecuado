@@ -599,6 +599,20 @@ body {
 .data-table thead th.th-gse { left: 200px; z-index: 4; min-width: 110px; }
 .data-table thead th.th-prelim { color: var(--ocean-80); }
 .prelim-mark { color: var(--ocean); font-weight: 900; }
+.badge-traspaso {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(0,98,160,0.10);
+  color: var(--ocean);
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
 .data-table tbody td {
   padding: 8px 12px;
   border-bottom: 1px solid var(--border-1);
@@ -960,8 +974,16 @@ code {
   <!-- D3 inline -->
   <script>__D3_INLINE__</script>
 
-  <!-- Datos reales del pipeline R -->
-  <script>const DATA = __JSON_DATA__;</script>
+  <!-- pako inline (descompresión gzip del JSON embebido) -->
+  <script>__PAKO_INLINE__</script>
+
+  <!-- Datos reales del pipeline R (gzip + base64, descomprimidos en cliente) -->
+  <script>
+    const DATA = JSON.parse(pako.inflate(
+      Uint8Array.from(atob("__JSON_DATA__"), c => c.charCodeAt(0)),
+      { to: "string" }
+    ));
+  </script>
 
   <!-- Aplicación React (JSX, compilado por Babel en el cliente) -->
   <script type="text/babel" data-presets="env,react">
@@ -1114,35 +1136,35 @@ code {
       };
       const DEPE2_CODES = M.depe2 || ["1","2","3","4","5"];
 
-      // generateSeries por RBDs (para SLEPs que operan por RBD, no por comunas+depe2)
+      // generateSeries por lista de RBDs: agrega ponderado por nalu sobre los
+      // establecimientos exactos del SLEP (entity.rbds), leyendo de DATA.simce_rbd
+      // (datos por establecimiento). Es la fuente de verdad: no depende de
+      // comuna+depe2, por lo que funciona igual para SLEP ya traspasados (RBDs
+      // depe 5) y prospectivos (RBDs aún municipales). Misma lista que usan el
+      // popup y los conteos de establecimientos.
       function generateSeriesByRbd({ rbds, gse, nivel, prueba }) {
         const cg = GSE_LABEL_TO_COD[gse];
         const nv = NIVEL_LABEL_TO_COD[nivel];
         const pr = PRUEBA_LABEL_TO_COD[prueba];
-        if (!cg || !nv || !pr) return YEARS.map(y => ({ year: y, pct: null, n_eval: null, n_estab: null, preliminar: PRELIMINAR_YEARS.includes(y) }));
-        const ix = indicesPCG(nv, pr, cg);
-        // Índice RBD → comunas (necesitamos cod_com para filtrar DATA.datos)
-        // DATA.datos está agregado por cod_com × cod_depe2 × gse × año
-        // Para SLEPs: filtrar por comunas del SLEP Y cod_depe2 == "5"
-        const setCom = new Set();
-        if (DATA.sleps) {
-          rbds.forEach(rbd => {
-            const rec = DATA.sleps.find(r => r.rbd === rbd);
-            if (rec) setCom.add(rec.cod_com_rbd);
-          });
-        }
+        const vacia = () => YEARS.map(y => ({ year: y, pct: null, n_eval: null, n_estab: null, preliminar: PRELIMINAR_YEARS.includes(y) }));
+        if (!cg || !nv || !pr || !DATA.simce_rbd) return vacia();
+        const setRbd = new Set((rbds || []).map(String));
+        const D2 = DATA.simce_rbd;
         const porAnio = new Map();
-        for (const i of ix) {
-          if (!setCom.has(D.cod_com[i])) continue;
-          if (D.cod_depe2[i] !== "5") continue;
-          const y = D.anio[i];
-          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
-          if (p == null || n == null || n === 0) continue;
+        for (let i = 0; i < D2.rows; i++) {
+          if (D2.nivel[i] !== nv) continue;
+          if (D2.prueba[i] !== pr) continue;
+          if (String(D2.cod_grupo[i]) !== cg) continue;
+          if (!setRbd.has(String(D2.rbd[i]))) continue;
+          const n = D2.nalu[i];
+          const p = D2.palu[i];
+          if (n == null || n === 0 || p == null) continue;
+          const y = D2.anio[i];
           let acc = porAnio.get(y);
           if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
           acc.num += (p * n) / 100;
           acc.den += n;
-          acc.n_estab += e;
+          acc.n_estab += 1;
         }
         return YEARS.map(year => {
           const acc = porAnio.get(year);
@@ -1284,8 +1306,19 @@ code {
         return generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
       }
 
+      // Último año con datos SIMCE. Un SLEP cuyo anio_traspaso es posterior
+      // administra sus establecimientos desde un año sin datos aún: sus
+      // resultados corresponden íntegramente a la administración previa
+      // (municipal). Se marca en la UI.
+      const ANIO_DATOS_MAX = YEARS.length ? Math.max.apply(null, YEARS) : null;
+      function slepEsProspectivo(anioTraspaso) {
+        return anioTraspaso != null && ANIO_DATOS_MAX != null
+          && anioTraspaso > ANIO_DATOS_MAX;
+      }
+
       return {
         YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
+        ANIO_DATOS_MAX, slepEsProspectivo,
         generateSeries, generateSeriesByRbd, generateSeriesByDepe,
         generateSeriesByEstab, generateSeriesByNacional, gseActualDeEstab, ESTAB_LIST,
         getSeriesForEntity,
@@ -1443,17 +1476,24 @@ code {
           .forEach(r => rbdsNP.add(String(r.rbd)));
       }
       const setCom = new Set(entity.comunas);
+      const rbdsSlep = entity.kind === "slep" ? new Set((entity.rbds || []).map(String)) : null;
       return DATA.establecimientos.filter(r => {
-        if (!setCom.has(String(r.cod_com_rbd))) return false;
-        if (entity.kind === "slep") { if (String(r.cod_depe2) !== "5") return false; }
-        else if (entity.depe2) { if (String(r.cod_depe2) !== String(entity.depe2)) return false; }
+        if (entity.kind === "slep") {
+          if (!rbdsSlep.has(String(r.rbd))) return false;
+        } else {
+          if (!setCom.has(String(r.cod_com_rbd))) return false;
+          if (entity.depe2) { if (String(r.cod_depe2) !== String(entity.depe2)) return false; }
+        }
         return rbdsNP.has(String(r.rbd));
       }).length;
     }
 
     function EntityChip({ entity, onRemove, onEdit, onShowEstab, nivel, prueba }) {
       const nEstabSlep = entity.kind === "slep" && DATA.establecimientos
-        ? DATA.establecimientos.filter(r => entity.comunas.includes(String(r.cod_com_rbd)) && String(r.cod_depe2) === "5").length
+        ? (function() {
+            const rbdsSlep = new Set((entity.rbds || []).map(String));
+            return DATA.establecimientos.filter(r => rbdsSlep.has(String(r.rbd))).length;
+          })()
         : null;
       const meta = entity.kind === "slep"
         ? `SLEP · ${entity.comunas.length} comunas · ${nEstabSlep !== null ? nEstabSlep : "…"} establecimientos`
@@ -1569,10 +1609,14 @@ code {
               DATA.rbds_por_nivel.filter(r => r.nivel === nv && r.prueba === pr).map(r => String(r.rbd))
             );
             const setCom = new Set(entity.comunas || []);
+            const rbdsSlep = entity.kind === "slep" ? new Set((entity.rbds || []).map(String)) : null;
             const candidatos = DATA.establecimientos.filter(r => {
-              if (!setCom.has(String(r.cod_com_rbd))) return false;
-              if (entity.kind === "slep") { if (String(r.cod_depe2) !== "5") return false; }
-              else if (entity.depe2) { if (String(r.cod_depe2) !== String(entity.depe2)) return false; }
+              if (entity.kind === "slep") {
+                if (!rbdsSlep.has(String(r.rbd))) return false;
+              } else {
+                if (!setCom.has(String(r.cod_com_rbd))) return false;
+                if (entity.depe2) { if (String(r.cod_depe2) !== String(entity.depe2)) return false; }
+              }
               return rbdsNP.has(String(r.rbd));
             });
             if (candidatos.length === 1) {
@@ -2053,6 +2097,9 @@ code {
               <b>*</b> Dato preliminar (2025, sujeto a revisión). &nbsp;
               <b>(N)</b> Número de estudiantes a los que corresponde ese porcentaje.
             </p>
+            <p style={{ marginTop: 6 }}>
+              <b>Traspaso {SimceData.ANIO_DATOS_MAX != null ? SimceData.ANIO_DATOS_MAX + 1 : ""}:</b> los SLEP con año de traspaso posterior al último dato disponible se incluyen con los establecimientos que administran desde su traspaso. Sus resultados corresponden íntegramente a la administración municipal previa y permiten un diagnóstico de base.
+            </p>
           </div>
           <div className="heat-legend-scale">
             <div className="heat-scale-bar" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
@@ -2219,11 +2266,13 @@ code {
         }, g);
 
         // Meta
-        const meta = ent.kind === "slep"   ? `SLEP · ${ent.comunas.length} comunas`
+        const metaProsp = ent.kind === "slep" && SimceData.slepEsProspectivo(ent.anio_traspaso)
+          ? ` · traspaso ${ent.anio_traspaso}` : "";
+        const meta = (ent.kind === "slep"   ? `SLEP · ${ent.comunas.length} comunas`
           : ent.kind === "region" ? `Región · ${ent.comunas.length} comunas`
           : ent.kind === "estab"  ? `RBD ${ent.rbd}`
           : ent.kind === "group"  ? `Grupo · ${ent.comunas.length} comunas`
-          : ent.depe2 ? (SimceData.DEPE2_LABELS[ent.depe2] || ent.depe2) : "Comuna";
+          : ent.depe2 ? (SimceData.DEPE2_LABELS[ent.depe2] || ent.depe2) : "Comuna") + metaProsp;
         txt(meta, {
           x: 20, y: 38,
           "font-family": "system-ui, sans-serif",
@@ -2435,7 +2484,11 @@ code {
           : String(gse);
 
         if (year != null && DATA.simce_rbd) {
-          // Fuente exacta: establecimientos con dato en ese año × GSE × nivel × prueba
+          // Fuente exacta: establecimientos con dato PUBLICABLE en ese
+          // año × GSE × nivel × prueba. Se exige palu no-NA: la Agencia suprime
+          // el resultado de establecimientos con muy pocos alumnos evaluados
+          // (deja palu = NA aunque nalu > 0). Esos RBDs no deben listarse en el
+          // popup, porque no tienen resultado publicado para esa celda.
           const D2 = DATA.simce_rbd;
           rbdsGSE = new Set();
           for (let i = 0; i < D2.rbd.length; i++) {
@@ -2443,7 +2496,8 @@ code {
               String(D2.cod_grupo[i]) === gseCod &&
               D2.nivel[i] === nv &&
               D2.prueba[i] === pr &&
-              D2.anio[i] === year
+              D2.anio[i] === year &&
+              D2.palu[i] != null
             ) {
               rbdsGSE.add(String(D2.rbd[i]));
             }
@@ -2457,18 +2511,26 @@ code {
         }
       }
 
-      // Obtener establecimientos: comunas de la entidad + depe2 + rindió nivel×prueba [+ GSE]
+      // Obtener establecimientos.
+      // Para SLEP: el universo es entity.rbds (lista exacta de RBDs del SLEP,
+      // construida en el pipeline). Filtrar por comuna+depe2 es incorrecto:
+      // dos SLEP pueden compartir comuna, y los RBDs de un SLEP prospectivo
+      // figuran como municipales. La lista de RBDs es la única fuente de verdad.
+      // Para el resto de entidades se mantiene el filtro comuna (+depe2).
       let items = [];
       if (DATA.establecimientos) {
         const setCom = new Set(entity.comunas || []);
         const isNacional = entity.kind === "nacional";
+        const rbdsSlep = entity.kind === "slep" ? new Set((entity.rbds || []).map(String)) : null;
         items = DATA.establecimientos
           .filter(r => {
-            if (!isNacional && !setCom.has(String(r.cod_com_rbd))) return false;
             if (entity.kind === "slep") {
-              if (String(r.cod_depe2) !== "5") return false;
-            } else if (entity.depe2) {
-              if (String(r.cod_depe2) !== String(entity.depe2)) return false;
+              if (!rbdsSlep.has(String(r.rbd))) return false;
+            } else {
+              if (!isNacional && !setCom.has(String(r.cod_com_rbd))) return false;
+              if (entity.depe2) {
+                if (String(r.cod_depe2) !== String(entity.depe2)) return false;
+              }
             }
             if (!rbdsNP.has(String(r.rbd))) return false;
             if (rbdsGSE !== null && !rbdsGSE.has(String(r.rbd))) return false;
@@ -2806,7 +2868,14 @@ code {
                             checked={selectedSlep === s.cod_slep}
                             onChange={() => setSelectedSlep(s.cod_slep)} />
                           <span className="check-name">{s.nombre}</span>
-                          <span className="check-region">{s.comunas.length} comunas · traspaso {s.anio_traspaso || "pendiente"}</span>
+                          <span className="check-region">
+                            {s.comunas.length} comunas · traspaso {s.anio_traspaso || "pendiente"}
+                            {SimceData.slepEsProspectivo(s.anio_traspaso) && (
+                              <span className="badge-traspaso" title={"Traspaso " + s.anio_traspaso + ": los resultados mostrados corresponden íntegramente a la administración municipal previa al traspaso."}>
+                                traspaso {s.anio_traspaso}
+                              </span>
+                            )}
+                          </span>
                         </label>
                       ))}
                     </div>
