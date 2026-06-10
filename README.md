@@ -132,6 +132,16 @@ No se requiere configuración adicional de rutas.
 ## Documentación
 
 - `POLITICA_PROYECTO.md` — política y convenciones canónicas.
+- [`50_documentacion/activa/documentacion_proyecto_slep_simce_adecuado.md`](50_documentacion/activa/documentacion_proyecto_slep_simce_adecuado.md)
+  — presentación conceptual del proyecto para lectores internos (versión
+  navegable en GitHub; existe también una versión HTML:
+  `50_documentacion/activa/documentacion_proyecto_slep_simce_adecuado.html`).
+- [`50_documentacion/activa/arquitectura_slep_simce_adecuado.html`](50_documentacion/activa/arquitectura_slep_simce_adecuado.html)
+  — diagrama de arquitectura del pipeline (insumos → 30 → 31 → 32 → 33 → motor).
+  Abrir localmente o vía vista previa del repo (no se publica en GitHub Pages,
+  que solo sirve `docs/`).
+- [`50_documentacion/activa/backlog_historico.md`](50_documentacion/activa/backlog_historico.md)
+  — registro acumulativo de cambios del proyecto (documento vivo).
 - Estructura del repo y esquemas de datos: ver secciones "Responsabilidades por
   archivo" y "Esquemas de datos" más arriba. Snapshot autogenerado del árbol en
   `50_documentacion/estructura/estructura_actual.md` (vía `00_escanear_proyecto.R`).
