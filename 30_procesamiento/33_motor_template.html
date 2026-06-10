@@ -2142,9 +2142,9 @@ code {
 
 
     // ============================================================
-    // exportarGraficos — SVG compuesto del supergrid
+    // construirSvgGraficos — SVG compuesto del supergrid (base de export SVG/PNG)
     // ============================================================
-    function exportarGraficos({ entities, nivel, prueba }) {
+    function construirSvgGraficos({ entities, nivel, prueba }) {
       const GSE_LEVELS = SimceData.GSE_LEVELS;
 
       // Dimensiones de cada SVG fuente (deben coincidir con viewBox de cada subchart)
@@ -2334,17 +2334,53 @@ code {
         });
       });
 
-      // Serializar y descargar
+      // Serializar
       const serializer = new XMLSerializer();
       const svgStr = serializer.serializeToString(root);
-      const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+      const fnameBase = `simce_adecuado_${nivel.replace(/[^a-zA-Z0-9]/g, "_")}_${prueba.replace(/[^a-zA-Z0-9]/g, "_")}`;
+      return { svgStr, totalW, totalH, fnameBase };
+    }
+
+    function descargarBlob(blob, fname) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      const fname = `simce_adecuado_${nivel.replace(/[^a-zA-Z0-9]/g, "_")}_${prueba.replace(/[^a-zA-Z0-9]/g, "_")}.svg`;
       a.download = fname;
       a.click();
       URL.revokeObjectURL(url);
+    }
+
+    function exportarGraficosSVG({ entities, nivel, prueba }) {
+      const { svgStr, fnameBase } = construirSvgGraficos({ entities, nivel, prueba });
+      descargarBlob(new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" }), fnameBase + ".svg");
+    }
+
+    // Rasteriza el mismo SVG compuesto a PNG. Factor 2x para nitidez en
+    // documentos/presentaciones sin inflar demasiado el peso del archivo.
+    const PNG_SCALE = 2;
+    function exportarGraficosPNG({ entities, nivel, prueba }) {
+      const { svgStr, totalW, totalH, fnameBase } = construirSvgGraficos({ entities, nivel, prueba });
+      const svgBlob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(svgBlob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = totalW * PNG_SCALE;
+        canvas.height = totalH * PNG_SCALE;
+        const ctx = canvas.getContext("2d");
+        ctx.scale(PNG_SCALE, PNG_SCALE);
+        ctx.drawImage(img, 0, 0, totalW, totalH);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(blob => {
+          if (!blob) { alert("No se pudo generar el PNG."); return; }
+          descargarBlob(blob, fnameBase + ".png");
+        }, "image/png");
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        alert("No se pudo rasterizar el SVG a PNG.");
+      };
+      img.src = url;
     }
 
     // ============================================================
@@ -2941,7 +2977,8 @@ code {
                 </div>
                 <div className="section-actions">
                   <ChartHints showElemInsuf={showElemInsuf} />
-                  <IconExport label="Exportar gráficos" icon="chart" onExport={() => exportarGraficos({ entities, nivel, prueba })} />
+                  <IconExport label="Exportar SVG" icon="chart" onExport={() => exportarGraficosSVG({ entities, nivel, prueba })} />
+                  <IconExport label="Exportar PNG" icon="image" onExport={() => exportarGraficosPNG({ entities, nivel, prueba })} />
                 </div>
               </div>
               <div className="supergrid" style={{ gridTemplateColumns: `repeat(4, minmax(0, 1fr))` }}>
