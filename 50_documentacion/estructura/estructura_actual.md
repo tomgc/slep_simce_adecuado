@@ -1,8 +1,8 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-06-09 13:12:29
-- **Totales:** 16 carpetas, 92 archivos
+- **Fecha:** 2026-06-09 14:01:49
+- **Totales:** 16 carpetas, 95 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 ## Arbol
@@ -69,7 +69,7 @@ slep_simce_adecuado/
 │   ├── 31_leer_normalizar.R  (15.4K)
 │   ├── 32_agregar_comunal.R  (7.21K)
 │   ├── 33_generar_html.R  (11.6K)
-│   └── 33_motor_template.html  (133K)
+│   └── 33_motor_template.html  (130K)
 ├── 40_salidas/
 │   ├── intermedios/
 │   │   ├── .gitkeep  (0)
@@ -85,15 +85,17 @@ slep_simce_adecuado/
 │   ├── activa/
 │   │   ├── .gitkeep  (0)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (19.7K)
+│   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (16.6K)
+│   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (8.3K)
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260609_113435_estructura.md  (6.19K)
-│   │   ├── 20260609_113435_estructura.txt  (6.25K)
 │   │   ├── 20260609_120845_estructura.md  (5.54K)
 │   │   ├── 20260609_120845_estructura.txt  (5.61K)
-│   │   ├── estructura_actual.md  (5.54K)
-│   │   ├── estructura_actual.txt  (5.61K)
+│   │   ├── 20260609_131229_estructura.md  (5.61K)
+│   │   ├── 20260609_131229_estructura.txt  (5.67K)
+│   │   ├── estructura_actual.md  (5.61K)
+│   │   ├── estructura_actual.txt  (5.67K)
 │   │   └── manifiesto_insumos.md  (2.78K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
@@ -105,7 +107,8 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v06.md  (16.6K)
 │   │   ├── traspaso_cierre_v07.md  (13.5K)
 │   │   ├── traspaso_cierre_v08.md  (15K)
-│   │   └── traspaso_cierre_v09.md  (27.8K)
+│   │   ├── traspaso_cierre_v09.md  (27.8K)
+│   │   └── traspaso_cierre_v10.md  (28.2K)
 │   └── .DS_Store  (10K)
 ├── docs/
 │   └── index.html  (14.2M)
@@ -124,11 +127,11 @@ slep_simce_adecuado/
 | Extension | Archivos |
 |---|---|
 | xlsx | 23 |
-| md | 18 |
+| md | 20 |
 | (sin extension) | 15 |
 | r | 7 |
+| html | 6 |
 | parquet | 6 |
-| html | 5 |
 | jsx | 5 |
 | csv | 3 |
 | txt | 3 |
