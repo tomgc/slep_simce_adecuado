@@ -23,6 +23,18 @@
 
 library(here)
 
+# ----------------------------------------------------------------------------
+# Constantes de configuración
+# ----------------------------------------------------------------------------
+# Último año con datos SIMCE en el proyecto. El directorio oficial de
+# establecimientos tiene corte al 30 de abril de este año, por lo que los SLEP
+# con AGNO_TRASPASO_EDUC <= ANIO_DATOS_VIGENTE ya figuran con COD_DEPE == 6
+# (Servicio Local) en el directorio. Los SLEP cuyo traspaso es el año siguiente
+# (ANIO_DATOS_VIGENTE + 1) administran desde ya sus establecimientos, pero en el
+# directorio aún aparecen como municipales (COD_DEPE 1/2): se incluyen vía la
+# rama prospectiva de la sección 4.2 y se marcan en el motor.
+ANIO_DATOS_VIGENTE <- 2025L
+
 
 # ============================================================================
 # Bloque 0 — RBDs que no rinden SIMCE
@@ -267,24 +279,59 @@ message(sprintf(
 
 # ---- 4.2 Join con directorio para obtener RBDs ----
 # Usar df_dir_raw ya cargado en bloque 2.
-# Filtrar SOLO establecimientos con COD_DEPE == 6 (Servicio Local de Educacion),
-# funcionando y con matricula. Esto excluye privados y subvencionados de las
-# mismas comunas. El join con SIMCE se hara por RBD, por lo que la cobertura
-# historica previa al traspaso queda garantizada (esos RBDs existian con
-# COD_DEPE == 1 antes y son los mismos establecimientos).
+#
+# Dos ramas según el año de traspaso de cada SLEP:
+#
+# (a) SLEP ya traspasados (anio_traspaso <= ANIO_DATOS_VIGENTE): sus
+#     establecimientos figuran con COD_DEPE == 6 (Servicio Local) en el
+#     directorio. El join con SIMCE por RBD garantiza la cobertura histórica
+#     previa al traspaso (esos RBDs existían con COD_DEPE 1/2 antes y son los
+#     mismos establecimientos).
+#
+# (b) SLEP con traspaso prospectivo (anio_traspaso == ANIO_DATOS_VIGENTE + 1):
+#     administran sus establecimientos desde este año, pero en el directorio
+#     (corte 30-abr del año vigente) aún aparecen como municipales
+#     (COD_DEPE 1 = Corp. Municipal, 2 = DAEM). Se incluyen esos RBDs para que
+#     el SLEP pueda hacer diagnóstico sobre los establecimientos que ya
+#     administra. El motor los marca: sus resultados corresponden íntegramente
+#     a la administración municipal previa al traspaso.
+#
+# SLEP con anio_traspaso > ANIO_DATOS_VIGENTE + 1 NO se incluyen: su traspaso
+# es demasiado futuro para considerar los establecimientos como propios.
+
+# Comunas según rama, derivadas del listado SLEP.
+comunas_traspasadas <- df_slep_comunas |>
+  dplyr::filter(.data$anio_traspaso <= ANIO_DATOS_VIGENTE) |>
+  dplyr::pull(cod_com_rbd) |>
+  unique()
+
+comunas_prospectivas <- df_slep_comunas |>
+  dplyr::filter(.data$anio_traspaso == ANIO_DATOS_VIGENTE + 1L) |>
+  dplyr::pull(cod_com_rbd) |>
+  unique()
+
+# RBDs públicos: depe 6 en comunas ya traspasadas, o depe 1/2 (municipal) en
+# comunas con traspaso prospectivo. Un mismo RBD se asigna por su comuna.
 df_dir_slep <- df_dir_raw |>
   dplyr::filter(
     .data$ESTADO_ESTAB == 1,
-    .data$MATRICULA == 1,
-    .data$COD_DEPE == 6          # Solo establecimientos SLEP
+    .data$MATRICULA == 1
+  ) |>
+  dplyr::mutate(cod_com_rbd = as.character(COD_COM_RBD)) |>
+  dplyr::filter(
+    (.data$COD_DEPE == 6 & .data$cod_com_rbd %in% comunas_traspasadas) |
+      (.data$COD_DEPE %in% c(1, 2) & .data$cod_com_rbd %in% comunas_prospectivas)
   ) |>
   dplyr::transmute(
-    cod_com_rbd = as.character(COD_COM_RBD),
+    cod_com_rbd = cod_com_rbd,
     rbd         = as.character(RBD),
     nom_rbd     = NOM_RBD
   )
 
-# Expandir SLEP x comuna a SLEP x RBD mediante inner_join
+# Expandir SLEP x comuna a SLEP x RBD mediante inner_join.
+# Solo se conservan las combinaciones SLEP x comuna de las dos ramas; el
+# inner_join descarta automáticamente los SLEP con traspaso demasiado futuro,
+# porque sus comunas no tienen RBDs en df_dir_slep.
 df_sleps <- dplyr::inner_join(
   df_slep_comunas,
   df_dir_slep,
@@ -305,11 +352,19 @@ if (nrow(df_sleps) == 0) {
   stop("Join SLEP x directorio devolvio 0 filas. Verificar cod_com_rbd.")
 }
 
+n_prospectivos <- dplyr::n_distinct(
+  df_sleps$cod_slep[df_sleps$anio_traspaso == ANIO_DATOS_VIGENTE + 1L]
+)
+
 message(sprintf(
   "    OK: %d SLEPs - %d comunas - %d establecimientos.",
   dplyr::n_distinct(df_sleps$cod_slep),
   dplyr::n_distinct(df_sleps$cod_com_rbd),
   dplyr::n_distinct(df_sleps$rbd)
+))
+message(sprintf(
+  "    Incluye %d SLEP(s) con traspaso prospectivo %d (RBDs municipales).",
+  n_prospectivos, ANIO_DATOS_VIGENTE + 1L
 ))
 
 # Sanity check Costa Central
