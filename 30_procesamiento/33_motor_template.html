@@ -2132,12 +2132,8 @@ code {
       }).join(";")).join("\n");
 
       const blob = new Blob(["﻿" + csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "simce_adecuado_" + nivel.replace(/[^a-zA-Z0-9]/g, "_") + "_" + prueba.replace(/[^a-zA-Z0-9]/g, "_") + ".csv";
-      a.click();
-      URL.revokeObjectURL(url);
+      const fname = "simce_adecuado_" + nivel.replace(/[^a-zA-Z0-9]/g, "_") + "_" + prueba.replace(/[^a-zA-Z0-9]/g, "_") + ".csv";
+      descargarBlob(blob, fname);
     }
 
 
