@@ -966,10 +966,19 @@ code {
   <div id="global-tooltip" class="tooltip" style="display:none"></div>
   <div id="tooltip-overlay" style="display:none;position:fixed;inset:0;z-index:9998;"></div>
 
-  <!-- React + Babel desde CDN -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+  <!-- React + Babel desde CDN — builds production + SRI (auditoría B4, s13).
+       Hashes sha384 calculados desde los tarballs oficiales de npm
+       (identicos a lo servido por unpkg para la version fijada). Si se
+       cambia la version, recalcular: openssl dgst -sha384 -binary | base64 -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+          integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z"
+          crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+          integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1"
+          crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+          integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+          crossorigin="anonymous"></script>
 
   <!-- D3 inline -->
   <script>__D3_INLINE__</script>
@@ -1026,49 +1035,6 @@ code {
           CACHE_IX.set(k, ix);
         }
         return CACHE_IX.get(k);
-      }
-
-      // generateSeries: filtra DATA.datos y agrega ponderado por comunas.
-      // Devuelve serie de 9 años con { year, pct, n_eval, n_estab, preliminar }.
-      function generateSeries({ entityName, comunas, gse, nivel, prueba }) {
-        const cg = GSE_LABEL_TO_COD[gse];
-        const nv = NIVEL_LABEL_TO_COD[nivel];
-        const pr = PRUEBA_LABEL_TO_COD[prueba];
-        if (!cg || !nv || !pr) {
-          // mapping faltante — devolver vacío para los 9 años
-          return YEARS.map(y => ({
-            year: y, pct: null, n_eval: null, n_estab: null,
-            preliminar: PRELIMINAR_YEARS.includes(y),
-          }));
-        }
-        const ix = indicesPCG(nv, pr, cg);
-        const setCom = new Set(comunas || []);
-        const porAnio = new Map();
-        for (const i of ix) {
-          if (!setCom.has(D.cod_com[i])) continue;
-          const y = D.anio[i];
-          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
-          if (p == null || n == null || n === 0) continue;
-          let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
-          acc.num += (p * n) / 100;
-          acc.den += n;
-          acc.n_estab += e;
-        }
-        return YEARS.map(year => {
-          const acc = porAnio.get(year);
-          const preliminar = PRELIMINAR_YEARS.includes(year);
-          if (acc && acc.den > 0) {
-            return {
-              year,
-              pct: Math.round((acc.num / acc.den) * 1000) / 10,
-              n_eval: acc.den,
-              n_estab: acc.n_estab,
-              preliminar,
-            };
-          }
-          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
-        });
       }
 
       // REGIONES: agrupar DATA.comunas por cod_reg
@@ -1319,7 +1285,7 @@ code {
       return {
         YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
         ANIO_DATOS_MAX, slepEsProspectivo,
-        generateSeries, generateSeriesByRbd, generateSeriesByDepe,
+        generateSeriesByRbd, generateSeriesByDepe,
         generateSeriesByEstab, generateSeriesByNacional, gseActualDeEstab, ESTAB_LIST,
         getSeriesForEntity,
         REGIONES, PRESETS, COMUNA_BY_COD,
