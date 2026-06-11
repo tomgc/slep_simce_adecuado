@@ -52,21 +52,43 @@ agregar_ponderado <- function(df, group_vars) {
       all(cols_requeridas %in% names(df))
   )
 
-  df |>
+  # ele/ins son opcionales: si están presentes, se agregan con la MISMA
+  # ponderación y los MISMOS filtros que adecuado. El conjunto de filas que
+  # entra al cálculo lo gobierna palu_eda_ade (no-NA), de modo que el % adecuado
+  # resultante es idéntico exista o no la columna ele/ins. Las filas suprimidas
+  # (nalu < 10, o marca presente) quedan fuera por igual para los tres niveles.
+  tiene_ele <- "palu_eda_ele" %in% names(df)
+  tiene_ins <- "palu_eda_ins" %in% names(df)
+
+  base <- df |>
     dplyr::filter(
       !is.na(nalu),
       nalu >= 10,
       is.na(marca),
       !is.na(palu_eda_ade)
     ) |>
-    dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(group_vars)))
+
+  res <- base |>
     dplyr::summarise(
       n_estab      = dplyr::n(),
       n_evaluados  = sum(nalu, na.rm = TRUE),
       pct_adecuado = sum(nalu * palu_eda_ade / 100, na.rm = TRUE) /
                      sum(nalu, na.rm = TRUE) * 100,
+      pct_elemental = if (tiene_ele)
+        sum(nalu * palu_eda_ele / 100, na.rm = TRUE) /
+        sum(nalu, na.rm = TRUE) * 100 else NA_real_,
+      pct_insuficiente = if (tiene_ins)
+        sum(nalu * palu_eda_ins / 100, na.rm = TRUE) /
+        sum(nalu, na.rm = TRUE) * 100 else NA_real_,
       .groups = "drop"
     )
+
+  # Si no venían ele/ins, no exponer columnas NA espurias (compatibilidad con
+  # llamadas históricas y con los tests inline).
+  if (!tiene_ele) res$pct_elemental <- NULL
+  if (!tiene_ins) res$pct_insuficiente <- NULL
+  res
 }
 
 

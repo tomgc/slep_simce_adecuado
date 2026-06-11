@@ -6,7 +6,7 @@
 #
 # Salida: 40_salidas/intermedios/simce_comunal.parquet
 #
-# Esquema final (12 columnas):
+# Esquema final (14 columnas):
 #   anio          integer
 #   nivel         character    "4b" | "2m"
 #   prueba        character    "lect" | "mate"
@@ -17,6 +17,8 @@
 #   cod_grupo     character    GSE "1".."5"  (filas con NA excluidas)
 #   cod_depe2     character    dependencia agrupada "1".."5"
 #   pct_adecuado  double       % ponderado adecuado
+#   pct_elemental double       % ponderado elemental
+#   pct_insuficiente double    % ponderado insuficiente
 #   n_evaluados   integer      sum(nalu) tras filtros MINEDUC
 #   n_estab       integer      n establecimientos en la agregación
 #
@@ -157,7 +159,7 @@ df_comunal <- df_comunal |>
     anio, nivel, prueba,
     cod_com_rbd, nom_com_rbd, cod_reg_rbd, nom_reg_rbd,
     cod_grupo, cod_depe2,
-    pct_adecuado, n_evaluados, n_estab
+    pct_adecuado, pct_elemental, pct_insuficiente, n_evaluados, n_estab
   ) |>
   dplyr::arrange(anio, nivel, prueba, cod_com_rbd, cod_depe2, cod_grupo)
 
@@ -203,6 +205,6 @@ print(cc, n = Inf, width = 200)
 
 message("")
 message(sprintf(
-  "32_agregar_comunal.R: OK. Total %d filas en simce_comunal.parquet (12 columnas).",
+  "32_agregar_comunal.R: OK. Total %d filas en simce_comunal.parquet (14 columnas).",
   nrow(df_comunal)
 ))

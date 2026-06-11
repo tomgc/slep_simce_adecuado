@@ -6,7 +6,7 @@
 #
 #   40_salidas/intermedios/simce_rbd.parquet
 #
-# Esquema final (12 columnas):
+# Esquema final (14 columnas):
 #   anio          integer    2014-2018, 2022-2025
 #   nivel         character  "4b" | "2m"
 #   prueba        character  "lect" | "mate"
@@ -17,6 +17,8 @@
 #   cod_depe2     character  dependencia agrupada "1".."5"
 #   nalu          integer    n° evaluados
 #   palu_eda_ade  double     % en estándar adecuado
+#   palu_eda_ele  double     % en estándar elemental
+#   palu_eda_ins  double     % en estándar insuficiente
 #   marca         character  marca genérica de puntaje (decisión A2 opción a)
 #   preliminar    logical    TRUE solo para anio == 2025 (regla R3)
 #
@@ -171,7 +173,9 @@ extraer_prueba <- function(df_raw, nivel, prueba) {
   sufijo <- paste0(prueba, nivel)  # p. ej. "lect2m" o "mate4b"
 
   col_nalu  <- paste0("nalu_",         sufijo, "_rbd")
-  col_palu  <- paste0("palu_eda_ade_", sufijo, "_rbd")
+  col_ade   <- paste0("palu_eda_ade_", sufijo, "_rbd")
+  col_ele   <- paste0("palu_eda_ele_", sufijo, "_rbd")
+  col_ins   <- paste0("palu_eda_ins_", sufijo, "_rbd")
   col_marca <- paste0("marca_",        sufijo, "_rbd")
 
   # Coerción defensiva: si el valor viene con coma decimal, normalizar
@@ -186,7 +190,9 @@ extraer_prueba <- function(df_raw, nivel, prueba) {
     nom_com_rbd  = as.character(df_raw$nom_com_rbd),
     cod_grupo    = as.character(df_raw$cod_grupo),
     nalu         = as.integer(to_num(df_raw[[col_nalu]])),
-    palu_eda_ade = to_num(df_raw[[col_palu]]),
+    palu_eda_ade = to_num(df_raw[[col_ade]]),
+    palu_eda_ele = to_num(df_raw[[col_ele]]),
+    palu_eda_ins = to_num(df_raw[[col_ins]]),
     marca        = as.character(df_raw[[col_marca]]),
     prueba       = prueba
   )
@@ -217,6 +223,10 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
     paste0("nalu_mate", nivel, "_rbd"),
     paste0("palu_eda_ade_lect", nivel, "_rbd"),
     paste0("palu_eda_ade_mate", nivel, "_rbd"),
+    paste0("palu_eda_ele_lect", nivel, "_rbd"),
+    paste0("palu_eda_ele_mate", nivel, "_rbd"),
+    paste0("palu_eda_ins_lect", nivel, "_rbd"),
+    paste0("palu_eda_ins_mate", nivel, "_rbd"),
     paste0("marca_lect", nivel, "_rbd"),
     paste0("marca_mate", nivel, "_rbd")
   )
@@ -314,7 +324,7 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
   df_largo <- df_largo[, c(
     "anio", "nivel", "prueba", "rbd",
     "cod_com_rbd", "nom_com_rbd", "cod_grupo", "cod_depe2",
-    "nalu", "palu_eda_ade", "marca", "preliminar"
+    "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca", "preliminar"
   )]
 
   df_largo
@@ -415,6 +425,6 @@ print(resumen, n = Inf)
 
 message("")
 message(sprintf(
-  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (12 columnas).",
+  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (14 columnas).",
   nrow(df_simce_rbd)
 ))

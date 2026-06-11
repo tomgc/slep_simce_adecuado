@@ -113,7 +113,7 @@ meta <- list(
     "2" = "Particular Subvencionado",
     "3" = "Particular Pagado",
     "4" = "Corp. Admin. Delegada",
-    "5" = "Servicio Local de Educación"
+    "5" = "Servicio Local de Educación Pública (SLEP)"
   )
 )
 
@@ -131,6 +131,8 @@ datos_lst <- list(
   cod_depe2   = df_ord$cod_depe2,
   anio        = as.integer(df_ord$anio),
   pct         = round(df_ord$pct_adecuado, 2),
+  pct_ele     = round(df_ord$pct_elemental, 2),
+  pct_ins     = round(df_ord$pct_insuficiente, 2),
   n_evaluados = as.integer(df_ord$n_evaluados),
   n_estab     = as.integer(df_ord$n_estab)
 )
@@ -199,10 +201,12 @@ df_simce_rbd <- arrow::read_parquet(
     !is.na(.data$nalu), .data$nalu >= 10,
     is.na(.data$marca)
   ) |>
-  dplyr::select(rbd, nivel, prueba, cod_grupo, anio, nalu, palu_eda_ade, cod_depe2) |>
+  dplyr::select(rbd, nivel, prueba, cod_grupo, anio, nalu, palu_eda_ade, palu_eda_ele, palu_eda_ins, cod_depe2) |>
   dplyr::mutate(
     rbd       = as.character(rbd),
-    palu_eda_ade = round(palu_eda_ade, 2)
+    palu_eda_ade = round(palu_eda_ade, 2),
+    palu_eda_ele = round(palu_eda_ele, 2),
+    palu_eda_ins = round(palu_eda_ins, 2)
   ) |>
   dplyr::arrange(rbd, nivel, prueba, anio, cod_grupo)
 
@@ -215,6 +219,8 @@ simce_rbd_lst <- list(
   anio       = as.integer(df_simce_rbd$anio),
   nalu       = as.integer(df_simce_rbd$nalu),
   palu       = df_simce_rbd$palu_eda_ade,
+  palu_ele   = df_simce_rbd$palu_eda_ele,
+  palu_ins   = df_simce_rbd$palu_eda_ins,
   cod_depe2  = df_simce_rbd$cod_depe2
 )
 
