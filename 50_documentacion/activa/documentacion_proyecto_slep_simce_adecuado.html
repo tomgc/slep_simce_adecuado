@@ -206,7 +206,7 @@ code.inl { font-family: var(--mono); font-size: 12.5px; background: #F0EEEB; pad
 
   <div class="callout">
     <div class="ct">Que es este documento</div>
-    <p>Una presentacion conceptual del proyecto: que problema resuelve, que conceptos usa y que decisiones metodologicas lo gobiernan. Esta pensado para cualquier persona del equipo, con independencia de cuanto maneje SIMCE.</p>
+    <p>Una presentacion conceptual del proyecto: que problema resuelve, que conceptos usa y que decisiones metodologicas lo gobiernan. Esta pensado para cualquier persona del equipo, con independencia de cuanto maneje Simce.</p>
     <p><strong>Documentos complementarios:</strong></p>
     <ul>
       <li><code>arquitectura_slep_simce_adecuado.html</code> &mdash; diagrama visual del flujo de datos, etapa por etapa. Este documento explica el <em>que y el porque</em>; el diagrama muestra el <em>como fluye</em>. Se leen juntos.</li>
@@ -218,16 +218,16 @@ code.inl { font-family: var(--mono); font-size: 12.5px; background: #F0EEEB; pad
   <!-- 1 -->
   <section>
     <h2><span class="snum">1</span> Que es y para que</h2>
-    <p><code class="inl">slep_simce_adecuado</code> es una herramienta de analisis interno que permite <strong>comparar el desempeno SIMCE de distintos territorios y establecimientos</strong> a lo largo del tiempo, midiendo que porcentaje de estudiantes alcanza el nivel <strong>Adecuado</strong> de aprendizaje.</p>
-    <p>El problema que resuelve es concreto: los resultados SIMCE se publican por establecimiento, ano, prueba y nivel, en planillas dispersas y con formatos que cambian de un ano a otro. Responder una pregunta aparentemente simple &mdash;"&iquest;como le va a las comunas de Costa Central en 4&deg; basico Lectura comparadas con el resto de la region, controlando por nivel socioeconomico?"&mdash; exige consolidar casi una decada de planillas, homologar codigos que cambiaron en el tiempo y agregar correctamente. Esta herramienta hace ese trabajo y entrega el resultado en un unico archivo navegable.</p>
+    <p><code class="inl">slep_simce_adecuado</code> es una herramienta de analisis interno que permite <strong>comparar el desempeno Simce de distintos territorios y establecimientos</strong> a lo largo del tiempo, midiendo que porcentaje de estudiantes alcanza el nivel <strong>Adecuado</strong> de aprendizaje, con la opcion de desglosar tambien los niveles Elemental e Insuficiente.</p>
+    <p>El problema que resuelve es concreto: los resultados Simce se publican por establecimiento, ano, prueba y nivel, en planillas dispersas y con formatos que cambian de un ano a otro. Responder una pregunta aparentemente simple &mdash;"&iquest;como le va a las comunas de Costa Central en 4&deg; basico Lectura comparadas con el resto de la region, controlando por nivel socioeconomico?"&mdash; exige consolidar casi una decada de planillas, homologar codigos que cambiaron en el tiempo y agregar correctamente. Esta herramienta hace ese trabajo y entrega el resultado en un unico archivo navegable.</p>
     <p>El producto final es un <strong>archivo HTML autonomo</strong> (<code class="inl">motor_comparacion.html</code>): se abre en cualquier navegador, sin instalar nada, y permite explorar las comparaciones de forma interactiva. Esta publicado para consulta en linea.</p>
   </section>
 
   <!-- 2 -->
   <section>
-    <h2><span class="snum">2</span> Conceptos SIMCE</h2>
-    <div class="skip">Esta seccion es saltable. Si ya manejas SIMCE, estandares de aprendizaje y GSE, pasa a la seccion 3.</div>
-    <p><strong>SIMCE</strong> (Sistema de Medicion de la Calidad de la Educacion) es la evaluacion estandarizada nacional que aplica la Agencia de Calidad de la Educacion. Mide aprendizajes en pruebas como Lectura y Matematica, en distintos niveles escolares. Este proyecto trabaja con dos niveles: <strong>4&deg; basico (4b)</strong> y <strong>2&deg; medio (2m)</strong>.</p>
+    <h2><span class="snum">2</span> Conceptos Simce</h2>
+    <div class="skip">Esta seccion es saltable. Si ya manejas Simce, estandares de aprendizaje y GSE, pasa a la seccion 3.</div>
+    <p><strong>Simce</strong> (Sistema de Medicion de la Calidad de la Educacion) es la evaluacion estandarizada nacional que aplica la Agencia de Calidad de la Educacion. Mide aprendizajes en pruebas como Lectura y Matematica, en distintos niveles escolares. Este proyecto trabaja con dos niveles: <strong>4&deg; basico (4b)</strong> y <strong>2&deg; medio (2m)</strong>.</p>
     <h3>Estandares de aprendizaje</h3>
     <p>Mas alla del puntaje, la Agencia clasifica a cada estudiante en uno de tres estandares segun lo que demuestra saber:</p>
     <ul class="terms">
@@ -252,7 +252,7 @@ code.inl { font-family: var(--mono); font-size: 12.5px; background: #F0EEEB; pad
       <div class="card"><div class="ct">Nacional ("Chile")</div><div class="cd">El total pais.</div></div>
       <div class="card"><div class="ct">Grupos personalizados</div><div class="cd">Conjuntos de establecimientos definidos a medida.</div></div>
     </div>
-    <p>Para cualquier entidad seleccionada, la herramienta muestra la <strong>serie temporal</strong> del % Adecuado a lo largo de los anos disponibles, el resultado <strong>segmentado por GSE</strong> (nunca como un unico numero global) y una <strong>tabla</strong> detallada con el conteo de estudiantes evaluados por celda.</p>
+    <p>Para cualquier entidad seleccionada, la herramienta muestra la <strong>serie temporal</strong> del % Adecuado a lo largo de los anos disponibles, el resultado <strong>segmentado por GSE</strong> (nunca como un unico numero global) y una <strong>tabla</strong> detallada con el conteo de estudiantes evaluados por celda. Por defecto muestra solo el % Adecuado; un toggle activa el desglose de los <strong>tres estandares</strong> (Adecuado, Elemental e Insuficiente) apilados en la barra de cada ano, para ver como se reparte el total entre los tres niveles. Cada estandar tiene un <strong>color fijo</strong> (el mismo en todas las entidades): el nivel se reconoce siempre por su color, y cada entidad se distingue por su nombre y un borde de color propio.</p>
     <p>Todo dentro de una combinacion fija de <strong>prueba</strong> (Lectura o Matematica) y <strong>nivel</strong> (4&deg; basico o 2&deg; medio): el motor nunca mezcla pruebas ni niveles entre si (ver 4.3).</p>
   </section>
 
@@ -288,8 +288,14 @@ code.inl { font-family: var(--mono); font-size: 12.5px; background: #F0EEEB; pad
 
     <div class="dec">
       <h3>4.5 Vacios y datos preliminares explicitos</h3>
-      <p>Entre <strong>2019 y 2021 no hubo SIMCE</strong> (estallido social y pandemia). Los datos de <strong>2025 son preliminares</strong>. Ambas situaciones se marcan visualmente en el motor.</p>
+      <p>Entre <strong>2019 y 2021 no hubo Simce</strong> (estallido social y pandemia). Los datos de <strong>2025 son preliminares</strong>. Ambas situaciones se marcan visualmente en el motor.</p>
       <div class="why"><strong>Por que.</strong> Un vacio que se dibuja como continuidad, o un dato preliminar que se presenta como definitivo, inducen a leer tendencias que no existen.</div>
+    </div>
+
+    <div class="dec">
+      <h3>4.6 La dependencia es la actual y se aplica a toda la serie</h3>
+      <p>Cada establecimiento se clasifica segun su dependencia <strong>vigente</strong> (del directorio oficial), y esa clasificacion se aplica a <strong>toda la serie historica</strong>. Un Servicio Local de Educacion Publica (SLEP) agrupa a sus establecimientos tambien en los anos <strong>anteriores a su traspaso</strong>, cuando la gestion era municipal.</p>
+      <div class="why"><strong>Por que importa.</strong> Las cifras previas al ano de traspaso de un SLEP corresponden a gestion municipal y <strong>no son atribuibles a la gestion del SLEP</strong>. El motor lo advierte con un disclaimer en cada lugar donde se selecciona dependencia SLEP. El motor no segmenta automaticamente la serie en el ano de traspaso: muestra el historico completo bajo la clasificacion actual y delega en el lector la interpretacion con ayuda del disclaimer.</div>
     </div>
   </section>
 

@@ -1,10 +1,12 @@
 # slep_simce_adecuado
 
-Motor de comparación comunal de resultados SIMCE por estándares de aprendizaje,
-con foco en el % ponderado de estudiantes en nivel **Adecuado**.
+Motor de comparación comunal de resultados Simce por estándares de aprendizaje,
+con foco en el % ponderado de estudiantes en nivel **Adecuado**, con opción de
+desglosar la barra en los tres estándares (Adecuado / Elemental / Insuficiente).
 
 Producto final: un único archivo `motor_comparacion.html` standalone (JSON
-embebido) que permite comparar entre comunas y SLEPs.
+embebido) que permite comparar entre comunas, SLEPs, regiones, establecimientos
+y el nivel nacional.
 
 ## Stack
 
@@ -27,7 +29,7 @@ embebido) que permite comparar entre comunas y SLEPs.
   auxiliares/                    # directorio oficial, listado SLEP, etc.
 30_procesamiento/
   30_construir_auxiliares.R      # xlsx auxiliares -> parquets de catálogo
-  31_leer_normalizar.R           # xlsx SIMCE -> simce_rbd.parquet
+  31_leer_normalizar.R           # xlsx Simce -> simce_rbd.parquet
   32_agregar_comunal.R           # Agregación comuna × GSE × prueba × año
   33_generar_html.R              # JSON + HTML final
   33_motor_template.html         # Plantilla React/D3 del motor
@@ -39,7 +41,7 @@ embebido) que permite comparar entre comunas y SLEPs.
 
 ## Datos de entrada
 
-Los xlsx de SIMCE provienen del portal
+Los xlsx de Simce provienen del portal
 [informacionestadistica.agenciaeducacion.cl](https://informacionestadistica.agenciaeducacion.cl)
 y se versionan en el repo junto al código (son datos públicos, < 25 MB en total).
 No se requiere configuración adicional de rutas.
@@ -66,18 +68,31 @@ No se requiere configuración adicional de rutas.
 
 ## Reglas de cálculo
 
-- **Indicador:** % ponderado de estudiantes en nivel Adecuado.
-- **Fórmula de agregación:**
+- **Indicador principal:** % ponderado de estudiantes en nivel Adecuado.
+- **Desglose opcional:** el motor puede mostrar los tres estándares apilados
+  (Adecuado / Elemental / Insuficiente) mediante un toggle. Cada nivel se
+  agrega con la misma ponderación; los tres se normalizan a 100 en el apilado.
+- **Fórmula de agregación** (idéntica para los tres niveles):
   ```
-  % adecuado = sum(nalu * palu_eda_ade / 100) / sum(nalu) * 100
+  % nivel = sum(nalu * palu_eda_<nivel> / 100) / sum(nalu) * 100
   ```
+  donde `<nivel>` es `ade` (adecuado), `ele` (elemental) o `ins` (insuficiente).
 - **Filtros de exclusión (umbral MINEDUC):**
   - Establecimientos con `nalu < 10` se excluyen.
   - Establecimientos con `marca_<prueba><nivel>_rbd` distinto de NA se excluyen.
+  - Estos filtros gobiernan las filas para los tres niveles por igual, de modo
+    que el % Adecuado es idéntico exista o no el desglose Elem/Insuf.
 - **Segmentación inviolable:** todo resultado se reporta por GSE (Bajo / Medio
   bajo / Medio / Medio alto / Alto).
 - **No se mezclan** pruebas (Lectura / Matemática) ni niveles (4B / 2M)
   entre sí.
+- **Clasificación de dependencia (importante).** La dependencia de cada
+  establecimiento es la **vigente** (del directorio oficial) y se aplica a toda
+  la serie histórica. Un Servicio Local de Educación Pública (SLEP) agrupa a sus
+  establecimientos también en los años previos a su traspaso, cuando la gestión
+  era municipal; por eso las cifras anteriores al año de traspaso no son
+  atribuibles a la gestión del SLEP. El motor lo advierte con un disclaimer en
+  cada punto donde se selecciona dependencia SLEP.
 
 ## Responsabilidades por archivo
 
@@ -86,7 +101,9 @@ No se requiere configuración adicional de rutas.
 - **`00_escanear_proyecto.R`** — genera el snapshot de estructura en
   `50_documentacion/estructura/` y auto-poda los snapshots antiguos (retiene 2).
 - **`10_utils/10_utils.R`** — `agregar_ponderado(df, group_vars)`: aplica filtros
-  MINEDUC y agrega el % adecuado ponderado por nº de evaluados.
+  MINEDUC y agrega el % ponderado por nº de evaluados. Devuelve `pct_adecuado`
+  siempre, y `pct_elemental`/`pct_insuficiente` cuando las columnas
+  `palu_eda_ele`/`palu_eda_ins` están presentes en `df`.
 - **`30_construir_auxiliares.R`** — xlsx auxiliares → parquets de catálogo
   (comunas, establecimientos, SLEPs).
 - **`31_leer_normalizar.R`** — lee los xlsx crudos por nivel/año, normaliza,
@@ -111,9 +128,13 @@ No se requiere configuración adicional de rutas.
 | cod_com_rbd   | character | Código comuna                        |
 | nom_com_rbd   | character | Nombre comuna                        |
 | cod_grupo     | character | "1".."5" (GSE)                       |
+| cod_depe2     | character | Dependencia agrupada (1..5, actual)  |
 | nalu          | integer   | N° evaluados                         |
 | palu_eda_ade  | double    | % en estándar adecuado               |
+| palu_eda_ele  | double    | % en estándar elemental              |
+| palu_eda_ins  | double    | % en estándar insuficiente           |
 | marca         | character | Marca de supresión (NA si válido)    |
+| preliminar    | logical   | TRUE solo para 2025                  |
 
 ### simce_comunal.parquet
 
@@ -124,8 +145,13 @@ No se requiere configuración adicional de rutas.
 | prueba        | character |                                      |
 | cod_com_rbd   | character |                                      |
 | nom_com_rbd   | character |                                      |
+| cod_reg_rbd   | character | Código región                        |
+| nom_reg_rbd   | character | Nombre región                        |
 | cod_grupo     | character |                                      |
-| pct_adecuado  | double    | % ponderado agregado                 |
+| cod_depe2     | character | Dependencia agrupada (1..5, actual)  |
+| pct_adecuado  | double    | % ponderado agregado, adecuado       |
+| pct_elemental | double    | % ponderado agregado, elemental      |
+| pct_insuficiente | double | % ponderado agregado, insuficiente   |
 | n_evaluados   | integer   | sum(nalu) tras filtros MINEDUC       |
 | n_estab       | integer   | N° establecimientos en la agregación |
 

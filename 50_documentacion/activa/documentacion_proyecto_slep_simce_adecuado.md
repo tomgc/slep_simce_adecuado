@@ -3,7 +3,7 @@
 > **Qué es este documento.** Una presentación conceptual del proyecto: qué
 > problema resuelve, qué conceptos usa y qué decisiones metodológicas lo
 > gobiernan. Está pensado para cualquier persona del equipo, con independencia
-> de cuánto maneje SIMCE.
+> de cuánto maneje Simce.
 >
 > **Documentos complementarios:**
 > - `arquitectura_slep_simce_adecuado.html` — diagrama visual del flujo de
@@ -17,11 +17,12 @@
 ## 1. Qué es y para qué
 
 `slep_simce_adecuado` es una herramienta de análisis interno que permite
-**comparar el desempeño SIMCE de distintos territorios y establecimientos** a
+**comparar el desempeño Simce de distintos territorios y establecimientos** a
 lo largo del tiempo, midiendo qué porcentaje de estudiantes alcanza el nivel
-**Adecuado** de aprendizaje.
+**Adecuado** de aprendizaje, con la opción de desglosar también los niveles
+Elemental e Insuficiente.
 
-El problema que resuelve es concreto: los resultados SIMCE se publican por
+El problema que resuelve es concreto: los resultados Simce se publican por
 establecimiento, año, prueba y nivel, en planillas dispersas y con formatos que
 cambian de un año a otro. Responder una pregunta aparentemente simple —"¿cómo
 le va a las comunas de Costa Central en 4° básico Lectura comparadas con el
@@ -36,12 +37,12 @@ comparaciones de forma interactiva. Está publicado para consulta en línea.
 
 ---
 
-## 2. Conceptos SIMCE
+## 2. Conceptos Simce
 
-> **Esta sección es saltable.** Si ya manejas SIMCE, estándares de aprendizaje
+> **Esta sección es saltable.** Si ya manejas Simce, estándares de aprendizaje
 > y GSE, pasa directamente a la sección 3.
 
-**SIMCE** (Sistema de Medición de la Calidad de la Educación) es la evaluación
+**Simce** (Sistema de Medición de la Calidad de la Educación) es la evaluación
 estandarizada nacional que aplica la Agencia de Calidad de la Educación. Mide
 aprendizajes en pruebas como Lectura y Matemática, en distintos niveles
 escolares. Este proyecto trabaja con dos niveles: **4° básico (4b)** y
@@ -85,6 +86,12 @@ Para cualquier entidad seleccionada, la herramienta muestra:
 - La **serie temporal** del % Adecuado a lo largo de los años disponibles.
 - El resultado **segmentado por GSE**, nunca como un único número global.
 - Una **tabla** detallada con el conteo de estudiantes evaluados por celda.
+- Por defecto, solo el **% Adecuado**. Un toggle activa el **desglose de los
+  tres estándares** (Adecuado, Elemental e Insuficiente) apilados en la barra
+  de cada año, para ver no solo cuántos alcanzan Adecuado, sino cómo se reparte
+  el resto entre Elemental e Insuficiente. Cada estándar tiene un **color fijo**
+  (el mismo en todas las entidades): así un nivel se reconoce siempre por su
+  color, y cada entidad se distingue por su nombre y un borde de color propio.
 
 Todo dentro de una combinación fija de **prueba** (Lectura o Matemática) y
 **nivel** (4° básico o 2° medio): el motor nunca mezcla pruebas ni niveles
@@ -137,10 +144,25 @@ limpia: SLEP versus todo lo demás.
 
 ### 4.5 Vacíos y datos preliminares explícitos
 
-Entre **2019 y 2021 no hubo SIMCE** (estallido social y pandemia). Los datos de
+Entre **2019 y 2021 no hubo Simce** (estallido social y pandemia). Los datos de
 **2025 son preliminares**. Ambas situaciones se marcan visualmente en el motor.
 **Por qué.** Un vacío que se dibuja como continuidad, o un dato preliminar que
 se presenta como definitivo, inducen a leer tendencias que no existen.
+
+### 4.6 La dependencia es la actual y se aplica a toda la serie
+
+Cada establecimiento se clasifica según su dependencia **vigente** (del
+directorio oficial), y esa clasificación se aplica a **toda la serie
+histórica**. En consecuencia, un Servicio Local de Educación Pública (SLEP)
+agrupa a sus establecimientos también en los años **anteriores a su traspaso**,
+cuando la gestión era municipal. **Por qué importa.** Las cifras previas al año
+de traspaso de un SLEP corresponden a gestión municipal y **no son atribuibles
+a la gestión del SLEP**. El motor lo advierte con un disclaimer en cada lugar
+donde se selecciona dependencia SLEP (pestañas del selector de entidad y
+tarjetas de entidad), y lo explica en las notas metodológicas. El motor **no**
+segmenta automáticamente la serie en el año de traspaso: muestra el histórico
+completo bajo la clasificación actual, y delega en el lector la interpretación
+con ayuda del disclaimer.
 
 ---
 
