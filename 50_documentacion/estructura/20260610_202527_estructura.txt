@@ -1,19 +1,16 @@
-# Estructura actual — slep_simce_adecuado
+ESCANEO DE ESTRUCTURA — slep_simce_adecuado
+Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
+Fecha  : 2026-06-10 20:25:27
+Totales: 16 carpetas, 103 archivos
+Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
-- **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-06-09 14:01:49
-- **Totales:** 16 carpetas, 95 archivos
-- **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
-
-## Arbol
-
-```
 slep_simce_adecuado/
 ├── .claude/
-│   └── settings.local.json  (2.85K)
+│   └── settings.local.json  (2.88K)
 ├── 10_utils/
 │   ├── 10_utils.R  (7.67K)
-│   └── d3.min.js  (273K)
+│   ├── d3.min.js  (273K)
+│   └── pako.min.js  (45.8K)
 ├── 20_insumos/
 │   ├── auxiliares/
 │   │   ├── prototipo_design/
@@ -26,6 +23,7 @@ slep_simce_adecuado/
 │   │   │   ├── styles.css  (27.7K)
 │   │   │   ├── table.jsx  (7.22K)
 │   │   │   └── tweaks-panel.jsx  (23.3K)
+│   │   ├── .DS_Store  (6K)
 │   │   ├── .gitkeep  (0)
 │   │   ├── 202602_Listado_SLEP_2026_vf.xlsx  (55.5K)
 │   │   ├── anexo_indicadores_simce.xlsx  (81.1K)
@@ -65,10 +63,10 @@ slep_simce_adecuado/
 │   └── .DS_Store  (10K)
 ├── 30_procesamiento/
 │   ├── .DS_Store  (6K)
-│   ├── 30_construir_auxiliares.R  (12.8K)
+│   ├── 30_construir_auxiliares.R  (15.3K)
 │   ├── 31_leer_normalizar.R  (15.4K)
 │   ├── 32_agregar_comunal.R  (7.21K)
-│   ├── 33_generar_html.R  (11.6K)
+│   ├── 33_generar_html.R  (13.8K)
 │   └── 33_motor_template.html  (130K)
 ├── 40_salidas/
 │   ├── intermedios/
@@ -78,24 +76,26 @@ slep_simce_adecuado/
 │   │   ├── simce_comunal.parquet  (455K)
 │   │   ├── simce_rbd.parquet  (1.19M)
 │   │   ├── slep_cc_establecimientos.parquet  (5.68K)
-│   │   └── sleps_chile.parquet  (43.5K)
+│   │   └── sleps_chile.parquet  (58.7K)
 │   ├── .DS_Store  (6K)
-│   └── motor_comparacion.html  (14.2M)
+│   └── motor_comparacion.html  (1.79M)
 ├── 50_documentacion/
 │   ├── activa/
 │   │   ├── .gitkeep  (0)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (19.7K)
+│   │   ├── backlog_historico.md  (11.2K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (16.6K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (8.3K)
+│   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260609_120845_estructura.md  (5.54K)
-│   │   ├── 20260609_120845_estructura.txt  (5.61K)
 │   │   ├── 20260609_131229_estructura.md  (5.61K)
 │   │   ├── 20260609_131229_estructura.txt  (5.67K)
-│   │   ├── estructura_actual.md  (5.61K)
-│   │   ├── estructura_actual.txt  (5.67K)
+│   │   ├── 20260609_140149_estructura.md  (5.82K)
+│   │   ├── 20260609_140149_estructura.txt  (5.88K)
+│   │   ├── estructura_actual.md  (5.82K)
+│   │   ├── estructura_actual.txt  (5.88K)
 │   │   └── manifiesto_insumos.md  (2.78K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
@@ -108,35 +108,35 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v07.md  (13.5K)
 │   │   ├── traspaso_cierre_v08.md  (15K)
 │   │   ├── traspaso_cierre_v09.md  (27.8K)
-│   │   └── traspaso_cierre_v10.md  (28.2K)
-│   └── .DS_Store  (10K)
+│   │   ├── traspaso_cierre_v10.md  (28.2K)
+│   │   ├── traspaso_cierre_v11.md  (28.1K)
+│   │   └── traspaso_cierre_v12.md  (14.1K)
+│   └── .DS_Store  (14K)
 ├── docs/
-│   └── index.html  (14.2M)
+│   └── index.html  (1.79M)
 ├── .DS_Store  (10K)
-├── .gitignore  (355)
+├── .gitignore  (365)
 ├── 00_build.R  (967)
 ├── 00_escanear_proyecto.R  (8.99K)
+├── auditoria_popup_petorca.R  (4.53K)
 ├── CLAUDE.md  (6.92K)
-├── POLITICA_PROYECTO.md  (3.17K)
-├── README.md  (5.92K)
+├── diagnostico_peso_json.R  (4.18K)
+├── POLITICA_PROYECTO.md  (32.9K)
+├── README.md  (6.76K)
 └── slep_simce_adecuado.Rproj  (220)
-```
 
-## Conteo por extension
-
-| Extension | Archivos |
-|---|---|
-| xlsx | 23 |
-| md | 20 |
-| (sin extension) | 15 |
-| r | 7 |
-| html | 6 |
-| parquet | 6 |
-| jsx | 5 |
-| csv | 3 |
-| txt | 3 |
-| css | 2 |
-| js | 2 |
-| json | 1 |
-| pdf | 1 |
-| rproj | 1 |
+Conteo por extension:
+  md                 24
+  xlsx               23
+  (sin extension)    16
+  r                  9
+  html               6
+  parquet            6
+  jsx                5
+  csv                3
+  js                 3
+  txt                3
+  css                2
+  json               1
+  pdf                1
+  rproj              1

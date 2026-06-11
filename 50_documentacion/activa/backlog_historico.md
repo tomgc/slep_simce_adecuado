@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–12 (traspasos v01–v12). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11 y s12 anexados por su traspaso respectivo.
+- **Cobertura:** sesiones 1–13 (traspasos v01–v13). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11, s12 y s13 anexados por su traspaso respectivo.
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -111,3 +111,24 @@
 56. Auditoría y corrección de supresión de la Agencia: los popups listaban establecimientos cuyo resultado fue suprimido por confidencialidad (`palu_eda_ade = NA` con `nalu > 0`), porque los catálogos `rbds_por_nivel` y `rbd_gse` se construían con `distinct()` sin filtrar `palu`. Confirmado contra el sitio oficial de la Agencia (RBD 1131 muestra "-" en 2025). Filtro `!is.na(palu_eda_ade)` añadido en `33_generar_html.R` (ambos catálogos) y guard `D2.palu[i] != null` en el popup de celda del motor. Bug latente desde la sesión 4; expuesto (no causado) por la entrada de SLEP rurales con el traspaso 2026. `RBDs×GSE` de 42.134 a 34.255; `RBDs×nivel` de 23.026 a 21.402. — UI/P/D
 
 **Delta del backlog:** 6 entradas nuevas (51–56). Sin reclasificación de taxonomía. La categoría UI sigue dominante; DT y P con presencia por los dos fixes de raíz.
+
+## Sesión 13 — Auditoría pre-lanzamiento (traspaso v13)
+
+57. [Pipeline/Corrección] Filtro completo de producción (palu no-NA,
+    nalu >= 10, marca NA) aplicado en 33_generar_html.R a los tres bloques
+    que viajan al JSON (simce_rbd, rbd_gse, rbds_por_nivel). Corrige de raíz
+    la regresión introducida por el ítem 55 (s12): generateSeriesByRbd
+    operaba sobre simce_rbd sin filtros MINEDUC, con divergencias de hasta
+    42,6 pp en celdas SLEP. JSON: 185.378 → 140.345 filas. (Resuelve el
+    caso A2 del encargo de auditoría.)
+58. [Infraestructura/Seguridad] Scripts CDN del template a builds
+    production.min con SRI sha384 y crossorigin (React 18.3.1, ReactDOM
+    18.3.1, @babel/standalone 7.29.0). (Caso B4, opción 1.)
+59. [Deuda técnica] Removida la función generateSeries legacy del template
+    (42 líneas, cero llamadas) y su export en SimceData. (Caso C1.)
+60. [Documentación/Gobernanza] Informe de auditoría pre-lanzamiento +
+    decisiones: nombres de establecimiento se mantienen (B2; la prohibición
+    citada en POLITICA §6.4 corresponde a bases por estudiante) y repo
+    público como excepción justificada por GitHub Pages Free (B3).
+
+**Delta del backlog:** 4 entradas nuevas (57–60). Total acumulado: 60. Modelo: Fable 5 — auditoría pre-lanzamiento.

@@ -1,15 +1,16 @@
 ESCANEO DE ESTRUCTURA — slep_simce_adecuado
 Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
-Fecha  : 2026-06-09 14:01:49
-Totales: 16 carpetas, 95 archivos
+Fecha  : 2026-06-11 07:42:21
+Totales: 16 carpetas, 116 archivos
 Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 slep_simce_adecuado/
 ├── .claude/
-│   └── settings.local.json  (2.85K)
+│   └── settings.local.json  (2.88K)
 ├── 10_utils/
 │   ├── 10_utils.R  (7.67K)
-│   └── d3.min.js  (273K)
+│   ├── d3.min.js  (273K)
+│   └── pako.min.js  (45.8K)
 ├── 20_insumos/
 │   ├── auxiliares/
 │   │   ├── prototipo_design/
@@ -22,6 +23,7 @@ slep_simce_adecuado/
 │   │   │   ├── styles.css  (27.7K)
 │   │   │   ├── table.jsx  (7.22K)
 │   │   │   └── tweaks-panel.jsx  (23.3K)
+│   │   ├── .DS_Store  (6K)
 │   │   ├── .gitkeep  (0)
 │   │   ├── 202602_Listado_SLEP_2026_vf.xlsx  (55.5K)
 │   │   ├── anexo_indicadores_simce.xlsx  (81.1K)
@@ -61,11 +63,11 @@ slep_simce_adecuado/
 │   └── .DS_Store  (10K)
 ├── 30_procesamiento/
 │   ├── .DS_Store  (6K)
-│   ├── 30_construir_auxiliares.R  (12.8K)
+│   ├── 30_construir_auxiliares.R  (15.3K)
 │   ├── 31_leer_normalizar.R  (15.4K)
 │   ├── 32_agregar_comunal.R  (7.21K)
-│   ├── 33_generar_html.R  (11.6K)
-│   └── 33_motor_template.html  (130K)
+│   ├── 33_generar_html.R  (14.8K)
+│   └── 33_motor_template.html  (129K)
 ├── 40_salidas/
 │   ├── intermedios/
 │   │   ├── .gitkeep  (0)
@@ -74,24 +76,29 @@ slep_simce_adecuado/
 │   │   ├── simce_comunal.parquet  (455K)
 │   │   ├── simce_rbd.parquet  (1.19M)
 │   │   ├── slep_cc_establecimientos.parquet  (5.68K)
-│   │   └── sleps_chile.parquet  (43.5K)
+│   │   └── sleps_chile.parquet  (58.7K)
 │   ├── .DS_Store  (6K)
-│   └── motor_comparacion.html  (14.2M)
+│   └── motor_comparacion.html  (1.67M)
 ├── 50_documentacion/
 │   ├── activa/
 │   │   ├── .gitkeep  (0)
+│   │   ├── 20260611_decision_nombres_establecimientos.md  (1.85K)
+│   │   ├── 20260611_decision_repo_publico.md  (1.32K)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (19.7K)
+│   │   ├── backlog_historico.md  (11.2K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (16.6K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (8.3K)
+│   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
+│   │   ├── informe_auditoria_prelanzamiento.md  (10.6K)
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260609_120845_estructura.md  (5.54K)
-│   │   ├── 20260609_120845_estructura.txt  (5.61K)
-│   │   ├── 20260609_131229_estructura.md  (5.61K)
-│   │   ├── 20260609_131229_estructura.txt  (5.67K)
-│   │   ├── estructura_actual.md  (5.61K)
-│   │   ├── estructura_actual.txt  (5.67K)
+│   │   ├── 20260609_140149_estructura.md  (5.82K)
+│   │   ├── 20260609_140149_estructura.txt  (5.88K)
+│   │   ├── 20260610_202527_estructura.md  (6.2K)
+│   │   ├── 20260610_202527_estructura.txt  (6.26K)
+│   │   ├── estructura_actual.md  (6.2K)
+│   │   ├── estructura_actual.txt  (6.26K)
 │   │   └── manifiesto_insumos.md  (2.78K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
@@ -104,31 +111,45 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v07.md  (13.5K)
 │   │   ├── traspaso_cierre_v08.md  (15K)
 │   │   ├── traspaso_cierre_v09.md  (27.8K)
-│   │   └── traspaso_cierre_v10.md  (28.2K)
-│   └── .DS_Store  (10K)
+│   │   ├── traspaso_cierre_v10.md  (28.2K)
+│   │   ├── traspaso_cierre_v11.md  (28.1K)
+│   │   ├── traspaso_cierre_v12.md  (14.1K)
+│   │   └── traspaso_cierre_v13.md  (16.4K)
+│   └── .DS_Store  (14K)
 ├── docs/
-│   └── index.html  (14.2M)
+│   └── index.html  (1.79M)
 ├── .DS_Store  (10K)
-├── .gitignore  (355)
+├── .gitignore  (365)
 ├── 00_build.R  (967)
 ├── 00_escanear_proyecto.R  (8.99K)
+├── auditoria_a1_reagregacion_comunal.R  (5.76K)
+├── auditoria_a2_consistencia_popup.R  (6.73K)
+├── auditoria_a2b_verificar_html.R  (5.42K)
+├── auditoria_a3_equivalencia_slep.R  (7.19K)
+├── auditoria_a4_universo_slep.R  (8.03K)
+├── auditoria_a5_checksum_json.R  (1.57K)
+├── auditoria_a6_muestra_oficial.R  (4.82K)
+├── auditoria_a7_reproducibilidad.R  (4K)
+├── auditoria_b1_datos_personales.R  (3.67K)
+├── auditoria_popup_petorca.R  (4.53K)
 ├── CLAUDE.md  (6.92K)
-├── POLITICA_PROYECTO.md  (3.17K)
-├── README.md  (5.92K)
+├── diagnostico_peso_json.R  (4.18K)
+├── POLITICA_PROYECTO.md  (32.9K)
+├── README.md  (6.76K)
 └── slep_simce_adecuado.Rproj  (220)
 
 Conteo por extension:
+  md                 28
   xlsx               23
-  md                 20
-  (sin extension)    15
-  r                  7
+  r                  18
+  (sin extension)    16
   html               6
   parquet            6
   jsx                5
   csv                3
+  js                 3
   txt                3
   css                2
-  js                 2
   json               1
   pdf                1
   rproj              1
