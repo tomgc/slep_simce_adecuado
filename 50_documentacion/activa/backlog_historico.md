@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–10 (traspasos v01–v10), consolidado el 2026-06-09 (sesión 11).
+- **Cobertura:** sesiones 1–12 (traspasos v01–v12). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11 y s12 anexados por su traspaso respectivo.
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -90,3 +90,24 @@
 41. Remoción del panel de ajustes del motor (P3): densidad fija "cómoda", `showElemInsuf`/`yScale` hardcodeados. — UI
 42. Eliminación de la franja de leyenda bajo la tabla y contacto al pie de las notas (P4 reformulado). — UI
 43. Deploy a Pages y sincronización de snapshots. — REPO
+
+## Sesión 11 — Limpieza CSS, POLITICA v4, exportación PNG y consolidación del backlog (traspaso v11)
+
+44. Limpieza quirúrgica de CSS huérfano en `33_motor_template.html` (cierre del pendiente 2 de v10): bloque `TweaksPanel` completo (24 reglas `.twk-*`), 9 reglas `.is-compact`, `.table-legend` (2 reglas), `.dot-prelim` (huérfano adicional detectado) e icono `gear` sin uso. 3.208 → 3.098 líneas. — UI
+45. Verificación y cierre del pendiente 4 de v10 (estado `region` huérfano en tab comuna): ya había sido resuelto en la sesión 5 (ítem 19 de este backlog); el registro de v10 estaba obsoleto. Cerrado sin cambio. — DT
+46. Sustitución de `POLITICA_PROYECTO.md` local por la canónica v4 (cierre del pendiente 1 de v10). — REPO
+47. Exportación de gráficos a PNG (cierre completo de P2): refactor de `exportarGraficos` en `construirSvgGraficos` (constructor puro) + `descargarBlob` + `exportarGraficosSVG` + `exportarGraficosPNG` (rasterización canvas con `PNG_SCALE = 2`); dos botones SVG/PNG en la sección de resultados. — UI
+48. Consolidación del backlog histórico v01–v10 como documento vivo (`50_documentacion/activa/backlog_historico.md`, este archivo), con regla de mantenimiento por delta (cierre del pendiente 6 de v10). — DOC
+49. Exclusión de `_archivo/` en `.gitignore` (alineación con POLITICA §1.6) y versionado del `traspaso_cierre_v10.md` que estaba sin trackear. — REPO
+50. Dos deploys a GitHub Pages: motor sin CSS huérfano (`f0cd824`) y motor con exportación SVG/PNG (`b77eec0`). — REPO
+
+## Sesión 12 — Compresión gzip, SLEP traspaso 2026 y auditoría de supresión (traspaso v12)
+
+51. Enlace de la documentación nueva (conceptual md/html, arquitectura html, backlog histórico) en la sección "Documentación" del `README.md`, con aclaración de que los `.html` no se publican por Pages (solo `docs/`). — DOC
+52. Migración de la descarga de `exportarCSV` al helper `descargarBlob` (cierre del pendiente DRY de v11): una sola implementación de descarga en el motor; comportamiento del CSV idéntico. — DT/UI
+53. Compresión del JSON embebido con gzip + base64, descomprimido en cliente con pako (`__PAKO_INLINE__`): `33_generar_html.R` comprime (`memCompress` + `base64_enc`, con `gsub` para quitar saltos de línea MIME que rompían el literal JS), `pako.min.js` añadido a `10_utils/`. Peso del HTML de 14.531 KB a ~1.830 KB (13% del original, muy bajo el criterio ≤50% de v11). Cierra el pendiente de optimización de peso. — UI/Infra
+54. Inclusión de SLEP con traspaso prospectivo (2026) en `30_construir_auxiliares.R`: rama que incorpora los RBDs municipales (`COD_DEPE ∈ {1,2}`) de las comunas de los 10 SLEP cuyo traspaso es el año siguiente al último dato (constante `ANIO_DATOS_VIGENTE`). Catálogo de 26 a 36 SLEP, +630 RBDs. Marca visual en el motor (badge "traspaso 2026", sufijo en meta-label, nota metodológica) vía helper `slepEsProspectivo` derivado de `max(YEARS)`. — P/UI/D
+55. Corrección de raíz de la selección de establecimientos por SLEP: el motor reconstruía el universo del SLEP por comuna+`cod_depe2`, lo que (a) vaciaba los SLEP prospectivos (sus RBDs son municipales, no depe 5) y (b) podía incluir RBDs ajenos. `generateSeriesByRbd` reescrita para agregar ponderado por `nalu` sobre `entity.rbds` exactos desde `simce_rbd`; popups, conteos y tooltip migrados a `entity.rbds` como fuente única de verdad. Helper `depe2CodesParaSlep` introducido y luego retirado al volverse innecesario. — UI/DT
+56. Auditoría y corrección de supresión de la Agencia: los popups listaban establecimientos cuyo resultado fue suprimido por confidencialidad (`palu_eda_ade = NA` con `nalu > 0`), porque los catálogos `rbds_por_nivel` y `rbd_gse` se construían con `distinct()` sin filtrar `palu`. Confirmado contra el sitio oficial de la Agencia (RBD 1131 muestra "-" en 2025). Filtro `!is.na(palu_eda_ade)` añadido en `33_generar_html.R` (ambos catálogos) y guard `D2.palu[i] != null` en el popup de celda del motor. Bug latente desde la sesión 4; expuesto (no causado) por la entrada de SLEP rurales con el traspaso 2026. `RBDs×GSE` de 42.134 a 34.255; `RBDs×nivel` de 23.026 a 21.402. — UI/P/D
+
+**Delta del backlog:** 6 entradas nuevas (51–56). Sin reclasificación de taxonomía. La categoría UI sigue dominante; DT y P con presencia por los dos fixes de raíz.
