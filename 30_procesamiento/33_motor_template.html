@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <title>Motor de comparación Simce — proporción de estudiantes en nivel Adecuado</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230A3A5C'/%3E%3Crect x='8' y='15' width='4' height='9' rx='1' fill='%23FFF6E0'/%3E%3Crect x='14' y='10' width='4' height='14' rx='1' fill='%23FFF6E0'/%3E%3Crect x='20' y='6' width='4' height='18' rx='1' fill='%23C45A3E'/%3E%3C/svg%3E" />
 <style>
 /* ============================================================
    SLEP Costa Central — colores y tipografía (sin @font-face;
@@ -128,7 +129,6 @@ body {
   background: #0A3A5C;
   color: var(--fg-on-plum);
   padding: 28px 40px 26px;
-  border-bottom: 4px solid var(--coral);
 }
 .app-header-inner {
   display: flex; align-items: flex-end; justify-content: space-between;
@@ -178,8 +178,10 @@ body {
   display: flex; align-items: center; gap: 28px;
   padding: 18px 40px;
   background: var(--paper);
+  border-top: 4px solid var(--coral);
   border-bottom: 1px solid var(--border-1);
   flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 50;
 }
 .control-group { display: flex; align-items: center; gap: 12px; }
 .control-label {
@@ -265,9 +267,11 @@ body {
   border-bottom: 1px solid var(--border-1);
 }
 .entities-head {
-  display: flex; align-items: baseline; gap: 12px;
+  display: flex; align-items: center; gap: 12px;
   margin-bottom: 12px;
 }
+.entities-reset { align-self: center; color: var(--fg-3); flex: none; }
+.entities-reset:hover { color: var(--fg-1); }
 .section-eyebrow {
   font-family: var(--font-display);
   font-weight: 700;
@@ -277,14 +281,15 @@ body {
   margin: 0;
 }
 .entities-count { font-size: 12px; color: var(--fg-3); font-weight: 500; }
-.entities-list { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.entities-list { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
 .entity-chip {
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: flex-start; gap: 8px;
   padding: 6px 8px 6px 10px;
   background: var(--paper);
   border: 1px solid var(--border-2);
   border-radius: var(--radius-2);
   transition: border-color 120ms ease;
+  max-width: 340px; flex: 0 1 auto;
 }
 .entity-chip:hover { border-color: var(--plum); }
 .entity-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
@@ -322,6 +327,13 @@ body {
 .btn:active { transform: translateY(1px); }
 .btn .icon { width: 14px; height: 14px; }
 .btn-small { padding: 5px 10px; font-size: 12px; }
+.btn-icon-only { padding: 6px; }
+.btn-icon-only .icon { width: 16px; height: 16px; }
+.btn-toggle { color: var(--fg-2); }
+.btn-toggle.is-active {
+  background: var(--ocean); color: var(--cream); border-color: var(--ocean);
+}
+.btn-toggle.is-active:hover { background: var(--ocean-80); border-color: var(--ocean-80); }
 .btn-primary { background: var(--ocean); color: var(--cream); border-color: var(--ocean); }
 .btn-primary:hover { background: var(--ocean-80); border-color: var(--ocean-80); }
 .btn-ghost { background: transparent; color: var(--fg-1); border-color: var(--border-2); }
@@ -347,14 +359,33 @@ body {
 
 /* Results */
 .results-section { padding: 28px 40px 8px; }
+.empty-board {
+  margin: 28px 40px; padding: 56px 32px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 10px;
+  border: 1px dashed var(--border-2); border-radius: var(--radius-2);
+  background: var(--cream-200);
+}
+.empty-board-text { font-size: 16px; color: var(--fg-2); margin: 0; max-width: 520px; line-height: 1.5; }
 .results-head {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 24px; margin-bottom: 18px; flex-wrap: wrap;
+  display: flex; flex-direction: column; align-items: stretch;
+  gap: 14px; margin-bottom: 18px;
+}
+.results-head-top { display: flex; flex-direction: column; gap: 2px; }
+/* Fila única bajo el título: controles a la izquierda, leyenda a la
+   derecha (mockup). En pantallas angostas envuelve sin romperse. */
+.results-head-controls {
+  display: flex; align-items: center; justify-content: flex-start;
+  gap: 16px 24px; flex-wrap: wrap;
 }
 .section-actions {
   display: flex; align-items: center; gap: 14px;
-  flex-wrap: wrap; justify-content: flex-end;
+  flex-wrap: wrap; justify-content: flex-start;
 }
+/* La cabecera de la tabla conserva el layout horizontal (título a la
+   izquierda, controles a la derecha). */
+.table-head { justify-content: space-between; }
+.table-head .section-actions { justify-content: flex-end; }
 .icon-export {
   display: inline-flex; align-items: center; gap: 0;
   height: 32px; padding: 0 8px;
@@ -387,9 +418,9 @@ body {
 }
 .hint-item { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-1); }
 .hint-muted { color: var(--fg-3); font-size: 11px; }
-.hint-empty-box {
+.hint-box {
   display: inline-block; width: 14px; height: 12px;
-  background: #FFFFFF; border: 1px solid #C8BDA0; border-radius: 1px;
+  border: 1px solid rgba(0,0,0,0.12); border-radius: 1px;
 }
 .hint-low-n {
   display: inline-block; width: 14px; height: 12px;
@@ -437,6 +468,8 @@ body {
 .chart-cell {
   background: var(--paper);
   border: 1px solid var(--border-1);
+  /* Un estilo inline sobrescribe el borde completo con el color de la
+     entidad (1px), rodeando la ficha para identificar la columna. */
   border-radius: var(--radius-3);
   padding: 10px 10px 6px;
   box-shadow: var(--shadow-1);
@@ -516,11 +549,6 @@ body {
   gap: 6px; align-items: center; font-size: 12px;
 }
 .tt-seg-sw { width: 10px; height: 10px; border-radius: 2px; }
-.tt-seg-sw-empty {
-  background: var(--paper) !important;
-  border: 1px solid #C8BDA0;
-  width: 9px; height: 9px;
-}
 .tt-seg-lbl { color: var(--fg-2); }
 .tt-seg-val {
   font-family: var(--font-display);
@@ -613,6 +641,26 @@ body {
   vertical-align: middle;
   white-space: nowrap;
 }
+.slep-disclaimer {
+  grid-column: 1 / -1;
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,98,160,0.25);
+  border-radius: var(--radius-2);
+  background: rgba(0,98,160,0.06);
+  color: var(--fg-2);
+  font-size: 12.5px; line-height: 1.45;
+}
+.slep-disclaimer .icon { width: 16px; height: 16px; color: var(--ocean); flex: none; margin-top: 1px; }
+.slep-disclaimer.is-compact { font-size: 11.5px; padding: 8px 10px; }
+.entity-slep-note {
+  display: inline-flex; gap: 4px; align-items: flex-start;
+  margin-top: 3px;
+  font-size: 10.5px; line-height: 1.3; font-weight: 600;
+  color: var(--ocean);
+  white-space: normal;
+}
+.entity-slep-note .icon { width: 12px; height: 12px; flex: none; margin-top: 1px; }
 .data-table tbody td {
   padding: 8px 12px;
   border-bottom: 1px solid var(--border-1);
@@ -727,9 +775,10 @@ body {
   border-radius: var(--radius-3);
   padding: 28px; box-shadow: var(--shadow-1);
 }
-.notes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 36px; }
-.notes-grid .note-full { grid-column: 1 / -1; }
-@media (max-width: 900px) { .notes-grid { grid-template-columns: 1fr; } }
+.notes-grid { columns: 3 280px; column-gap: 36px; }
+.notes-grid .note { break-inside: avoid; margin-bottom: 24px; display: inline-block; width: 100%; }
+.note-stack { display: contents; }
+@media (max-width: 900px) { .notes-grid { columns: 1; } }
 .note h4 {
   font-family: var(--font-display);
   font-weight: 800; font-size: 13px;
@@ -836,6 +885,9 @@ body {
 .check-row:last-child { border-bottom: 0; }
 .check-row:hover { background: var(--cream-200); }
 .check-row input[type="checkbox"] { accent-color: var(--ocean); }
+.check-row.is-disabled { opacity: 0.45; }
+.check-row.is-disabled:hover { background: transparent; }
+.multiselect-hint { display: block; font-size: 11.5px; color: var(--fg-3); margin: 2px 0 4px; }
 .check-name { font-size: 13px; font-weight: 500; color: var(--fg-1); flex: 1; }
 .check-region { font-size: 11px; color: var(--fg-3); }
 .empty-state { padding: 16px; text-align: center; color: var(--fg-3); font-size: 13px; }
@@ -1064,11 +1116,6 @@ code {
           }));
       })();
 
-      // PRESETS — Costa Central
-      const PRESETS = {
-        "SLEP Costa Central": ["5103", "5105", "5107", "5109"],
-      };
-
       // Look up de comuna por código
       const COMUNA_BY_COD = new Map(DATA.comunas.map(c => [c.cod, c]));
 
@@ -1095,12 +1142,37 @@ code {
           .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
       })();
 
-      // Catálogo de dependencias
-      const DEPE2_LABELS = M.depe2_labels || {
-        "1":"Municipal","2":"Part. Subvencionado","3":"Part. Pagado",
-        "4":"Corp. Admin. Delegada","5":"Servicio Local de Educación"
+      // Catálogo de dependencias. El label de SLEP se normaliza al nombre oficial
+      // "Servicio Local de Educación Pública (SLEP)" independientemente de cómo lo
+      // traiga el JSON (las bases lo definen como "Servicio Local de Educación").
+      const DEPE2_LABELS = {
+        "1": "Municipal", "2": "Part. Subvencionado", "3": "Part. Pagado",
+        "4": "Corp. Admin. Delegada", "5": "Servicio Local de Educación Pública (SLEP)",
+        ...(M.depe2_labels || {}),
+        "5": "Servicio Local de Educación Pública (SLEP)",
       };
-      const DEPE2_CODES = M.depe2 || ["1","2","3","4","5"];
+      const DEPE2_CODES = M.depe2 || ["1", "2", "3", "4", "5"];
+
+      // Construye un punto de serie desde un acumulador {num,num_ele,num_ins,den,n_estab}.
+      // Normaliza los tres niveles a 100 para el apilado: Adecuado se conserva
+      // exacto (no cambia respecto al modo solo-Adecuado); Elem e Insuf se ajustan
+      // proporcionalmente para absorber el ±0.1 de redondeo de la fuente, de modo
+      // que ningún gráfico apilado sume 99.9 ni 100.1.
+      function mkPunto(year, acc, preliminar) {
+        const pct = Math.round((acc.num / acc.den) * 1000) / 10;
+        let pe = acc.num_ele > 0 ? (acc.num_ele / acc.den) * 100 : 0;
+        let pi = acc.num_ins > 0 ? (acc.num_ins / acc.den) * 100 : 0;
+        const resto = Math.max(0, 100 - pct);   // lo que no es Adecuado
+        const sumaEI = pe + pi;
+        if (sumaEI > 0) {
+          // Reescalar Elem+Insuf para que sumen exactamente (100 − Adecuado).
+          pe = Math.round((pe / sumaEI) * resto * 10) / 10;
+          pi = Math.round((resto - pe) * 10) / 10;
+        } else {
+          pe = 0; pi = Math.round(resto * 10) / 10;
+        }
+        return { year, pct, pct_ele: pe, pct_ins: pi, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
+      }
 
       // generateSeries por lista de RBDs: agrega ponderado por nalu sobre los
       // establecimientos exactos del SLEP (entity.rbds), leyendo de DATA.simce_rbd
@@ -1125,18 +1197,21 @@ code {
           const n = D2.nalu[i];
           const p = D2.palu[i];
           if (n == null || n === 0 || p == null) continue;
+          const pe = D2.palu_ele[i], pi = D2.palu_ins[i];
           const y = D2.anio[i];
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
           acc.num += (p * n) / 100;
+          if (pe != null) acc.num_ele += (pe * n) / 100;
+          if (pi != null) acc.num_ins += (pi * n) / 100;
           acc.den += n;
           acc.n_estab += 1;
         }
         return YEARS.map(year => {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
-          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
-          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+          if (acc && acc.den > 0) return mkPunto(year, acc, preliminar);
+          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
         });
       }
 
@@ -1155,17 +1230,20 @@ code {
           const y = D.anio[i];
           const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
           if (p == null || n == null || n === 0) continue;
+          const pe = D.pct_ele[i], pi = D.pct_ins[i];
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
           acc.num += (p * n) / 100;
+          if (pe != null) acc.num_ele += (pe * n) / 100;
+          if (pi != null) acc.num_ins += (pi * n) / 100;
           acc.den += n;
           acc.n_estab += e;
         }
         return YEARS.map(year => {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
-          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
-          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+          if (acc && acc.den > 0) return mkPunto(year, acc, preliminar);
+          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
         });
       }
 
@@ -1189,16 +1267,19 @@ code {
           const n = D2.nalu[i];
           const p = D2.palu[i];
           if (n == null || n === 0 || p == null) continue;
+          const pe = D2.palu_ele[i], pi = D2.palu_ins[i];
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, den: 0 }; porAnio.set(y, acc); }
+          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 1 }; porAnio.set(y, acc); }
           acc.num += (p * n) / 100;
+          if (pe != null) acc.num_ele += (pe * n) / 100;
+          if (pi != null) acc.num_ins += (pi * n) / 100;
           acc.den += n;
         }
         return YEARS.map(year => {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
-          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: 1, preliminar };
-          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+          if (acc && acc.den > 0) { const pt = mkPunto(year, acc, preliminar); pt.n_estab = 1; return pt; }
+          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
         });
       }
 
@@ -1216,17 +1297,20 @@ code {
           const y = D.anio[i];
           const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
           if (p == null || n == null || n === 0) continue;
+          const pe = D.pct_ele[i], pi = D.pct_ins[i];
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
           acc.num += (p * n) / 100;
+          if (pe != null) acc.num_ele += (pe * n) / 100;
+          if (pi != null) acc.num_ins += (pi * n) / 100;
           acc.den += n;
           acc.n_estab += e;
         }
         return YEARS.map(year => {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
-          if (acc && acc.den > 0) return { year, pct: Math.round((acc.num / acc.den) * 1000) / 10, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
-          return { year, pct: null, n_eval: null, n_estab: null, preliminar };
+          if (acc && acc.den > 0) return mkPunto(year, acc, preliminar);
+          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
         });
       }
 
@@ -1282,13 +1366,21 @@ code {
           && anioTraspaso > ANIO_DATOS_MAX;
       }
 
+      // Una entidad depende de la clasificación SLEP (dependencia actual aplicada
+      // a toda la serie) cuando es un SLEP, o cuando filtra por dependencia
+      // "Servicio Local de Educación" (cod 5) en comuna/región/nacional.
+      function entidadDependeSlep(entity) {
+        if (!entity) return false;
+        return entity.kind === "slep" || String(entity.depe2) === "5";
+      }
+
       return {
         YEARS, GAP_YEARS, PRELIMINAR_YEARS, GSE_LEVELS,
-        ANIO_DATOS_MAX, slepEsProspectivo,
+        ANIO_DATOS_MAX, slepEsProspectivo, entidadDependeSlep,
         generateSeriesByRbd, generateSeriesByDepe,
         generateSeriesByEstab, generateSeriesByNacional, gseActualDeEstab, ESTAB_LIST,
         getSeriesForEntity,
-        REGIONES, PRESETS, COMUNA_BY_COD,
+        REGIONES, COMUNA_BY_COD,
         SLEPS, DEPE2_LABELS, DEPE2_CODES,
         NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
         GSE_LABELS, GSE_LABEL_TO_COD,
@@ -1322,7 +1414,7 @@ code {
         download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></>,
         image: <><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></>,
         chart: <><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></>,
-        layers: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>,
+        "rotate-ccw": <><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></>,
         chevron: <><polyline points="6 9 12 15 18 9" /></>,
         info: <><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></>,
       };
@@ -1341,27 +1433,15 @@ code {
       "#B89530", "#4A6FA5", "#A35A6F", "#5C8A6E",
     ];
     const MAX_ENTIDADES = 4;
-
-    // INITIAL_ENTITIES: 4 comunas Costa Central con códigos reales
-    function buildInitialEntities() {
-      const seedCodigos = [
-        { cod: "5103", colorIdx: 0 },  // Concón
-        { cod: "5105", colorIdx: 1 },  // Puchuncaví
-        { cod: "5107", colorIdx: 2 },  // Quintero
-        { cod: "5109", colorIdx: 3 },  // Viña del Mar
-      ];
-      return seedCodigos.map((s, i) => {
-        const c = SimceData.COMUNA_BY_COD.get(s.cod);
-        return {
-          id: "e" + (i + 1),
-          name: c ? c.nom : ("Comuna " + s.cod),
-          kind: "comuna",
-          comunas: [s.cod],
-          depe2: "5",
-          color: ENTITY_PALETTE[s.colorIdx],
-        };
-      });
-    }
+    // Colores fijos para los segmentos Elemental e Insuficiente (modo apilado).
+    // Tonos neutros, deliberadamente distintos de ENTITY_PALETTE para no
+    // confundirse con el color de la entidad (que representa Adecuado).
+    // Colores fijos por NIVEL (no por entidad): un mismo nivel se ve igual
+    // en todas las entidades. La identidad de cada entidad se distingue por
+    // su nombre, su swatch en la tarjeta y el borde inferior del gráfico.
+    const COLOR_ADEC  = "#0C4682";  // azul (Adecuado)
+    const COLOR_ELEM  = "#6BA0CE";  // azul claro (Elemental)
+    const COLOR_INSUF = "#79204F";  // vino (Insuficiente)
 
     // ============================================================
     // Header — banner azul institucional
@@ -1475,6 +1555,12 @@ code {
           <span className="entity-text">
             <span className="entity-name">{entity.name}</span>
             <span className="entity-meta">{meta}</span>
+            {SimceData.entidadDependeSlep(entity) && (
+              <span className="entity-slep-note" title="Clasificación por dependencia actual: incluye años previos al traspaso (gestión municipal). Las cifras anteriores al traspaso no son atribuibles al SLEP.">
+                <Icon name="info" />
+                Incluye periodo de gestión municipal previo al traspaso
+              </span>
+            )}
             {hasEstabs && (
               <button className="entity-estab-btn" onClick={onShowEstab}>
                 {`ver establecimientos (${contarEstablecimientos(entity, nivel, prueba) ?? "…"}) ▸`}
@@ -1487,7 +1573,7 @@ code {
       );
     }
 
-    function EntitiesBar({ entities, setEntities, openModal, openPresetMenu, onShowEstab, nivel, prueba }) {
+    function EntitiesBar({ entities, setEntities, openModal, onReset, onShowEstab, nivel, prueba }) {
       function removeEntity(id) { setEntities(entities.filter(e => e.id !== id)); }
       return (
         <section className="entities-bar">
@@ -1512,11 +1598,12 @@ code {
                 <button className="btn btn-primary" onClick={() => openModal(null)}>
                   <Icon name="plus" /> Agregar entidad
                 </button>
-                <button className="btn btn-ghost btn-small" onClick={openPresetMenu}>
-                  <Icon name="layers" /> Preset SLEP
-                </button>
               </div>
             )}
+            <button className="btn btn-ghost btn-icon-only entities-reset" onClick={onReset}
+              title="Restablecer entidades iniciales" aria-label="Restablecer entidades iniciales">
+              <Icon name="rotate-ccw" />
+            </button>
           </div>
         </section>
       );
@@ -1536,20 +1623,25 @@ code {
       function populate(tip, s, yr, pinned) {
         tip.innerHTML = `
           <div class="tt-row tt-head">
-            <span class="tt-swatch" style="background:${entity.color}"></span>
+            <span class="tt-swatch" style="background:${COLOR_ADEC}"></span>
             <span class="tt-ent"></span>
           </div>
           <div class="tt-gse"></div>
           <div class="tt-segments">
             <div class="tt-seg">
-              <span class="tt-seg-sw" style="background:${entity.color}"></span>
+              <span class="tt-seg-sw" style="background:${COLOR_ADEC}"></span>
               <span class="tt-seg-lbl">Adecuado</span>
               <span class="tt-seg-val tt-adec"></span>
             </div>
             <div class="tt-seg">
-              <span class="tt-seg-sw tt-seg-sw-empty"></span>
-              <span class="tt-seg-lbl">Elemental + Insuficiente</span>
-              <span class="tt-seg-val tt-rest"></span>
+              <span class="tt-seg-sw" style="background:${COLOR_ELEM}"></span>
+              <span class="tt-seg-lbl">Elemental</span>
+              <span class="tt-seg-val tt-ele"></span>
+            </div>
+            <div class="tt-seg">
+              <span class="tt-seg-sw" style="background:${COLOR_INSUF}"></span>
+              <span class="tt-seg-lbl">Insuficiente</span>
+              <span class="tt-seg-val tt-ins"></span>
             </div>
           </div>
           <div class="tt-meta">
@@ -1560,7 +1652,10 @@ code {
         tip.querySelector(".tt-ent").textContent = entity.name;
         tip.querySelector(".tt-gse").textContent = "GSE " + gse + " · " + yr + (s.preliminar ? " *" : "");
         tip.querySelector(".tt-adec").textContent = fmtPct(s.pct);
-        tip.querySelector(".tt-rest").textContent = s.pct == null ? "—" : fmtPct(100 - s.pct);
+        tip.querySelector(".tt-ele").textContent = (s.pct == null) ? "—"
+          : (s.pct_ele != null ? fmtPct(s.pct_ele) : "—");
+        tip.querySelector(".tt-ins").textContent = (s.pct == null) ? "—"
+          : (s.pct_ins != null ? fmtPct(s.pct_ins) : "—");
         tip.querySelector(".tt-n-eval").textContent = fmtInt(s.n_eval);
         tip.querySelector(".tt-n-estab").textContent = fmtInt(s.n_estab);
 
@@ -1719,7 +1814,7 @@ code {
           g.append("path")
             .attr("d", lineGen(seg))
             .attr("fill", "none")
-            .attr("stroke", entity.color)
+            .attr("stroke", COLOR_ADEC)
             .attr("stroke-width", 1.5)
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round");
@@ -1733,8 +1828,8 @@ code {
           const opacity = isLowN ? 0.45 : 1;
           g.append("circle")
             .attr("cx", cx).attr("cy", cy)
-            .attr("r", 2.2)
-            .attr("fill", entity.color)
+            .attr("r", 2.6)
+            .attr("fill", COLOR_ADEC)
             .attr("opacity", opacity)
             .style("cursor", "pointer")
             .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
@@ -1745,9 +1840,9 @@ code {
             .attr("x", cx).attr("y", labelY)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 8.5)
+            .attr("font-size", 10.5)
             .attr("font-weight", 600)
-            .attr("fill", entity.color)
+            .attr("fill", COLOR_ADEC)
             .attr("opacity", opacity * 0.9)
             .style("pointer-events", "none")
             .text(Math.round(s.pct) + "%");
@@ -1755,20 +1850,20 @@ code {
             .attr("x", cx).attr("y", ih + 13)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 8)
+            .attr("font-size", 9.5)
             .attr("fill", "#747474")
             .text(s.year);
           if (s.preliminar) {
             g.append("text")
               .attr("x", cx + 7).attr("y", labelY - 1)
               .attr("font-family", "system-ui, sans-serif")
-              .attr("font-size", 9)
+              .attr("font-size", 10.5)
               .attr("font-weight", 900)
               .attr("fill", "#0062A0")
               .text("*");
           }
         });
-      }, [entity.id, entity.color, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba]);
+      }, [entity.id, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba]);
       return <svg ref={ref} className="sparkline-svg" />;
     }
 
@@ -1839,22 +1934,46 @@ code {
           const opacity = isLowN ? 0.45 : 1;
 
           if (showElemInsuf && s.pct < 100) {
-            const restTopY = y(Math.min(yMax, 100));
-            const restBottomY = y(s.pct);
-            const h = restBottomY - restTopY;
-            if (h > 0) {
-              g.append("rect")
-                .attr("x", xPos + 0.5).attr("y", restTopY + 0.5)
-                .attr("width", bw - 1).attr("height", h - 1)
-                .attr("fill", "#FFFFFF")
-                .attr("stroke", "#C8BDA0")
-                .attr("stroke-width", 1)
-                .attr("opacity", opacity)
-                .style("cursor", "pointer")
-                .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
-                .on("mouseleave", tt.hide)
-                .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
-            }
+            // Dos segmentos apilados sobre Adecuado: Elemental (medio) e
+            // Insuficiente (arriba). Colores fijos, no por entidad, para que la
+            // lectura sea consistente entre tarjetas.
+            const segs = [
+              { key: "ele", val: s.pct_ele, fill: COLOR_ELEM, label: "Elemental" },
+              { key: "ins", val: s.pct_ins, fill: COLOR_INSUF, label: "Insuficiente" },
+            ];
+            let base = s.pct;  // apila desde el tope de Adecuado
+            segs.forEach(seg => {
+              if (seg.val == null || seg.val <= 0) return;
+              const topY = y(Math.min(yMax, base + seg.val));
+              const botY = y(Math.min(yMax, base));
+              const h = botY - topY;
+              base += seg.val;
+              if (h > 0) {
+                g.append("rect")
+                  .attr("x", xPos).attr("y", topY)
+                  .attr("width", bw).attr("height", h)
+                  .attr("fill", seg.fill)
+                  .attr("opacity", opacity)
+                  .style("cursor", "pointer")
+                  .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
+                  .on("mouseleave", tt.hide)
+                  .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
+                // Etiqueta % del segmento, en blanco, a la base de su franja.
+                // Solo si la franja tiene alto suficiente para no amontonar texto.
+                if (h >= 16) {
+                  g.append("text")
+                    .attr("x", xPos + bw / 2).attr("y", botY - 5)
+                    .attr("text-anchor", "middle")
+                    .attr("font-family", "system-ui, sans-serif")
+                    .attr("font-size", 11)
+                    .attr("font-weight", 700)
+                    .attr("fill", "#FFFFFF")
+                    .attr("opacity", isLowN ? 0.7 : 1)
+                    .style("pointer-events", "none")
+                    .text(fmtPctShort(seg.val));
+                }
+              }
+            });
           }
 
           const yAdec = y(s.pct);
@@ -1862,15 +1981,19 @@ code {
           g.append("rect")
             .attr("x", xPos).attr("y", yAdec)
             .attr("width", bw).attr("height", hAdec)
-            .attr("fill", entity.color)
+            .attr("fill", COLOR_ADEC)
             .attr("opacity", opacity)
             .style("cursor", "pointer")
             .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
             .on("mouseleave", tt.hide)
             .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
 
-          const labelY = yAdec - 5;
-          const fill = entity.color;
+          // En modo apilado la etiqueta va a la base de Adecuado, en blanco,
+          // para no caer sobre el segmento Elemental. En modo solo-Adecuado
+          // se mantiene encima de la barra, en color Adecuado.
+          const stacked = showElemInsuf && s.pct < 100;
+          const labelY = stacked ? Math.min(ih - 7, yAdec + 16) : yAdec - 5;
+          const fill = stacked ? "#FFFFFF" : COLOR_ADEC;
           g.append("text")
             .attr("x", xPos + bw / 2).attr("y", labelY)
             .attr("text-anchor", "middle")
@@ -1902,7 +2025,7 @@ code {
               .text("*");
           }
         });
-      }, [entity.id, entity.color, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
+      }, [entity.id, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
       return <svg ref={ref} className="bars-svg" />;
     }
 
@@ -1913,7 +2036,8 @@ code {
       const hasData = series.some(s => s.pct != null);
       if (!hasData) return <div className="chart-cell is-empty" data-entity-id={entity.id} data-gse={gse} />;
       return (
-        <div className="chart-cell" data-entity-id={entity.id} data-gse={gse}>
+        <div className="chart-cell" data-entity-id={entity.id} data-gse={gse}
+          style={{ border: `1px solid ${entity.color}` }}>
           <div className="chart-cell-head">
             <span className="chart-cell-eyebrow">GSE</span>
             <span className="chart-cell-title">{gse}</span>
@@ -2084,19 +2208,21 @@ code {
     function ChartHints({ showElemInsuf }) {
       return (
         <div className="chart-hints">
-          {showElemInsuf && (
-            <span className="hint-item">
-              <span className="hint-empty-box" />
-              <span>Elemental + Insuficiente</span>
-            </span>
-          )}
           <span className="hint-item hint-muted">
             <span className="hint-low-n" />
             <span>Baja representatividad (un solo establecimiento)</span>
           </span>
-          <span className="hint-item hint-muted">
-            <span className="hint-asterisk">*</span>
-            <span>2025 preliminar</span>
+          <span className="hint-item">
+            <span className="hint-box" style={{ background: COLOR_ADEC }} />
+            <span>Adecuado</span>
+          </span>
+          <span className="hint-item" style={{ visibility: showElemInsuf ? "visible" : "hidden" }}>
+            <span className="hint-box" style={{ background: COLOR_ELEM }} />
+            <span>Elemental</span>
+          </span>
+          <span className="hint-item" style={{ visibility: showElemInsuf ? "visible" : "hidden" }}>
+            <span className="hint-box" style={{ background: COLOR_INSUF }} />
+            <span>Insuficiente</span>
           </span>
         </div>
       );
@@ -2540,7 +2666,25 @@ code {
     // ============================================================
     // Modal agregar entidad — v2 con tabs: Comuna | SLEP | Región | Establecimiento | Grupo
     // ============================================================
-    function AddEntityModal({ editing, onSave, onCancel, takenColors }) {
+    // Disclaimer metodológico: la clasificación por dependencia es la ACTUAL y
+    // se aplica a toda la serie, sin corte por año de traspaso. Aparece donde se
+    // puede seleccionar dependencia SLEP y como nota permanente en entidades SLEP.
+    function SlepDisclaimer({ compact }) {
+      return (
+        <div className={"slep-disclaimer" + (compact ? " is-compact" : "")}>
+          <Icon name="info" />
+          <span>
+            Los establecimientos se clasifican según su dependencia <strong>actual</strong>.
+            Un Servicio Local de Educación Pública (SLEP) agrupa a sus establecimientos en
+            toda la serie histórica, incluidos los años anteriores a su traspaso, cuando la
+            gestión era municipal. Las cifras previas al año de traspaso no son atribuibles
+            a la gestión del SLEP.
+          </span>
+        </div>
+      );
+    }
+
+    function AddEntityModal({ editing, onSave, onSaveMany, onCancel, takenColors, slotsLibres }) {
       const [tab, setTab] = React.useState(
         editing?.kind === "slep" ? "slep"
           : editing?.kind === "region" ? "region"
@@ -2553,15 +2697,15 @@ code {
       const [comunaCod, setComunaCod] = React.useState(
         editing?.kind === "comuna" ? (editing.comunas?.[0] || "") : ""
       );
-      const [depe2, setDepe2] = React.useState(editing?.depe2 || "5");
-      // Tab SLEP
+      const [depe2, setDepe2] = React.useState(editing?.depe2 || "");
+      // Tab SLEP — selección múltiple (Set de cod_slep). En edición, un solo elemento.
       const [slepSearch, setSlepSearch] = React.useState("");
-      const [selectedSlep, setSelectedSlep] = React.useState(
-        editing?.kind === "slep" ? editing.cod_slep : ""
+      const [selectedSleps, setSelectedSleps] = React.useState(
+        editing?.kind === "slep" ? [editing.cod_slep] : []
       );
-      // Tab región
-      const [selectedRegion, setSelectedRegion] = React.useState(
-        editing?.kind === "region" ? (editing.cod_reg || "") : ""
+      // Tab región — selección múltiple (Set de cod_reg). En edición, un solo elemento.
+      const [selectedRegions, setSelectedRegions] = React.useState(
+        editing?.kind === "region" ? [editing.cod_reg] : []
       );
       const [regionSearch, setRegionSearch] = React.useState("");
       // Tab establecimiento
@@ -2598,6 +2742,17 @@ code {
         return norm(s.nombre).includes(norm(slepSearch));
       });
 
+      // Límite de selección múltiple: en alta, tantos como slots libres; en edición, 1.
+      const maxSel = editing ? 1 : Math.max(1, slotsLibres || 0);
+      function toggleSel(cod, lista, setLista) {
+        if (lista.includes(cod)) {
+          setLista(lista.filter(x => x !== cod));
+        } else {
+          if (lista.length >= maxSel) return;
+          setLista([...lista, cod]);
+        }
+      }
+
       function handleSave() {
         const color = editing?.color || availableColor;
         if (tab === "comuna") {
@@ -2614,18 +2769,24 @@ code {
             color,
           });
         } else if (tab === "region") {
-          if (!selectedRegion) return;
-          const reg = SimceData.REGIONES.find(r => r.cod_reg === selectedRegion);
-          if (!reg) return;
-          onSave({
-            id: editing?.id || ("e" + Date.now()),
-            name: reg.nombre + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
-            kind: "region",
-            cod_reg: reg.cod_reg,
-            comunas: reg.comunas.map(c => c.cod_com),
-            depe2: depe2 || null,
-            color,
-          });
+          if (selectedRegions.length === 0) return;
+          const nuevas = selectedRegions.map(cod => {
+            const reg = SimceData.REGIONES.find(r => r.cod_reg === cod);
+            if (!reg) return null;
+            return {
+              id: editing?.id || ("e" + Date.now() + "_" + cod),
+              name: reg.nombre + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
+              kind: "region",
+              cod_reg: reg.cod_reg,
+              comunas: reg.comunas.map(c => c.cod_com),
+              depe2: depe2 || null,
+              // En alta múltiple el color lo asigna saveEntities() por índice;
+              // en edición se conserva el color existente más abajo.
+              color: editing ? color : undefined,
+            };
+          }).filter(Boolean);
+          if (editing) { onSave(nuevas[0]); } else { onSaveMany(nuevas); }
+          return;
         } else if (tab === "estab") {
           if (!selectedEstab) return;
           onSave({
@@ -2639,19 +2800,24 @@ code {
             color,
           });
         } else if (tab === "slep") {
-          if (!selectedSlep) return;
-          const slep = SimceData.SLEPS.find(s => s.cod_slep === selectedSlep);
-          if (!slep) return;
-          onSave({
-            id: editing?.id || ("e" + Date.now()),
-            name: "SLEP " + slep.nombre,
-            kind: "slep",
-            cod_slep: slep.cod_slep,
-            comunas: slep.comunas,
-            rbds: slep.rbds,
-            anio_traspaso: slep.anio_traspaso,
-            color,
-          });
+          if (selectedSleps.length === 0) return;
+          const nuevas = selectedSleps.map(cod => {
+            const slep = SimceData.SLEPS.find(s => s.cod_slep === cod);
+            if (!slep) return null;
+            return {
+              id: editing?.id || ("e" + Date.now() + "_" + cod),
+              name: "SLEP " + slep.nombre,
+              kind: "slep",
+              cod_slep: slep.cod_slep,
+              comunas: slep.comunas,
+              rbds: slep.rbds,
+              anio_traspaso: slep.anio_traspaso,
+              // En alta múltiple el color lo asigna saveEntities() por índice.
+              color: editing ? color : undefined,
+            };
+          }).filter(Boolean);
+          if (editing) { onSave(nuevas[0]); } else { onSaveMany(nuevas); }
+          return;
         } else if (tab === "nacional") {
           onSave({
             id: editing?.id || ("e" + Date.now()),
@@ -2745,26 +2911,33 @@ code {
                       type="text"
                       placeholder="Buscar región…"
                       value={regionSearch}
-                      onChange={e => { setRegionSearch(e.target.value); setSelectedRegion(""); }}
+                      onChange={e => setRegionSearch(e.target.value)}
                     />
+                    <span className="multiselect-hint">
+                      {editing ? "Edición: una región." : `Puedes elegir varias. ${selectedRegions.length} de ${maxSel} seleccionadas.`}
+                    </span>
                     <div className="comuna-checklist" style={{ maxHeight: 260, marginTop: 4 }}>
                       {SimceData.REGIONES
                         .filter(r => !regionSearch || norm(r.nombre).includes(norm(regionSearch)))
-                        .map(r => (
-                          <label key={r.cod_reg}
-                            className={"check-row" + (selectedRegion === r.cod_reg ? " is-selected" : "")}
-                            style={{ cursor: "pointer" }}
-                            onClick={() => { setSelectedRegion(r.cod_reg); setRegionSearch(r.nombre); }}>
-                            <input type="radio" name="region" value={r.cod_reg}
-                              checked={selectedRegion === r.cod_reg}
-                              onChange={() => { setSelectedRegion(r.cod_reg); setRegionSearch(r.nombre); }} />
-                            <span className="check-name">{r.nombre}</span>
-                            <span className="check-region">{r.comunas.length} comunas</span>
-                          </label>
-                        ))
+                        .map(r => {
+                          const checked = selectedRegions.includes(r.cod_reg);
+                          const bloqueado = !checked && selectedRegions.length >= maxSel;
+                          return (
+                            <label key={r.cod_reg}
+                              className={"check-row" + (checked ? " is-selected" : "") + (bloqueado ? " is-disabled" : "")}
+                              style={{ cursor: bloqueado ? "not-allowed" : "pointer" }}>
+                              <input type={editing ? "radio" : "checkbox"} name="region" value={r.cod_reg}
+                                checked={checked} disabled={bloqueado}
+                                onChange={() => toggleSel(r.cod_reg, selectedRegions, setSelectedRegions)} />
+                              <span className="check-name">{r.nombre}</span>
+                              <span className="check-region">{r.comunas.length} comunas</span>
+                            </label>
+                          );
+                        })
                       }
                     </div>
                   </label>
+                  {depe2 === "5" && <SlepDisclaimer />}
                   <label className="field field-full">
                     <span className="field-label">Dependencia</span>
                     <select className="select" value={depe2} onChange={e => setDepe2(e.target.value)}>
@@ -2799,6 +2972,7 @@ code {
                       </div>
                     )}
                   </label>
+                  {depe2 === "5" && <SlepDisclaimer />}
                   <label className="field field-full">
                     <span className="field-label">Dependencia</span>
                     <select className="select" value={depe2} onChange={e => setDepe2(e.target.value)}>
@@ -2819,31 +2993,39 @@ code {
               )}
               {tab === "slep" && (
                 <div className="form-grid">
+                  <SlepDisclaimer />
                   <label className="field field-full">
                     <span className="field-label">Buscar SLEP</span>
                     <input className="input input-search" type="text" placeholder="Nombre del SLEP…"
                       value={slepSearch} onChange={e => setSlepSearch(e.target.value)} />
                   </label>
                   <div className="field field-full">
+                    <span className="multiselect-hint">
+                      {editing ? "Edición: un SLEP." : `Puedes elegir varios. ${selectedSleps.length} de ${maxSel} seleccionados.`}
+                    </span>
                     <div className="comuna-checklist" style={{ maxHeight: 260 }}>
-                      {filteredSleps.map(s => (
-                        <label key={s.cod_slep} className={"check-row" + (selectedSlep === s.cod_slep ? " is-selected" : "")}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => setSelectedSlep(s.cod_slep)}>
-                          <input type="radio" name="slep" value={s.cod_slep}
-                            checked={selectedSlep === s.cod_slep}
-                            onChange={() => setSelectedSlep(s.cod_slep)} />
-                          <span className="check-name">{s.nombre}</span>
-                          <span className="check-region">
-                            {s.comunas.length} comunas · traspaso {s.anio_traspaso || "pendiente"}
-                            {SimceData.slepEsProspectivo(s.anio_traspaso) && (
-                              <span className="badge-traspaso" title={"Traspaso " + s.anio_traspaso + ": los resultados mostrados corresponden íntegramente a la administración municipal previa al traspaso."}>
-                                traspaso {s.anio_traspaso}
-                              </span>
-                            )}
-                          </span>
-                        </label>
-                      ))}
+                      {filteredSleps.map(s => {
+                        const checked = selectedSleps.includes(s.cod_slep);
+                        const bloqueado = !checked && selectedSleps.length >= maxSel;
+                        return (
+                          <label key={s.cod_slep}
+                            className={"check-row" + (checked ? " is-selected" : "") + (bloqueado ? " is-disabled" : "")}
+                            style={{ cursor: bloqueado ? "not-allowed" : "pointer" }}>
+                            <input type={editing ? "radio" : "checkbox"} name="slep" value={s.cod_slep}
+                              checked={checked} disabled={bloqueado}
+                              onChange={() => toggleSel(s.cod_slep, selectedSleps, setSelectedSleps)} />
+                            <span className="check-name">{s.nombre}</span>
+                            <span className="check-region">
+                              {s.comunas.length} comunas · traspaso {s.anio_traspaso || "pendiente"}
+                              {SimceData.slepEsProspectivo(s.anio_traspaso) && (
+                                <span className="badge-traspaso" title={"Traspaso " + s.anio_traspaso + ": los resultados mostrados corresponden íntegramente a la administración municipal previa al traspaso."}>
+                                  traspaso {s.anio_traspaso}
+                                </span>
+                              )}
+                            </span>
+                          </label>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -2857,6 +3039,7 @@ code {
                       Incluye todos los establecimientos del país con datos disponibles en cada año.
                     </p>
                   </div>
+                  {depe2 === "5" && <SlepDisclaimer />}
                   <label className="field field-full">
                     <span className="field-label">Dependencia</span>
                     <select className="select" value={depe2} onChange={e => setDepe2(e.target.value)}>
@@ -2919,7 +3102,7 @@ code {
 
       const [nivel, setNivel] = React.useState(niveles[0]);
       const [prueba, setPrueba] = React.useState(pruebas[0]);
-      const [entities, setEntities] = React.useState(buildInitialEntities);
+      const [entities, setEntities] = React.useState([]);
       const [modal, setModal] = React.useState(null);
       const [loading, setLoading] = React.useState(false);
       const [notesOpen, setNotesOpen] = React.useState(false);
@@ -2928,9 +3111,9 @@ code {
       const [cellPopup, setCellPopup] = React.useState(null);   // { entity, gse, pos }
       const [chartPopup, setChartPopup] = React.useState(null); // { entity, gse } desde tooltip gráfico
 
-      // Parámetros de visualización fijos (antes configurables vía panel de ajustes,
-      // removido en sesión 10). Valores hardcodeados en su default original.
-      const showElemInsuf = true;
+      // Parámetros de visualización. yScale fijo (panel de ajustes removido en
+      // sesión 10). showElemInsuf controlable vía toggle (sesión 14).
+      const [showElemInsuf, setShowElemInsuf] = React.useState(false);
       const yScale = "100";
 
       const firstRender = React.useRef(true);
@@ -2972,20 +3155,24 @@ code {
         setModal(null);
       }
 
-      function applyPreset() {
-        const slep = SimceData.SLEPS.find(s => s.nombre === "Costa Central");
-        if (slep) {
-          setEntities([{
-            id: "preset-cc",
-            name: "SLEP Costa Central",
-            kind: "slep",
-            cod_slep: slep.cod_slep,
-            comunas: slep.comunas,
-            rbds: slep.rbds,
-            anio_traspaso: slep.anio_traspaso,
-            color: ENTITY_PALETTE[0],
-          }]);
-        }
+      // Alta en lote (multi-selección de SLEP o regiones). Respeta el tope y
+      // asigna colores distintos a cada nueva entidad.
+      function saveEntities(nuevas) {
+        setEntities(prev => {
+          const libres = MAX_ENTIDADES - prev.length;
+          const aAgregar = nuevas.slice(0, Math.max(0, libres));
+          const usados = prev.map(e => e.color);
+          const disponibles = ENTITY_PALETTE.filter(c => !usados.includes(c));
+          const conColor = aAgregar.map((e, i) => ({
+            ...e, color: e.color || disponibles[i] || ENTITY_PALETTE[i % ENTITY_PALETTE.length],
+          }));
+          return [...prev, ...conColor];
+        });
+        setModal(null);
+      }
+
+      function resetEntities() {
+        setEntities([]);
       }
 
       const containerClass = "app is-comfy ";
@@ -2996,25 +3183,43 @@ code {
           <main className="app-main">
             <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba} loading={loading} />
             <EntitiesBar entities={entities} setEntities={setEntities}
-              openModal={(ent) => setModal({ editing: ent })} openPresetMenu={applyPreset}
+              openModal={(ent) => setModal({ editing: ent })} onReset={resetEntities}
               nivel={nivel} prueba={prueba}
               onShowEstab={(ent, ev) => setEstabPopup({ entity: { ...ent, _popupPos: { top: ev.clientY + window.scrollY + 8, left: ev.clientX + window.scrollX - 100 } } })} />
 
+            {entities.length === 0 ? (
+              <section className="empty-board">
+                <p className="empty-board-text">
+                  Agrega una comuna, un SLEP, una región, un establecimiento o el
+                  nivel nacional para comenzar la comparación.
+                </p>
+              </section>
+            ) : (
+            <React.Fragment>
             <section className="results-section">
               <div className="results-head">
-                <div>
-                  <span className="section-eyebrow">Resultados por GSE</span>
+                <div className="results-head-top">
+                  <span className="section-eyebrow">Resultados segmentados por grupo socioeconómico (GSE)</span>
                   <h2 className="results-title">Proporción de estudiantes en nivel Adecuado — {prueba}, {nivel}</h2>
                 </div>
-                <div className="section-actions">
+                <div className="results-head-controls">
+                  <div className="section-actions">
+                    <button className={"btn btn-ghost btn-small btn-toggle" + (showElemInsuf ? " is-active" : "")}
+                      onClick={() => setShowElemInsuf(v => !v)}
+                      aria-pressed={showElemInsuf}
+                      title="Mostrar u ocultar el área Elemental + Insuficiente">
+                      Mostrar niveles Elemental e Insuficiente
+                    </button>
+                    <IconExport label="Exportar SVG" icon="chart" onExport={() => exportarGraficosSVG({ entities, nivel, prueba })} />
+                    <IconExport label="Exportar PNG" icon="image" onExport={() => exportarGraficosPNG({ entities, nivel, prueba })} />
+                  </div>
                   <ChartHints showElemInsuf={showElemInsuf} />
-                  <IconExport label="Exportar SVG" icon="chart" onExport={() => exportarGraficosSVG({ entities, nivel, prueba })} />
-                  <IconExport label="Exportar PNG" icon="image" onExport={() => exportarGraficosPNG({ entities, nivel, prueba })} />
                 </div>
               </div>
               <div className="supergrid" style={{ gridTemplateColumns: `repeat(4, minmax(0, 1fr))` }}>
                 {entities.map(ent => (
-                  <div key={ent.id} className="supergrid-entity-head">
+                  <div key={ent.id} className="supergrid-entity-head"
+                    style={{ borderBottomColor: ent.color }}>
                     <span className="entity-swatch" style={{ background: ent.color }} />
                     <span className="sg-ent-name">{ent.name}</span>
                     <span className="sg-ent-meta">
@@ -3070,6 +3275,8 @@ code {
                   gse,
                 })} />
             </section>
+            </React.Fragment>
+            )}
 
             <footer className="app-footer">
               <button className={"notes-toggle" + (notesOpen ? " is-open" : "")} onClick={() => setNotesOpen(!notesOpen)}>
@@ -3080,13 +3287,18 @@ code {
               {notesOpen && (
                 <div className="notes-body">
                   <div className="notes-grid">
-                    <article className="note note-full">
+                    <article className="note">
                       <h4>Estándares de Aprendizaje</h4>
                       <p>Los Estándares de Aprendizaje son referentes definidos por el Ministerio de Educación que describen lo que los estudiantes deben saber y poder hacer para demostrar determinados niveles de logro de los Objetivos de Aprendizaje de las Bases Curriculares, medidos a través del Simce. Buscan responder qué tan adecuados son los aprendizajes de un estudiante en los cursos y asignaturas evaluados nacionalmente.</p>
                       <p>Comprenden tres niveles:</p>
                       <p><b>Adecuado:</b> Estudiantes que han logrado lo exigido en el currículum de manera satisfactoria, demostrando las habilidades y conocimientos básicos estipulados para el periodo evaluado.</p>
                       <p><b>Elemental:</b> Estudiantes que han logrado lo exigido en el currículum de manera parcial, demostrando solo las habilidades y conocimientos más elementales estipulados para el periodo evaluado.</p>
                       <p><b>Insuficiente:</b> Estudiantes que no logran demostrar consistentemente las habilidades y conocimientos más elementales estipulados para el periodo evaluado.</p>
+                    </article>
+                    <article className="note">
+                      <h4>Servicios Locales de Educación Pública (SLEP)</h4>
+                      <p>Los SLEP son los organismos públicos que, en el marco de la Ley 21.040 (Sistema de Educación Pública), asumen progresivamente la administración de los establecimientos que antes dependían de los municipios. Cada SLEP recibe sus establecimientos en un <b>año de traspaso</b> específico.</p>
+                      <p>En esta herramienta, los establecimientos se clasifican según su dependencia <b>actual</b>. Un SLEP agrupa a sus establecimientos en toda la serie histórica, incluidos los años anteriores a su traspaso, cuando la gestión era municipal. Por lo tanto, <b>las cifras previas al año de traspaso no son atribuibles a la gestión del SLEP</b>, sino a la administración municipal de ese periodo. Los SLEP con traspaso posterior al último año con datos se incluyen con los establecimientos que administrarán, cuyos resultados corresponden íntegramente a la gestión municipal previa.</p>
                     </article>
                     <article className="note">
                       <h4>Fórmula de agregación ponderada</h4>
@@ -3100,7 +3312,7 @@ code {
                     </article>
                     <article className="note">
                       <h4>Gap 2019–2021</h4>
-                      <p>La prueba SIMCE no se aplicó en 2019, 2020 ni 2021 debido al estallido social y la pandemia. En los gráficos aparece una banda sombreada y las líneas no se conectan a través del gap.</p>
+                      <p>La aplicación del Simce en 2019, 2020 y 2021 fue interrumpida por el estallido social y la pandemia. En los gráficos aparece una banda sombreada y las líneas no se conectan a través del gap.</p>
                     </article>
                     <article className="note">
                       <h4>Datos preliminares 2025</h4>
@@ -3108,7 +3320,7 @@ code {
                     </article>
                   </div>
                   <div className="notes-sources">
-                    <span>Fuente: Agencia de Calidad de la Educación · Bases SIMCE 2014–2025. Procesamiento: SLEP Costa Central.</span>
+                    <span>Fuente: Agencia de Calidad de la Educación · Bases Simce 2014–2025. Procesamiento: SLEP Costa Central.</span>
                     <span>Área de Monitoreo y Seguimiento de Procesos y Resultados Educativos · Contacto: {["tomas", "gonzalez"].join(".") + String.fromCharCode(64) + ["slepcostacentral", "gob", "cl"].join(".")}</span>
                   </div>
                 </div>
@@ -3150,7 +3362,9 @@ code {
             <AddEntityModal
               editing={modal.editing}
               takenColors={entities.map(e => e.color)}
+              slotsLibres={MAX_ENTIDADES - entities.length}
               onSave={saveEntity}
+              onSaveMany={saveEntities}
               onCancel={() => setModal(null)}
             />
           )}
