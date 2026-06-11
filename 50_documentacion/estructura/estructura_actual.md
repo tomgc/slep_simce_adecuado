@@ -1,7 +1,7 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-06-11 12:25:57
+- **Fecha:** 2026-06-11 19:44:46
 - **Totales:** 17 carpetas, 101 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
@@ -65,7 +65,7 @@ slep_simce_adecuado/
 │   ├── 31_leer_normalizar.R  (15.9K)
 │   ├── 32_agregar_comunal.R  (7.35K)
 │   ├── 33_generar_html.R  (15.1K)
-│   └── 33_motor_template.html  (140K)
+│   └── 33_motor_template.html  (143K)
 ├── 40_salidas/
 │   ├── intermedios/
 │   │   ├── .gitkeep  (0)
@@ -82,22 +82,22 @@ slep_simce_adecuado/
 │   │   │   ├── 20260611_decision_nombres_establecimientos.md  (1.85K)
 │   │   │   └── 20260611_decision_repo_publico.md  (1.32K)
 │   │   ├── .gitkeep  (0)
-│   │   ├── arquitectura_slep_simce_adecuado.html  (19.7K)
+│   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
 │   │   ├── backlog_historico.md  (12.4K)
-│   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (17.8K)
-│   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.56K)
+│   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
+│   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
 │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   ├── informe_auditoria_prelanzamiento.md  (10.6K)
 │   │   ├── manifiesto_insumos.md  (2.78K)
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260611_074221_estructura.md  (6.9K)
-│   │   ├── 20260611_074221_estructura.txt  (6.96K)
 │   │   ├── 20260611_075105_estructura.md  (6.01K)
 │   │   ├── 20260611_075105_estructura.txt  (6.07K)
-│   │   ├── estructura_actual.md  (6.01K)
-│   │   └── estructura_actual.txt  (6.07K)
+│   │   ├── 20260611_122557_estructura.md  (6.24K)
+│   │   ├── 20260611_122557_estructura.txt  (6.31K)
+│   │   ├── estructura_actual.md  (6.24K)
+│   │   └── estructura_actual.txt  (6.31K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
 │   │   ├── traspaso_cierre_v01.md  (17.8K)
@@ -116,7 +116,7 @@ slep_simce_adecuado/
 │   │   └── traspaso_cierre_v14.md  (17.4K)
 │   └── .DS_Store  (14K)
 ├── docs/
-│   └── index.html  (1.67M)
+│   └── index.html  (2.45M)
 ├── .DS_Store  (10K)
 ├── .gitignore  (365)
 ├── 00_build.R  (967)
