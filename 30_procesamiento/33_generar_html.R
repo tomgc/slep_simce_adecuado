@@ -145,10 +145,18 @@ establecimientos_lst <- df_rbd |>
 
 # --- RBDs por nivel × prueba (para filtrar popup de establecimientos) ---
 # Fuente: simce_rbd.parquet — qué RBDs rindieron cada combinación nivel×prueba.
+# Filtro COMPLETO de producción (auditoría A2, s13): mismo criterio que
+# agregar_ponderado() — palu publicado, umbral MINEDUC (nalu >= 10) y sin
+# marca de supresión. Solo palu no-NA es insuficiente: listaría RBDs que no
+# aportan al % mostrado.
 df_rbd_np <- arrow::read_parquet(
   here::here("40_salidas", "intermedios", "simce_rbd.parquet")
 ) |>
-  dplyr::filter(!is.na(.data$palu_eda_ade)) |>
+  dplyr::filter(
+    !is.na(.data$palu_eda_ade),
+    !is.na(.data$nalu), .data$nalu >= 10,
+    is.na(.data$marca)
+  ) |>
   dplyr::distinct(rbd, nivel, prueba) |>
   dplyr::mutate(rbd = as.character(rbd)) |>
   dplyr::arrange(nivel, prueba, rbd)
@@ -157,14 +165,19 @@ df_rbd_np <- arrow::read_parquet(
 # Distinct de rbd × nivel × prueba × cod_grupo. Se usa en EstabPopup cuando
 # se abre desde una celda de la tabla (P7) para mostrar solo los establecimientos
 # del GSE clicado. ~15-20k filas vs 185k del parquet completo.
-# Solo combinaciones con dato publicable (palu_eda_ade no-NA): la Agencia suprime
-# el resultado de establecimientos con muy pocos alumnos (deja palu = NA aunque
-# nalu > 0). Esos RBDs no deben listarse en el popup, porque no tienen resultado
-# publicado en ese nivel × prueba × GSE.
+# Solo combinaciones que APORTAN al cálculo (auditoría A2, s13): palu no-NA,
+# nalu >= 10 (umbral MINEDUC) y marca NA — el mismo criterio de
+# agregar_ponderado(). La Agencia suprime resultados (palu = NA aunque
+# nalu > 0) y además producción excluye nalu < 10 y marcas de supresión;
+# un RBD que no cumple cualquiera de las tres condiciones no debe listarse.
 df_rbd_gse <- arrow::read_parquet(
   here::here("40_salidas", "intermedios", "simce_rbd.parquet")
 ) |>
-  dplyr::filter(!is.na(.data$palu_eda_ade)) |>
+  dplyr::filter(
+    !is.na(.data$palu_eda_ade),
+    !is.na(.data$nalu), .data$nalu >= 10,
+    is.na(.data$marca)
+  ) |>
   dplyr::distinct(rbd, nivel, prueba, cod_grupo) |>
   dplyr::mutate(rbd = as.character(rbd)) |>
   dplyr::arrange(nivel, prueba, cod_grupo, rbd)
@@ -172,9 +185,20 @@ df_rbd_gse <- arrow::read_parquet(
 # --- Datos por establecimiento (para entidades tipo establecimiento) ---
 # 8 columnas necesarias para graficar; excluye marca, nom_com_rbd, preliminar
 # (recuperables desde otros catálogos). Formato columnar para compacidad.
+# Filtro COMPLETO de producción (auditoría A2, s13): generateSeriesByRbd y
+# los conteos del motor consumen esta tabla SIN poder reaplicar el umbral
+# MINEDUC ni la marca (marca no viaja en el JSON). Si acá entran filas con
+# nalu < 10 o marca no-NA, los % de SLEP divergen del resto del motor
+# (divergencias de hasta 42.6 pp medidas en la auditoría). La regla del
+# invariante 5 se aplica una sola vez, acá, en R.
 df_simce_rbd <- arrow::read_parquet(
   here::here("40_salidas", "intermedios", "simce_rbd.parquet")
 ) |>
+  dplyr::filter(
+    !is.na(.data$palu_eda_ade),
+    !is.na(.data$nalu), .data$nalu >= 10,
+    is.na(.data$marca)
+  ) |>
   dplyr::select(rbd, nivel, prueba, cod_grupo, anio, nalu, palu_eda_ade, cod_depe2) |>
   dplyr::mutate(
     rbd       = as.character(rbd),
