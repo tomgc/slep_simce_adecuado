@@ -1,4 +1,10 @@
 # 31_leer_normalizar.R
+# Copyright 2026 Tomás Ignacio González Cifuentes — SLEP Costa Central
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
 # ----------------------------------------------------------------------------
 # Lee los 18 xlsx en 20_insumos/simce/{4b,2m}/, normaliza nombres de
 # columnas, los lleva a formato largo (una fila por rbd × prueba × año

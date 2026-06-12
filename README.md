@@ -171,3 +171,17 @@ No se requiere configuración adicional de rutas.
 - Estructura del repo y esquemas de datos: ver secciones "Responsabilidades por
   archivo" y "Esquemas de datos" más arriba. Snapshot autogenerado del árbol en
   `50_documentacion/estructura/estructura_actual.md` (vía `00_escanear_proyecto.R`).
+
+## Licencia
+
+El **código** de este proyecto (scripts R, pipeline, plantilla HTML/JS/CSS,
+documentación técnica) está licenciado bajo la
+[Apache License 2.0](LICENSE) (SPDX: `Apache-2.0`).
+
+Los **datos** (resultados Simce e indicadores) provienen de la Agencia de
+Calidad de la Educación de Chile y se rigen por sus Condiciones de Uso de Bases
+de Datos, **no** por esta licencia. Quien reutilice este código debe obtener los
+datos directamente de la fuente oficial
+([agenciaeducacion.cl](https://www.agenciaeducacion.cl)) bajo sus propias
+condiciones. Ver [`NOTICE`](NOTICE) para el alcance completo y los componentes
+de terceros.

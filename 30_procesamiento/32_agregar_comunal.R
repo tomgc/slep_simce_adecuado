@@ -1,4 +1,10 @@
 # 32_agregar_comunal.R
+# Copyright 2026 Tomás Ignacio González Cifuentes — SLEP Costa Central
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
 # ----------------------------------------------------------------------------
 # Construye la agregación a nivel comuna × GSE × prueba × nivel × año a
 # partir de simce_rbd.parquet, joineando con comunas_chile.parquet para

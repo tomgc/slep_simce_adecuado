@@ -1,9 +1,15 @@
 # =============================================================================
 # 00_escanear_proyecto.R
+# Copyright 2026 Tomás Ignacio González Cifuentes — SLEP Costa Central
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
 # -----------------------------------------------------------------------------
 # Proyecto : slep_simce_adecuado — Motor de comparación comunal de resultados
 #            SIMCE por estándares de aprendizaje (SLEP Costa Central)
-# Autor    : Tomas
+# Autor    : Tomás Ignacio González Cifuentes
 # Proposito: Generar un snapshot navegable de la estructura actual del repo,
 #            conforme a la seccion 10 de POLITICA_PROYECTO.md.
 #            Emite un snapshot con sello de fecha (.txt y .md) y mantiene los
