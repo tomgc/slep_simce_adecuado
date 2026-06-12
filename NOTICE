@@ -1,0 +1,40 @@
+slep_simce_adecuado
+Copyright 2026 Tomás Ignacio González Cifuentes — SLEP Costa Central
+
+This product includes software developed at the Servicio Local de
+Educación Pública Costa Central (Área de Monitoreo y Seguimiento).
+
+Licensed under the Apache License, Version 2.0. See the LICENSE file
+for the full license text.
+
+-------------------------------------------------------------------------------
+ALCANCE DE LA LICENCIA — SOLO CÓDIGO, NO DATOS
+-------------------------------------------------------------------------------
+
+La licencia Apache 2.0 cubre EXCLUSIVAMENTE el código fuente de este
+repositorio (scripts R, pipeline, plantillas HTML/JS/CSS, documentación
+técnica).
+
+NO cubre los datos. Los datos de resultados SIMCE e indicadores incluidos o
+procesados por este proyecto provienen de la Agencia de Calidad de la
+Educación (Chile) y están sujetos a sus Condiciones de Uso de Bases de Datos,
+que prohíben, entre otras cosas, la transferencia de bases a terceros y la
+identificación de establecimientos por nombre. El uso de los datos se rige por
+esas condiciones, no por esta licencia.
+
+Quien reutilice este código debe obtener los datos directamente de la fuente
+oficial (https://www.agenciaeducacion.cl) bajo sus propias condiciones.
+
+-------------------------------------------------------------------------------
+COMPONENTES DE TERCEROS
+-------------------------------------------------------------------------------
+
+Este proyecto incluye o depende de bibliotecas de terceros con sus propias
+licencias, entre ellas:
+
+- D3.js (v7)     — BSD 3-Clause License
+- pako           — MIT License / zlib License
+- React (v18)    — MIT License
+
+Las licencias respectivas aplican a cada componente. Consultar los sitios
+oficiales de cada biblioteca para el texto completo.
