@@ -1,13 +1,9 @@
-# Estructura actual — slep_simce_adecuado
+ESCANEO DE ESTRUCTURA — slep_simce_adecuado
+Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
+Fecha  : 2026-06-12 12:04:22
+Totales: 17 carpetas, 109 archivos
+Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
-- **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-06-12 08:15:58
-- **Totales:** 17 carpetas, 108 archivos
-- **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
-
-## Arbol
-
-```
 slep_simce_adecuado/
 ├── .claude/
 │   └── settings.local.json  (2.95K)
@@ -28,7 +24,6 @@ slep_simce_adecuado/
 │   │   │   ├── table.jsx  (7.22K)
 │   │   │   └── tweaks-panel.jsx  (23.3K)
 │   │   ├── .gitkeep  (0)
-│   │   ├── 202602_Listado_SLEP_2026_vf.xlsx  (55.5K)
 │   │   ├── anexo_indicadores_simce.xlsx  (81.1K)
 │   │   ├── caracterizacion_establecimientos.xlsx  (16.5K)
 │   │   ├── diccionario_territorios.xlsx  (16.8K)
@@ -36,7 +31,8 @@ slep_simce_adecuado/
 │   │   ├── glosas_directorio_oficial_ee.pdf  (457K)
 │   │   ├── glosas_simce_consolidado_simce.xlsx  (59.4K)
 │   │   ├── glosas_simce_resumen_cambios_simce_rbd_2014_2025.csv  (844)
-│   │   └── glosas_simce_tabla_comparativa_simce_rbd_2014_2025.csv  (18K)
+│   │   ├── glosas_simce_tabla_comparativa_simce_rbd_2014_2025.csv  (18K)
+│   │   └── listado_slep_2026.xlsx  (55.5K)
 │   └── simce/
 │       ├── 2m/
 │       │   ├── .gitkeep  (0)
@@ -65,7 +61,7 @@ slep_simce_adecuado/
 │   ├── 31_leer_normalizar.R  (16.2K)
 │   ├── 32_agregar_comunal.R  (7.64K)
 │   ├── 33_generar_html.R  (15.4K)
-│   └── 33_motor_template.html  (143K)
+│   └── 33_motor_template.html  (147K)
 ├── 40_salidas/
 │   ├── intermedios/
 │   │   ├── .gitkeep  (0)
@@ -95,10 +91,10 @@ slep_simce_adecuado/
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260612_080440_estructura.md  (6.56K)
-│   │   ├── 20260612_080440_estructura.txt  (6.62K)
 │   │   ├── 20260612_080447_estructura.md  (6.56K)
 │   │   ├── 20260612_080447_estructura.txt  (6.62K)
+│   │   ├── 20260612_081558_estructura.md  (6.56K)
+│   │   ├── 20260612_081558_estructura.txt  (6.62K)
 │   │   ├── estructura_actual.md  (6.56K)
 │   │   └── estructura_actual.txt  (6.62K)
 │   ├── traspasos/
@@ -117,7 +113,8 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v12.md  (14.1K)
 │   │   ├── traspaso_cierre_v13.md  (16.4K)
 │   │   ├── traspaso_cierre_v14.md  (17.4K)
-│   │   └── traspaso_cierre_v15.md  (16.4K)
+│   │   ├── traspaso_cierre_v15.md  (16.4K)
+│   │   └── traspaso_cierre_v16.md  (15.6K)
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.45M)
@@ -128,29 +125,25 @@ slep_simce_adecuado/
 ├── CLAUDE.md  (6.92K)
 ├── LICENSE  (11.1K)
 ├── NOTICE  (1.76K)
-├── POLITICA_PROYECTO.md  (32.9K)
+├── POLITICA_PROYECTO.md  (30.3K)
 ├── README.md  (9.28K)
 ├── slep_simce_adecuado.Rproj  (220)
 ├── verificar_depe4.R  (6.46K)
 ├── verificar_elem_insuf_2023_2024.R  (4.07K)
 └── verificar_elem_insuf.R  (6.15K)
-```
 
-## Conteo por extension
-
-| Extension | Archivos |
-|---|---|
-| md | 32 |
-| xlsx | 23 |
-| (sin extension) | 12 |
-| r | 10 |
-| html | 6 |
-| parquet | 6 |
-| jsx | 5 |
-| csv | 3 |
-| js | 3 |
-| txt | 3 |
-| css | 2 |
-| json | 1 |
-| pdf | 1 |
-| rproj | 1 |
+Conteo por extension:
+  md                 33
+  xlsx               23
+  (sin extension)    12
+  r                  10
+  html               6
+  parquet            6
+  jsx                5
+  csv                3
+  js                 3
+  txt                3
+  css                2
+  json               1
+  pdf                1
+  rproj              1
