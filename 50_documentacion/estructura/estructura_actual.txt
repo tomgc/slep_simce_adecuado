@@ -1,7 +1,7 @@
 ESCANEO DE ESTRUCTURA — slep_simce_adecuado
 Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
-Fecha  : 2026-06-12 12:16:28
-Totales: 17 carpetas, 110 archivos
+Fecha  : 2026-06-12 17:15:00
+Totales: 17 carpetas, 111 archivos
 Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 slep_simce_adecuado/
@@ -91,12 +91,12 @@ slep_simce_adecuado/
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260612_081558_estructura.md  (6.56K)
-│   │   ├── 20260612_081558_estructura.txt  (6.62K)
-│   │   ├── 20260612_120422_estructura.md  (6.6K)
-│   │   ├── 20260612_120422_estructura.txt  (6.67K)
-│   │   ├── estructura_actual.md  (6.6K)
-│   │   └── estructura_actual.txt  (6.67K)
+│   │   ├── 20260612_125544_estructura.md  (6.66K)
+│   │   ├── 20260612_125544_estructura.txt  (6.72K)
+│   │   ├── 20260612_171450_estructura.md  (6.71K)
+│   │   ├── 20260612_171450_estructura.txt  (6.77K)
+│   │   ├── estructura_actual.md  (6.71K)
+│   │   └── estructura_actual.txt  (6.77K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
 │   │   ├── traspaso_cierre_v01.md  (17.8K)
@@ -115,7 +115,8 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v14.md  (17.4K)
 │   │   ├── traspaso_cierre_v15.md  (16.4K)
 │   │   ├── traspaso_cierre_v16.md  (15.6K)
-│   │   └── traspaso_cierre_v17.md  (19.8K)
+│   │   ├── traspaso_cierre_v17.md  (19.8K)
+│   │   └── traspaso_cierre_v18.md  (11.5K)
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.45M)
@@ -134,7 +135,7 @@ slep_simce_adecuado/
 └── verificar_elem_insuf.R  (6.15K)
 
 Conteo por extension:
-  md                 34
+  md                 35
   xlsx               23
   (sin extension)    12
   r                  10
