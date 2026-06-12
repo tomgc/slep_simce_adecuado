@@ -18,7 +18,7 @@
 #        operativos con matrícula).
 #
 #   3. sleps_chile.parquet
-#        Desde 202602_Listado_SLEP_2026_vf.xlsx + directorio oficial.
+#        Desde listado_slep_2026.xlsx + directorio oficial.
 #
 # Uso:
 #   source(here::here("30_procesamiento", "30_construir_auxiliares.R"))
@@ -227,7 +227,7 @@ message(sprintf(
 # ============================================================================
 # Bloque 4 — sleps_chile.parquet
 # ============================================================================
-# Fuente: 202602_Listado_SLEP_2026_vf.xlsx (hoja "Listado SLEP"), provisto
+# Fuente: listado_slep_2026.xlsx (hoja "Listado SLEP"), provisto
 # por el titular. Contiene una fila por SLEP x comuna, con COD_COM_RBD ya
 # disponible. Se joineara con el directorio oficial para obtener los RBDs
 # que pertenecen a cada SLEP.
@@ -250,7 +250,7 @@ message("[4] Construyendo sleps_chile.parquet...")
 
 # ---- 4.1 Leer hoja Listado SLEP ----
 ruta_sleps <- here::here(
-  "20_insumos", "auxiliares", "202602_Listado_SLEP_2026_vf.xlsx"
+  "20_insumos", "auxiliares", "listado_slep_2026.xlsx"
 )
 
 df_sleps_raw <- readxl::read_excel(
@@ -264,7 +264,7 @@ cols_slep_req <- c(
 )
 faltan_slep <- setdiff(cols_slep_req, names(df_sleps_raw))
 stopifnot(
-  "Faltan columnas en 202602_Listado_SLEP_2026_vf.xlsx" =
+  "Faltan columnas en listado_slep_2026.xlsx" =
     length(faltan_slep) == 0
 )
 
