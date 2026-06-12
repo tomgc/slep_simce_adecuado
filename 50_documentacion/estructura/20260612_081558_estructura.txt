@@ -1,7 +1,7 @@
 ESCANEO DE ESTRUCTURA — slep_simce_adecuado
 Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
-Fecha  : 2026-06-11 19:44:46
-Totales: 17 carpetas, 101 archivos
+Fecha  : 2026-06-12 08:15:58
+Totales: 17 carpetas, 108 archivos
 Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 slep_simce_adecuado/
@@ -57,10 +57,10 @@ slep_simce_adecuado/
 │           ├── simce4b2024_rbd_final.xlsx  (1.09M)
 │           └── simce4b2025_rbd_preliminar.xlsx  (1.05M)
 ├── 30_procesamiento/
-│   ├── 30_construir_auxiliares.R  (15.3K)
-│   ├── 31_leer_normalizar.R  (15.9K)
-│   ├── 32_agregar_comunal.R  (7.35K)
-│   ├── 33_generar_html.R  (15.1K)
+│   ├── 30_construir_auxiliares.R  (15.6K)
+│   ├── 31_leer_normalizar.R  (16.2K)
+│   ├── 32_agregar_comunal.R  (7.64K)
+│   ├── 33_generar_html.R  (15.4K)
 │   └── 33_motor_template.html  (143K)
 ├── 40_salidas/
 │   ├── intermedios/
@@ -71,10 +71,13 @@ slep_simce_adecuado/
 │   │   ├── simce_rbd.parquet  (1.59M)
 │   │   ├── slep_cc_establecimientos.parquet  (5.68K)
 │   │   └── sleps_chile.parquet  (58.7K)
+│   ├── .DS_Store  (6K)
 │   └── motor_comparacion.html  (2.45M)
 ├── 50_documentacion/
 │   ├── activa/
 │   │   ├── decisiones/
+│   │   │   ├── 20260611_decision_color_por_nivel.md  (2.99K)
+│   │   │   ├── 20260611_decision_licencia_apache.md  (3.17K)
 │   │   │   ├── 20260611_decision_nombres_establecimientos.md  (1.85K)
 │   │   │   └── 20260611_decision_repo_publico.md  (1.32K)
 │   │   ├── .gitkeep  (0)
@@ -88,12 +91,12 @@ slep_simce_adecuado/
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260611_075105_estructura.md  (6.01K)
-│   │   ├── 20260611_075105_estructura.txt  (6.07K)
-│   │   ├── 20260611_122557_estructura.md  (6.24K)
-│   │   ├── 20260611_122557_estructura.txt  (6.31K)
-│   │   ├── estructura_actual.md  (6.24K)
-│   │   └── estructura_actual.txt  (6.31K)
+│   │   ├── 20260612_080440_estructura.md  (6.56K)
+│   │   ├── 20260612_080440_estructura.txt  (6.62K)
+│   │   ├── 20260612_080447_estructura.md  (6.56K)
+│   │   ├── 20260612_080447_estructura.txt  (6.62K)
+│   │   ├── estructura_actual.md  (6.56K)
+│   │   └── estructura_actual.txt  (6.62K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
 │   │   ├── traspaso_cierre_v01.md  (17.8K)
@@ -109,26 +112,30 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v11.md  (28.1K)
 │   │   ├── traspaso_cierre_v12.md  (14.1K)
 │   │   ├── traspaso_cierre_v13.md  (16.4K)
-│   │   └── traspaso_cierre_v14.md  (17.4K)
+│   │   ├── traspaso_cierre_v14.md  (17.4K)
+│   │   └── traspaso_cierre_v15.md  (16.4K)
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.45M)
 ├── .DS_Store  (10K)
 ├── .gitignore  (365)
-├── 00_build.R  (967)
-├── 00_escanear_proyecto.R  (8.99K)
+├── 00_build.R  (1.24K)
+├── 00_escanear_proyecto.R  (9.31K)
 ├── CLAUDE.md  (6.92K)
+├── LICENSE  (11.1K)
+├── NOTICE  (1.76K)
 ├── POLITICA_PROYECTO.md  (32.9K)
-├── README.md  (8.66K)
+├── README.md  (9.28K)
 ├── slep_simce_adecuado.Rproj  (220)
+├── verificar_depe4.R  (6.46K)
 ├── verificar_elem_insuf_2023_2024.R  (4.07K)
 └── verificar_elem_insuf.R  (6.15K)
 
 Conteo por extension:
-  md                 29
+  md                 32
   xlsx               23
-  (sin extension)    9
-  r                  9
+  (sin extension)    12
+  r                  10
   html               6
   parquet            6
   jsx                5
