@@ -1,407 +1,404 @@
 # POLITICA_PROYECTO.md
 
-> **Versión 4 — vigente y definitiva.** Adjuntar este documento a cada proyecto nuevo. Es el contrato fundacional que define estructura, nombramiento, versionado, arrancadores, escaneo periódico, gobernanza de datos y migración de proyectos existentes. Aplica a Claude, Claude Code y cualquier agente que trabaje sobre el proyecto.
+> **Versión 6 — vigente y definitiva.** Documento maestro único de
+> arquitectura y gobernanza. Se copia a `50_documentacion/activa/` de cada
+> proyecto y vive en la knowledge base del Project. Aplica a Claude, Claude
+> Code y cualquier agente que trabaje sobre el proyecto.
 >
-> **Cambios respecto a v3:** sección 2.2 reescrita. Ahora **todos** los archivos llevan prefijo numérico (no solo el archivo principal de cada carpeta). Dos modos según si la carpeta tiene orden de ejecución interno. Ver sección 2.2 para detalle.
+> **Cambios respecto a v5:** (a) sección 10, bullet `LICENSE`: se
+> reconoce Apache 2.0 junto a MIT, con criterio explícito de cuándo
+> elegir cada una (Apache cuando se requiera concesión expresa de
+> patentes o archivo NOTICE, típico de publicación institucional).
+>
+> **Cambios de v4 a v5:** (a) absorbe `regla_estructura_proyectos.md`
+> (archivo retirado); (b) absorbe los principios técnicos de
+> `principios_desarrollo_v3.md` como sección 5 (archivo retirado); (c) la
+> arquitectura de dos raíces (código en Git / datos en OneDrive) pasa a ser
+> el modelo canónico para proyectos con datos sensibles (sección 6); (d)
+> sección 7 del escáner reescrita con poda atómica de 2 snapshots; (e)
+> nueva sección 8 de inicialización de proyectos con bifurcación por
+> sensibilidad de datos; (f) migración consolidada (estructura + GitHub)
+> en sección 9.
 
 ---
 
 ## 0. Reglas de interacción del asistente (alta prioridad)
 
-Estas reglas aplican a cualquier asistente (Claude, Claude Code, etc.) que trabaje sobre proyectos que sigan esta política.
-
 ### 0.1 Recomendación explícita al ofrecer alternativas
 
-Cada vez que el asistente presente opciones, alternativas, caminos posibles o decisiones a tomar:
+Cada vez que el asistente presente opciones o decisiones a tomar, debe
+declarar cuál recomienda, al final de la lista, en una línea separada:
+`**Recomendación:** [opción] — [razón concreta en una oración].`
+No vale presentar alternativas neutras. El usuario decide, pero recibe
+la opinión del asistente antes. Excepción: opciones verdaderamente
+equivalentes; declararlo: `Sin recomendación: ambas opciones son
+equivalentes en este contexto.`
 
-- **Debe declarar explícitamente cuál recomienda y por qué.**
-- La recomendación va al final de la lista de alternativas, en una línea separada con el formato: `**Recomendación:** [opción] — [razón en una oración].`
-- La razón debe ser concreta (no "es mejor"; sí "evita renombrar todo si insertas estaciones intermedias").
-- No vale presentar alternativas neutras sin recomendar. El asistente conoce el contexto del proyecto y debe tomar postura.
-- El usuario sigue siendo quien decide, pero recibe la opinión del asistente antes de elegir.
+### 0.2 Escaneo cuando se pierde la referencia
 
-### 0.2 Cuando no recomendar
+Si el asistente no sabe dónde están los archivos o cómo está organizado
+el proyecto, debe ejecutar o solicitar el escáner (sección 7) antes de
+continuar. No deducir ni inventar rutas.
 
-Excepciones donde no aplica la regla 0.1:
+Failsafe de gobernanza documental: si una sesión va a apoyarse en esta
+política o en `SETTINGS_Y_PROMPTS_OPERACIONALES.md` y el asistente no
+los encuentra (knowledge base del Project, `50_documentacion/activa/`,
+o adjuntos en chat suelto), debe declararlo explícitamente y pedirlos
+antes de proceder, en lugar de operar desde su memoria o improvisar el
+protocolo.
 
-- Decisiones puramente personales (color preferido, nombre de un archivo cuando ambas opciones son equivalentes).
-- Decisiones sobre las que el asistente no tiene base técnica para opinar.
+### 0.3 Autonomía con interrupciones mínimas
 
-En esos casos, declararlo: `Sin recomendación: ambas opciones son equivalentes en este contexto.`
+El asistente opera con máxima autonomía. Interrumpe al usuario solo si:
+(1) necesita una decisión estratégica vital para la continuidad del
+proyecto, o (2) le falta un archivo o dato crítico irrecuperable. Todo
+lo demás (rutas rotas, warnings, tipado, refactors menores) se resuelve
+de forma autónoma, reportando la decisión en una línea. La gobernanza
+de datos (sección 6) prevalece siempre sobre la autonomía.
 
-### 0.3 Ofrecer escaneo de directorio cuando se pierde la referencia
+### 0.4 Tareas mecánicas manuales
 
-Si el asistente no sabe dónde están archivos, qué carpetas existen o cómo está organizado el proyecto en el momento actual, **debe sugerir ejecutar el escáner antes de continuar** (sección 7). No debe deducir ni inventar rutas.
+Descargar un archivo de una plataforma, arrastrarlo a una carpeta o
+reemplazarlo a mano son tareas del usuario. El asistente no genera
+scripts para ellas: indica qué hacer en una línea.
 
 ---
 
 ## 1. Estructura de carpetas y nomenclatura
 
-Todo proyecto de desarrollo (R, Power BI, Python, etc.) sigue una estructura de carpetas numeradas según el **flujo de ejecución**. La numeración no es decorativa: refleja el orden real en que los componentes participan en el pipeline.
+Todo proyecto sigue una estructura de carpetas numeradas según el
+**flujo de ejecución**.
 
-### 1.1 Estructura canónica
+### 1.1 Estructura canónica (raíz de código)
 
 ```
-proyecto/
-├── 00_<orquestador>.{R,py,...}     ← punto de entrada único (00_run_all.R)
-├── 00_escanear_proyecto.R          ← escáner de estructura (raíz)
-├── 10_utils/                       ← funciones compartidas (se cargan primero)
-├── 20_insumos/                     ← datos crudos de entrada (read-only)
-│   ├── auxiliares/                 ← archivos de apoyo (diccionarios, equivalencias)
-│   ├── publico/                    ← (opcional, ver sección 6.2)
-│   ├── privado/                    ← (opcional, ver sección 6.2)
-│   └── <fuente>/                   ← subcarpetas por origen de datos
-├── 30_procesamiento/               ← ETLs, motores, modelos, app
-│   ├── 31_<sub_etapa>.R            ← sub-numeración interna por orden de ejecución
+proyecto/                               ← repo Git
+├── 00_run_all.R                        ← orquestador (punto de entrada único)
+├── 00_escanear_proyecto.R              ← escáner de estructura
+├── 10_utils/                           ← funciones compartidas (se cargan primero)
+│   ├── 10_utils.R                      ← bootstrapping (instalar_si_falta, log_msg)
+│   └── 10_configuracion.R              ← rutas, constantes, resolución de data root
+├── 20_insumos/                         ← datos crudos (read-only) — ver sección 6
+├── 30_procesamiento/                   ← ETLs, motores, modelos, app
+│   ├── 31_<sub_etapa>.R
 │   ├── 32_<sub_etapa>.R
 │   └── ...
-├── 40_salidas/                     ← outputs generados (parquet, csv, reportes)
-│   ├── publico/                    ← (simetría con 20_insumos si aplica)
-│   └── privado/                    ← (simetría con 20_insumos si aplica)
-├── 50_documentacion/               ← documentación del proyecto
-│   ├── activa/                     ← documentación vigente
-│   ├── traspasos/                  ← handoffs entre sesiones
-│   ├── andamios/                   ← scripts históricos de refactor (congelados)
-│   └── estructura/                 ← snapshots del escáner (ver sección 7)
-├── tests/                          ← suite de pruebas (sin numerar)
-│   └── testthat/
-└── _archivo/                       ← obsoletos no asociados a refactors documentados
-    └── YYYYMMDD/                   ← snapshots de hitos importantes
+├── 40_salidas/                         ← outputs generados — ver sección 6
+├── 50_documentacion/
+│   ├── activa/                         ← documentación vigente (incluye esta política)
+│   │   └── decisiones/                 ← YYYYMMDD_decision_<tema>.md
+│   ├── traspasos/                      ← handoffs entre sesiones (solo se agregan)
+│   ├── andamios/                       ← scripts de refactor ejecutados (congelados)
+│   └── estructura/                     ← snapshots del escáner (sección 7)
+├── tests/                              ← sin numerar (R: tests/testthat/)
+└── _archivo/                           ← obsoletos y snapshots locales (fuera de Git)
+    └── YYYYMMDD/
 ```
 
-### 1.2 Principios de la numeración
+En proyectos con datos sensibles, `20_insumos/` y `40_salidas/` físicas
+viven FUERA del repo, en la raíz de datos de OneDrive (sección 6.2). El
+repo no las contiene.
 
-**Principio 1 — Decenas, no unidades.** Usar `10, 20, 30...` deja espacio para insertar carpetas intermedias sin renumerar todo. Si en `30_procesamiento/` hay varios scripts, numerarlos como `31_, 32_, 33_` dentro de la carpeta.
+### 1.2 Principios de numeración
 
-**Principio 2 — El número refleja orden de ejecución.** `00` orquesta, `10` se carga primero (utils son prerrequisito), `20` se lee, `30` procesa, `40` escribe, `50` documenta. Si una carpeta no encaja en este flujo, probablemente no debería existir como decena propia.
-
-**Principio 3 — Sin saltos.** Compactar `10, 20, 30, 40, 50` — no dejar huecos como `10, 30, 70, 90`. Los huecos son residuos de refactors previos, no reserva.
-
-**Principio 4 — El nombre del archivo coincide con su carpeta.** Si la carpeta es `10_utils/`, el archivo es `10_utils.{ext}`, no `05_utils.{ext}`.
+1. **Decenas, no unidades.** `10, 20, 30...` deja espacio para insertar
+   sin renumerar. Dentro de `30_procesamiento/`, correlativos `31_, 32_,
+   33_` (y saltos internos como `39_app.R` para dejar aire).
+2. **El número refleja orden de ejecución.** `00` orquesta, `10` se
+   carga primero, `20` se lee, `30` procesa, `40` escribe, `50`
+   documenta. Si una carpeta no encaja en este flujo, no merece decena.
+3. **Sin saltos entre decenas.** Compactar `10, 20, 30, 40, 50`; los
+   huecos son residuos de refactors, no reserva.
+4. **Todos los archivos llevan prefijo numérico**, en dos modos:
+   - **Sin orden interno** (`10_utils/`, subcarpetas de `50_*`): el
+     número de la carpeta como prefijo (`10_utils.R`,
+     `10_configuracion.R`, `10_validaciones.R`).
+   - **Con orden interno** (`30_procesamiento/`): correlativos por orden
+     de ejecución. Los auxiliares no ejecutables toman el número del
+     ejecutable que los emplea (`32_motor_calculo.R` +
+     `32_funciones_motor.R`).
+   - **Excepción declarada:** datos crudos heredados de fuentes externas
+     conservan su nombre original. Documentarlo en el README.
 
 ### 1.3 Principios de las carpetas
 
-**Principio 5 — Separación input → procesamiento → output.** `20_insumos/` es read-only (datos crudos no se modifican). `40_salidas/` es write-only desde el pipeline (no se edita a mano). `30_procesamiento/` es la única capa que transforma.
+5. **Separación input → procesamiento → output.** `20_insumos/` es
+   read-only; `40_salidas/` es write-only desde el pipeline;
+   `30_procesamiento/` es la única capa que transforma.
+6. **Simetría input/output.** La raíz de datos replica `20_insumos/` y
+   `40_salidas/` con las mismas subcarpetas (incluido `publico/privado/`
+   si se usa granularidad interna).
+7. **Documentación bifurcada.** `activa/` se actualiza in place;
+   `traspasos/` solo se agregan; `andamios/` se congelan (sus rutas
+   internas no se reescriben jamás); `estructura/` la gestiona el
+   escáner.
+8. **`tests/` no se numera.** Convención del lenguaje.
 
-**Principio 6 — Simetría entre input y output.** Si en `20_insumos/` existe `privado/` y `publico/`, en `40_salidas/` deben existir las mismas subcarpetas. Facilita la trazabilidad raw → procesado.
+### 1.4 `10_utils/`
 
-**Principio 7 — Documentación bifurcada: viva vs. congelada.**
-- `50_documentacion/activa/`: lo vigente (arquitectura, doc técnica). Se actualiza in place.
-- `50_documentacion/traspasos/`: handoffs históricos. Solo se agregan, nunca se editan.
-- `50_documentacion/andamios/`: scripts de refactor ya ejecutados. Se preservan como registro histórico — **nunca se reescriben sus rutas internas** aunque la estructura cambie.
-- `50_documentacion/estructura/`: snapshots del escáner del proyecto (ver sección 7).
+- Cero dependencias de paquetes cargados: usar `paquete::funcion()`.
+  Permite cargar utils antes de cualquier `library()` (bootstrapping).
+- Migrar a utils solo con duplicación real: cada función debe ser
+  (a) genérica y (b) usada en más de un script. Lo específico de una
+  sub-etapa vive en esa sub-etapa.
 
-**Principio 8 — `tests/` no se numera.** Sigue la convención del lenguaje (R: `tests/testthat/`; Python: `tests/`).
+### 1.5 `_archivo/`
 
-### 1.4 Sub-numeración interna en 30_procesamiento
+Snapshots de hitos (`_archivo/YYYYMMDD/` conservando ruta relativa) y
+obsoletos no asociados a refactors documentados. Criterio: si borrarlo
+hoy no rompe nada, va a `_archivo/`, no a la papelera. Excluido de Git.
 
-Cuando el procesamiento tiene múltiples etapas (ETL → motor → app, etc.), se numeran internamente con orden de ejecución:
+### 1.6 Anti-patrones
 
-```
-30_procesamiento/
-├── 31_etl.R
-├── 32_motor_calculo.R
-├── 33_indicadores.R
-└── 39_app.R           ← deja espacio para insertar entre 33 y 39 sin renumerar
-```
+- Carpetas planas con todos los scripts juntos.
+- `output/` ambiguo que mezcla intermedios con finales.
+- `10_utils/` que importa medio tidyverse en cabecera (rompe el
+  bootstrapping).
+- Numeración de un dígito o decimal.
+- Huecos entre decenas.
+- Renombrar carpetas por refactors menores (las carpetas son contratos
+  estables; los scripts cambian libremente).
+- Correr scripts sueltos como flujo habitual (el método canónico es el
+  orquestador; sueltos solo para debug).
+- Mezclar funciones genéricas y específicas en `10_utils/`.
+- Reescribir rutas en `andamios/` (falsifica el registro histórico).
+- Borrar en lugar de archivar.
 
-Las sub-numeraciones también van de a 1 o de a varios según necesidad. Lo importante es que el orden alfabético en el árbol refleje el orden de ejecución del pipeline.
+### 1.7 Qué decide cada proyecto
 
-### 1.5 La carpeta `10_utils/`
-
-Las funciones genéricas que usan múltiples scripts viven en `10_utils/`. Restricciones importantes:
-
-- **Cero dependencias de paquetes cargados.** Usar `paquete::funcion()` con doble dos puntos cuando se necesite. Esto permite cargar utils antes que cualquier `library()`, lo que resuelve problemas de bootstrapping. Ejemplo: una función `instalar_si_falta()` que vive en utils y se invoca antes del primer `library()`.
-- **Migrar a `10_utils/` solo cuando hay duplicación real** o riesgo claro de que aparezca. No es un cajón de sastre: cada función ahí justifica su lugar siendo (a) genérica y (b) usada en más de un script.
-- Funciones específicas de una sub-etapa de procesamiento viven en esa sub-etapa, no en utils.
-
-### 1.6 Carpeta `_archivo/` para historia local
-
-Distinta de `50_documentacion/andamios/`:
-
-- **`50_documentacion/andamios/`:** scripts de refactor que se ejecutaron sobre el proyecto. Quedan como registro histórico de cómo evolucionó la estructura. Sus rutas internas nunca se reescriben.
-- **`_archivo/YYYYMMDD/`:** snapshots de archivos antes de cambios mayores, copias de respaldo locales, andamios no asociados a un refactor documentado.
-
-Criterio para mover a `_archivo/`: si lo borraras hoy y no se rompe nada, va a `_archivo/` (no a la papelera). `_archivo/` se excluye de Git.
-
-### 1.7 Filosofía de evolución
-
-- **Las carpetas son contratos estables.** No las renombres reflejando refactors menores. Los scripts dentro pueden cambiar libremente, las carpetas no.
-- **No anticipes todas las etapas.** Empieza con las que ya identifiques. La numeración con saltos de 10 te deja margen para insertar después sin renumerar.
-- **Migración gradual de proyectos existentes.** Para migrar un proyecto a esta convención, usar el protocolo documentado en `prompt_migrar_estructura.md` con el motor `99_reorganizar_estructura_PLANTILLA.R`. Ver sección 8.
-
-### 1.8 Anti-patrones a evitar
-
-- **Carpetas planas con todos los scripts juntos** (típico `scripts/01_etl.R 02_motor.R 03_app.R`). Funciona para proyectos chicos, no escala. La numeración por carpeta da más aire.
-- **Una carpeta `output/` ambigua** que mezcla salidas intermedias del pipeline con salidas finales para el usuario. Usar subcarpetas explícitas dentro de `40_salidas/` si la separación importa.
-- **`10_utils/` que importa medio tidyverse en cabecera.** Rompe el bootstrapping. Las funciones de utils usan `paquete::funcion()` explícito.
-- **Numeración decimal o de un solo dígito** (`1_etl.R 2_motor.R`). Cuando aparece la quinta etapa intermedia entre 2 y 3, te vas a arrepentir. Empieza siempre con saltos de 10.
-- **Huecos en la numeración** (`10, 30, 70, 90`). Indica residuos de refactors no completados. Compactar a `10, 20, 30, 40`.
-- **Renombrar carpetas reflejando refactors menores.** Las carpetas son contratos estables; los scripts dentro pueden cambiar libremente.
-- **Saltarse el orquestador y correr scripts individuales como flujo habitual.** Llamar a scripts sueltos queda reservado para debug de una etapa específica. El método canónico de ejecución es `00_*`.
-- **Mezclar funciones genéricas con específicas en `10_utils/`.** Si una función la usa una sola sub-etapa, vive en esa sub-etapa, no en utils.
-- **Reescribir rutas en `50_documentacion/andamios/`.** Falsifica el registro histórico de refactors pasados.
-- **Borrar en lugar de archivar.** Si dudas si algo todavía sirve, va a `_archivo/`. La papelera es para basura inequívoca.
-
-### 1.9 Qué decide cada proyecto
-
-La convención no fija lo siguiente; cada proyecto lo resuelve:
-
-1. Qué sub-etapas concretas componen su `30_procesamiento/` (cuántos números 31/32/33/... y qué hace cada uno).
-2. Si necesita la separación `publico/privado` en `20_insumos/` y `40_salidas/` (depende de si maneja datos personales; ver sección 6).
-3. Qué funciones merecen estar en `10_utils/` desde el día uno (típicamente: instalación condicional de paquetes, escritura atómica de archivos, resolución de raíz del proyecto, logging).
-4. Cuál es su archivo principal de presentación (app Shiny, reporte Quarto, dashboard, paquete publicado), dentro de `30_procesamiento/`.
-5. Si usa tests y qué cobertura inicial (las funciones de `10_utils/` son el punto natural de partida).
+Las sub-etapas concretas de `30_procesamiento/`; la granularidad
+`publico/privado` dentro de la raíz de datos; qué funciones entran a
+`10_utils/` desde el día uno; el archivo principal de presentación;
+cobertura inicial de tests.
 
 ---
 
 ## 2. Nombramiento de archivos
 
-### 2.1 Orquestadores en raíz
-
-- Prefijo `00_` para arrancadores: `00_run_all.R`, `00_escanear_proyecto.R`.
-- Puede haber múltiples archivos `00_*` en raíz cuando son orquestadores u operaciones de meta-nivel.
-
-### 2.2 Numeración de archivos dentro de carpetas
-
-**Todos los archivos llevan prefijo numérico que indica su ubicación en la estructura.** No hay archivos sin prefijo dentro de carpetas numeradas: el prefijo es la señal visual que permite saber dónde va el archivo aunque se lo lea fuera de contexto.
-
-Dos modos según si la carpeta tiene orden de ejecución interno:
-
-**Modo A — Carpeta sin orden interno.** Típico de `10_utils/` y de las subcarpetas de `50_documentacion/`. Todos los archivos usan el número de la carpeta como prefijo:
-
-```
-10_utils/10_utils.R                       ← archivo principal de la carpeta
-10_utils/10_configuracion.R               ← otro módulo de utils
-10_utils/10_validaciones.R                ← otro módulo de utils
-```
-
-El nombre del archivo principal (`10_utils.R` dentro de `10_utils/`) sigue coincidiendo con su carpeta por convención, pero ya no es el único que lleva prefijo.
-
-**Modo B — Carpeta con orden de ejecución interno.** Típico de `30_procesamiento/`. Los archivos ejecutables llevan numeración correlativa que refleja el orden dentro del rango de la decena:
-
-```
-30_procesamiento/31_etl.R                 ← primera sub-etapa
-30_procesamiento/32_motor_calculo.R       ← segunda sub-etapa
-30_procesamiento/33_indicadores.R         ← tercera sub-etapa
-30_procesamiento/39_app.R                 ← presentación (deja espacio entre 33 y 39)
-```
-
-Si una sub-etapa con orden propio tiene archivos auxiliares que no se ejecutan directamente (típicamente funciones locales que solo se cargan desde el ejecutable de la misma sub-etapa), los auxiliares toman el número del archivo principal que los emplea:
-
-```
-30_procesamiento/32_motor_calculo.R       ← script ejecutable
-30_procesamiento/32_funciones_motor.R     ← auxiliar cargado desde 32_motor_calculo.R
-30_procesamiento/32_validaciones_motor.R  ← auxiliar cargado desde 32_motor_calculo.R
-```
-
-Esto permite reconocer de un vistazo qué auxiliares pertenecen a qué sub-etapa.
-
-**Excepción declarada — Datos heredados de fuentes externas.** Los archivos crudos en `20_insumos/` que llegan desde fuentes externas (descargas oficiales, archivos institucionales, exports de sistemas de terceros) conservan su nombre original y no se renumeran. La numeración aplica solo a los archivos generados o gestionados por el proyecto. Documentar esta excepción en el README cuando aplique.
-
-### 2.3 Convenciones generales de nombres
-
-- Snake_case en minúsculas.
-- Sin tildes, sin ñ, sin espacios.
-- Nombre descriptivo del verbo o sustantivo principal: `etl_parquet`, `motor_cruce`, `generar_graficos`.
-- Sin sufijos de versión (`_v3`, `_final`, `_nuevo`). Ver sección 3.
-
-### 2.4 Datos
-
-- Crudos en `20_insumos/`: prefijo de fecha `YYYYMMDD_` cuando el dato tiene versión temporal (descargas oficiales, datasets actualizables).
-- Procesados en `40_salidas/`: nombre descriptivo sin fecha, porque la fecha vive en `_archivo/YYYYMMDD/` cuando se hace snapshot.
-- Formatos por defecto: `.parquet` para datos masivos, `.xlsx` solo para entregables a usuario final, `.csv` solo cuando el destino lo exige.
-
-### 2.5 Documentos
-
-- Traspasos: `traspaso_cierre_vNN.md` (N correlativo, dos dígitos) en `50_documentacion/traspasos/`.
-- Documentación técnica: `documentacion_tecnica_vN.md` en `50_documentacion/activa/`.
-- Decisiones: `YYYYMMDD_decision_<tema>.md` en `50_documentacion/activa/decisiones/`.
-- Andamios de refactor: el propio script ejecutado, archivado en `50_documentacion/andamios/`.
+- **Orquestadores:** prefijo `00_` en raíz (`00_run_all.R`,
+  `00_escanear_proyecto.R`). Pueden coexistir varios `00_*`.
+- **General:** snake_case en minúsculas; sin tildes, sin ñ, sin
+  espacios. La regla aplica a nombres de carpetas y archivos, NO al
+  contenido (comentarios, títulos y textos van en español pleno).
+  Excepción declarada: archivos heredados imposibles de renombrar.
+- **Sin sufijos de versión en scripts vivos** (`_v3`, `_final`,
+  `_nuevo`). El versionado lo dan Git y `_archivo/` (sección 3).
+- **Datos crudos:** prefijo `YYYYMMDD_` cuando el dato tiene versión
+  temporal. **Datos procesados:** nombre descriptivo sin fecha.
+- **Formatos:** `.parquet` para datos masivos; `.xlsx` solo entregables
+  finales; `.csv` solo cuando el destino lo exige; JSON con claves
+  ordenadas e indentación fija cuando el destino es web/GitHub Pages.
+- **Documentos:** traspasos `traspaso_cierre_vNN.md` (correlativo
+  global, dos dígitos); documentación técnica
+  `documentacion_tecnica_vN.md`; decisiones
+  `YYYYMMDD_decision_<tema>.md`.
 
 ---
 
-## 3. Política de versionado
+## 3. Versionado
 
-Dos sistemas complementarios: **Git** para historial granular, **`_archivo/YYYYMMDD/`** para snapshots de hitos.
+Dos sistemas complementarios: **Git** (historial granular) y
+**`_archivo/YYYYMMDD/`** (snapshots de hitos).
 
-### 3.1 Git (obligatorio desde el primer commit)
-
-- Inicializar Git al crear el proyecto.
-- `.gitignore` debe excluir desde el primer commit (ver sección 6.3 para versión completa cuando hay datos sensibles):
-  - `_archivo/` (snapshots no van a Git; son histórico local).
-  - `.Rproj.user/`, `.Rhistory`, `.RData`.
-  - `*.bak` (backups temporales generados por scripts de migración).
-  - Credenciales (`.env`, `.Renviron`, `*credentials*`, `*secret*`, `*token*`).
-- Commits frecuentes con mensajes descriptivos en español: `Agregar sub-etapa de cruce escuelas-jardines`.
-- Branches solo cuando hay experimentación paralela. La rama principal vive en `main`.
-
-### 3.2 Snapshots por fecha (para hitos)
-
-**Regla:** el script vivo nunca lleva sufijo de versión.
-
-- Los reemplazos van a `_archivo/YYYYMMDD/` conservando su ruta relativa original.
-- Ejemplo: si `30_procesamiento/31_etl.R` cambia profundamente, el actual se mueve a `_archivo/20260522/30_procesamiento/31_etl.R` y el nuevo ocupa la ruta limpia.
-- Las rutas activas son estables: nunca hay que actualizar `source()` ni referencias por cambios de versión.
-
-### 3.3 Cuándo usar cada uno
-
-**Git (commits):**
-- Cambios incrementales, correcciones, mejoras cotidianas.
-- Cada vez que termines una unidad de trabajo coherente.
-- **Obligatorio:** commit limpio antes de ejecutar cualquier migración estructural en modo real (sección 8).
-
-**Snapshot `_archivo/YYYYMMDD/`:**
-- Antes de un refactor mayor.
-- Al cerrar una versión grande del proyecto.
-- Antes de aplicar cambios irreversibles a estructura.
-- Al final de una sesión que cambió múltiples archivos críticos.
-
-### 3.4 Numeración de traspasos
-
-Los traspasos llevan correlativo `vNN` global del proyecto, no del año o de la rama. Crece monotónicamente: v01, v02, ..., v19, v20. Viven en `50_documentacion/traspasos/`.
+- Git desde el primer commit. `.gitignore` según sección 6.3. Commits
+  frecuentes, mensajes descriptivos en español. Rama principal `main`;
+  branches solo para experimentación paralela.
+- El script vivo nunca lleva sufijo de versión: los reemplazos van a
+  `_archivo/YYYYMMDD/` conservando su ruta relativa, y el nuevo ocupa
+  la ruta limpia. Las rutas activas son estables.
+- Snapshot obligatorio antes de refactor mayor o cambio irreversible;
+  commit limpio obligatorio antes de cualquier migración estructural
+  en modo real.
 
 ---
 
-## 4. Política del arrancador `00_*`
+## 4. Orquestador `00_run_all.R`
 
-### 4.1 Responsabilidad
-
-Orquestar el pipeline de principio a fin. Solo orquesta; **no contiene lógica de negocio**.
-
-Es el método canónico de ejecución del proyecto. Llamar a los scripts individualmente queda reservado para debug de una etapa específica.
-
-### 4.2 Requisitos estándar
-
-- Vive en la raíz del proyecto, típicamente como `00_run_all.R`.
-- Ancla el root vía `rprojroot::find_root()` con criterios `.here`, `.Rproj`, `is_rstudio_project`, `is_git_root`.
-- Carga primero `10_utils/10_utils.R` antes de cualquier `library()` que dependa de paquetes potencialmente faltantes (permite el bootstrapping descrito en 1.5).
-- Define lista ordenada `PASOS` donde cada paso es una lista con `id` (entero), `etiqueta` (string legible) y `ruta` (relativa al root, típicamente apuntando a archivos dentro de `30_procesamiento/`).
-- Encapsula la ejecución en función `run_all()` con argumentos estándar (siempre presentes, mismo nombre en todos los proyectos):
-  - `from = NULL`: ejecutar desde el paso N.
-  - `to = NULL`: ejecutar hasta el paso N inclusive.
-  - `only = NULL`: vector de IDs a ejecutar.
-  - `skip = NULL`: vector de IDs a saltar.
-  - Combinaciones razonables deben funcionar.
-
-### 4.3 Argumentos opcionales según necesidad del proyecto
-
-Cuando el proyecto lo amerite, `run_all()` puede aceptar argumentos adicionales más allá de los estándar. Casos típicos:
-
-- `refrescar = TRUE/FALSE`: decide si reejecutar las transformaciones costosas (ETL, motores de cómputo) o solo levantar la capa de presentación. Útil cuando el desarrollo iterativo se concentra en la app o el reporte y los datos procesados no cambian.
-- `verbose = TRUE/FALSE`: controla el nivel de log.
-
-Estos argumentos son **opcionales** y específicos del proyecto. El nombre `run_all()` y los cuatro argumentos estándar (`from/to/only/skip`) deben mantenerse siempre, para que la experiencia de usar el arrancador sea consistente entre proyectos.
-
-### 4.4 Comportamiento
-
-- Antes de cada paso: encabezado con separador, ID, etiqueta, ruta.
-- Mide y reporta duración por paso.
-- Si un paso falla: detiene con `stop()` y mensaje claro. No continúa.
-- Al final: resumen con pasos ejecutados, saltados, duración total.
-- Scripts `.R` se ejecutan con `source(ruta, echo = FALSE, chdir = TRUE)`.
-- Documentos `.qmd` se ejecutan con `quarto::quarto_render()`.
-- Verifica al inicio que todas las rutas declaradas en `PASOS` existan en disco.
-
-### 4.5 Logging
-
-- Función `log_msg()` con timestamp, vive en `10_utils/10_utils.R`.
-- Formato: `[YYYY-MM-DD HH:MM:SS] [00_run_all] [NIVEL] mensaje`.
-- Niveles: INFO, WARN, ERROR.
-- Sin paquetes externos pesados: `cat()` y `sprintf()` bastan; opcionalmente `cli` para scripts de meta-nivel como migraciones.
-
-### 4.6 Lo prohibido
-
-- No agregar caché automático por timestamp. Saltar pasos es responsabilidad explícita del usuario (vía `skip`/`only`) o vía argumento opcional documentado (como `refrescar`).
-- No modificar scripts de procesamiento desde el arrancador.
-- No mezclar lógica de negocio.
+- Solo orquesta: cero lógica de negocio; no modifica scripts de
+  estación; sin caché automático por timestamp (saltar pasos es
+  decisión explícita del usuario).
+- Ancla la raíz vía `rprojroot::find_root()` (criterios `.here`,
+  `.Rproj`, `is_rstudio_project`, `is_git_root`). Carga primero
+  `10_utils/10_utils.R` (bootstrapping) y luego
+  `10_utils/10_configuracion.R` (validación de precondiciones,
+  incluida la resolución del data root: si la variable de entorno no
+  resuelve, falla al inicio con mensaje claro, no a mitad de pipeline).
+- Lista ordenada `PASOS` (cada paso: `id`, `etiqueta`, `ruta` relativa
+  a la raíz). Verifica al inicio que todas las rutas existan.
+- Función `run_all()` con argumentos estándar idénticos en todos los
+  proyectos: `from`, `to`, `only`, `skip` (combinaciones razonables
+  funcionan). Opcionales por proyecto: `refrescar`, `verbose`.
+- Por paso: encabezado con separador, ID, etiqueta, ruta; duración
+  medida; ante fallo, `stop()` con mensaje claro (no continúa). Al
+  final, resumen (ejecutados, saltados, duración total).
+- `.R` vía `source(ruta, echo = FALSE, chdir = TRUE)`; `.qmd` vía
+  `quarto::quarto_render()`.
+- Logging con `log_msg()` (en `10_utils/10_utils.R`), formato
+  `[YYYY-MM-DD HH:MM:SS] [origen] [NIVEL] mensaje`, niveles
+  INFO/WARN/ERROR, sin paquetes externos.
 
 ---
 
-## 5. Convenciones de código
+## 5. Principios técnicos de código
 
-Esta sección **no reemplaza** `principios_desarrollo_vN.md`. Lo complementa con reglas de forma:
+Guía operativa, no checklist rígida. Cuando un principio no aplique
+(script de uso único, exploratorio), declararlo y justificarlo; la
+excepción silenciosa es peor que la omisión declarada.
 
-### 5.1 R
+### 5.1 Interacción (resumen; el contrato completo vive en CLAUDE.md)
 
-- Tidyverse, native pipe `|>`.
-- `janitor::clean_names()` antes de cualquier análisis.
-- `here::here()` para paths en scripts `.R`.
-- **Excepción:** dentro de `.qmd`, los `source()` y `readRDS()` usan paths relativos al `.qmd`, no `here()`.
-- Quarto sobre RMarkdown.
-- `gt` o `reactable` para tablas; `flextable` para tablas exportadas a Word.
+Pensar antes de codificar (supuestos explícitos, interpretaciones sobre
+la mesa); simplicidad primero (mínimo código, nada especulativo);
+cambios quirúrgicos (cada línea modificada se traza al pedido); ejecución
+dirigida por objetivos (check de éxito definido antes de codificar).
 
-### 5.2 Auto-instalación de paquetes
+Tensiones reconocidas: modularidad vs. simplicidad (modularizar solo con
+reuso real); validación vs. simplicidad (validar lo que puede fallar en
+la práctica); resiliencia vs. simplicidad (backoff y `tryCatch()` solo
+ante fuentes externas reales). Declarar la decisión cuando tensen.
 
-Todos los scripts ejecutables incluyen al inicio el bloque:
+### 5.2 Datos y reproducibilidad
 
-```r
-paquetes_requeridos <- c("dplyr", "readr", "fs")
-paquetes_faltantes <- paquetes_requeridos[
-  !sapply(paquetes_requeridos, requireNamespace, quietly = TRUE)
-]
-if (length(paquetes_faltantes) > 0) install.packages(paquetes_faltantes)
-```
+1. **Inmutabilidad de la fuente.** Los datos crudos jamás se editan a
+   mano; toda corrección es código documentado.
+2. **Reproducibilidad completa.** El flujo corre de cero sin
+   intervención manual y produce el mismo resultado: semillas fijadas
+   (`set.seed()`), sin dependencias de estado, `renv` para proyectos de
+   larga vida.
+3. **Idempotencia y checkpointing.** Ejecutar N veces produce lo mismo
+   sin duplicar; procesos interrumpibles guardan progreso.
+4. **Escritura atómica.** Patrón write → rename para todo artefacto que
+   alimente otros procesos.
 
-### 5.3 Header banner de scripts
+### 5.3 Calidad del código
 
-Todos los scripts del pipeline llevan header con formato banner:
+5. **Modularidad con responsabilidad única**, documentando qué recibe y
+   entrega cada función. Separar configuración, I/O, transformación y
+   lógica de negocio.
+6. **Rigor de nomenclatura y tipado.** `snake_case` siempre
+   (`janitor::clean_names()` tras cada lectura). Identificadores que
+   actúan como llaves (RBD, RUT, códigos comunales) SIEMPRE como
+   `character`, con tipo consistente entre caché y recálculo (un join
+   con tipos mezclados falla silenciosamente). Porcentajes como
+   decimales hasta la exportación final; no redondear prematuramente.
+7. **Portabilidad total.** Prohibidas las rutas absolutas en código:
+   `here::here()` desde la raíz de código; funciones de configuración
+   para la raíz de datos (sección 6.2). UTF-8 explícito. Excepción:
+   dentro de `.qmd`, `source()`/`readRDS()` relativos al `.qmd`.
+8. **Validación de integridad.** Checks tras transformaciones críticas:
+   NAs en columnas clave, totales pre/post join, rangos esperados.
+   Alertar con `warning()`/`message()`, no fallar en silencio.
+9. **Resiliencia ante fuentes externas.** Backoff exponencial ante 429;
+   `tryCatch()` granular (registrar, guardar progreso, descartar ítem,
+   continuar).
+10. **Transparencia del cambio.** Comentarios que explican el "por qué";
+    filtros y exclusiones con constancia explícita; decisiones
+    metodológicas (umbrales, tolerancias, cortes) como constantes
+    nombradas al inicio, jamás números mágicos embebidos.
+11. **Dependencias explícitas.** `library()` (no `require()`) al inicio;
+    bloque de auto-instalación previo (`requireNamespace()` +
+    `install.packages()` de faltantes).
+12. **Logging y observabilidad.** Progreso informativo en procesos
+    largos; resumen final (procesados, errores, duración); errores con
+    contexto diagnóstico ("fila 12, RBD 12345: columna 'asistencia'
+    contiene 'N/A'", no "error en fila 12").
 
-```r
-# =============================================================================
-# 31_etl.R
-# -----------------------------------------------------------------------------
-# Propósito: ETL de datos privados de asistencia mensual a parquet.
-# Insumos:   20_insumos/privado/asistencia_cem/{anio}/*.xlsx
-# Salidas:   40_salidas/privado/escuelas.parquet
-# Autor:     Tomás G. Casanova
-# Creado:    YYYY-MM-DD
-# =============================================================================
-```
+### 5.4 Convenciones R / Positron
 
-### 5.4 Comentarios
+- Tidyverse, pipe nativo `|>`, `dplyr >= 1.1` con `.by=` en
+  `mutate()`/`summarize()` en lugar de pares `group_by()/ungroup()`.
+- Quarto sobre RMarkdown. `gt`/`reactable` para tablas; `flextable`
+  para Word; `tinytable` para typst.
+- `theme_minimal()` como base ggplot2. `dplyr::if_else()` jamás con
+  condición escalar y argumentos vectoriales.
+- Estructura canónica de todo script, en este orden: (1) header banner
+  (nombre, propósito, insumos, salidas, autor, fecha); (2) bloque de
+  auto-instalación; (3) `library()`; (4) rutas centralizadas; (5)
+  constantes y parámetros; (6) funciones; (7) flujo principal
+  (lectura → limpieza → transformación → validación → exportación).
+  Nada de rutas, paquetes ni constantes en medio del flujo.
+- Comentarios en español, bloques `# ---- Nombre ----`.
 
-- En español.
-- Explicar el "por qué", no el "qué".
-- Bloques temáticos separados por divisores: `# ---- Nombre del bloque ----`.
+### 5.5 Excel (locale español) y web estática
 
-### 5.5 Idioma
+Excel: decimal `,`, miles `.`, separador de argumentos `;`, funciones
+en español. Web (GitHub Pages): HTML5 semántico de archivo único, CSS/JS
+inline o locales, SVGs inline, JSON como formato de datos, sin
+dependencias externas salvo necesidad estricta.
 
-- Carpetas raíz en inglés cuando sean convencionales (`tests/`, `_archivo/` es excepción).
-- Carpetas numeradas del pipeline en español sin tildes ni ñ (`insumos`, `procesamiento`, `salidas`, `documentacion`).
-- Comentarios y mensajes de log en español neutro.
+### 5.6 Auditoría del proyecto (apertura y cierre)
+
+Checklist corto a correr al abrir un proyecto (deuda heredada) y al
+cerrar una entrega (cumplimiento). Es legítimo declarar excepciones;
+no es legítimo saltarse la pregunta.
+
+| # | Pregunta | Cuándo | Si la respuesta es "no" |
+|---|----------|--------|--------------------------|
+| 1 | ¿Datos crudos aislados e inmutables? | Apertura | Aislarlos antes de seguir |
+| 2 | ¿El pipeline corre de cero sin intervención manual? | Apertura y cierre | Eliminar la dependencia de estado |
+| 3 | ¿Paquetes, rutas y constantes declarados al inicio de cada script? | Apertura | Centralizarlos según 5.4 |
+| 4 | ¿La estructura respeta esta política (decenas, naming, ubicación)? | Apertura | Documentar como deuda heredada y proponer pendiente |
+| 5 | ¿Cada transformación crítica tiene check de validación? | Cierre | Agregar al menos uno por paso crítico (5.3.8) |
+| 6 | ¿Los outputs son reproducibles e idempotentes? | Cierre | Revisar escritura atómica y semillas |
+| 7 | ¿Decisiones metodológicas como constantes nombradas? | Cierre | Extraer números mágicos (5.3.10) |
+| 8 | ¿Nombres de archivos y carpetas sin tildes, ñ ni espacios? | Apertura y cierre | Renombrar y actualizar referencias |
+
+Toda respuesta "no" al cierre se convierte en pendiente del traspaso.
 
 ---
 
-## 6. Gobernanza de datos
+## 6. Gobernanza de datos y arquitectura de dos raíces
 
 ### 6.1 Principio rector
 
-Cuando el proyecto maneja datos personales, estos **nunca** salen del proyecto local. La estructura del repositorio refleja esta separación con subcarpetas `publico/` y `privado/`.
+Cuando el proyecto maneja datos personales (RUT, nombres, datos
+individuales identificables, especialmente de menores), esos datos
+**jamás entran al repositorio Git ni salen del control institucional**.
+La separación es física, no solo de `.gitignore`.
 
-### 6.2 Separación física (cuando aplica)
+### 6.2 Modelo canónico de dos raíces (proyectos con datos sensibles)
 
-**Aplicar cuando** el proyecto maneja datos personales (RUT, nombres, datos individuales identificables). **Omitir cuando** todos los datos del proyecto son públicos o sintéticos.
+- **Raíz de código:** repo Git privado, fuera de OneDrive (típicamente
+  `~/Projects/<nombre_proyecto>`; evita conflictos de sincronización
+  con `.git/objects/`). Contiene código, configuración, documentación
+  no sensible. `20_insumos/` y `40_salidas/` NO existen aquí.
+- **Raíz de datos:** carpeta en OneDrive institucional
+  (`.../OneDrive-SLEP/Proyectos/<nombre_proyecto>/`) con `20_insumos/`
+  y `40_salidas/` físicas, replicando la granularidad interna que el
+  proyecto necesite (`auxiliares/`, `publico/`, `privado/`, por fuente).
+- **Conexión:** variable de entorno en `~/.Renviron`, generada desde
+  `nombre_proyecto` en MAYÚSCULAS más sufijo `_DATA_ROOT`, **sin
+  abreviar ni recortar** (la consistencia vale más que la brevedad).
+  Ej.: `seguimiento_educacion_inicial` →
+  `SEGUIMIENTO_EDUCACION_INICIAL_DATA_ROOT`. Esta regla es única y
+  canónica; deroga cualquier convención previa que recortara prefijos.
+- **Resolución dinámica:** `10_utils/10_configuracion.R` define
+  `PROYECTO_ID`, resuelve el data root vía la variable de entorno
+  (helper genérico `10_utils/10_resolver_rutas.R`, copiado idéntico
+  desde `herramientas_dev/`, nunca editado por proyecto) y expone
+  `ruta_insumos(...)` y `ruta_salidas(...)`. Todo acceso a datos pasa
+  por estas funciones. Si la variable no resuelve, fallo inmediato con
+  mensaje claro indicando cómo configurarla.
+- **`.Renviron.example`** en la raíz del repo documenta la variable con
+  ejemplos por sistema operativo (macOS/Windows).
+- Proyectos 100% públicos usan **raíz unificada**: `20_insumos/` y
+  `40_salidas/` viven en el repo y se versionan si el tamaño lo permite
+  (sección 8.2).
 
-- `20_insumos/publico/`: datos públicos descargados de portales oficiales. Pueden versionarse en Git si su tamaño lo permite.
-- `20_insumos/privado/`: datos con información personal. Excluidos de Git por `.gitignore`.
-- `40_salidas/publico/`: outputs agregados sin información identificable. Pueden versionarse o subirse a servidores.
-- `40_salidas/privado/`: outputs con datos individuales. Excluidos de Git, almacenados solo localmente.
-
-La simetría entre `20_insumos/` y `40_salidas/` no es opcional cuando la separación aplica (Principio 6).
-
-### 6.3 `.gitignore` obligatorio cuando hay datos sensibles
+### 6.3 `.gitignore` blindado (proyectos con datos sensibles)
 
 ```
-# Datos privados
-20_insumos/privado/
-40_salidas/privado/
+# Datos (defensa en profundidad: las carpetas viven fuera del repo,
+# pero se blindan igual por si alguien las recrea localmente)
+20_insumos/
+40_salidas/
 *.csv
 *.xlsx
 *.parquet
 *.rds
 *.sqlite
 *.db
+*.feather
 
 # Excepciones para datos sintéticos y de ejemplo
 !20_insumos/publico/ejemplos/
@@ -418,211 +415,263 @@ La simetría entre `20_insumos/` y `40_salidas/` no es opcional cuando la separa
 .Rproj.user/
 .Rhistory
 .RData
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
+# Nota: *.Rproj SÍ se versiona (es el ancla del proyecto; sin él,
+# here::here() no resuelve en otra máquina). Solo .Rproj.user/ se ignora.
 
 # Snapshots y backups locales
 _archivo/
 *.bak
+
+# Outputs accidentales en raíz y scripts de diagnóstico
+/*.docx
+/*.pdf
+/*.html
+/diagnostico_*.md
+/verificar_*.R
+/listar_*.R
 
 # Outputs temporales
 *_freeze/
 .quarto/
 ```
 
+Para proyectos públicos, omitir el bloque de datos y conservar el resto.
+
 ### 6.4 Marco normativo
 
-El proyecto opera bajo:
+- **Chile:** Ley 19.628 (vida privada); Ley 21.719 (protección de datos,
+  vigente desde diciembre 2026); Ley 19.223 (delitos informáticos);
+  Ley 21.663 (Ciberseguridad); Ley 21.180 (Transformación Digital);
+  Ley 21.658 (Secretaría de Gobierno Digital); D.S. 83/2005 MINSEGPRES
+  (seguridad y confidencialidad de documentos electrónicos); Estrategia
+  de Datos del Estado.
+- **Agencia de Calidad (contractual):** Condiciones de Uso de Bases de
+  Datos (SIMCE, IDPS): no identificar establecimientos por nombre en
+  ningún output; no transferir bases a terceros; acceso restringido al
+  equipo declarado; quien abandona el equipo no se lleva los datos.
+  Principios CIA según NCh-ISO 27001:2013 y 27002:2009 (Política
+  General de Seguridad, REX 1440/2014 y REX 1459/2016).
+- **Internacional:** GDPR y principios OCDE como referencia.
 
-- **Chile:** Ley 19.628, Ley 21.719 (vigente desde diciembre 2026), Ley 21.663 (Ciberseguridad), Ley 21.180 (Transformación Digital), Ley 21.658 (Secretaría de Gobierno Digital), Estrategia de Datos del Estado.
-- **Internacional:** GDPR como referencia de buenas prácticas, principios OCDE.
-
-Decisiones técnicas con implicancia normativa (logs de acceso, retención, transferencia internacional) deben documentarse en `50_documentacion/activa/decisiones/`.
+Decisiones técnicas con implicancia normativa se documentan en
+`50_documentacion/activa/decisiones/`.
 
 ---
 
-## 7. Escaneo periódico de estructura
+## 7. Escáner de estructura (`00_escanear_proyecto.R`)
 
-### 7.1 Propósito
+### 7.1 Propósito y disparadores
 
-El proyecto evoluciona. Las carpetas se agregan, los scripts se mueven, los datos crecen. El escáner es el mecanismo para que cualquier agente (humano o asistente) sepa **dónde está parado en el momento actual**, sin deducir ni inventar.
+Mecanismo para que cualquier agente sepa dónde está parado sin deducir
+rutas. Ejecutar: (1) al abrir sesión sobre un proyecto en curso; (2)
+tras reorganizar estructura; (3) antes de cerrar sesión; (4) cuando un
+asistente pierde referencia (regla 0.2).
 
-### 7.2 Disparadores obligatorios
+### 7.2 Alcance y exclusiones
 
-Ejecutar `00_escanear_proyecto.R` en estos cuatro momentos:
-
-1. **Al abrir una sesión nueva** sobre un proyecto en curso. Adjuntar el output al chat para anclar el contexto.
-2. **Después de reorganizar estructura**, renombrar carpetas o mover scripts (incluido después de una migración con `99_reorganizar_estructura_PLANTILLA.R`).
-3. **Antes de cerrar sesión**: el escaneo se referencia en el traspaso de cierre.
-4. **Cuando un asistente pierde referencia**: si el agente no sabe dónde están los archivos, debe pedir un escaneo antes de continuar (regla 0.3).
+- Escanea SOLO la raíz de código (basado en `here` + `fs`).
+- Excluye carpetas ocultas y de sistema: `.git/`, `.Rproj.user/`,
+  `renv/`, `.quarto/`.
+- **Jamás escanea la raíz de datos en OneDrive.** El snapshot se
+  versiona en Git; mapear el data root filtraría nombres de archivos
+  con información sensible. Si se necesita inventariar datos, es una
+  operación separada, manual y nunca versionada.
+- `_archivo/` se excluye o incluye según preferencia del proyecto
+  (parámetro al inicio del script).
 
 ### 7.3 Output
 
-El escáner genera dos archivos en paralelo en `50_documentacion/estructura/`:
+En `50_documentacion/estructura/`:
 
-- `YYYYMMDD_HHMMSS_estructura.txt`: snapshot con fecha. Histórico navegable.
-- `YYYYMMDD_HHMMSS_estructura.md`: misma información en Markdown, optimizada para adjuntar a sesiones de chat.
+- Snapshots sellados: `YYYYMMDD_HHMMSS_estructura.txt` y
+  `YYYYMMDD_HHMMSS_estructura.md` (mismo contenido; el `.md` optimizado
+  para adjuntar a sesiones).
+- Aliases estáticos `estructura_actual.txt` y `estructura_actual.md`,
+  siempre copia del snapshot más reciente.
+- Contenido: header (raíz, fecha, totales), árbol completo con tamaños,
+  conteo por extensión.
 
-Adicionalmente, mantiene dos aliases que siempre apuntan al escaneo más reciente:
+### 7.4 Poda estricta de snapshots (retención = 2)
 
-- `50_documentacion/estructura/estructura_actual.txt`
-- `50_documentacion/estructura/estructura_actual.md`
+El escáner mantiene **únicamente los 2 timestamps sellados más
+recientes** (cada uno con su par `.txt`/`.md`). Algoritmo atómico, en
+este orden:
 
-### 7.4 Contenido del escaneo
+1. Escribir el snapshot nuevo (par `.txt`/`.md` con timestamp).
+2. Actualizar los aliases `estructura_actual.*` copiando el nuevo.
+3. Solo si 1 y 2 terminaron sin error: listar los archivos que calzan
+   con `^\d{8}_\d{6}_estructura\.(txt|md)$`, ordenar por timestamp
+   descendente, conservar los 2 timestamps más recientes y eliminar
+   todo lo anterior.
+4. Los aliases nunca se podan. Cualquier archivo que no calce con el
+   patrón no se toca.
 
-- Header con raíz, fecha y totales (carpetas, archivos).
-- Árbol completo del proyecto excluyendo `.git/`, `renv/`, `.Rproj.user/`, `_archivo/` (este último es opcional excluirlo o incluirlo según preferencia del proyecto).
-- Tamaños por archivo.
-- Conteo por extensión al final.
-
----
-
-## 8. Migración de proyectos existentes
-
-Para migrar un proyecto con estructura desordenada (`raw/`, `data/`, `docs/`, carpetas con guiones bajos, huecos en numeración, decenas que no encajan en esta convención) a la estructura canónica, **no improvisar**. Usar el protocolo y motor ya probados:
-
-### 8.1 Archivos de referencia
-
-- **`prompt_migrar_estructura.md`:** protocolo paso a paso para que el asistente guíe la migración. Define el orden exacto: leer regla, escanear, diagnosticar referencias, proponer mapeo, adaptar plantilla, ciclo DRY_RUN, validar.
-- **`99_reorganizar_estructura_PLANTILLA.R`:** motor probado de migración. Plantilla con bloques de configuración a llenar según el proyecto.
-
-### 8.2 Reglas no negociables del protocolo
-
-Independiente de quién ejecute la migración (tú, Claude, Claude Code), estas reglas no se pueden saltar:
-
-1. **Diagnóstico de referencias antes del mapeo.** Antes de proponer renombres, buscar todas las referencias literales a las carpetas actuales en archivos de código (no solo `here::here()`, también `file.path()`, `test_path()`, paths en comentarios y tests). Sin este diagnóstico, los regex de reescritura fallan silenciosamente.
-2. **DRY_RUN obligatorio antes del modo real.** El motor `99_reorganizar_estructura_PLANTILLA.R` arranca con `DRY_RUN <- TRUE`. Solo se cambia a `FALSE` después de validar que el plan se ve correcto.
-3. **Commit limpio en Git antes del modo real.** Permite rollback si algo sale mal.
-4. **Backups `.bak` se preservan** hasta validar end-to-end (tests + pipeline + verificación visual).
-5. **No reescribir rutas en `50_documentacion/andamios/`.** Falsifica el registro histórico de refactors pasados. Este es el error más común.
-6. **No combinar fases.** Renombrar carpetas, renombrar archivos, y reescribir código son tres operaciones distintas con tres puntos de validación distintos.
-7. **No borrar carpetas históricas sin verificar primero** que su contenido se copió íntegro al destino.
-
-### 8.3 Validación obligatoria post-migración
-
-Después de ejecutar la migración en modo real, antes de borrar los `.bak`:
-
-1. Reiniciar sesión de R.
-2. Correr tests si existen (`devtools::test()` o equivalente).
-3. Correr el orquestador (`00_run_all.R`) end-to-end.
-4. Verificación visual si hay app/reporte.
-
-Solo después de los 4 pasos de validación se borran los `.bak`.
-
-### 8.4 Cuándo migrar
-
-Migrar un proyecto existente cuando:
-
-- La estructura actual te confunde o ralentiza el trabajo.
-- Vas a trabajar en él de forma sostenida en próximas semanas/meses.
-- Otros van a colaborar y la convención les ahorrará tiempo.
-
-**No migrar** cuando:
-
-- El proyecto está cerrado y solo se consulta esporádicamente.
-- El proyecto va a ser archivado o reemplazado pronto.
-- No hay tiempo para hacer la migración completa con sus validaciones.
-
-Una migración a medias es peor que no migrar.
+Si la escritura del snapshot nuevo falla, no se poda nada: la corrida
+fallida no puede destruir el histórico existente.
 
 ---
 
-## 9. Workflow de evolución del proyecto
+## 8. Inicialización de proyectos nuevos (bifurcación por sensibilidad)
 
-### 9.1 Agregar una sub-etapa nueva en 30_procesamiento
+Al iniciar un proyecto nuevo, la **primera decisión obligatoria** es el
+nivel de sensibilidad de los datos. De ella depende la arquitectura. El
+asistente debe formularla explícitamente si el usuario no la declaró.
 
-1. Decidir en qué número va dentro de `30_procesamiento/`. Si encaja entre dos existentes (entre `32` y `33`), usar un número intermedio o reorganizar.
-2. Crear el script `30_procesamiento/3N_<nombre>.R`.
-3. Agregar el paso a `PASOS` en `00_run_all.R` en el orden de dependencia correcto.
-4. Ejecutar escáner para confirmar nueva estructura.
-5. Commit en Git.
+### 8.1 Pregunta de bifurcación
 
-### 9.2 Agregar una decena nueva al pipeline
+> ¿El proyecto procesará en algún punto datos personales o protegidos
+> (RUT, nombres de estudiantes, asistencia nominal, resultados SIMCE
+> individuales, datos de funcionarios)?
 
-Si el proyecto crece y requiere una decena nueva (raro, dado que el procesamiento se consolida en `30_*`):
+Ante duda, tratar como sensible: bajar de sensible a público es
+trivial; subir de público a sensible exige limpiar historial de Git.
 
-1. Verificar que no es solución a un problema que se resolvería con sub-numeración en `30_procesamiento/`.
-2. Si realmente se justifica, usar `99_reorganizar_estructura_PLANTILLA.R` para introducirla.
-3. Actualizar todas las referencias en código.
-4. Documentar la decisión en `50_documentacion/activa/decisiones/`.
+### 8.2 Rama A — Proyecto 100% público
 
-### 9.3 Renombrar o mover archivos
+Raíz unificada en el repo:
 
-- Usar `fs::file_move()` desde script controlado.
-- Buscar y reemplazar referencias (`source()`, `here()`, `file.path()`) en todos los scripts.
-- Verificar que no queden referencias al nombre antiguo antes de commit.
-- Ejecutar escáner antes y después.
+1. Crear la estructura canónica completa (sección 1.1), incluidas
+   `20_insumos/` y `40_salidas/` dentro del repo.
+2. `.gitignore` estándar sin el bloque de datos (sección 6.3).
+3. `10_utils/10_configuracion.R` con rutas vía `here::here()`
+   exclusivamente; sin variable de entorno ni data root externo.
+4. Resto del checklist común (8.4).
 
-### 9.4 Versionar un cambio mayor
+### 8.3 Rama B — Proyecto con datos privados o sensibles
 
-- Antes de aplicar: snapshot a `_archivo/YYYYMMDD/`.
-- Aplicar cambio.
-- Ejecutar escáner.
-- Commit en Git con mensaje descriptivo.
-- Si la sesión termina aquí, generar traspaso de cierre referenciando el snapshot.
+Estructura bifurcada obligatoria:
+
+1. **Repo (raíz de código)** en `~/Projects/<nombre_proyecto>`:
+   estructura canónica SIN `20_insumos/` ni `40_salidas/`.
+2. **Raíz de datos** en OneDrive institucional:
+   `<WORKSPACE_DATA_ROOT>/<nombre_proyecto>/{20_insumos,40_salidas}/`
+   (creación manual del usuario o instrucción de una línea; no requiere
+   script).
+3. **Variable de entorno** `<NOMBRE_PROYECTO_MAYUS>_DATA_ROOT` agregada
+   a `~/.Renviron` apuntando a la raíz de datos (regla de nombres de
+   6.2).
+4. **`.gitignore` blindado** completo (6.3) desde el primer commit.
+5. **`10_utils/10_resolver_rutas.R`** copiado idéntico desde
+   `herramientas_dev/` y **`10_utils/10_configuracion.R`** con
+   `PROYECTO_ID`, `obtener_data_root_proyecto()` (con caché),
+   `ruta_insumos()` y `ruta_salidas()`.
+6. **`.Renviron.example`** en la raíz del repo con la variable
+   documentada y ejemplos por sistema operativo.
+7. **Validación obligatoria antes del primer commit:**
+
+   ```r
+   source(here::here("10_utils", "10_configuracion.R"))
+   obtener_data_root_proyecto()   # ruta válida
+   dir.exists(ruta_insumos())     # TRUE
+   dir.exists(ruta_salidas())     # TRUE
+   ```
+
+8. **README** con sección "Configuración inicial en una máquina nueva"
+   (clonar, copiar `.Renviron.example` a `~/.Renviron`, ajustar la ruta,
+   reiniciar R, validar) y aviso explícito: "Este repositorio NO
+   contiene datos reales. Los datos se obtienen de [fuente] y se colocan
+   en la raíz de datos externa."
+
+El script `scaffold_proyecto.R` de `herramientas_dev/` automatiza ambas
+ramas mediante el parámetro `maneja_datos_sensibles` y deja instalado el
+escáner, el `.gitignore` correspondiente y los stubs de configuración.
+
+### 8.4 Checklist común de inicio (ambas ramas)
+
+- [ ] Estructura de carpetas creada según la rama.
+- [ ] `00_run_all.R` con stub funcional y `00_escanear_proyecto.R` en raíz.
+- [ ] `10_utils/10_utils.R` con bootstrapping (`instalar_si_falta`, `log_msg`).
+- [ ] Git inicializado, `.gitignore` correcto, primer commit.
+- [ ] `README.md` mínimo.
+- [ ] `POLITICA_PROYECTO.md` (este documento) y
+      `SETTINGS_Y_PROMPTS_OPERACIONALES.md` copiados a
+      `50_documentacion/activa/` (o disponibles en la knowledge base
+      del Project).
+- [ ] `CLAUDE.md` copiado a la raíz del repo.
+- [ ] Primer escaneo ejecutado.
+- [ ] Rama B: validación del punto 8.3.7 ejecutada y en verde.
+
+---
+
+## 9. Migración de proyectos existentes
+
+No improvisar: protocolos detallados en
+`SETTINGS_Y_PROMPTS_OPERACIONALES.md` (secciones 4.2 y 4.3) con el
+motor `99_reorganizar_estructura_PLANTILLA.R`. Reglas no negociables,
+independiente de quién ejecute:
+
+1. Diagnóstico de referencias literales en código ANTES del mapeo (no
+   solo `here::here()`: también `file.path()`, `test_path()`,
+   comentarios, tests). Sin él, los regex de reescritura fallan en
+   silencio.
+2. `DRY_RUN <- TRUE` obligatorio primero; el reporte se revisa antes
+   del modo real. Mantener esta postura incluso ante presión del
+   usuario por ir más rápido.
+3. Commit limpio en Git antes del modo real.
+4. Backups `.bak` se preservan hasta validar end-to-end.
+5. No reescribir rutas en `andamios/`.
+6. No combinar fases (renombrar carpetas, renombrar archivos, reescribir
+   código: tres operaciones, tres validaciones).
+7. No mezclar la migración con otros tipos de cambio (refactors,
+   bugfixes, features van en sesiones y commits separados).
+8. No borrar carpetas históricas sin verificar copia íntegra.
+9. Registrar cada cambio en `_archivo/log_reorganizacion.csv` (tipo,
+   ruta vieja, ruta nueva, ocurrencias, timestamp).
+10. Validación post-migración antes de borrar `.bak`: reiniciar R,
+    tests, orquestador end-to-end, verificación visual.
+
+Migrar solo proyectos con trabajo sostenido por delante; una migración
+a medias es peor que no migrar.
 
 ---
 
 ## 10. Documentación mínima del proyecto
 
-Todo proyecto debe tener desde el inicio:
-
-### 10.1 `README.md` en raíz
-
-- Qué hace el proyecto.
-- Cómo correr el pipeline (`Rscript 00_run_all.R` o equivalente).
-- Estructura de carpetas (referencia a esta política).
-- Dónde obtener los datos crudos (sin incluirlos).
-- Aviso explícito de gobernanza si maneja datos personales.
-
-### 10.2 `50_documentacion/activa/documentacion_tecnica_vN.md`
-
-- Decisiones arquitectónicas vigentes.
-- Diagrama de flujo de datos (opcional pero recomendado).
-- Constantes y configuraciones del proyecto.
-- Convenciones específicas del proyecto que no estén en esta política.
-
-### 10.3 `50_documentacion/traspasos/`
-
-Traspasos de cierre `traspaso_cierre_vNN.md` generados al cerrar cada sesión de desarrollo (ver `prompt-cierre-sesion.md`).
-
-### 10.4 `50_documentacion/activa/decisiones/`
-
-Decisiones puntuales con fecha: `YYYYMMDD_decision_<tema>.md`. Una decisión por archivo, autocontenida, con alternativas consideradas y justificación.
-
-### 10.5 `50_documentacion/andamios/`
-
-Scripts de refactor ya ejecutados sobre este proyecto (típicamente versiones llenas de `99_reorganizar_estructura_PLANTILLA.R`). Se preservan congelados como registro histórico. **Sus rutas internas no se reescriben jamás**, aunque la estructura del proyecto cambie después.
+- **`README.md`:** qué hace, cómo correr el pipeline, estructura
+  (referencia a esta política), de dónde obtener los datos (sin
+  incluirlos), configuración de máquina nueva (Rama B), aviso de
+  gobernanza si aplica.
+- **`50_documentacion/activa/documentacion_tecnica_vN.md`:** decisiones
+  arquitectónicas vigentes, constantes, convenciones específicas.
+- **`50_documentacion/activa/gobernanza_datos.md`** (obligatorio en
+  proyectos con datos sensibles): qué datos maneja el proyecto,
+  categoría según Ley 21.719 (personales / sensibles / de NNA), quién
+  tiene acceso, dónde se almacenan los datos reales, base legal del
+  tratamiento, período de retención, procedimiento ante incidente de
+  seguridad.
+- **`LICENSE`** (al publicar en repo remoto): MIT por defecto para el
+  código. Apache 2.0 cuando el proyecto requiera concesión expresa de
+  patentes o un archivo `NOTICE` (caso típico de publicación
+  institucional); en ese caso se versionan `LICENSE` y `NOTICE`, y los
+  scripts llevan encabezado de licencia. En ambas, cláusula explícita de
+  que la licencia cubre solo el código y no aplica a los datos.
+- **`50_documentacion/activa/decisiones/`:** una decisión por archivo,
+  autocontenida, con alternativas y justificación.
+- **`50_documentacion/traspasos/`:** cierres de sesión
+  `traspaso_cierre_vNN.md`.
+- **`50_documentacion/andamios/`:** refactors ejecutados, congelados.
 
 ---
 
-## 11. Checklist de inicio de proyecto
+## 11. Glosario
 
-Al crear un proyecto nuevo, verificar:
-
-- [ ] Estructura de carpetas creada: `10_utils/`, `20_insumos/`, `30_procesamiento/`, `40_salidas/`, `50_documentacion/{activa,traspasos,andamios,estructura}/`, `tests/`, `_archivo/`.
-- [ ] `00_run_all.R` con stub funcional.
-- [ ] `00_escanear_proyecto.R` instalado en raíz.
-- [ ] `10_utils/10_utils.R` con funciones de bootstrapping (`instalar_si_falta`, `log_msg`, etc.).
-- [ ] Git inicializado y primer commit hecho.
-- [ ] `.gitignore` con exclusiones de la sección 3.1 (o sección 6.3 si maneja datos sensibles).
-- [ ] `README.md` con descripción mínima.
-- [ ] `POLITICA_PROYECTO.md` (este documento) adjunto en `50_documentacion/activa/`.
-- [ ] `principios_desarrollo_vN.md` adjunto en `50_documentacion/activa/`.
-- [ ] `regla_estructura_proyectos.md` adjunto en `50_documentacion/activa/`.
-- [ ] Primer escaneo ejecutado y guardado en `50_documentacion/estructura/`.
-
----
-
-## 12. Glosario rápido
-
-- **Decena:** rango de 10 enteros (00-09, 10-19, etc.) asignado a un tipo de entidad o etapa del flujo de ejecución.
-- **Sub-etapa:** división interna de `30_procesamiento/` con numeración secundaria (`31`, `32`, `33`, ...).
-- **Orquestador:** script en raíz que ejecuta el pipeline completo (`00_run_all.R`).
-- **Snapshot:** copia con fecha de un archivo o conjunto de archivos en `_archivo/YYYYMMDD/`.
-- **Script vivo:** la versión actual de un script, sin sufijos de versión, en su ruta canónica.
-- **Traspaso:** documento de cierre de sesión que permite retomar el trabajo en sesión futura. Vive en `50_documentacion/traspasos/`.
-- **Andamio:** script de refactor ya ejecutado que se preserva como registro histórico en `50_documentacion/andamios/`. No se reescribe nunca.
-- **Escáner:** `00_escanear_proyecto.R`, herramienta para conocer el estado actual del proyecto.
-- **Bootstrapping:** carga inicial del proyecto antes de que se invoque cualquier `library()`. Las funciones de `10_utils/` deben funcionar en esta fase, por eso no pueden depender de paquetes cargados.
-- **DRY_RUN:** modo de simulación de un script de migración. Lista cambios planeados sin ejecutarlos. Es siempre el modo de arranque obligatorio de cualquier reorganización estructural.
+- **Raíz de código / raíz de datos:** las dos raíces del modelo de la
+  sección 6.2 (repo Git / OneDrive institucional).
+- **Data root:** ruta física de la raíz de datos, resuelta por variable
+  de entorno `<PROYECTO>_DATA_ROOT`.
+- **Decena:** rango de 10 enteros asignado a una etapa del flujo.
+- **Sub-etapa:** división interna de `30_procesamiento/` (`31_`, `32_`...).
+- **Orquestador:** `00_run_all.R`, punto de entrada único del pipeline.
+- **Escáner:** `00_escanear_proyecto.R` (sección 7).
+- **Snapshot sellado:** par `.txt`/`.md` con timestamp emitido por el
+  escáner; sujeto a poda de retención 2.
+- **Traspaso:** documento de cierre que permite retomar en sesión futura.
+- **Andamio:** script de refactor ejecutado, congelado como registro.
+- **Bootstrapping:** carga inicial previa a cualquier `library()`; las
+  funciones de `10_utils/` no dependen de paquetes cargados.
+- **DRY_RUN:** modo simulación obligatorio de toda reorganización
+  estructural.
