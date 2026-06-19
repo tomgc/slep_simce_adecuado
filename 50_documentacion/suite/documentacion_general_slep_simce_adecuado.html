@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de la herramienta — slep_simce_adecuado</title>
+<link rel="stylesheet" href="suite_estilos.css">
+</head>
+<body>
+<header class="mast">
+  <div class="mast-in">
+    <div class="mast-txt">
+      <div class="eyebrow"><span class="dot"></span> Documentación del proyecto · Guía general</div>
+      <h1>Qué es la herramienta y cómo leerla </h1>
+      <p class="tagline">Una guía breve y sin tecnicismos para entender qué muestra el comparador de resultados Simce por estándares de aprendizaje, qué se puede ver en él y en qué conviene fijarse al interpretarlo.</p>
+      <div class="metarow"><span class="meta"><span class="pip" style="background:var(--coral)"></span> <b>Para</b> directivos, docentes, apoderados y comunidad</span> <span class="meta"><span class="pip" style="background:var(--olive)"></span> <b>Detalle técnico</b> documentacion_proyecto_slep_simce_adecuado.html</span></div>
+    </div>
+  </div>
+</header>
+<div class="doc">
+  <div class="hero-note"><p>Es una herramienta para <strong>ver qué porcentaje de estudiantes alcanza el nivel Adecuado</strong> en el Simce por estándares, por comuna, por Servicio Local, por región, por establecimiento educacional o a nivel país, siempre dentro de un mismo grupo socioeconómico.</p></div>
+  <section><h2>Por qué existe</h2><p>Los resultados Simce se publican cada año en planillas separadas por nivel y prueba, con formatos que cambian y códigos que no siempre calzan entre un año y otro. Responder algo tan simple como <em>“¿cómo evolucionó el porcentaje de estudiantes en nivel Adecuado de mi comuna, en cada grupo socioeconómico?”</em> normalmente exige horas de trabajo y conocimiento técnico.</p>
+<p>Esta herramienta hace ese trabajo una sola vez, con reglas claras, y entrega la respuesta lista para mirar. El objetivo es que la conversación sea sobre <strong>qué dicen los datos</strong>, no sobre cómo armarlos.</p></section>
+  <section><h2>Qué puedes hacer con ella</h2>
+    <p>Eliges <strong>qué quieres mirar</strong> y la herramienta te muestra el % Adecuado de sus estudiantes, por grupo socioeconómico:</p><div class="cards"><div class="card"><div class="ct">Una comuna</div><div class="cd">Todos sus establecimientos educacionales juntos.</div></div><div class="card"><div class="ct">Un Servicio Local</div><div class="cd">Las comunas y establecimientos de un SLEP.</div></div><div class="card"><div class="ct">Una región</div><div class="cd">Todas las comunas de la región.</div></div><div class="card"><div class="ct">Todo el país</div><div class="cd">El total nacional, "Chile".</div></div><div class="card"><div class="ct">Un establecimiento educacional</div><div class="cd">Un establecimiento en particular, con su historia de resultados.</div></div></div><p>Para lo que elijas, verás el <strong>% Adecuado por grupo socioeconómico</strong> y, si quieres, el desglose en los tres estándares y la trayectoria año a año.</p>
+  </section>
+  <section><h2>En qué fijarte al leerla</h2>
+    <p>Cinco claves para interpretar la herramienta sin malentendidos:</p>
+    <ul class="notes"><li><span class="ni"><i data-lucide="palette"></i></span><span class="nt"><strong>El color indica el estándar; el nombre y el borde indican el territorio.</strong> Cada estándar tiene siempre el mismo color en todas las vistas, así que no hay que memorizar leyendas distintas.</span></li>
+<li><span class="ni"><i data-lucide="percent"></i></span><span class="nt"><strong>Lo que ves es un porcentaje ponderado por estudiantes, no un promedio de establecimientos.</strong> Un establecimiento educacional grande influye más que uno pequeño, porque la pregunta es por los estudiantes.</span></li>
+<li><span class="ni"><i data-lucide="scale"></i></span><span class="nt"><strong>Siempre verás el grupo socioeconómico.</strong> No es un detalle: comparar resultados Simce sin fijar el grupo socioeconómico puede llevar a conclusiones equivocadas.</span></li>
+<li><span class="ni"><i data-lucide="shapes"></i></span><span class="nt"><strong>4° básico y 2° medio se ven por separado, y también Lectura y Matemática.</strong> Son universos distintos; el motor nunca los suma en una sola cifra.</span></li>
+<li><span class="ni"><i data-lucide="git-commit"></i></span><span class="nt"><strong>Mira la trayectoria, no solo el último año.</strong> La serie muestra la evolución; ahí se lee si un territorio mejoró, se mantuvo o retrocedió. Recuerda que en una dependencia SLEP los años previos al traspaso corresponden a la gestión municipal.</span></li></ul>
+  </section>
+  <section><h2>De dónde vienen los datos</h2>
+    <p>Todos los datos provienen de la <strong>Agencia de Calidad de la Educación</strong> y son <strong>públicos</strong>. La herramienta no contiene información de estudiantes individuales: trabaja con resultados agregados por establecimiento, que la propia Agencia difunde.</p>
+  </section>
+  <section><h2>Preguntas frecuentes</h2><div class="faq"><details open><summary>¿Qué muestra esta herramienta?</summary><p>El porcentaje de estudiantes en nivel Adecuado según el Simce por estándares de aprendizaje, por comuna, Servicio Local, región, establecimiento o a nivel país, siempre separado por grupo socioeconómico, nivel (4° básico o 2° medio) y prueba (Lectura o Matemática).</p></details>
+<details><summary>¿Por qué se pondera por número de estudiantes y no se cuentan establecimientos?</summary><p>Porque el dato de cada establecimiento es una proporción de estudiantes, no una etiqueta. Para saber qué porcentaje de los estudiantes de un territorio alcanza el nivel Adecuado, hay que dar a cada establecimiento el peso de sus estudiantes evaluados; promediar porcentajes sin ponderar trataría igual a uno grande y a uno pequeño.</p></details>
+<details><summary>¿Por qué siempre se separa por grupo socioeconómico?</summary><p>Porque el Simce por estándares no ajusta por el contexto socioeconómico del establecimiento. Comparar resultados en bruto entre territorios con composición distinta puede ser engañoso. Fijar el grupo socioeconómico asegura que la comparación sea entre realidades parecidas.</p></details>
+<details><summary>¿Qué años cubre?</summary><p>2014 a 2025, sin 2019, 2020 ni 2021 (años sin Simce). El año más reciente, 2025, es preliminar y se muestra marcado como tal.</p></details>
+<details><summary>¿Por qué un SLEP muestra años anteriores a su creación?</summary><p>Porque la herramienta agrupa los establecimientos por su dependencia actual a lo largo de toda su historia. Los años previos al traspaso corresponden a la gestión municipal de esos establecimientos, no al SLEP; la herramienta lo advierte cuando seleccionas una dependencia SLEP.</p></details>
+<details><summary>¿Necesito instalar algo para usarla?</summary><p>No. Es un archivo que se abre en cualquier navegador. También está publicada en línea para consultarla directamente.</p></details></div></section>
+  <section><div class="comunas"><span style="background:var(--mk-red)">Concón</span><span style="background:var(--mk-yellow);color:var(--ink)">Puchuncaví</span><span style="background:var(--mk-green)">Quintero</span><span style="background:var(--mk-blue)">Viña del Mar</span></div></section>
+</div><div class="foot"><div class="foot-in">
+  <span class="mk"><i style="background:var(--mk-red)"></i><i style="background:var(--mk-yellow)"></i><i style="background:var(--mk-green)"></i><i style="background:var(--mk-blue)"></i></span>
+  slep_simce_adecuado · Área de Monitoreo y Seguimiento · SLEP Costa Central · <span class="gob">Datos públicos de la Agencia de Calidad</span>
+</div></div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+</body></html>

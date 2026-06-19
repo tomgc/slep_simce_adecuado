@@ -23,3 +23,7 @@ Thumbs.db
 # Configuración local de Claude Code
 .claude/
 _archivo/
+
+# Suite de documentacion: tema regenerable (no se publica desde el repo)
+50_documentacion/suite/fonts/
+50_documentacion/suite/assets/
