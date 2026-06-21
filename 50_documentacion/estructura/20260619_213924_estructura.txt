@@ -1,13 +1,9 @@
-# Estructura actual — slep_simce_adecuado
+ESCANEO DE ESTRUCTURA — slep_simce_adecuado
+Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
+Fecha  : 2026-06-19 21:39:24
+Totales: 20 carpetas, 127 archivos
+Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
-- **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-06-12 17:14:50
-- **Totales:** 17 carpetas, 111 archivos
-- **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
-
-## Arbol
-
-```
 slep_simce_adecuado/
 ├── .claude/
 │   └── settings.local.json  (2.95K)
@@ -37,29 +33,31 @@ slep_simce_adecuado/
 │   │   ├── glosas_simce_resumen_cambios_simce_rbd_2014_2025.csv  (844)
 │   │   ├── glosas_simce_tabla_comparativa_simce_rbd_2014_2025.csv  (18K)
 │   │   └── listado_slep_2026.xlsx  (55.5K)
-│   └── simce/
-│       ├── 2m/
-│       │   ├── .gitkeep  (0)
-│       │   ├── simce2m2014_rbd_final.xlsx  (745K)
-│       │   ├── simce2m2015_rbd_final.xlsx  (674K)
-│       │   ├── simce2m2016_rbd_final.xlsx  (703K)
-│       │   ├── simce2m2017_rbd_final.xlsx  (711K)
-│       │   ├── simce2m2018_rbd_final.xlsx  (543K)
-│       │   ├── simce2m2022_rbd_final.xlsx  (587K)
-│       │   ├── simce2m2023_rbd_final.xlsx  (509K)
-│       │   ├── simce2m2024_rbd_final.xlsx  (509K)
-│       │   └── simce2m2025_rbd_preliminar.xlsx  (528K)
-│       └── 4b/
-│           ├── .gitkeep  (0)
-│           ├── simce4b2014_rbd_final.xlsx  (1.97M)
-│           ├── simce4b2015_rbd_final.xlsx  (1.39M)
-│           ├── simce4b2016_rbd_final.xlsx  (1.38M)
-│           ├── simce4b2017_rbd_final.xlsx  (1.31M)
-│           ├── simce4b2018_rbd_final.xlsx  (1.08M)
-│           ├── simce4b2022_rbd_final.xlsx  (1.34M)
-│           ├── simce4b2023_rbd_final.xlsx  (1.11M)
-│           ├── simce4b2024_rbd_final.xlsx  (1.09M)
-│           └── simce4b2025_rbd_preliminar.xlsx  (1.05M)
+│   ├── simce/
+│   │   ├── 2m/
+│   │   │   ├── .gitkeep  (0)
+│   │   │   ├── simce2m2014_rbd_final.xlsx  (745K)
+│   │   │   ├── simce2m2015_rbd_final.xlsx  (674K)
+│   │   │   ├── simce2m2016_rbd_final.xlsx  (703K)
+│   │   │   ├── simce2m2017_rbd_final.xlsx  (711K)
+│   │   │   ├── simce2m2018_rbd_final.xlsx  (543K)
+│   │   │   ├── simce2m2022_rbd_final.xlsx  (587K)
+│   │   │   ├── simce2m2023_rbd_final.xlsx  (509K)
+│   │   │   ├── simce2m2024_rbd_final.xlsx  (509K)
+│   │   │   └── simce2m2025_rbd_preliminar.xlsx  (528K)
+│   │   ├── 4b/
+│   │   │   ├── .gitkeep  (0)
+│   │   │   ├── simce4b2014_rbd_final.xlsx  (1.97M)
+│   │   │   ├── simce4b2015_rbd_final.xlsx  (1.39M)
+│   │   │   ├── simce4b2016_rbd_final.xlsx  (1.38M)
+│   │   │   ├── simce4b2017_rbd_final.xlsx  (1.31M)
+│   │   │   ├── simce4b2018_rbd_final.xlsx  (1.08M)
+│   │   │   ├── simce4b2022_rbd_final.xlsx  (1.34M)
+│   │   │   ├── simce4b2023_rbd_final.xlsx  (1.11M)
+│   │   │   ├── simce4b2024_rbd_final.xlsx  (1.09M)
+│   │   │   └── simce4b2025_rbd_preliminar.xlsx  (1.05M)
+│   │   └── .DS_Store  (6K)
+│   └── .DS_Store  (6K)
 ├── 30_procesamiento/
 │   ├── 30_construir_auxiliares.R  (15.6K)
 │   ├── 31_leer_normalizar.R  (16.2K)
@@ -75,7 +73,6 @@ slep_simce_adecuado/
 │   │   ├── simce_rbd.parquet  (1.59M)
 │   │   ├── slep_cc_establecimientos.parquet  (5.68K)
 │   │   └── sleps_chile.parquet  (58.7K)
-│   ├── .DS_Store  (6K)
 │   └── motor_comparacion.html  (2.45M)
 ├── 50_documentacion/
 │   ├── activa/
@@ -95,12 +92,30 @@ slep_simce_adecuado/
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   └── referencia_glosas_simce.md  (9.28K)
 │   ├── estructura/
-│   │   ├── 20260612_121628_estructura.md  (6.66K)
-│   │   ├── 20260612_121628_estructura.txt  (6.72K)
-│   │   ├── 20260612_125544_estructura.md  (6.66K)
-│   │   ├── 20260612_125544_estructura.txt  (6.72K)
-│   │   ├── estructura_actual.md  (6.66K)
-│   │   └── estructura_actual.txt  (6.72K)
+│   │   ├── 20260612_171450_estructura.md  (6.71K)
+│   │   ├── 20260612_171450_estructura.txt  (6.77K)
+│   │   ├── 20260612_171500_estructura.md  (6.71K)
+│   │   ├── 20260612_171500_estructura.txt  (6.77K)
+│   │   ├── estructura_actual.md  (6.71K)
+│   │   └── estructura_actual.txt  (6.77K)
+│   ├── suite/
+│   │   ├── assets/
+│   │   │   ├── logo-color-stacked.png  (126K)
+│   │   │   ├── logo-mark-cc.png  (118K)
+│   │   │   └── logo-white-stacked.png  (143K)
+│   │   ├── fonts/
+│   │   │   ├── gobCL_Heavy.otf  (43.7K)
+│   │   │   ├── gobCL_Light.otf  (37.1K)
+│   │   │   ├── gobCL_Regular.otf  (35.7K)
+│   │   │   ├── MuseoSans_500.otf  (61K)
+│   │   │   ├── MuseoSans_700.otf  (62.1K)
+│   │   │   └── MuseoSans-300.otf  (61.5K)
+│   │   ├── arquitectura_general_slep_simce_adecuado.html  (10.1K)
+│   │   ├── arquitectura_slep_simce_adecuado.html  (20.6K)
+│   │   ├── documentacion_general_slep_simce_adecuado.html  (7.74K)
+│   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (13K)
+│   │   ├── documentar.R  (46K)
+│   │   └── suite_estilos.css  (21.7K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
 │   │   ├── traspaso_cierre_v01.md  (17.8K)
@@ -125,7 +140,7 @@ slep_simce_adecuado/
 ├── docs/
 │   └── index.html  (2.45M)
 ├── .DS_Store  (10K)
-├── .gitignore  (365)
+├── .gitignore  (500)
 ├── 00_build.R  (1.24K)
 ├── 00_escanear_proyecto.R  (9.31K)
 ├── CLAUDE.md  (6.92K)
@@ -137,23 +152,21 @@ slep_simce_adecuado/
 ├── verificar_depe4.R  (6.46K)
 ├── verificar_elem_insuf_2023_2024.R  (4.07K)
 └── verificar_elem_insuf.R  (6.15K)
-```
 
-## Conteo por extension
-
-| Extension | Archivos |
-|---|---|
-| md | 35 |
-| xlsx | 23 |
-| (sin extension) | 12 |
-| r | 10 |
-| html | 6 |
-| parquet | 6 |
-| jsx | 5 |
-| csv | 3 |
-| js | 3 |
-| txt | 3 |
-| css | 2 |
-| json | 1 |
-| pdf | 1 |
-| rproj | 1 |
+Conteo por extension:
+  md                 35
+  xlsx               23
+  (sin extension)    13
+  r                  11
+  html               10
+  otf                6
+  parquet            6
+  jsx                5
+  css                3
+  csv                3
+  js                 3
+  png                3
+  txt                3
+  json               1
+  pdf                1
+  rproj              1
