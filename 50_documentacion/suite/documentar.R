@@ -128,7 +128,7 @@ cfg <- list(
          flags=c('4° básico y 2° medio nunca se mezclan','Lectura y Matemática nunca se mezclan','Lectura por header, nunca por posición','Dependencia vigente del directorio aplicada a toda la serie'),
          norm=list(
            list(id='A1', tx='<strong>Sufijos de columna cruzados en 2018/4° básico:</strong> <span class="code-sm">simce4b2018</span> trae los sufijos como <span class="code-sm">_2m_</span> en lugar de <span class="code-sm">_4b_</span>. Se reescriben antes de la normalización general; la lectura por nombre hace el resto.'),
-           list(id='A2', tx='<strong>Marca de supresión de la fuente:</strong> la columna <span class="code-sm">marca_&lt;prueba&gt;&lt;nivel&gt;_rbd</span> señala resultados suprimidos por la Agencia. Se conserva como <span class="code-sm">marca</span> y gobierna la exclusión de filas junto con el umbral de evaluados.'),  # REVISAR (decisión): el matiz "opción a" del header de 31_leer_normalizar.R no consta en archivo de decisión; confirmar.
+           list(id='A2', tx='<strong>Marca de supresión de la fuente:</strong> la columna <span class="code-sm">marca_&lt;prueba&gt;&lt;nivel&gt;_rbd</span> señala resultados suprimidos por la Agencia. Se conserva como <span class="code-sm">marca</span> y gobierna la exclusión de filas junto con el umbral de evaluados.'),
            list(id='A3', tx='<strong>cod_com_rbd con formato no canónico:</strong> en 2015/2° medio y 2017/4° básico la columna trae códigos de 1–2 dígitos en vez de los 4–5 canónicos. Se recupera el código correcto por RBD desde el directorio oficial (snapshot 2025).'),
            list(id='A4', tx='<strong>Códigos pre-Ñuble (Ley 21.033):</strong> antes de 2018 las comunas de la actual Región de Ñuble tenían códigos del Biobío (8401–8421). Los xlsx 2014, 2016 y 2017 los traen. Se retroaplican los códigos nuevos (16101–16207) en todos los años para preservar las series históricas sin saltos.')
          )),
@@ -192,9 +192,9 @@ cfg <- list(
     list(id='', titulo='Establecimientos identificados por nombre (agregados públicos)',
          cuerpo='<p>El motor lista cada establecimiento con su <strong>nombre</strong> (<span class="inl">nom_rbd</span>), no solo su RBD.</p>',
          por_que='<strong>Por qué.</strong> Las bases por establecimiento, comuna y región de la Agencia de Calidad son de <strong>libre descarga pública</strong> y la propia Agencia difunde resultados por establecimiento de forma nominal en su buscador. La restricción de las Condiciones de Uso protege las bases <em>por estudiante</em> (datos enmascarados), que este proyecto no utiliza. Decisión documentada en 50_documentacion/activa/decisiones/20260611_decision_nombres_establecimientos.md.'),
-    list(id='', titulo='Color fijo por estándar; el corte de traspaso modula estilo',  # REVISAR (decisión): cuerpo y por_que inferidos del traspaso v18 §12; confirmar contra 20260611_decision_color_por_nivel.md.
-         cuerpo='<p>Cada estándar (Adecuado · Elemental · Insuficiente) tiene un <strong>color fijo</strong> en todas las vistas. La segmentación por año de traspaso modula <strong>opacidad y estilo de trazo</strong>, nunca el color.</p>',
-         por_que='<strong>Por qué.</strong> Mantener el color asociado al estándar (y no al territorio ni al periodo) evita que el lector deba memorizar leyendas distintas entre vistas. El corte de traspaso es una dimensión visual separada (atenúa el tramo previo a la gestión SLEP) que no debe competir con la codificación de color del estándar.')
+    list(id='', titulo='Color fijo por estándar; el corte de traspaso modula estilo',
+         cuerpo='<p>Cada estándar (Adecuado · Elemental · Insuficiente) tiene un <strong>color fijo</strong> en todas las vistas, idéntico para todas las entidades. La identidad del territorio se sostiene por <strong>nombre, swatch y borde de ficha</strong>, no por el color del trazo. La segmentación por año de traspaso modula <strong>opacidad y estilo de trazo</strong>, nunca el color.</p>',
+         por_que='<strong>Por qué.</strong> Mantener el color asociado al estándar (y no a la entidad) evita que el lector deba memorizar leyendas distintas entre vistas: el azul de Adecuado es siempre el mismo. El corte de traspaso es una dimensión visual separada (atenúa el tramo previo a la gestión SLEP) que no compite con la codificación de color del estándar.')
   ),
 
   # ---- 1.6 Anomalías de origen ----------------------------------------------
@@ -204,7 +204,7 @@ cfg <- list(
          corto='Un archivo (2018, 4° básico) trae los sufijos de columna del otro nivel. Se corrigen antes de leer.'),
     list(id='A2',
          largo='<strong>Marca de supresión de la fuente.</strong> La Agencia suprime ciertos resultados mediante una columna de marca. Se conserva como <span class="inl">marca</span> y gobierna la exclusión de filas (junto con el umbral de evaluados) antes de cualquier agregación.',
-         corto='La fuente marca resultados suprimidos. Esas filas se excluyen del cálculo.'),  # REVISAR (decisión): confirmar el detalle del manejo de marca contra el archivo de decisión.
+         corto='La fuente marca resultados suprimidos. Esas filas se excluyen del cálculo.'),
     list(id='A3',
          largo='<strong>cod_com_rbd con formato no canónico.</strong> En 2015/2° medio y 2017/4° básico la columna de comuna trae códigos de 1–2 dígitos en lugar de los 4–5 canónicos. Se recupera el código correcto por RBD desde el directorio oficial (snapshot 2025).',
          corto='Dos archivos traen el código de comuna mal formado. Se recupera por RBD desde el directorio.'),
