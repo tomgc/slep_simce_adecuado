@@ -27,3 +27,9 @@ _archivo/
 # Suite de documentacion: tema regenerable (no se publica desde el repo)
 50_documentacion/suite/fonts/
 50_documentacion/suite/assets/
+
+# Directorio oficial MINEDUC crudo: contiene MRUN (RUN enmascarado de
+# sostenedores persona natural) = dato personal Ley 21.719. No se versiona
+# (minimizacion). Regenerable 1x/anio desde MINEDUC; el pipeline lo lee de disco.
+# Ver: 50_documentacion/activa/decisiones/20260622_decision_cumplimiento_ley_21719.md
+20_insumos/auxiliares/directorio_oficial_ee.csv

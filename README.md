@@ -46,6 +46,13 @@ Los xlsx de Simce provienen del portal
 y se versionan en el repo junto al código (son datos públicos, < 25 MB en total).
 No se requiere configuración adicional de rutas.
 
+El **directorio oficial MINEDUC** (`20_insumos/auxiliares/directorio_oficial_ee.csv`)
+**no se versiona**: contiene la columna MRUN (RUN enmascarado de sostenedores
+persona natural), un dato personal según la Ley 21.719 que el pipeline no utiliza.
+Se descarga del portal de datos abiertos de MINEDUC (directorio oficial de
+establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle en
+[`50_documentacion/activa/gobernanza_datos.md`](50_documentacion/activa/gobernanza_datos.md).
+
 ## Cómo correr en una máquina nueva
 
 1. Clonar el repo:
@@ -55,16 +62,19 @@ No se requiere configuración adicional de rutas.
    ```
 2. Abrir `slep_simce_adecuado.Rproj` en Positron. Esto ancla `here::here()`
    a la raíz del proyecto automáticamente.
-3. Instalar los paquetes necesarios (una sola vez):
+3. Descargar el **directorio oficial MINEDUC** (no versionado, ver "Datos de
+   entrada") y colocarlo en `20_insumos/auxiliares/directorio_oficial_ee.csv`.
+   Sin este archivo, los pasos 30 y 31 del pipeline fallan.
+4. Instalar los paquetes necesarios (una sola vez):
    ```r
    install.packages(c("here", "readxl", "readr", "dplyr", "tidyr",
                       "purrr", "arrow", "jsonlite", "fs", "tibble"))
    ```
-4. Correr el pipeline:
+5. Correr el pipeline:
    ```r
    source("00_build.R")
    ```
-5. El producto final queda en `40_salidas/motor_comparacion.html`.
+6. El producto final queda en `40_salidas/motor_comparacion.html`.
 
 ## Reglas de cálculo
 
