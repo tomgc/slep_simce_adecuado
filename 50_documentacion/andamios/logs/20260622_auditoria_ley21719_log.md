@@ -5,8 +5,9 @@
 - **Encargo:** auditar datos personales en insumos y producto publicado; documentar
   cumplimiento Ley 21.719. Auditoría + documentación, sin modificar pipeline/motor/insumos.
 - **Modelo:** Claude Opus 4.8
-- **Estado:** **GATE ESTRATÉGICO ACTIVADO** — detención antes de Fase 3, a la espera de
-  decisión del titular. Sin mitigación ejecutada, sin commits.
+- **Estado:** **CERRADO** — cumplimiento ejecutado y pusheado. Producto limpio;
+  insumo `directorio_oficial_ee.csv` de-versionado going-forward; exposición
+  histórica aceptada como riesgo residual documentado y revisable.
 
 ---
 
@@ -21,14 +22,23 @@ son exactamente los sostenedores **persona natural** — RUN enmascarado, dato
 personal bajo Ley 21.719. Esto dispara el gate estratégico: se reporta y se espera
 decisión del titular antes de cualquier mitigación.
 
+**Corrección de un supuesto del encargo (por la Fase 1 determinista):** el riesgo
+real estaba en **MRUN** (946 sostenedores persona natural), **no** en
+**RUT_SOSTENEDOR** (14.819, todos persona jurídica → no personal). La hipótesis del
+encargo apuntaba al cruce RUT × P_JURIDICA, que resultó **nulo**; el conteo
+determinista relocalizó el riesgo a MRUN.
+
 ---
 
 ## 2. Commits
 
-**Ninguno.** El gate prohíbe ejecutar mitigación o commitear hasta la decisión del
-titular. Los dos archivos de Fase 3 (gobernanza_datos.md, decisión 21.719) NO se
-escribieron: su postura de cumplimiento depende de la mitigación que decida el
-titular (evitar "improvisar metodología" que el gate prohíbe).
+| Hash | Contenido |
+|------|-----------|
+| `1edc787` | `chore(gobernanza)` — `git rm --cached` del directorio crudo + `.gitignore` + `gobernanza_datos.md` + decisión 21.719 + README |
+| `a1271c7` | `docs(log)` — este log de auditoría |
+
+Push: `ed00cd6..a1271c7` → `origin/main`. La revisión de este log a su estado final
+se persiste en un commit `docs()` posterior.
 
 ---
 
@@ -100,21 +110,38 @@ independientes.
 ---
 
 ## 5. Decisiones del titular en el gate
-**Pendiente.** Ninguna decisión tomada aún. El titular debe elegir la mitigación
-(ver opciones en §7 del reporte / abajo). Hasta entonces, Fase 3 (docs de
-gobernanza) queda sin redactar.
+El titular resolvió el gate con dos decisiones:
+
+1. **Mitigación:** de-versionar el `directorio_oficial_ee.csv` crudo going-forward
+   (`git rm --cached` + `.gitignore`; el archivo permanece en disco, regenerable
+   desde MINEDUC). Se descartaron "versionar una versión filtrada" y "mantener el
+   CSV".
+2. **Historial:** **Opción 1 — aceptar la exposición histórica como riesgo residual
+   documentado** (dato de rol público, descargable de MINEDUC, desproporción de
+   reescribir el historial de un repo público con Pages activo). La Opción 2
+   (reescritura `git filter-repo`/BFG + `push --force`) se descartó por
+   desproporción; queda como vía de escalamiento si el residual dejara de ser
+   aceptable.
+
+Detalle en `decisiones/20260622_decision_cumplimiento_ley_21719.md` §6 y
+`gobernanza_datos.md` §8.1.
 
 ---
 
 ## 6. Pendientes
-- **Decisión del titular** sobre la mitigación de H1 (MRUN en el CSV versionado).
-- Tras la decisión: redactar Fase 3 (`gobernanza_datos.md` + decisión 21.719)
-  reflejando la postura y la mitigación elegida; commitear como `docs()` sin push.
+- **Resuelto:** mitigación decidida y ejecutada; Fase 3 (`gobernanza_datos.md` +
+  decisión 21.719 + README) redactada, commiteada (`1edc787`) y pusheada.
+- **Residual aceptado:** el CSV permanece en el historial público (commit `61c3b9b`);
+  decisión revisable si cambia la naturaleza del dato.
 - (Opcional) Alinear la compresión de un futuro redeploy (gzip vs zlib, H4).
 
 ---
 
 ## 7. Notas para el revisor — opciones de mitigación de H1
+
+> **Elegida: Opción 1** (de-versionar el CSV crudo). Las tres opciones se conservan
+> como registro de la deliberación del gate.
+
 1. **De-versionar el CSV crudo** y gitignorarlo. El directorio es regenerable desde
    MINEDUC 1×/año → bajo costo de reproducibilidad (sugerido por el encargo). Costo:
    un clon nuevo no puede correr el pipeline sin descargar el directorio.
