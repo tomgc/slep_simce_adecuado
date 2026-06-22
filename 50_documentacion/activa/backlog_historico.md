@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–19 (traspasos v01–v19). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s19 anexados por su traspaso respectivo.
+- **Cobertura:** sesiones 1–20 (traspasos v01–v20). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s20 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -207,3 +207,12 @@
 105. [DOC] Auditoría de la suite, ajuste y versionado: auditados los 4 HTML (fieles, sin residuos del ejemplo de fábrica, terminología SLEP correcta); único ajuste de contenido: se quitaron dos referencias al "proyecto hermano" en las decisiones de Agregación ponderada y GSE inviolable (autocontención del manual). Regenerada y versionada (`git add` de `.gitignore` + `documentar.R` + 4 HTML + `suite_estilos.css`; `fonts/` y `assets/` al `.gitignore`). Commit `e9b251d`, push `0bb504c..e9b251d`.
 
 **Delta del backlog:** 3 entradas nuevas (103–105). Sin reclasificaciones. Total acumulado: 105.
+
+## Sesión 20 — Documentación y gobernanza: decisión 4b/depe4, marcas de suite y reconstrucción del backlog (traspaso v20)
+
+106. [DOC/Gobernanza] Archivo de decisión `20260620_decision_celda_unico_establecimiento.md` (D20-1, corolario de D-nombres): formaliza que las celdas con `n_estab=1` no se suprimen, porque la exposición de establecimientos individuales es general y deliberada en el motor y la restricción de §6.4 aplica solo a microdatos por estudiante. Documenta las dos alternativas descartadas (colapsar `depe2`; suprimir por `n_estab < k`) con su porqué. Commit `e0d4438`.
+107. [DOC] Corrección de las marcas `# REVISAR (decisión)` del `documentar.R` de la suite: las "2 marcas" anunciadas en v19 eran temas de contenido mal rotulados; se hallaron 3 marcas reales. Se corrigió una imprecisión real (el bloque de color atribuía el color "al periodo", algo que la decisión de color s15 no contempla; añadido el mecanismo de identidad por nombre/swatch/borde que la fuente sí especifica) y se confirmaron las otras dos (item A2 del diccionario y glosario de marca) fieles al backlog #57. Suite regenerada (4 HTML) y versionada. Commits `e14048f` (suite), `2488a2f` (log).
+108. [DOC] Reconstrucción del backlog histórico 61–105: se descubrió que el archivo vivo estaba congelado en la entrada 60 / sesión 13; las entradas 61–102 vivían solo en los §4 de los traspasos v14–v18, nunca anexadas. Se reconstruyeron las 45 entradas faltantes (61–105) desde el §4 de cada traspaso (no el §5, que es puntero), respetando la numeración global declarada en cada §5. Backlog en 1–105 / 19 sesiones, entradas 1–60 intactas. Commit `409b861`.
+109. [DOC] Cotejo de las 19 categorías inferidas (entradas 80–98) contra el texto verbatim de los §4 de v15/v16, que no asignan categoría por entrada; retiradas las marcas `# REVISAR (categoría)`. Único cambio real de categoría: entrada 83 (DOC/UI → UI/DOC). Incluido en el commit `409b861`.
+
+**Delta del backlog:** 4 entradas nuevas (106–109). Sin reclasificación de taxonomía (tags compuestos conservados, D20-3). Total acumulado: 109.
