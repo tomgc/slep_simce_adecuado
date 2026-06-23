@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–20 (traspasos v01–v20). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s20 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–21 (traspasos v01–v21). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s21 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -216,3 +216,12 @@
 109. [DOC] Cotejo de las 19 categorías inferidas (entradas 80–98) contra el texto verbatim de los §4 de v15/v16, que no asignan categoría por entrada; retiradas las marcas `# REVISAR (categoría)`. Único cambio real de categoría: entrada 83 (DOC/UI → UI/DOC). Incluido en el commit `409b861`.
 
 **Delta del backlog:** 4 entradas nuevas (106–109). Sin reclasificación de taxonomía (tags compuestos conservados, D20-3). Total acumulado: 109.
+
+## Sesión 21 — Mantenimiento documental y cumplimiento Ley 21.719 (traspaso v21)
+
+110. [DOC] Anexo del delta de la sesión 20 al backlog (entradas 106–109) y actualización de cobertura a 1–20. Commit `0e9d275`.
+111. [Gobernanza/Auditoría] Auditoría Ley 21.719: producto publicado verificado limpio por dos caminos (código + panel adversarial); hallazgo `MRUN` (946 filas, persona natural) en insumo versionado. Sin cambios de código.
+112. [REPO/Gobernanza] Mitigación: de-versionado de `directorio_oficial_ee.csv` going-forward (`git rm --cached` + `.gitignore` + README), residual de historial aceptado. Commit `1edc787`.
+113. [DOC/Gobernanza] `gobernanza_datos.md` (primer archivo de gobernanza del proyecto) + decisión 21.719. Commit `1edc787`.
+
+**Delta del backlog:** 4 entradas nuevas (110–113). Sin reclasificación (tags compuestos, D20-3). Total acumulado: 113.

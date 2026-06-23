@@ -24,6 +24,9 @@ Thumbs.db
 .claude/
 _archivo/
 
+# Scripts de verificación/diagnóstico efímeros (no versionables; traspaso v20)
+/verificar_*.R
+
 # Suite de documentacion: tema regenerable (no se publica desde el repo)
 50_documentacion/suite/fonts/
 50_documentacion/suite/assets/

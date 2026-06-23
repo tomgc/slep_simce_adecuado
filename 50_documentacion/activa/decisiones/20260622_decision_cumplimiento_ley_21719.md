@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-06-22
 - **Sesión:** 21 (auditoría de cumplimiento Ley 21.719)
-- **Estado:** adoptada (mitigación going-forward); **residual de historial pendiente** (ver §6)
+- **Estado:** adoptada y cerrada (residual de historial aceptado, ver §6)
 - **Relacionada con:** `decisiones/20260611_decision_nombres_establecimientos.md`
   (D-nombres), `decisiones/…repo_publico…`, `50_documentacion/activa/gobernanza_datos.md`
 
