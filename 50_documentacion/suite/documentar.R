@@ -102,7 +102,7 @@ cfg <- list(
   ),
   auxiliares = list(
     list(t='directorio_oficial_ee.csv', badge='csv',
-         d='Directorio oficial MINEDUC por RBD<br>comuna · región · dependencia (cod_depe2) · matrícula · estado'),
+         d='Directorio oficial MINEDUC por RBD<br>comuna · región · dependencia (cod_depe2) · matrícula · estado<br><strong>Insumo externo, no versionado</strong> (se descarga de MINEDUC, D21-1); el pipeline usa solo columnas institucionales, nunca MRUN / RUT de persona natural / geo'),
     list(t='listado_slep_2026.xlsx', badge='xlsx',
          d='Listado oficial de SLEP por comuna<br>código · nombre · año de traspaso'),
     list(t='caracterizacion_establecimientos.xlsx', badge='xlsx',
@@ -189,12 +189,24 @@ cfg <- list(
     list(id='', titulo='Dependencia vigente aplicada a toda la serie (SLEP)',
          cuerpo='<p>La dependencia de cada establecimiento es la <strong>actual</strong> (directorio oficial) y se aplica a toda su serie histórica. Un SLEP agrupa a sus establecimientos también en los años previos a su traspaso.</p>',
          por_que='<strong>Por qué.</strong> Permite leer la trayectoria de un territorio bajo su gestión actual de forma continua. Como las cifras previas al traspaso corresponden a la gestión municipal, <strong>no</strong> son atribuibles al SLEP: el motor lo advierte con un disclaimer cada vez que se selecciona dependencia SLEP, y los SLEP con traspaso el año siguiente se incluyen marcados como prospectivos.'),
-    list(id='', titulo='Establecimientos identificados por nombre (agregados públicos)',
+    list(id='D-nombres', titulo='Establecimientos identificados por nombre (agregados públicos)',
          cuerpo='<p>El motor lista cada establecimiento con su <strong>nombre</strong> (<span class="inl">nom_rbd</span>), no solo su RBD.</p>',
          por_que='<strong>Por qué.</strong> Las bases por establecimiento, comuna y región de la Agencia de Calidad son de <strong>libre descarga pública</strong> y la propia Agencia difunde resultados por establecimiento de forma nominal en su buscador. La restricción de las Condiciones de Uso protege las bases <em>por estudiante</em> (datos enmascarados), que este proyecto no utiliza. Decisión documentada en 50_documentacion/activa/decisiones/20260611_decision_nombres_establecimientos.md.'),
-    list(id='', titulo='Color fijo por estándar; el corte de traspaso modula estilo',
+    list(id='D-color-nivel', titulo='Color fijo por estándar; el corte de traspaso modula estilo',
          cuerpo='<p>Cada estándar (Adecuado · Elemental · Insuficiente) tiene un <strong>color fijo</strong> en todas las vistas, idéntico para todas las entidades. La identidad del territorio se sostiene por <strong>nombre, swatch y borde de ficha</strong>, no por el color del trazo. La segmentación por año de traspaso modula <strong>opacidad y estilo de trazo</strong>, nunca el color.</p>',
-         por_que='<strong>Por qué.</strong> Mantener el color asociado al estándar (y no a la entidad) evita que el lector deba memorizar leyendas distintas entre vistas: el azul de Adecuado es siempre el mismo. El corte de traspaso es una dimensión visual separada (atenúa el tramo previo a la gestión SLEP) que no compite con la codificación de color del estándar.')
+         por_que='<strong>Por qué.</strong> Mantener el color asociado al estándar (y no a la entidad) evita que el lector deba memorizar leyendas distintas entre vistas: el azul de Adecuado es siempre el mismo. El corte de traspaso es una dimensión visual separada (atenúa el tramo previo a la gestión SLEP) que no compite con la codificación de color del estándar.'),
+    list(id='D-licencia-apache', titulo='Licencia Apache 2.0 para el código',
+         cuerpo='<p>El código se licencia bajo <strong>Apache License 2.0</strong> (no MIT; desviación deliberada de la política §10). Cubre <strong>solo el código</strong>; los datos Simce siguen bajo las Condiciones de Uso de la Agencia de Calidad, declarado en el archivo <span class="inl">NOTICE</span>.</p>',
+         por_que='<strong>Por qué.</strong> Apache 2.0 concede expresamente una licencia de patentes que MIT no contempla, es la licencia permisiva preferida en entornos públicos e institucionales y reduce la fricción legal para que otros servicios del Estado reutilicen el código, sin sacrificar permisividad. Documentada en 20260611_decision_licencia_apache.md.'),
+    list(id='D-repo-publico', titulo='Repositorio público (B3)',
+         cuerpo='<p>El repositorio se mantiene <strong>público</strong>. Con repo público, todo lo versionado es visible —no solo <span class="inl">docs/</span>—, por lo que rige una regla operativa: <strong>nada se versiona si no es publicable</strong>.</p>',
+         por_que='<strong>Por qué.</strong> GitHub Pages en plan Free exige repositorio público y el motor se publica por Pages (<span class="inl">docs/index.html</span>). La excepción a la regla de visibilidad privada queda justificada y documentada; los insumos versionados son bases públicas o de creación interna sin datos privados. Documentada en 20260611_decision_repo_publico.md.'),
+    list(id='D-celda-unico-establecimiento', titulo='Celdas con un único establecimiento educacional no se suprimen',
+         cuerpo='<p>No se implementa supresión de celdas por <span class="inl">n_estab</span>. Mostrar resultados de un <strong>establecimiento educacional</strong> individual es deliberado y transversal en el motor: cualquier punto con <span class="inl">n_estab = 1</span> ya expone el RBD (tooltip) y el nombre (popup), en cualquier nivel.</p>',
+         por_que='<strong>Por qué.</strong> Corolario de D-nombres: la restricción de §6.4 (no identificar por nombre) aplica a las bases <em>por estudiante</em> (microdatos enmascarados), que el proyecto no usa, no a las bases <em>por establecimiento</em>, que son públicas y que la Agencia difunde nominalmente. Suprimir por <span class="inl">n_estab</span> contradiría D-nombres, sería incoherente y degradaría utilidad sin reducir ningún riesgo real. Documentada en 20260620_decision_celda_unico_establecimiento.md.'),
+    list(id='D-ley-21719', titulo='Cumplimiento Ley 21.719: de-versionado del directorio crudo',
+         cuerpo='<p>El producto publicado <strong>no contiene dato personal</strong> de persona natural (verificado por dos caminos independientes). El insumo <span class="inl">directorio_oficial_ee.csv</span> contenía la columna <span class="inl">MRUN</span> (RUN enmascarado de 946 sostenedores persona natural) que el pipeline no usa; se <strong>de-versionó</strong> (<span class="inl">git rm --cached</span> + <span class="inl">.gitignore</span>) y se descarga de MINEDUC.</p>',
+         por_que='<strong>Por qué.</strong> Minimización (Ley 21.719): no versionar en un repo público un dato personal que el pipeline no utiliza. La exposición histórica del insumo se acepta como <strong>riesgo residual documentado</strong> —es un dato de rol público ya difundido por MINEDUC y reescribir el historial de un repo público con Pages activo sería desproporcionado—, revisable si cambia la naturaleza del dato. Documentada en 20260622_decision_cumplimiento_ley_21719.md y gobernanza_datos.md.')
   ),
 
   # ---- 1.6 Anomalías de origen ----------------------------------------------
@@ -333,7 +345,7 @@ cfg <- list(
   ),
 
   # ---- 1.14 Gobernanza ------------------------------------------------------
-  gobernanza = "Datos públicos de la Agencia de Calidad",
+  gobernanza = "El producto publicado contiene solo datos institucionales (resultados Simce agregados por establecimiento educacional, comuna, SLEP y región, segmentados por GSE); no incluye dato personal de persona natural, verificado por doble vía (trazado de código y panel adversarial independiente). Base de licitud: datos públicos de fuente oficial (Agencia de Calidad de la Educación y directorio MINEDUC). El insumo directorio_oficial_ee.csv contenía la columna MRUN (RUN enmascarado de sostenedores persona natural) que el pipeline no usa; se de-versionó going-forward (D21-1, Ley 21.719) y se descarga de MINEDUC, conservando solo columnas institucionales. La exposición histórica de ese insumo se acepta como riesgo residual documentado y revisable. Retención: los datos públicos se conservan mientras el proyecto esté activo; el directorio crudo local se reemplaza en cada actualización anual de MINEDUC. Marco: Ley 21.719 (minimización) y la decisión D-nombres sobre la legitimidad de exhibir establecimientos educacionales por nombre desde bases públicas por establecimiento. Detalle en 50_documentacion/activa/gobernanza_datos.md.",
 
   # ---- 1.15 Rótulos del diagrama técnico ------------------------------------
   rotulos = list(
@@ -411,5 +423,6 @@ suitedoc::generar_suite(
   salida_dir  = here::here("50_documentacion", "suite"),
   copiar_tema = TRUE,
   verificar   = FALSE,
+  standalone  = TRUE,
   verbose     = TRUE
 )
