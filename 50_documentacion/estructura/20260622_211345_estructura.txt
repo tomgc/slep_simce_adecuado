@@ -1,7 +1,7 @@
 ESCANEO DE ESTRUCTURA — slep_simce_adecuado
 Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
-Fecha  : 2026-06-22 20:07:10
-Totales: 22 carpetas, 138 archivos
+Fecha  : 2026-06-22 21:13:45
+Totales: 23 carpetas, 141 archivos
 Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 slep_simce_adecuado/
@@ -82,13 +82,16 @@ slep_simce_adecuado/
 │   │   │   ├── 20260611_decision_nombres_establecimientos.md  (1.85K)
 │   │   │   ├── 20260611_decision_repo_publico.md  (1.32K)
 │   │   │   ├── 20260620_decision_celda_unico_establecimiento.md  (3.77K)
-│   │   │   └── 20260622_decision_cumplimiento_ley_21719.md  (5.37K)
+│   │   │   └── 20260622_decision_cumplimiento_ley_21719.md  (5.35K)
+│   │   ├── encargos/
+│   │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
+│   │   │   └── encargo_claude_code_simce_suite_standalone.md  (13.3K)
+│   │   ├── .DS_Store  (8K)
 │   │   ├── .gitkeep  (0)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_historico.md  (26.7K)
+│   │   ├── backlog_historico.md  (27.6K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
-│   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   ├── gobernanza_datos.md  (6.96K)
 │   │   ├── informe_auditoria_prelanzamiento.md  (10.6K)
 │   │   ├── manifiesto_insumos.md  (2.78K)
@@ -103,10 +106,10 @@ slep_simce_adecuado/
 │   │   │   └── 20260622_auditoria_ley21719_log.md  (8.43K)
 │   │   └── .DS_Store  (6K)
 │   ├── estructura/
-│   │   ├── 20260621_094321_estructura.md  (8.21K)
-│   │   ├── 20260621_094321_estructura.txt  (8.29K)
-│   │   ├── 20260622_191156_estructura.md  (8.55K)
-│   │   ├── 20260622_191156_estructura.txt  (8.63K)
+│   │   ├── 20260622_200710_estructura.md  (8.55K)
+│   │   ├── 20260622_200710_estructura.txt  (8.63K)
+│   │   ├── 20260622_201059_estructura.md  (8.55K)
+│   │   ├── 20260622_201059_estructura.txt  (8.63K)
 │   │   ├── estructura_actual.md  (8.55K)
 │   │   └── estructura_actual.txt  (8.63K)
 │   ├── suite/
@@ -118,9 +121,9 @@ slep_simce_adecuado/
 │   │   │   ├── gobCL_Heavy.otf  (43.7K)
 │   │   │   ├── gobCL_Light.otf  (37.1K)
 │   │   │   ├── gobCL_Regular.otf  (35.7K)
-│   │   │   ├── MuseoSans-300.otf  (61.5K)
 │   │   │   ├── MuseoSans_500.otf  (61K)
-│   │   │   └── MuseoSans_700.otf  (62.1K)
+│   │   │   ├── MuseoSans_700.otf  (62.1K)
+│   │   │   └── MuseoSans-300.otf  (61.5K)
 │   │   ├── arquitectura_general_slep_simce_adecuado.html  (10.1K)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20.6K)
 │   │   ├── documentacion_general_slep_simce_adecuado.html  (7.74K)
@@ -148,7 +151,8 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v17.md  (19.8K)
 │   │   ├── traspaso_cierre_v18.md  (11.5K)
 │   │   ├── traspaso_cierre_v19.md  (16.3K)
-│   │   └── traspaso_cierre_v20.md  (18.4K)
+│   │   ├── traspaso_cierre_v20.md  (18.4K)
+│   │   └── traspaso_cierre_v21.md  (19.1K)
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.45M)
@@ -163,13 +167,13 @@ slep_simce_adecuado/
 ├── README.md  (9.98K)
 ├── slep_simce_adecuado.Rproj  (220)
 ├── verificar_depe4.R  (6.46K)
-├── verificar_elem_insuf.R  (6.15K)
-└── verificar_elem_insuf_2023_2024.R  (4.07K)
+├── verificar_elem_insuf_2023_2024.R  (4.07K)
+└── verificar_elem_insuf.R  (6.15K)
 
 Conteo por extension:
-  md                 45
+  md                 47
   xlsx               23
-  (sin extension)    14
+  (sin extension)    15
   r                  11
   html               10
   otf                6
