@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–21 (traspasos v01–v21). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s21 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–22 (traspasos v01–v22). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s22 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -225,3 +225,11 @@
 113. [DOC/Gobernanza] `gobernanza_datos.md` (primer archivo de gobernanza del proyecto) + decisión 21.719. Commit `1edc787`.
 
 **Delta del backlog:** 4 entradas nuevas (110–113). Sin reclasificación (tags compuestos, D20-3). Total acumulado: 113.
+
+## Sesión 22 — Suite de documentación standalone offline (traspaso v22)
+
+114. [Proceso] Saneamiento del encargo de suite standalone: recorte a solo Fase B (Fase A obsoleta, backlog ya en 1–113) y verificación de la API real de `suitedoc` antes de redactar (firma `standalone=`, lucide 1.21.0). Sin commit de código (trabajo de análisis); materializado en el encargo versionado.
+115. [DOC/Gobernanza] Actualización de la cfg del `documentar.R`: gobernanza Ley 21.719 + 6 decisiones formales (con `id`/`por_que` del archivo, +D20-1 +D21-1) + directorio marcado no versionado. Commit `6f94729`.
+116. [DOC] Regeneración de la suite como standalone offline (4 `*_standalone.html`, 0 red verificado) + versionado del encargo saneado y el log. Commits `6f94729`, `c5b6a17`.
+
+**Delta del backlog:** 3 entradas nuevas (114–116). Sin reclasificación (D20-3). Total acumulado: 116.
