@@ -1,8 +1,8 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-06-22 21:13:45
-- **Totales:** 23 carpetas, 141 archivos
+- **Fecha:** 2026-06-24 08:10:41
+- **Totales:** 23 carpetas, 143 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 ## Arbol
@@ -89,11 +89,11 @@ slep_simce_adecuado/
 │   │   │   └── 20260622_decision_cumplimiento_ley_21719.md  (5.35K)
 │   │   ├── encargos/
 │   │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
-│   │   │   └── encargo_claude_code_simce_suite_standalone.md  (13.3K)
-│   │   ├── .DS_Store  (8K)
+│   │   │   └── encargo_claude_code_simce_suite_standalone.md  (10.5K)
+│   │   ├── .DS_Store  (10K)
 │   │   ├── .gitkeep  (0)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_historico.md  (27.6K)
+│   │   ├── backlog_historico.md  (28.5K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
 │   │   ├── gobernanza_datos.md  (6.96K)
@@ -107,15 +107,16 @@ slep_simce_adecuado/
 │   │   │   ├── 20260620_cotejo_marcas_suite_log.md  (6.69K)
 │   │   │   ├── 20260620_reconstruccion_backlog_log.md  (9.44K)
 │   │   │   ├── 20260622_anexo_delta_s20_backlog_log.md  (4.71K)
-│   │   │   └── 20260622_auditoria_ley21719_log.md  (8.43K)
+│   │   │   ├── 20260622_auditoria_ley21719_log.md  (8.43K)
+│   │   │   └── 20260622_suite_standalone_simce_log.md  (5.48K)
 │   │   └── .DS_Store  (6K)
 │   ├── estructura/
-│   │   ├── 20260622_200710_estructura.md  (8.55K)
-│   │   ├── 20260622_200710_estructura.txt  (8.63K)
-│   │   ├── 20260622_201059_estructura.md  (8.55K)
-│   │   ├── 20260622_201059_estructura.txt  (8.63K)
-│   │   ├── estructura_actual.md  (8.55K)
-│   │   └── estructura_actual.txt  (8.63K)
+│   │   ├── 20260623_161031_estructura.md  (8.87K)
+│   │   ├── 20260623_161031_estructura.txt  (8.96K)
+│   │   ├── 20260623_163045_estructura.md  (8.92K)
+│   │   ├── 20260623_163045_estructura.txt  (9.01K)
+│   │   ├── estructura_actual.md  (8.92K)
+│   │   └── estructura_actual.txt  (9.01K)
 │   ├── suite/
 │   │   ├── assets/
 │   │   │   ├── logo-color-stacked.png  (126K)
@@ -125,14 +126,14 @@ slep_simce_adecuado/
 │   │   │   ├── gobCL_Heavy.otf  (43.7K)
 │   │   │   ├── gobCL_Light.otf  (37.1K)
 │   │   │   ├── gobCL_Regular.otf  (35.7K)
+│   │   │   ├── MuseoSans-300.otf  (61.5K)
 │   │   │   ├── MuseoSans_500.otf  (61K)
-│   │   │   ├── MuseoSans_700.otf  (62.1K)
-│   │   │   └── MuseoSans-300.otf  (61.5K)
-│   │   ├── arquitectura_general_slep_simce_adecuado.html  (10.1K)
-│   │   ├── arquitectura_slep_simce_adecuado.html  (20.6K)
-│   │   ├── documentacion_general_slep_simce_adecuado.html  (7.74K)
-│   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (13.2K)
-│   │   ├── documentar.R  (45.8K)
+│   │   │   └── MuseoSans_700.otf  (62.1K)
+│   │   ├── arquitectura_general_slep_simce_adecuado_standalone.html  (442K)
+│   │   ├── arquitectura_slep_simce_adecuado_standalone.html  (445K)
+│   │   ├── documentacion_general_slep_simce_adecuado_standalone.html  (434K)
+│   │   ├── documentacion_proyecto_slep_simce_adecuado_standalone.html  (441K)
+│   │   ├── documentar.R  (50.6K)
 │   │   └── suite_estilos.css  (21.7K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
@@ -156,7 +157,8 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v18.md  (11.5K)
 │   │   ├── traspaso_cierre_v19.md  (16.3K)
 │   │   ├── traspaso_cierre_v20.md  (18.4K)
-│   │   └── traspaso_cierre_v21.md  (19.1K)
+│   │   ├── traspaso_cierre_v21.md  (19.1K)
+│   │   └── traspaso_cierre_v22.md  (16.4K)
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.45M)
@@ -168,18 +170,18 @@ slep_simce_adecuado/
 ├── LICENSE  (11.1K)
 ├── NOTICE  (1.76K)
 ├── POLITICA_PROYECTO.md  (30.3K)
-├── README.md  (9.98K)
+├── README.md  (9.97K)
 ├── slep_simce_adecuado.Rproj  (220)
 ├── verificar_depe4.R  (6.46K)
-├── verificar_elem_insuf_2023_2024.R  (4.07K)
-└── verificar_elem_insuf.R  (6.15K)
+├── verificar_elem_insuf.R  (6.15K)
+└── verificar_elem_insuf_2023_2024.R  (4.07K)
 ```
 
 ## Conteo por extension
 
 | Extension | Archivos |
 |---|---|
-| md | 47 |
+| md | 49 |
 | xlsx | 23 |
 | (sin extension) | 15 |
 | r | 11 |
