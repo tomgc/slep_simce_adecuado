@@ -1,8 +1,8 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-06-24 08:10:41
-- **Totales:** 23 carpetas, 143 archivos
+- **Fecha:** 2026-06-26 18:58:09
+- **Totales:** 23 carpetas, 145 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 ## Arbol
@@ -67,17 +67,17 @@ slep_simce_adecuado/
 │   ├── 31_leer_normalizar.R  (16.2K)
 │   ├── 32_agregar_comunal.R  (7.64K)
 │   ├── 33_generar_html.R  (15.4K)
-│   └── 33_motor_template.html  (147K)
+│   └── 33_motor_template.html  (148K)
 ├── 40_salidas/
 │   ├── intermedios/
 │   │   ├── .gitkeep  (0)
-│   │   ├── comunas_chile.parquet  (7.18K)
+│   │   ├── comunas_chile.parquet  (7.23K)
 │   │   ├── establecimientos_chile.parquet  (260K)
 │   │   ├── simce_comunal.parquet  (988K)
 │   │   ├── simce_rbd.parquet  (1.59M)
 │   │   ├── slep_cc_establecimientos.parquet  (5.68K)
 │   │   └── sleps_chile.parquet  (58.7K)
-│   └── motor_comparacion.html  (2.45M)
+│   └── motor_comparacion.html  (2.46M)
 ├── 50_documentacion/
 │   ├── activa/
 │   │   ├── decisiones/
@@ -90,7 +90,7 @@ slep_simce_adecuado/
 │   │   ├── encargos/
 │   │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   │   └── encargo_claude_code_simce_suite_standalone.md  (10.5K)
-│   │   ├── .DS_Store  (10K)
+│   │   ├── .DS_Store  (8K)
 │   │   ├── .gitkeep  (0)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
 │   │   ├── backlog_historico.md  (28.5K)
@@ -101,7 +101,8 @@ slep_simce_adecuado/
 │   │   ├── manifiesto_insumos.md  (2.78K)
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   ├── referencia_glosas_simce.md  (9.28K)
-│   │   └── SETTINGS_Y_PROMPTS_OPERACIONALES.md  (32.9K)
+│   │   ├── resena_slep_simce_adecuado.md  (8.63K)
+│   │   └── SETTINGS_Y_PROMPTS_OPERACIONALES.md  (37.3K)
 │   ├── andamios/
 │   │   ├── logs/
 │   │   │   ├── 20260620_cotejo_marcas_suite_log.md  (6.69K)
@@ -111,10 +112,10 @@ slep_simce_adecuado/
 │   │   │   └── 20260622_suite_standalone_simce_log.md  (5.48K)
 │   │   └── .DS_Store  (6K)
 │   ├── estructura/
-│   │   ├── 20260623_161031_estructura.md  (8.87K)
-│   │   ├── 20260623_161031_estructura.txt  (8.96K)
 │   │   ├── 20260623_163045_estructura.md  (8.92K)
 │   │   ├── 20260623_163045_estructura.txt  (9.01K)
+│   │   ├── 20260624_081041_estructura.md  (8.92K)
+│   │   ├── 20260624_081041_estructura.txt  (9.01K)
 │   │   ├── estructura_actual.md  (8.92K)
 │   │   └── estructura_actual.txt  (9.01K)
 │   ├── suite/
@@ -126,9 +127,9 @@ slep_simce_adecuado/
 │   │   │   ├── gobCL_Heavy.otf  (43.7K)
 │   │   │   ├── gobCL_Light.otf  (37.1K)
 │   │   │   ├── gobCL_Regular.otf  (35.7K)
-│   │   │   ├── MuseoSans-300.otf  (61.5K)
 │   │   │   ├── MuseoSans_500.otf  (61K)
-│   │   │   └── MuseoSans_700.otf  (62.1K)
+│   │   │   ├── MuseoSans_700.otf  (62.1K)
+│   │   │   └── MuseoSans-300.otf  (61.5K)
 │   │   ├── arquitectura_general_slep_simce_adecuado_standalone.html  (442K)
 │   │   ├── arquitectura_slep_simce_adecuado_standalone.html  (445K)
 │   │   ├── documentacion_general_slep_simce_adecuado_standalone.html  (434K)
@@ -158,10 +159,11 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v19.md  (16.3K)
 │   │   ├── traspaso_cierre_v20.md  (18.4K)
 │   │   ├── traspaso_cierre_v21.md  (19.1K)
-│   │   └── traspaso_cierre_v22.md  (16.4K)
+│   │   ├── traspaso_cierre_v22.md  (16.4K)
+│   │   └── traspaso_cierre_v23.md  (20.1K)
 │   └── .DS_Store  (14K)
 ├── docs/
-│   └── index.html  (2.45M)
+│   └── index.html  (2.46M)
 ├── .DS_Store  (10K)
 ├── .gitignore  (960)
 ├── 00_build.R  (1.24K)
@@ -173,15 +175,15 @@ slep_simce_adecuado/
 ├── README.md  (9.97K)
 ├── slep_simce_adecuado.Rproj  (220)
 ├── verificar_depe4.R  (6.46K)
-├── verificar_elem_insuf.R  (6.15K)
-└── verificar_elem_insuf_2023_2024.R  (4.07K)
+├── verificar_elem_insuf_2023_2024.R  (4.07K)
+└── verificar_elem_insuf.R  (6.15K)
 ```
 
 ## Conteo por extension
 
 | Extension | Archivos |
 |---|---|
-| md | 49 |
+| md | 51 |
 | xlsx | 23 |
 | (sin extension) | 15 |
 | r | 11 |
