@@ -1,6 +1,6 @@
 # slep_simce_adecuado
 
-Motor de comparación comunal de resultados Simce por estándares de aprendizaje,
+Motor de comparación de resultados Simce por estándares de aprendizaje,
 con foco en el % ponderado de estudiantes en nivel **Adecuado**, con opción de
 desglosar la barra en los tres estándares (Adecuado / Elemental / Insuficiente).
 
