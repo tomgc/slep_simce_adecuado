@@ -3224,6 +3224,12 @@ code {
         return () => { window.__openChartEstabPopup = null; };
       }, []);
 
+      // Estado por defecto al montar: si el tablero está vacío, sembrar las
+      // comunas del SLEP Costa Central (ver entidadesPorDefecto()).
+      React.useEffect(() => {
+        setEntities(prev => prev.length ? prev : entidadesPorDefecto());
+      }, []);
+
       function saveEntity(ent) {
         setEntities(prev => {
           const idx = prev.findIndex(p => p.id === ent.id);
@@ -3252,8 +3258,31 @@ code {
         setModal(null);
       }
 
+      // Estado por defecto del motor: las comunas del SLEP Costa Central con
+      // dependencia Servicio Local (depe2="5"). Se derivan EN RUNTIME desde
+      // SimceData.SLEPS (sin hardcodear cod_com ni cod_slep); el nombre del SLEP
+      // se localiza por coincidencia normalizada. Respeta el tope MAX_ENTIDADES.
+      // Si el SLEP no aparece, devuelve [] y no rompe el render.
+      function entidadesPorDefecto() {
+        const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const slep = SimceData.SLEPS.find(s => norm(s.nombre).includes("costa central"));
+        if (!slep) return [];
+        const depeLabel = SimceData.DEPE2_LABELS["5"];
+        return slep.comunas.slice(0, MAX_ENTIDADES).map((cod, i) => {
+          const c = SimceData.COMUNA_BY_COD.get(cod);
+          return {
+            id: "default_cc_" + cod,
+            name: (c ? c.nom : cod) + " · " + depeLabel,
+            kind: "comuna",
+            comunas: [cod],
+            depe2: "5",
+            color: ENTITY_PALETTE[i % ENTITY_PALETTE.length],
+          };
+        });
+      }
+
       function resetEntities() {
-        setEntities([]);
+        setEntities(entidadesPorDefecto());
       }
 
       const containerClass = "app is-comfy ";
