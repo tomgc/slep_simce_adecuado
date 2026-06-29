@@ -20,8 +20,7 @@ here::i_am("50_documentacion/suite/documentar.R")
 #
 # Convención del proyecto: paquetes prefijados, here::here() para rutas.
 #
-# REVISAR (voz): las zonas marcadas con "# REVISAR (voz)" contienen prosa de
-# comunidad redactada desde lo que el proyecto hace; ajusta el tono a tu gusto.
+
 # REVISAR (decisión): las marcadas así infieren el "por_que" desde traspaso /
 # README / política; confirma contra el archivo de decisión original.
 # ----------------------------------------------------------------------------
@@ -268,7 +267,7 @@ cfg <- list(
   ),
 
   # ---- 1.9 Línea de producción ----------------------------------------------
-  # REVISAR (voz): toda esta sección es prosa de comunidad; ajusta el tono.
+
   estaciones = list(
     list(icon='boxes', color='var(--ocean)', paso='Paso 1 · Insumo', titulo='Llegan las materias primas',
          parrafos=c('Cada año, la Agencia de Calidad de la Educación publica los resultados <strong>Simce por estándares de aprendizaje</strong> de cada establecimiento: qué porcentaje de sus estudiantes quedó en nivel Adecuado, Elemental o Insuficiente, en Lectura y Matemática, para 4° básico y 2° medio. Son datos <strong>públicos</strong>.',
@@ -296,7 +295,7 @@ cfg <- list(
   ),
 
   # ---- 1.10 Garantías -------------------------------------------------------
-  # REVISAR (voz): prosa de comunidad.
+
   garantias = list(
     list(icon='users', titulo='Cada estudiante pesa lo que corresponde', d='Al juntar establecimientos no se promedian porcentajes a la ligera: se pondera por el número de estudiantes evaluados. Así, el porcentaje de un territorio refleja a sus estudiantes, no a sus establecimientos en abstracto.'),
     list(icon='scale', titulo='Siempre comparamos dentro del mismo grupo socioeconómico', d='Todo resultado se muestra por grupo socioeconómico (GSE). El Simce por estándares no ajusta por contexto, así que comparar en bruto entre realidades distintas sería injusto: por eso el GSE nunca se omite.'),
@@ -307,7 +306,7 @@ cfg <- list(
   ),
 
   # ---- 1.11 "En qué fijarte" ------------------------------------------------
-  # REVISAR (voz): prosa de comunidad.
+
   notas = list(
     list(icon='palette', tx='<strong>El color indica el estándar; el nombre y el borde indican el territorio.</strong> Cada estándar tiene siempre el mismo color en todas las vistas, así que no hay que memorizar leyendas distintas.'),
     list(icon='percent', tx='<strong>Lo que ves es un porcentaje ponderado por estudiantes, no un promedio de establecimientos.</strong> Un establecimiento educacional grande influye más que uno pequeño, porque la pregunta es por los estudiantes.'),
@@ -317,7 +316,7 @@ cfg <- list(
   ),
 
   # ---- 1.12 Preguntas frecuentes --------------------------------------------
-  # REVISAR (voz): prosa de comunidad.
+
   faq = list(
     list(q='¿Qué muestra esta herramienta?', a='El porcentaje de estudiantes en nivel Adecuado según el Simce por estándares de aprendizaje, por comuna, Servicio Local, región, establecimiento o a nivel país, siempre separado por grupo socioeconómico, nivel (4° básico o 2° medio) y prueba (Lectura o Matemática).', abierta=TRUE),
     list(q='¿Por qué se pondera por número de estudiantes y no se cuentan establecimientos?', a='Porque el dato de cada establecimiento es una proporción de estudiantes, no una etiqueta. Para saber qué porcentaje de los estudiantes de un territorio alcanza el nivel Adecuado, hay que dar a cada establecimiento el peso de sus estudiantes evaluados; promediar porcentajes sin ponderar trataría igual a uno grande y a uno pequeño.', abierta=FALSE),
@@ -329,7 +328,7 @@ cfg <- list(
 
   # ---- 1.13 Prosa de los documentos de lectura ------------------------------
   prosa = list(
-    doc_que = c(  # REVISAR (voz)
+    doc_que = c(
       '<code class="inl">slep_simce_adecuado</code> es una herramienta de análisis interno que permite <strong>comparar los resultados Simce por estándares de aprendizaje</strong> —con foco en el porcentaje de estudiantes en nivel Adecuado— entre comunas, Servicios Locales, regiones, establecimientos y el nivel nacional, siempre por grupo socioeconómico y separando 4° básico de 2° medio y Lectura de Matemática.',
       'El problema que resuelve es concreto: los resultados se publican por establecimiento, año, nivel y prueba, en planillas dispersas y con formatos que cambian de un año a otro. Responder algo tan simple como “¿cómo evolucionó el % Adecuado de mi comuna en cada grupo socioeconómico?” exige consolidar varios años de planillas, homologar etiquetas y códigos que cambiaron, y recuperar el territorio de cada establecimiento educacional. Esta herramienta hace ese trabajo y entrega el resultado en un único archivo navegable.',
       'El producto final es un <strong>archivo HTML autónomo</strong> (<code class="inl">motor_comparacion.html</code>): se abre en cualquier navegador y permite explorar el % Adecuado por grupo socioeconómico y la trayectoria de cada territorio o establecimiento. Está publicado para consulta en línea.'
@@ -337,7 +336,7 @@ cfg <- list(
     doc_pipeline = c(
       'Detrás del archivo navegable hay un <strong>pipeline en R</strong> de cuatro etapas, orquestado por un único script (<code class="inl">00_build.R</code>). Cada etapa lee el resultado de la anterior y escribe el suyo, de modo que el proceso completo es reproducible de principio a fin. El motor resultante es un HTML autocontenido que embebe <em>inline</em> D3 v7 y pako (versionados en <code class="inl">10_utils/</code>); React 18.3.1, ReactDOM 18.3.1 y Babel 7.29.0 viajan por CDN (unpkg, con SRI) y Babel compila el JSX en el cliente. En prosa, las etapas son:'
     ),
-    gen_porque = c(  # REVISAR (voz)
+    gen_porque = c(
       'Los resultados Simce se publican cada año en planillas separadas por nivel y prueba, con formatos que cambian y códigos que no siempre calzan entre un año y otro. Responder algo tan simple como <em>“¿cómo evolucionó el porcentaje de estudiantes en nivel Adecuado de mi comuna, en cada grupo socioeconómico?”</em> normalmente exige horas de trabajo y conocimiento técnico.',
       'Esta herramienta hace ese trabajo una sola vez, con reglas claras, y entrega la respuesta lista para mirar. El objetivo es que la conversación sea sobre <strong>qué dicen los datos</strong>, no sobre cómo armarlos.'
     ),
