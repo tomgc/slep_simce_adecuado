@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–22 (traspasos v01–v22). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s22 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–23 (traspasos v01–v23). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s23 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -233,3 +233,12 @@
 116. [DOC] Regeneración de la suite como standalone offline (4 `*_standalone.html`, 0 red verificado) + versionado del encargo saneado y el log. Commits `6f94729`, `c5b6a17`.
 
 **Delta del backlog:** 3 entradas nuevas (114–116). Sin reclasificación (D20-3). Total acumulado: 116.
+
+## Sesión 23 — Estado por defecto del motor y auditoría de suite standalone (traspaso v23)
+
+117. [Motor] Estado por defecto del motor = 4 comunas del SLEP Costa Central con dependencia Servicio Local (depe2="5"), en montaje y reset; derivación en runtime sin hardcodear códigos (`entidadesPorDefecto()`). Commit `4d647df`.
+118. [DOC] Regeneración de la suite standalone offline a pedido del titular; resultó determinista byte-idéntica (no-op de versionado, sin commit).
+119. [DOC/Auditoría] Auditoría minuciosa de los 4 `*_standalone.html`: red real 0 verificada, `946` en general identificado como falso positivo (base64 de fuente), `MRUN` en general confirmado heredado/aceptado. Sin commit (análisis).
+120. [DOC] README: subtítulo sin "comunal" (el motor compara entidades de todo nivel). Commit `f87a3f7`.
+
+**Delta del backlog:** 4 entradas nuevas (117–120). Sin reclasificación (D20-3). Total acumulado: 120.
