@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–23 (traspasos v01–v23). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s23 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–22 (traspasos v01–v22). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s22 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -20,113 +20,113 @@
 
 ## Sesión 1 — Scaffold, pipeline de datos y UI v2 (traspaso v01)
 
-1. Creación del repo en GitHub y scaffold completo de directorios. — REPO/Infra
-2. Pipeline de datos completo (scripts 30–32): lectura, normalización, auxiliares y agregación comunal; 185.378 filas brutas → 32.134 agregaciones comunales × GSE, 9 años, 2 niveles, 2 pruebas. — P
-3. Motor de comparación como HTML standalone con React + D3 (supergrid entidades × GSE, sparklines, barras de últimas 3 aplicaciones, tabla con heat map), rediseñado sobre el prototipo Claude Design. — UI
-4. Detección y resolución de 4 anomalías en datos crudos de la Agencia (A1–A4), documentadas en `referencia_glosas_simce.md`. — D/DOC
+1. Creación del repo en GitHub y scaffold completo de directorios. [REPO]
+2. Pipeline de datos completo (scripts 30–32): lectura, normalización, auxiliares y agregación comunal; 185.378 filas brutas → 32.134 agregaciones comunales × GSE, 9 años, 2 niveles, 2 pruebas. [P]
+3. Motor de comparación como HTML standalone con React + D3 (supergrid entidades × GSE, sparklines, barras de últimas 3 aplicaciones, tabla con heat map), rediseñado sobre el prototipo Claude Design. [UI]
+4. Detección y resolución de 4 anomalías en datos crudos de la Agencia (A1–A4), documentadas en `referencia_glosas_simce.md`. [D]
 
 ## Sesión 2 — Dimensión depe2, sleps_chile y rediseño UI (traspaso v02)
 
-5. Incorporación de `cod_depe2` a `simce_rbd.parquet` y `simce_comunal.parquet`. — P
-6. Construcción de `sleps_chile.parquet` desde el listado oficial de SLEPs 2026 (cierre de P1); desbloqueó la comparación por SLEP. — P/D
-7. Rediseño de la UI: flujo comuna + dependencia + nivel/prueba, modal con 3 tabs (Comuna/SLEP/Grupo), heatmap con umbrales fijos, años descendentes, foco por año, filtro GSE, popup de establecimientos. — UI
-8. Renombre del template a prefijo `33_` según convención de auxiliares numerados. — REPO
+5. Incorporación de `cod_depe2` a `simce_rbd.parquet` y `simce_comunal.parquet`. [P]
+6. Construcción de `sleps_chile.parquet` desde el listado oficial de SLEPs 2026 (cierre de P1); desbloqueó la comparación por SLEP. [P]
+7. Rediseño de la UI: flujo comuna + dependencia + nivel/prueba, modal con 3 tabs (Comuna/SLEP/Grupo), heatmap con umbrales fijos, años descendentes, foco por año, filtro GSE, popup de establecimientos. [UI]
+8. Renombre del template a prefijo `33_` según convención de auxiliares numerados. [REPO]
 
 ## Sesión 3 — Bugs UI, exportación CSV y UX de tabla (traspaso v03)
 
-9. Resolución de B3 (popup de establecimientos): fix de crash, extensión a toda entidad, filtrado por RBD × nivel × prueba con nuevo catálogo `establecimientos_chile.parquet`. — UI/P
-10. Exportación CSV (cierre de P3) con separador `;` y BOM UTF-8 para Excel chileno. — UI
-11. Resolución parcial de B2: semillas iniciales con `depe2="5"` (SLEP); decisión razonada de no filtrar por `depe2="1"` (comunas Costa Central sin registros municipales post-traspaso). — UI/D
-12. Mejoras de UX: supergrid con columnas dinámicas, etiquetas de barras arriba, conteo de establecimientos en chip, búsqueda de comuna por input libre, límite de 4 entidades, corrección de leyendas. — UI
+9. Resolución de B3 (popup de establecimientos): fix de crash, extensión a toda entidad, filtrado por RBD × nivel × prueba con nuevo catálogo `establecimientos_chile.parquet`. [UI]
+10. Exportación CSV (cierre de P3) con separador `;` y BOM UTF-8 para Excel chileno. [UI]
+11. Resolución parcial de B2: semillas iniciales con `depe2="5"` (SLEP); decisión razonada de no filtrar por `depe2="1"` (comunas Costa Central sin registros municipales post-traspaso). [UI]
+12. Mejoras de UX: supergrid con columnas dinámicas, etiquetas de barras arriba, conteo de establecimientos en chip, búsqueda de comuna por input libre, límite de 4 entidades, corrección de leyendas. [UI]
 
 ## Sesión 4 — Orquestador y entidades región/establecimiento (traspaso v04)
 
-13. Orquestador `00_build.R` (cierre de P4): ejecuta los 4 scripts del pipeline en orden con timer. — Infra
-14. Entidades tipo región y establecimiento (cierre de P6): tabs en modal, agregación desde `simce_comunal`, buscador 3+ caracteres con datos desde `simce_rbd.parquet`. — UI/P
-15. Popup de celda GSE (cierre de P7) con nuevo catálogo `rbd_gse` inyectado en el JSON. — UI/P
-16. Correcciones varias: nombres de región oficiales, nota metodológica de fórmula, texto de objetivo en header, reorden de tabs, bug de establecimiento repetido en GSEs, C stack overflow en R, corte del 100% en SVG. — UI/P
+13. Orquestador `00_build.R` (cierre de P4): ejecuta los 4 scripts del pipeline en orden con timer. [Infra]
+14. Entidades tipo región y establecimiento (cierre de P6): tabs en modal, agregación desde `simce_comunal`, buscador 3+ caracteres con datos desde `simce_rbd.parquet`. [UI]
+15. Popup de celda GSE (cierre de P7) con nuevo catálogo `rbd_gse` inyectado en el JSON. [UI]
+16. Correcciones varias: nombres de región oficiales, nota metodológica de fórmula, texto de objetivo en header, reorden de tabs, bug de establecimiento repetido en GSEs, C stack overflow en R, corte del 100% en SVG. [UI]
 
 ## Sesión 5 — Exportación SVG, tooltip interactivo y escáner (traspaso v05)
 
-17. Exportación del supergrid como SVG compuesto vectorial (primera parte de P2). — UI
-18. Tooltip interactivo: hover con datos fijos, clic fija el tooltip y habilita "Ver establecimientos (N) ▸" hacia `EstabPopup` filtrado por entidad × GSE × año. — UI
-19. Limpieza del estado `region`/`setRegion` sin uso en el tab de comunas (D3-cleanup). — DT
-20. Escáner con 4 outputs (cierre de P5): aliases `.md`/`.txt` + snapshots con timestamp. — Infra
-21. Nota metodológica sobre Estándares de Aprendizaje en el motor. — DOC
+17. Exportación del supergrid como SVG compuesto vectorial (primera parte de P2). [UI]
+18. Tooltip interactivo: hover con datos fijos, clic fija el tooltip y habilita "Ver establecimientos (N) ▸" hacia `EstabPopup` filtrado por entidad × GSE × año. [UI]
+19. Limpieza del estado `region`/`setRegion` sin uso en el tab de comunas (D3-cleanup). [DT]
+20. Escáner con 4 outputs (cierre de P5): aliases `.md`/`.txt` + snapshots con timestamp. [Infra]
+21. Nota metodológica sobre Estándares de Aprendizaje en el motor. [DOC]
 
 ## Sesión 6 — Auditoría de agregación y entidad nacional (traspaso v06)
 
-22. Auditoría de reproducibilidad de la agregación comunal desde RBD: diferencia cero en 44.975 filas; valida `simce_comunal` como fuente del cálculo nacional. — P
-23. Entidad nacional "Chile" (cierre de P8) con resolución de 3 bugs encadenados (ramas faltantes en subcharts, guard de `entity.comunas`, orden de filtros en `EstabPopup`). — UI
-24. Commit `b47e1d5` pusheado a main. — REPO
+22. Auditoría de reproducibilidad de la agregación comunal desde RBD: diferencia cero en 44.975 filas; valida `simce_comunal` como fuente del cálculo nacional. [P]
+23. Entidad nacional "Chile" (cierre de P8) con resolución de 3 bugs encadenados (ramas faltantes en subcharts, guard de `entity.comunas`, orden de filtros en `EstabPopup`). [UI]
+24. Commit `b47e1d5` pusheado a main. [REPO]
 
 ## Sesión 7 — Portabilidad cross-OS y cierre de deuda técnica (traspaso v07)
 
-25. Portabilidad Windows: xlsx de SIMCE versionados en el repo (datos públicos, 22 MB), `.Rproj` con `Encoding: UTF-8`, pipeline verificado en Windows (R 4.5.1, Positron). — REPO/D
-26. Cierre de DT6.2: `auditoria_agregacion_comunal.R` movida a `_archivo/`. — DT
-27. Cierre de DT6.1: extracción de `getSeriesForEntity` en `SimceData`, eliminando cinco copias del ternario de despacho por `kind`. Regla arquitectónica vigente. — DT/UI
+25. Portabilidad Windows: xlsx de SIMCE versionados en el repo (datos públicos, 22 MB), `.Rproj` con `Encoding: UTF-8`, pipeline verificado en Windows (R 4.5.1, Positron). [REPO]
+26. Cierre de DT6.2: `auditoria_agregacion_comunal.R` movida a `_archivo/`. [DT]
+27. Cierre de DT6.1: extracción de `getSeriesForEntity` en `SimceData`, eliminando cinco copias del ternario de despacho por `kind`. Regla arquitectónica vigente. [DT]
 
 ## Sesión 8 — Bugs UX del motor y warning de pipeline (traspaso v08)
 
-28. Clamp del tooltip al viewport en `show()` y `pin()` (cierre de B8.1). — UI
-29. Normalización NFD de diacríticos en los 4 buscadores del modal (cierre de B8.2). — UI
-30. Prioridad de matches por nombre sobre matches por región en `filteredComunas` y slice de 30 → 60 (cierre de B8.3). — UI
-31. Eliminación del warning `pivot_wider` en sanity check de `32_agregar_comunal.R` re-agregando ponderadamente antes del pivot (cierre de B8.4). — P
+28. Clamp del tooltip al viewport en `show()` y `pin()` (cierre de B8.1). [UI]
+29. Normalización NFD de diacríticos en los 4 buscadores del modal (cierre de B8.2). [UI]
+30. Prioridad de matches por nombre sobre matches por región en `filteredComunas` y slice de 30 → 60 (cierre de B8.3). [UI]
+31. Eliminación del warning `pivot_wider` en sanity check de `32_agregar_comunal.R` re-agregando ponderadamente antes del pivot (cierre de B8.4). [P]
 
 ## Sesión 9 — Publicación y gobernanza (traspaso v09)
 
-32. Cierre en Git del trabajo pendiente de la sesión 8. — REPO
-33. Publicación del motor en GitHub Pages. — REPO
-34. Documentación del procedimiento de publicación. — DOC
-35. Escáner con auto-poda de snapshots. — Infra
-36. Limpieza de artefactos obsoletos. — REPO
-37. Consolidación de `estructura_proyecto.md` en README. — DOC
+32. Cierre en Git del trabajo pendiente de la sesión 8. [REPO]
+33. Publicación del motor en GitHub Pages. [REPO]
+34. Documentación del procedimiento de publicación. [DOC]
+35. Escáner con auto-poda de snapshots. [Infra]
+36. Limpieza de artefactos obsoletos. [REPO]
+37. Consolidación de `estructura_proyecto.md` en README. [DOC]
 
 ## Sesión 10 — Documentación visual/conceptual y simplificación UI (traspaso v10)
 
-38. Diagrama de arquitectura HTML standalone (insumos → 30 → 31 → 32 → 33 → motor), con A1–A4 representadas como normalizaciones resueltas. — DOC
-39. Actualización de `CLAUDE.md` al estado real post-v09. — DOC
-40. Presentación conceptual del proyecto (md + html) para lectores internos. — DOC
-41. Remoción del panel de ajustes del motor (P3): densidad fija "cómoda", `showElemInsuf`/`yScale` hardcodeados. — UI
-42. Eliminación de la franja de leyenda bajo la tabla y contacto al pie de las notas (P4 reformulado). — UI
-43. Deploy a Pages y sincronización de snapshots. — REPO
+38. Diagrama de arquitectura HTML standalone (insumos → 30 → 31 → 32 → 33 → motor), con A1–A4 representadas como normalizaciones resueltas. [DOC]
+39. Actualización de `CLAUDE.md` al estado real post-v09. [DOC]
+40. Presentación conceptual del proyecto (md + html) para lectores internos. [DOC]
+41. Remoción del panel de ajustes del motor (P3): densidad fija "cómoda", `showElemInsuf`/`yScale` hardcodeados. [UI]
+42. Eliminación de la franja de leyenda bajo la tabla y contacto al pie de las notas (P4 reformulado). [UI]
+43. Deploy a Pages y sincronización de snapshots. [REPO]
 
 ## Sesión 11 — Limpieza CSS, POLITICA v4, exportación PNG y consolidación del backlog (traspaso v11)
 
-44. Limpieza quirúrgica de CSS huérfano en `33_motor_template.html` (cierre del pendiente 2 de v10): bloque `TweaksPanel` completo (24 reglas `.twk-*`), 9 reglas `.is-compact`, `.table-legend` (2 reglas), `.dot-prelim` (huérfano adicional detectado) e icono `gear` sin uso. 3.208 → 3.098 líneas. — UI
-45. Verificación y cierre del pendiente 4 de v10 (estado `region` huérfano en tab comuna): ya había sido resuelto en la sesión 5 (ítem 19 de este backlog); el registro de v10 estaba obsoleto. Cerrado sin cambio. — DT
-46. Sustitución de `POLITICA_PROYECTO.md` local por la canónica v4 (cierre del pendiente 1 de v10). — REPO
-47. Exportación de gráficos a PNG (cierre completo de P2): refactor de `exportarGraficos` en `construirSvgGraficos` (constructor puro) + `descargarBlob` + `exportarGraficosSVG` + `exportarGraficosPNG` (rasterización canvas con `PNG_SCALE = 2`); dos botones SVG/PNG en la sección de resultados. — UI
-48. Consolidación del backlog histórico v01–v10 como documento vivo (`50_documentacion/activa/backlog_historico.md`, este archivo), con regla de mantenimiento por delta (cierre del pendiente 6 de v10). — DOC
-49. Exclusión de `_archivo/` en `.gitignore` (alineación con POLITICA §1.6) y versionado del `traspaso_cierre_v10.md` que estaba sin trackear. — REPO
-50. Dos deploys a GitHub Pages: motor sin CSS huérfano (`f0cd824`) y motor con exportación SVG/PNG (`b77eec0`). — REPO
+44. Limpieza quirúrgica de CSS huérfano en `33_motor_template.html` (cierre del pendiente 2 de v10): bloque `TweaksPanel` completo (24 reglas `.twk-*`), 9 reglas `.is-compact`, `.table-legend` (2 reglas), `.dot-prelim` (huérfano adicional detectado) e icono `gear` sin uso. 3.208 → 3.098 líneas. [UI]
+45. Verificación y cierre del pendiente 4 de v10 (estado `region` huérfano en tab comuna): ya había sido resuelto en la sesión 5 (ítem 19 de este backlog); el registro de v10 estaba obsoleto. Cerrado sin cambio. [DT]
+46. Sustitución de `POLITICA_PROYECTO.md` local por la canónica v4 (cierre del pendiente 1 de v10). [REPO]
+47. Exportación de gráficos a PNG (cierre completo de P2): refactor de `exportarGraficos` en `construirSvgGraficos` (constructor puro) + `descargarBlob` + `exportarGraficosSVG` + `exportarGraficosPNG` (rasterización canvas con `PNG_SCALE = 2`); dos botones SVG/PNG en la sección de resultados. [UI]
+48. Consolidación del backlog histórico v01–v10 como documento vivo (`50_documentacion/activa/backlog_historico.md`, este archivo), con regla de mantenimiento por delta (cierre del pendiente 6 de v10). [DOC]
+49. Exclusión de `_archivo/` en `.gitignore` (alineación con POLITICA §1.6) y versionado del `traspaso_cierre_v10.md` que estaba sin trackear. [REPO]
+50. Dos deploys a GitHub Pages: motor sin CSS huérfano (`f0cd824`) y motor con exportación SVG/PNG (`b77eec0`). [REPO]
 
 ## Sesión 12 — Compresión gzip, SLEP traspaso 2026 y auditoría de supresión (traspaso v12)
 
-51. Enlace de la documentación nueva (conceptual md/html, arquitectura html, backlog histórico) en la sección "Documentación" del `README.md`, con aclaración de que los `.html` no se publican por Pages (solo `docs/`). — DOC
-52. Migración de la descarga de `exportarCSV` al helper `descargarBlob` (cierre del pendiente DRY de v11): una sola implementación de descarga en el motor; comportamiento del CSV idéntico. — DT/UI
-53. Compresión del JSON embebido con gzip + base64, descomprimido en cliente con pako (`__PAKO_INLINE__`): `33_generar_html.R` comprime (`memCompress` + `base64_enc`, con `gsub` para quitar saltos de línea MIME que rompían el literal JS), `pako.min.js` añadido a `10_utils/`. Peso del HTML de 14.531 KB a ~1.830 KB (13% del original, muy bajo el criterio ≤50% de v11). Cierra el pendiente de optimización de peso. — UI/Infra
-54. Inclusión de SLEP con traspaso prospectivo (2026) en `30_construir_auxiliares.R`: rama que incorpora los RBDs municipales (`COD_DEPE ∈ {1,2}`) de las comunas de los 10 SLEP cuyo traspaso es el año siguiente al último dato (constante `ANIO_DATOS_VIGENTE`). Catálogo de 26 a 36 SLEP, +630 RBDs. Marca visual en el motor (badge "traspaso 2026", sufijo en meta-label, nota metodológica) vía helper `slepEsProspectivo` derivado de `max(YEARS)`. — P/UI/D
-55. Corrección de raíz de la selección de establecimientos por SLEP: el motor reconstruía el universo del SLEP por comuna+`cod_depe2`, lo que (a) vaciaba los SLEP prospectivos (sus RBDs son municipales, no depe 5) y (b) podía incluir RBDs ajenos. `generateSeriesByRbd` reescrita para agregar ponderado por `nalu` sobre `entity.rbds` exactos desde `simce_rbd`; popups, conteos y tooltip migrados a `entity.rbds` como fuente única de verdad. Helper `depe2CodesParaSlep` introducido y luego retirado al volverse innecesario. — UI/DT
-56. Auditoría y corrección de supresión de la Agencia: los popups listaban establecimientos cuyo resultado fue suprimido por confidencialidad (`palu_eda_ade = NA` con `nalu > 0`), porque los catálogos `rbds_por_nivel` y `rbd_gse` se construían con `distinct()` sin filtrar `palu`. Confirmado contra el sitio oficial de la Agencia (RBD 1131 muestra "-" en 2025). Filtro `!is.na(palu_eda_ade)` añadido en `33_generar_html.R` (ambos catálogos) y guard `D2.palu[i] != null` en el popup de celda del motor. Bug latente desde la sesión 4; expuesto (no causado) por la entrada de SLEP rurales con el traspaso 2026. `RBDs×GSE` de 42.134 a 34.255; `RBDs×nivel` de 23.026 a 21.402. — UI/P/D
+51. Enlace de la documentación nueva (conceptual md/html, arquitectura html, backlog histórico) en la sección "Documentación" del `README.md`, con aclaración de que los `.html` no se publican por Pages (solo `docs/`). [DOC]
+52. Migración de la descarga de `exportarCSV` al helper `descargarBlob` (cierre del pendiente DRY de v11): una sola implementación de descarga en el motor; comportamiento del CSV idéntico. [DT]
+53. Compresión del JSON embebido con gzip + base64, descomprimido en cliente con pako (`__PAKO_INLINE__`): `33_generar_html.R` comprime (`memCompress` + `base64_enc`, con `gsub` para quitar saltos de línea MIME que rompían el literal JS), `pako.min.js` añadido a `10_utils/`. Peso del HTML de 14.531 KB a ~1.830 KB (13% del original, muy bajo el criterio ≤50% de v11). Cierra el pendiente de optimización de peso. [UI]
+54. Inclusión de SLEP con traspaso prospectivo (2026) en `30_construir_auxiliares.R`: rama que incorpora los RBDs municipales (`COD_DEPE ∈ {1,2}`) de las comunas de los 10 SLEP cuyo traspaso es el año siguiente al último dato (constante `ANIO_DATOS_VIGENTE`). Catálogo de 26 a 36 SLEP, +630 RBDs. Marca visual en el motor (badge "traspaso 2026", sufijo en meta-label, nota metodológica) vía helper `slepEsProspectivo` derivado de `max(YEARS)`. [P]
+55. Corrección de raíz de la selección de establecimientos por SLEP: el motor reconstruía el universo del SLEP por comuna+`cod_depe2`, lo que (a) vaciaba los SLEP prospectivos (sus RBDs son municipales, no depe 5) y (b) podía incluir RBDs ajenos. `generateSeriesByRbd` reescrita para agregar ponderado por `nalu` sobre `entity.rbds` exactos desde `simce_rbd`; popups, conteos y tooltip migrados a `entity.rbds` como fuente única de verdad. Helper `depe2CodesParaSlep` introducido y luego retirado al volverse innecesario. [UI]
+56. Auditoría y corrección de supresión de la Agencia: los popups listaban establecimientos cuyo resultado fue suprimido por confidencialidad (`palu_eda_ade = NA` con `nalu > 0`), porque los catálogos `rbds_por_nivel` y `rbd_gse` se construían con `distinct()` sin filtrar `palu`. Confirmado contra el sitio oficial de la Agencia (RBD 1131 muestra "-" en 2025). Filtro `!is.na(palu_eda_ade)` añadido en `33_generar_html.R` (ambos catálogos) y guard `D2.palu[i] != null` en el popup de celda del motor. Bug latente desde la sesión 4; expuesto (no causado) por la entrada de SLEP rurales con el traspaso 2026. `RBDs×GSE` de 42.134 a 34.255; `RBDs×nivel` de 23.026 a 21.402. [UI]
 
 **Delta del backlog:** 6 entradas nuevas (51–56). Sin reclasificación de taxonomía. La categoría UI sigue dominante; DT y P con presencia por los dos fixes de raíz.
 
 ## Sesión 13 — Auditoría pre-lanzamiento (traspaso v13)
 
-57. [Pipeline/Corrección] Filtro completo de producción (palu no-NA,
+57. [P] Filtro completo de producción (palu no-NA,
     nalu >= 10, marca NA) aplicado en 33_generar_html.R a los tres bloques
     que viajan al JSON (simce_rbd, rbd_gse, rbds_por_nivel). Corrige de raíz
     la regresión introducida por el ítem 55 (s12): generateSeriesByRbd
     operaba sobre simce_rbd sin filtros MINEDUC, con divergencias de hasta
     42,6 pp en celdas SLEP. JSON: 185.378 → 140.345 filas. (Resuelve el
     caso A2 del encargo de auditoría.)
-58. [Infraestructura/Seguridad] Scripts CDN del template a builds
+58. [Infra] Scripts CDN del template a builds
     production.min con SRI sha384 y crossorigin (React 18.3.1, ReactDOM
     18.3.1, @babel/standalone 7.29.0). (Caso B4, opción 1.)
-59. [Deuda técnica] Removida la función generateSeries legacy del template
+59. [DT] Removida la función generateSeries legacy del template
     (42 líneas, cero llamadas) y su export en SimceData. (Caso C1.)
-60. [Documentación/Gobernanza] Informe de auditoría pre-lanzamiento +
+60. [DOC] Informe de auditoría pre-lanzamiento +
     decisiones: nombres de establecimiento se mantienen (B2; la prohibición
     citada en POLITICA §6.4 corresponde a bases por estudiante) y repo
     público como excepción justificada por GitHub Pages Free (B3).
@@ -146,14 +146,14 @@
 69. [UI] Multi-selección por checkbox de SLEP y de regiones: arrays `selectedSleps`/`selectedRegions`, helper `toggleSel` con límite dinámico `maxSel = slotsLibres` (no supera el tope de 4 entidades); `saveEntities()` agrega en lote con colores distintos. En edición vuelve a radio (selección única).
 70. [UI] Favicon inline (data-URI SVG, fondo ocean + tres barras) en `<head>`; elimina el 404 en GitHub Pages.
 71. [UI] Notas metodológicas en masonry de 3 columnas (`columns: 3 280px`, `break-inside: avoid`). Orden: Estándares → SLEP → Fórmula → GSE → Gap → Preliminares.
-72. [Metodología/UI] Componente `SlepDisclaimer` + helper `SimceData.entidadDependeSlep(entity)` (`kind==="slep"` o `depe2==="5"`): disclaimer permanente en pestaña SLEP, condicional en Región/Comuna/Nacional, nota en tarjetas con dependencia SLEP y nota larga en las notas metodológicas. La dependencia es la actual y aplica a toda la serie; las cifras previas al traspaso son de gestión municipal, no atribuibles al SLEP.
-73. [Consistencia/UI] Label de la dependencia 5 normalizado a "Servicio Local de Educación Pública (SLEP)" en `DEPE2_LABELS` (sobreescribe lo que traiga el JSON).
-74. [Pipeline] `31_leer_normalizar.R`: lee `palu_eda_ele` y `palu_eda_ins` (espejo de `palu_eda_ade`), las valida como requeridas y las incluye en el esquema (12 → 14 columnas de `simce_rbd.parquet`).
-75. [Pipeline] `10_utils/10_utils.R`: `agregar_ponderado()` calcula además `pct_elemental` y `pct_insuficiente` con la misma ponderación por `nalu` y los mismos filtros, condicional a que existan las columnas. El % Adecuado es idéntico exista o no ele/ins (lo gobierna `palu_eda_ade`).
-76. [Pipeline] `32_agregar_comunal.R`: propaga `pct_elemental`/`pct_insuficiente` al `select` final de `simce_comunal.parquet` (12 → 14 columnas).
-77. [Pipeline] `33_generar_html.R`: `depe2_labels` corregido a "Servicio Local de Educación Pública (SLEP)"; `pct_ele`/`pct_ins` embebidos en el bloque comunal (`datos_lst`); `palu_ele`/`palu_ins` crudos en el bloque por establecimiento (`simce_rbd_lst`).
-78. [Frontend] Las 5 funciones `generateSeriesBy*` acumulan `num_ele`/`num_ins` y devuelven `pct_ele`/`pct_ins` vía helper `mkPunto()`, que normaliza los tres niveles a 100 (Adecuado exacto; Elem+Insuf reescalados para sumar 100−Adecuado, absorbiendo el ±0,1 de redondeo de la fuente).
-79. [Frontend] `RecentBarsSubchart`: el rectángulo blanco "resto" se reemplaza por dos segmentos apilados con color fijo (Elemental `#D8C98E`, Insuficiente `#B9A9A0`) cuando el toggle está activo. Leyenda (`ChartHints`) y tooltip actualizados a tres niveles; dos selectores CSS huérfanos removidos.
+72. [UI] Componente `SlepDisclaimer` + helper `SimceData.entidadDependeSlep(entity)` (`kind==="slep"` o `depe2==="5"`): disclaimer permanente en pestaña SLEP, condicional en Región/Comuna/Nacional, nota en tarjetas con dependencia SLEP y nota larga en las notas metodológicas. La dependencia es la actual y aplica a toda la serie; las cifras previas al traspaso son de gestión municipal, no atribuibles al SLEP.
+73. [UI] Label de la dependencia 5 normalizado a "Servicio Local de Educación Pública (SLEP)" en `DEPE2_LABELS` (sobreescribe lo que traiga el JSON).
+74. [P] `31_leer_normalizar.R`: lee `palu_eda_ele` y `palu_eda_ins` (espejo de `palu_eda_ade`), las valida como requeridas y las incluye en el esquema (12 → 14 columnas de `simce_rbd.parquet`).
+75. [P] `10_utils/10_utils.R`: `agregar_ponderado()` calcula además `pct_elemental` y `pct_insuficiente` con la misma ponderación por `nalu` y los mismos filtros, condicional a que existan las columnas. El % Adecuado es idéntico exista o no ele/ins (lo gobierna `palu_eda_ade`).
+76. [P] `32_agregar_comunal.R`: propaga `pct_elemental`/`pct_insuficiente` al `select` final de `simce_comunal.parquet` (12 → 14 columnas).
+77. [P] `33_generar_html.R`: `depe2_labels` corregido a "Servicio Local de Educación Pública (SLEP)"; `pct_ele`/`pct_ins` embebidos en el bloque comunal (`datos_lst`); `palu_ele`/`palu_ins` crudos en el bloque por establecimiento (`simce_rbd_lst`).
+78. [UI] Las 5 funciones `generateSeriesBy*` acumulan `num_ele`/`num_ins` y devuelven `pct_ele`/`pct_ins` vía helper `mkPunto()`, que normaliza los tres niveles a 100 (Adecuado exacto; Elem+Insuf reescalados para sumar 100−Adecuado, absorbiendo el ±0,1 de redondeo de la fuente).
+79. [UI] `RecentBarsSubchart`: el rectángulo blanco "resto" se reemplaza por dos segmentos apilados con color fijo (Elemental `#D8C98E`, Insuficiente `#B9A9A0`) cuando el toggle está activo. Leyenda (`ChartHints`) y tooltip actualizados a tres niveles; dos selectores CSS huérfanos removidos.
 
 **Delta del backlog:** 19 entradas nuevas (61–79). Total acumulado: 79. Modelo: Opus 4.8 — UI/UX + toggle de tres niveles.
 
@@ -162,7 +162,7 @@
 80. [UI] Default del toggle a solo-Adecuado: `showElemInsuf` inicia en `false`; el motor abre mostrando solo el % Adecuado y el desglose es opt-in.
 81. [UI] Renombre del botón "Elem. + Insuf." → "Mostrar niveles Elemental e Insuficiente".
 82. [UI] Texto de la nota del gap 2019-2021 reescrito a la redacción del usuario.
-83. [UI/DOC] "SIMCE" → "Simce" en el motor (nota de gap + fuente) y en toda la documentación; identificadores de código (`SimceData`) intactos.
+83. [UI] "SIMCE" → "Simce" en el motor (nota de gap + fuente) y en toda la documentación; identificadores de código (`SimceData`) intactos.
 84. [UI] Tres niveles con color fijo por nivel (decisión de diseño 8.1): Adecuado #0C4682, Elemental #6BA0CE, Insuficiente #79204F, iguales en todas las entidades; los puntos que usaban `entity.color` para Adecuado pasan a `COLOR_ADEC`. `entity.color` queda solo como identidad (swatch de tarjeta, encabezado, export, borde de ficha).
 85. [UI] Colores distintos en alta múltiple (causa raíz): `handleSave` fijaba un único color en las ramas region/slep; fix: dejan `color: undefined` en alta múltiple y `saveEntities` asigna un color por índice desde `ENTITY_PALETTE`.
 86. [UI] Borde de color por entidad en la ficha del gráfico (1px rodeando la ficha) y color de entidad en la línea bajo el nombre en el encabezado del supergrid.
@@ -202,7 +202,7 @@
 
 ## Sesión 19 — Gobernanza 4b/depe4 y suite suitedoc (traspaso v19)
 
-103. [Gobernanza/Auditoría] Evaluación y cierre del pendiente 4b/depe4: se constató que `cod_depe2` es eje de segmentación real (selector "Dependencia" + `generateSeriesByDepe`) y que todo punto con `n_estab===1` ya expone el RBD (tooltip "un solo establecimiento (RBD …)") y el nombre (popup "Ver establecimientos"), lo cual es deliberado y fundado en la decisión D-nombres. Conclusión: no implementar supresión. Sin cambios de código.
+103. [REPO] Evaluación y cierre del pendiente 4b/depe4: se constató que `cod_depe2` es eje de segmentación real (selector "Dependencia" + `generateSeriesByDepe`) y que todo punto con `n_estab===1` ya expone el RBD (tooltip "un solo establecimiento (RBD …)") y el nombre (popup "Ver establecimientos"), lo cual es deliberado y fundado en la decisión D-nombres. Conclusión: no implementar supresión. Sin cambios de código.
 104. [DOC] Implementación de la suite `suitedoc` (`documentar.R` + 4 HTML): reverse-engineering de la API de `suitedoc` 0.3.0 desde el `documentar.R` del proyecto hermano; `cfg` poblada desde el escáner, el README, los scripts 30–33, el traspaso v18 y la decisión de nombres; contenido invertido donde difiere (agregación ponderada por evaluados, GSE inviolable); runtime/deploy verificados contra el código real (React/ReactDOM/Babel por CDN unpkg con SRI, D3/pako inline; deploy a `docs/` manual). `here::i_am()` añadido para correr vía `Rscript`.
 105. [DOC] Auditoría de la suite, ajuste y versionado: auditados los 4 HTML (fieles, sin residuos del ejemplo de fábrica, terminología SLEP correcta); único ajuste de contenido: se quitaron dos referencias al "proyecto hermano" en las decisiones de Agregación ponderada y GSE inviolable (autocontención del manual). Regenerada y versionada (`git add` de `.gitignore` + `documentar.R` + 4 HTML + `suite_estilos.css`; `fonts/` y `assets/` al `.gitignore`). Commit `e9b251d`, push `0bb504c..e9b251d`.
 
@@ -210,7 +210,7 @@
 
 ## Sesión 20 — Documentación y gobernanza: decisión 4b/depe4, marcas de suite y reconstrucción del backlog (traspaso v20)
 
-106. [DOC/Gobernanza] Archivo de decisión `20260620_decision_celda_unico_establecimiento.md` (D20-1, corolario de D-nombres): formaliza que las celdas con `n_estab=1` no se suprimen, porque la exposición de establecimientos individuales es general y deliberada en el motor y la restricción de §6.4 aplica solo a microdatos por estudiante. Documenta las dos alternativas descartadas (colapsar `depe2`; suprimir por `n_estab < k`) con su porqué. Commit `e0d4438`.
+106. [DOC] Archivo de decisión `20260620_decision_celda_unico_establecimiento.md` (D20-1, corolario de D-nombres): formaliza que las celdas con `n_estab=1` no se suprimen, porque la exposición de establecimientos individuales es general y deliberada en el motor y la restricción de §6.4 aplica solo a microdatos por estudiante. Documenta las dos alternativas descartadas (colapsar `depe2`; suprimir por `n_estab < k`) con su porqué. Commit `e0d4438`.
 107. [DOC] Corrección de las marcas `# REVISAR (decisión)` del `documentar.R` de la suite: las "2 marcas" anunciadas en v19 eran temas de contenido mal rotulados; se hallaron 3 marcas reales. Se corrigió una imprecisión real (el bloque de color atribuía el color "al periodo", algo que la decisión de color s15 no contempla; añadido el mecanismo de identidad por nombre/swatch/borde que la fuente sí especifica) y se confirmaron las otras dos (item A2 del diccionario y glosario de marca) fieles al backlog #57. Suite regenerada (4 HTML) y versionada. Commits `e14048f` (suite), `2488a2f` (log).
 108. [DOC] Reconstrucción del backlog histórico 61–105: se descubrió que el archivo vivo estaba congelado en la entrada 60 / sesión 13; las entradas 61–102 vivían solo en los §4 de los traspasos v14–v18, nunca anexadas. Se reconstruyeron las 45 entradas faltantes (61–105) desde el §4 de cada traspaso (no el §5, que es puntero), respetando la numeración global declarada en cada §5. Backlog en 1–105 / 19 sesiones, entradas 1–60 intactas. Commit `409b861`.
 109. [DOC] Cotejo de las 19 categorías inferidas (entradas 80–98) contra el texto verbatim de los §4 de v15/v16, que no asignan categoría por entrada; retiradas las marcas `# REVISAR (categoría)`. Único cambio real de categoría: entrada 83 (DOC/UI → UI/DOC). Incluido en el commit `409b861`.
@@ -220,25 +220,16 @@
 ## Sesión 21 — Mantenimiento documental y cumplimiento Ley 21.719 (traspaso v21)
 
 110. [DOC] Anexo del delta de la sesión 20 al backlog (entradas 106–109) y actualización de cobertura a 1–20. Commit `0e9d275`.
-111. [Gobernanza/Auditoría] Auditoría Ley 21.719: producto publicado verificado limpio por dos caminos (código + panel adversarial); hallazgo `MRUN` (946 filas, persona natural) en insumo versionado. Sin cambios de código.
-112. [REPO/Gobernanza] Mitigación: de-versionado de `directorio_oficial_ee.csv` going-forward (`git rm --cached` + `.gitignore` + README), residual de historial aceptado. Commit `1edc787`.
-113. [DOC/Gobernanza] `gobernanza_datos.md` (primer archivo de gobernanza del proyecto) + decisión 21.719. Commit `1edc787`.
+111. [REPO] Auditoría Ley 21.719: producto publicado verificado limpio por dos caminos (código + panel adversarial); hallazgo `MRUN` (946 filas, persona natural) en insumo versionado. Sin cambios de código.
+112. [REPO] Mitigación: de-versionado de `directorio_oficial_ee.csv` going-forward (`git rm --cached` + `.gitignore` + README), residual de historial aceptado. Commit `1edc787`.
+113. [DOC] `gobernanza_datos.md` (primer archivo de gobernanza del proyecto) + decisión 21.719. Commit `1edc787`.
 
 **Delta del backlog:** 4 entradas nuevas (110–113). Sin reclasificación (tags compuestos, D20-3). Total acumulado: 113.
 
 ## Sesión 22 — Suite de documentación standalone offline (traspaso v22)
 
-114. [Proceso] Saneamiento del encargo de suite standalone: recorte a solo Fase B (Fase A obsoleta, backlog ya en 1–113) y verificación de la API real de `suitedoc` antes de redactar (firma `standalone=`, lucide 1.21.0). Sin commit de código (trabajo de análisis); materializado en el encargo versionado.
-115. [DOC/Gobernanza] Actualización de la cfg del `documentar.R`: gobernanza Ley 21.719 + 6 decisiones formales (con `id`/`por_que` del archivo, +D20-1 +D21-1) + directorio marcado no versionado. Commit `6f94729`.
+114. [P] Saneamiento del encargo de suite standalone: recorte a solo Fase B (Fase A obsoleta, backlog ya en 1–113) y verificación de la API real de `suitedoc` antes de redactar (firma `standalone=`, lucide 1.21.0). Sin commit de código (trabajo de análisis); materializado en el encargo versionado.
+115. [DOC] Actualización de la cfg del `documentar.R`: gobernanza Ley 21.719 + 6 decisiones formales (con `id`/`por_que` del archivo, +D20-1 +D21-1) + directorio marcado no versionado. Commit `6f94729`.
 116. [DOC] Regeneración de la suite como standalone offline (4 `*_standalone.html`, 0 red verificado) + versionado del encargo saneado y el log. Commits `6f94729`, `c5b6a17`.
 
 **Delta del backlog:** 3 entradas nuevas (114–116). Sin reclasificación (D20-3). Total acumulado: 116.
-
-## Sesión 23 — Estado por defecto del motor y auditoría de suite standalone (traspaso v23)
-
-117. [Motor] Estado por defecto del motor = 4 comunas del SLEP Costa Central con dependencia Servicio Local (depe2="5"), en montaje y reset; derivación en runtime sin hardcodear códigos (`entidadesPorDefecto()`). Commit `4d647df`.
-118. [DOC] Regeneración de la suite standalone offline a pedido del titular; resultó determinista byte-idéntica (no-op de versionado, sin commit).
-119. [DOC/Auditoría] Auditoría minuciosa de los 4 `*_standalone.html`: red real 0 verificada, `946` en general identificado como falso positivo (base64 de fuente), `MRUN` en general confirmado heredado/aceptado. Sin commit (análisis).
-120. [DOC] README: subtítulo sin "comunal" (el motor compara entidades de todo nivel). Commit `f87a3f7`.
-
-**Delta del backlog:** 4 entradas nuevas (117–120). Sin reclasificación (D20-3). Total acumulado: 120.
