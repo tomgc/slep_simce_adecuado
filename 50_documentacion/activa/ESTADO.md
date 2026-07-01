@@ -3,17 +3,17 @@ slug: slep_simce_adecuado
 nombre_real: Motor de comparación interactivo de los resultados Simce por estándares de aprendizaje (Adecuado/Elemental/Insuficiente)
 categoria: activo
 semaforo: activo
-sesion_actual: v24
-ultima_actividad: 2026-06-29
+sesion_actual: v26
+ultima_actividad: 2026-07-01
 maneja_sensibles: false
 tipo_pendiente: ninguno
 ventana_insumos: ./20_insumos
 ---
 ## En que vamos
-La sesión 24 fue íntegramente de mantenimiento documental: sin cambios al motor ni al pipeline. Se cerró el delta de backlog de la s23 (entradas 117–120), se versionó la reseña final espejo del data.js del portafolio, se retiraron las 7 marcas REVISAR (voz) de `documentar.R` y se normalizaron todos los tags del backlog a la taxonomía canónica de 7 códigos. El proyecto queda estable y desplegado en GitHub Pages, con working tree limpio salvo un archivo untracked por diseño.
+Sesión 25: renombrado UI "entidad"→"territorio" (33 líneas, identificadores de código intactos), regeneración y deploy del motor, y reparación de un truncamiento del backlog originado en s24 (con un intento fallido revertido). Sesión 26: auditoría de dos hallazgos heredados de gobernanza documental (A-s25-4: `POLITICA_PROYECTO.md` duplicado en raíz resultó ser v6 obsoleta de jun-12, eliminada; `ESTADO.md` confirmado legítimo). Cerrado A-s25-3: `backlog_historico.md` renombrado a `backlog_acumulativo.md` (nombre canónico) y referencia actualizada en README. Sidequest: script `34_historico_pct_adecuado_costa_central.R` (histórico ponderado de % Adecuado, todos los GSE combinados, Costa Central, 4 hojas 4b/2m × lect/mate) ejecutado, verificado y versionado. Proyecto estable y desplegado, working tree limpio.
 
 ## Proximo paso
-No hay pendientes activos; candidatos de sesión futura (solo si surge necesidad): regenerar la suite si cambia `documentar.R`, la actualización anual de insumos Simce, o incorporar las entradas 121–124 del backlog.
+No hay pendientes activos ni bugs. Candidatos de sesión futura: regenerar la suite standalone (evaluar si `documentar.R` referencia terminología "entidad" a actualizar), actualización anual de insumos Simce 2025/2026.
 
 ## Bloqueantes
 ninguno
