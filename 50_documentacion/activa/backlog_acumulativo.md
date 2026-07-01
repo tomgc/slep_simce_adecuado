@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–22 (traspasos v01–v22). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s22 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–26 (traspasos v01–v26). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s26 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -260,3 +260,13 @@
 128. [REPO] Regeneración y deploy de `docs/index.html` con el cambio de renombrado; solo `docs/index.html` en stage (gobernanza OK). Commit `98d489f`.
 
 **Delta del backlog:** 4 entradas nuevas (125–128). Total acumulado: 128.
+
+## Sesión 26 — Auditoría de deuda heredada y sidequest histórico % Adecuado (traspaso v26)
+
+129. [REPO] Auditoría A-s25-4: `POLITICA_PROYECTO.md` duplicado en raíz identificado como v6 obsoleta (commit `32b090d`, 2026-06-12), anterior a la vigente `50_documentacion/activa/` v5.2 (commit `c9841d8`, 2026-07-01) pese a autodeclararse "vigente y definitiva"; eliminado de raíz. Commit `7ec8461`.
+130. [DOC] Cierre A-s25-3: `backlog_historico.md` renombrado a `backlog_acumulativo.md` (nombre canónico POLITICA §10); referencia actualizada en `README.md`. Commits `34d681d`, `7af874c`.
+131. [P] Sidequest: script `34_historico_pct_adecuado_costa_central.R` — histórico ponderado por `nalu` del % de estudiantes en nivel Adecuado, todos los GSE combinados, universo Costa Central (4 comunas + depe2="5"), 4 hojas por nivel × prueba (4b-lect, 4b-mate, 2m-lect, 2m-mate), formato porcentaje sin decimales. Verificado en R por el titular contra fuente externa. Commit `6a13f3e`.
+132. [DOC] `ESTADO.md` actualizado v24→v26 (Fase 2 del orquestador de cartera). Commit `98c3f6a`.
+133. [DT] Aprendizaje A-s26-1 (vigencia de documentos duplicados se determina por fecha de commit real, no por autodeclaración del texto) y A-s26-2 (verificar `git status --short` tras `mv`+`add` encadenado) registrados en traspaso v26.
+
+**Delta del backlog:** 5 entradas nuevas (129–133). Total acumulado: 133.
