@@ -176,7 +176,7 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
   — diagrama de arquitectura del pipeline (insumos → 30 → 31 → 32 → 33 → motor).
   Abrir localmente o vía vista previa del repo (no se publica en GitHub Pages,
   que solo sirve `docs/`).
-- [`50_documentacion/activa/backlog_historico.md`](50_documentacion/activa/backlog_historico.md)
+- [`50_documentacion/activa/backlog_acumulativo.md`](50_documentacion/activa/backlog_acumulativo.md)
   — registro acumulativo de cambios del proyecto (documento vivo).
 - Estructura del repo y esquemas de datos: ver secciones "Responsabilidades por
   archivo" y "Esquemas de datos" más arriba. Snapshot autogenerado del árbol en
