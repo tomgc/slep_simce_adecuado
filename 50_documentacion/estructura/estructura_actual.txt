@@ -1,7 +1,7 @@
 ESCANEO DE ESTRUCTURA — slep_simce_adecuado
 Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
-Fecha  : 2026-06-26 18:58:09
-Totales: 23 carpetas, 145 archivos
+Fecha  : 2026-06-29 06:32:57
+Totales: 23 carpetas, 146 archivos
 Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 slep_simce_adecuado/
@@ -89,7 +89,7 @@ slep_simce_adecuado/
 │   │   ├── .DS_Store  (8K)
 │   │   ├── .gitkeep  (0)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_historico.md  (28.5K)
+│   │   ├── backlog_historico.md  (28.1K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
 │   │   ├── gobernanza_datos.md  (6.96K)
@@ -97,7 +97,7 @@ slep_simce_adecuado/
 │   │   ├── manifiesto_insumos.md  (2.78K)
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   ├── referencia_glosas_simce.md  (9.28K)
-│   │   ├── resena_slep_simce_adecuado.md  (8.63K)
+│   │   ├── resena_slep_simce_adecuado.md  (1.4K)
 │   │   └── SETTINGS_Y_PROMPTS_OPERACIONALES.md  (37.3K)
 │   ├── andamios/
 │   │   ├── logs/
@@ -108,12 +108,12 @@ slep_simce_adecuado/
 │   │   │   └── 20260622_suite_standalone_simce_log.md  (5.48K)
 │   │   └── .DS_Store  (6K)
 │   ├── estructura/
-│   │   ├── 20260623_163045_estructura.md  (8.92K)
-│   │   ├── 20260623_163045_estructura.txt  (9.01K)
-│   │   ├── 20260624_081041_estructura.md  (8.92K)
-│   │   ├── 20260624_081041_estructura.txt  (9.01K)
-│   │   ├── estructura_actual.md  (8.92K)
-│   │   └── estructura_actual.txt  (9.01K)
+│   │   ├── 20260626_185809_estructura.md  (9.04K)
+│   │   ├── 20260626_185809_estructura.txt  (9.12K)
+│   │   ├── 20260629_063024_estructura.md  (9.03K)
+│   │   ├── 20260629_063024_estructura.txt  (9.12K)
+│   │   ├── estructura_actual.md  (9.03K)
+│   │   └── estructura_actual.txt  (9.12K)
 │   ├── suite/
 │   │   ├── assets/
 │   │   │   ├── logo-color-stacked.png  (126K)
@@ -130,7 +130,7 @@ slep_simce_adecuado/
 │   │   ├── arquitectura_slep_simce_adecuado_standalone.html  (445K)
 │   │   ├── documentacion_general_slep_simce_adecuado_standalone.html  (434K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado_standalone.html  (441K)
-│   │   ├── documentar.R  (50.6K)
+│   │   ├── documentar.R  (50.2K)
 │   │   └── suite_estilos.css  (21.7K)
 │   ├── traspasos/
 │   │   ├── .gitkeep  (0)
@@ -156,7 +156,8 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v20.md  (18.4K)
 │   │   ├── traspaso_cierre_v21.md  (19.1K)
 │   │   ├── traspaso_cierre_v22.md  (16.4K)
-│   │   └── traspaso_cierre_v23.md  (20.1K)
+│   │   ├── traspaso_cierre_v23.md  (20.1K)
+│   │   └── traspaso_cierre_v24.md  (10.6K)
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.46M)
@@ -175,7 +176,7 @@ slep_simce_adecuado/
 └── verificar_elem_insuf.R  (6.15K)
 
 Conteo por extension:
-  md                 51
+  md                 52
   xlsx               23
   (sin extension)    15
   r                  11
