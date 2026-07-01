@@ -233,3 +233,30 @@
 116. [DOC] Regeneración de la suite como standalone offline (4 `*_standalone.html`, 0 red verificado) + versionado del encargo saneado y el log. Commits `6f94729`, `c5b6a17`.
 
 **Delta del backlog:** 3 entradas nuevas (114–116). Sin reclasificación (D20-3). Total acumulado: 116.
+
+## Sesión 23 — Estado por defecto del motor y auditoría de suite standalone (traspaso v23)
+
+117. [UI] Estado por defecto del motor = 4 comunas del SLEP Costa Central con dependencia Servicio Local (depe2="5"), en montaje y reset; derivación en runtime sin hardcodear códigos (`entidadesPorDefecto()`). Commit `4d647df`.
+118. [DOC] Regeneración de la suite standalone offline a pedido del titular; resultó determinista byte-idéntica (no-op de versionado, sin commit).
+119. [DOC] Auditoría minuciosa de los 4 `*_standalone.html`: red real 0 verificada, `946` en general identificado como falso positivo (base64 de fuente), `MRUN` en general confirmado heredado/aceptado. Sin commit (análisis).
+120. [DOC] README: subtítulo sin "comunal" (el motor compara entidades de todo nivel). Commit `f87a3f7`.
+
+**Delta del backlog:** 4 entradas nuevas (117–120). Sin reclasificación (D20-3). Total acumulado: 120.
+
+## Sesión 24 — Cierre de backlog y pendientes de documentación (traspaso v24)
+
+121. [DOC] Anexo del delta de la sesión 23 al backlog (entradas 117–120) y actualización de cobertura a 1–23. Commit `8944c2e`.
+122. [DOC] Reseña final versionada como espejo verbatim del bloque `orden: 3` de `data.js` del portafolio del Área. Commit `d4051d0`.
+123. [DOC] Retiro de 7 marcas `# REVISAR (voz)` de `documentar.R` (6 inline + nota de L23); la marca `# REVISAR (decisión)` restante se conservó. Commit `ef2aded`.
+124. [DOC] Normalización de todos los tags del detalle cronológico a la taxonomía canónica de 7 códigos (D20-3): entradas 1–56 de `— CÓDIGO` a `[CÓDIGO]`; tags compuestos libres mapeados por intención primaria. Commit `572324a`. **Nota de bug (A-s25-1):** este mismo commit truncó por error las secciones de sesión 23–24 (entradas 117–120) del archivo; reparado en la sesión 25 (ver entrada 126).
+
+**Delta del backlog:** 4 entradas nuevas (121–124). Sin reclasificación adicional de taxonomía. Total acumulado: 124.
+
+## Sesión 25 — Renombrado UI "entidad" → "territorio" y reparación de backlog truncado (traspaso v25)
+
+125. [UI] Renombrado del concepto de UI "entidad" a "territorio" en 33 líneas de texto visible, comentarios y header CSV exportado de `33_motor_template.html`; identificadores de código (`entidadDependeSlep`, `entidadesPorDefecto`, `MAX_ENTIDADES`, `entities`/`entity`) intocables por decisión explícita. Encargo autónomo ejecutado por Claude Code, verificación de conteos exacta. Commit `0c70db0`.
+126. [DOC] Reparación del bug A-s25-1: el commit `572324a` (entrada 124) truncó las secciones de sesión 23 y 24 (entradas 117–120) al normalizar tags; reinsertadas desde `8944c2e` con tags ya en formato canónico `[CÓDIGO]`.
+127. [DOC] `POLITICA_PROYECTO.md` versionado por primera vez (antes untracked). Commit `c9841d8`.
+128. [REPO] Regeneración y deploy de `docs/index.html` con el cambio de renombrado; solo `docs/index.html` en stage (gobernanza OK). Commit `98d489f`.
+
+**Delta del backlog:** 4 entradas nuevas (125–128). Total acumulado: 128.
