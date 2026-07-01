@@ -114,30 +114,122 @@
 
 ## Sesión 13 — Auditoría pre-lanzamiento (traspaso v13)
 
+57. [P] Filtro completo de producción (palu no-NA,
+    nalu >= 10, marca NA) aplicado en 33_generar_html.R a los tres bloques
+    que viajan al JSON (simce_rbd, rbd_gse, rbds_por_nivel). Corrige de raíz
+    la regresión introducida por el ítem 55 (s12): generateSeriesByRbd
+    operaba sobre simce_rbd sin filtros MINEDUC, con divergencias de hasta
+    42,6 pp en celdas SLEP. JSON: 185.378 → 140.345 filas. (Resuelve el
+    caso A2 del encargo de auditoría.)
+58. [Infra] Scripts CDN del template a builds
+    production.min con SRI sha384 y crossorigin (React 18.3.1, ReactDOM
+    18.3.1, @babel/standalone 7.29.0). (Caso B4, opción 1.)
+59. [DT] Removida la función generateSeries legacy del template
+    (42 líneas, cero llamadas) y su export en SimceData. (Caso C1.)
+60. [DOC] Informe de auditoría pre-lanzamiento +
+    decisiones: nombres de establecimiento se mantienen (B2; la prohibición
+    citada en POLITICA §6.4 corresponde a bases por estudiante) y repo
+    público como excepción justificada por GitHub Pages Free (B3).
 
-## Sesión 23 — Estado por defecto del motor y auditoría de suite standalone (traspaso v23)
+**Delta del backlog:** 4 entradas nuevas (57–60). Total acumulado: 60. Modelo: Fable 5 — auditoría pre-lanzamiento.
 
-117. [UI] Estado por defecto del motor = 4 comunas del SLEP Costa Central con dependencia Servicio Local (depe2="5"), en montaje y reset; derivación en runtime sin hardcodear códigos (`entidadesPorDefecto()`). Commit `4d647df`.
-118. [DOC] Regeneración de la suite standalone offline a pedido del titular; resultó determinista byte-idéntica (no-op de versionado, sin commit).
-119. [DOC] Auditoría minuciosa de los 4 `*_standalone.html`: red real 0 verificada, `946` en general identificado como falso positivo (base64 de fuente), `MRUN` en general confirmado heredado/aceptado. Sin commit (análisis).
-120. [DOC] README: subtítulo sin "comunal" (el motor compara entidades de todo nivel). Commit `f87a3f7`.
+## Sesión 14 — UI/UX del motor y toggle real de tres niveles (traspaso v14)
 
-**Delta del backlog:** 4 entradas nuevas (117–120). Sin reclasificación (D20-3). Total acumulado: 120.
+61. [UI] Empty state inicial: el motor arranca con cero entidades (`useState([])`); sin entidades se ocultan resultados y tabla y se muestra un recuadro guía. `buildInitialEntities()` eliminada (huérfana); el botón limpiar vacía a `[]`.
+62. [UI] Texto guía del empty state: una sola línea a 16px, color `--fg-2`. Clase `.empty-board` (renombrada desde `.empty-state` para no colisionar con el empty-state del modal).
+63. [UI] Botón "limpiar" (icono `rotate-ccw`) movido del `entities-head` al final de `entities-list`, junto a la última tarjeta.
+64. [UI] Toggle "Elem. + Insuf.": bug de salto al desmarcar resuelto reservando el ancho del chip condicional de `ChartHints` (`visibility:hidden` en vez de desmontar).
+65. [UI] Tarjetas de entidad: crecen en alto antes de pasar a 2 filas (`max-width:340px`, `align-items:flex-start`, nota SLEP con `white-space:normal`).
+66. [UI] Sticky de Nivel/Prueba: `controls-bar` con `position:sticky; top:0` y `border-top:4px coral` (la línea naranja viaja con el sticky); borde coral del header removido para no duplicar.
+67. [UI] Default de dependencia en pestañas Comuna/Región/Nacional: de "Servicio Local de Educación" (cod 5) a "Todas las dependencias" (`""`). Resuelve de raíz el síntoma de "comuna sin datos" (p. ej. Petorca), que se guardaba con dependencia SLEP y salía vacía.
+68. [UI] Texto "Resultados por GSE" → "Resultados segmentados por grupo socioeconómico (GSE)".
+69. [UI] Multi-selección por checkbox de SLEP y de regiones: arrays `selectedSleps`/`selectedRegions`, helper `toggleSel` con límite dinámico `maxSel = slotsLibres` (no supera el tope de 4 entidades); `saveEntities()` agrega en lote con colores distintos. En edición vuelve a radio (selección única).
+70. [UI] Favicon inline (data-URI SVG, fondo ocean + tres barras) en `<head>`; elimina el 404 en GitHub Pages.
+71. [UI] Notas metodológicas en masonry de 3 columnas (`columns: 3 280px`, `break-inside: avoid`). Orden: Estándares → SLEP → Fórmula → GSE → Gap → Preliminares.
+72. [UI] Componente `SlepDisclaimer` + helper `SimceData.entidadDependeSlep(entity)` (`kind==="slep"` o `depe2==="5"`): disclaimer permanente en pestaña SLEP, condicional en Región/Comuna/Nacional, nota en tarjetas con dependencia SLEP y nota larga en las notas metodológicas. La dependencia es la actual y aplica a toda la serie; las cifras previas al traspaso son de gestión municipal, no atribuibles al SLEP.
+73. [UI] Label de la dependencia 5 normalizado a "Servicio Local de Educación Pública (SLEP)" en `DEPE2_LABELS` (sobreescribe lo que traiga el JSON).
+74. [P] `31_leer_normalizar.R`: lee `palu_eda_ele` y `palu_eda_ins` (espejo de `palu_eda_ade`), las valida como requeridas y las incluye en el esquema (12 → 14 columnas de `simce_rbd.parquet`).
+75. [P] `10_utils/10_utils.R`: `agregar_ponderado()` calcula además `pct_elemental` y `pct_insuficiente` con la misma ponderación por `nalu` y los mismos filtros, condicional a que existan las columnas. El % Adecuado es idéntico exista o no ele/ins (lo gobierna `palu_eda_ade`).
+76. [P] `32_agregar_comunal.R`: propaga `pct_elemental`/`pct_insuficiente` al `select` final de `simce_comunal.parquet` (12 → 14 columnas).
+77. [P] `33_generar_html.R`: `depe2_labels` corregido a "Servicio Local de Educación Pública (SLEP)"; `pct_ele`/`pct_ins` embebidos en el bloque comunal (`datos_lst`); `palu_ele`/`palu_ins` crudos en el bloque por establecimiento (`simce_rbd_lst`).
+78. [UI] Las 5 funciones `generateSeriesBy*` acumulan `num_ele`/`num_ins` y devuelven `pct_ele`/`pct_ins` vía helper `mkPunto()`, que normaliza los tres niveles a 100 (Adecuado exacto; Elem+Insuf reescalados para sumar 100−Adecuado, absorbiendo el ±0,1 de redondeo de la fuente).
+79. [UI] `RecentBarsSubchart`: el rectángulo blanco "resto" se reemplaza por dos segmentos apilados con color fijo (Elemental `#D8C98E`, Insuficiente `#B9A9A0`) cuando el toggle está activo. Leyenda (`ChartHints`) y tooltip actualizados a tres niveles; dos selectores CSS huérfanos removidos.
 
-## Sesión 24 — Cierre de backlog y pendientes de documentación (traspaso v24)
+**Delta del backlog:** 19 entradas nuevas (61–79). Total acumulado: 79. Modelo: Opus 4.8 — UI/UX + toggle de tres niveles.
 
-121. [DOC] Anexo del delta de la sesión 23 al backlog (entradas 117–120) y actualización de cobertura a 1–23. Commit `8944c2e`.
-122. [DOC] Reseña final versionada como espejo verbatim del bloque `orden: 3` de `data.js` del portafolio del Área. Commit `d4051d0`.
-123. [DOC] Retiro de 7 marcas `# REVISAR (voz)` de `documentar.R` (6 inline + nota de L23); la marca `# REVISAR (decisión)` restante se conservó. Commit `ef2aded`.
-124. [DOC] Normalización de todos los tags del detalle cronológico a la taxonomía canónica de 7 códigos (D20-3): entradas 1–56 de `— CÓDIGO` a `[CÓDIGO]`; tags compuestos libres mapeados por intención primaria. Commit `572324a`. **Nota de bug (A-s25-1):** este mismo commit truncó por error las secciones de sesión 23–24 (entradas 117–120) del archivo; reparado en la sesión 25 (ver entrada 126).
+## Sesión 15 — Ajustes finos de UI: color fijo por nivel y default Adecuado (traspaso v15)
 
-**Delta del backlog:** 4 entradas nuevas (121–124). Sin reclasificación adicional de taxonomía. Total acumulado: 124.
+80. [UI] Default del toggle a solo-Adecuado: `showElemInsuf` inicia en `false`; el motor abre mostrando solo el % Adecuado y el desglose es opt-in.
+81. [UI] Renombre del botón "Elem. + Insuf." → "Mostrar niveles Elemental e Insuficiente".
+82. [UI] Texto de la nota del gap 2019-2021 reescrito a la redacción del usuario.
+83. [UI] "SIMCE" → "Simce" en el motor (nota de gap + fuente) y en toda la documentación; identificadores de código (`SimceData`) intactos.
+84. [UI] Tres niveles con color fijo por nivel (decisión de diseño 8.1): Adecuado #0C4682, Elemental #6BA0CE, Insuficiente #79204F, iguales en todas las entidades; los puntos que usaban `entity.color` para Adecuado pasan a `COLOR_ADEC`. `entity.color` queda solo como identidad (swatch de tarjeta, encabezado, export, borde de ficha).
+85. [UI] Colores distintos en alta múltiple (causa raíz): `handleSave` fijaba un único color en las ramas region/slep; fix: dejan `color: undefined` en alta múltiple y `saveEntities` asigna un color por índice desde `ENTITY_PALETTE`.
+86. [UI] Borde de color por entidad en la ficha del gráfico (1px rodeando la ficha) y color de entidad en la línea bajo el nombre en el encabezado del supergrid.
+87. [UI] Reorganización de la leyenda: sale de `section-actions` a una fila propia bajo el título; "2025 preliminar" eliminado (ya está en notas); orden Baja repr. · Adecuado · Elemental · Insuficiente.
+88. [UI] Sin líneas entre segmentos apilados: removido `stroke #C8BDA0`/`stroke-width 0.5` y el inset de 0.5px; los segmentos se pegan sin gap.
+89. [UI] Etiquetas blancas en segmentos apilados: cada segmento (Elemental, Insuficiente) muestra su % en blanco a la base si el alto ≥16px; en modo solo-Adecuado la etiqueta se mantiene encima en azul.
+90. [UI] Tipografía del sparkline ampliada (etiqueta % 8.5→10.5, año 8→9.5, asterisco 9→10.5, radio de punto 2.2→2.6).
+91. [DOC] Documentación actualizada al estado actual (md+html de presentación, arquitectura.html, README): "Simce", colores fijos por nivel, default solo-Adecuado, desglose de tres niveles.
 
-## Sesión 25 — Renombrado UI "entidad" → "territorio" y reparación de backlog truncado (traspaso v25)
+**Delta del backlog:** 12 entradas nuevas (80–91). Sin reclasificación de taxonomía. Total acumulado: 91.
 
-125. [UI] Renombrado del concepto de UI "entidad" a "territorio" en 33 líneas de texto visible, comentarios y header CSV exportado de `33_motor_template.html`; identificadores de código (`entidadDependeSlep`, `entidadesPorDefecto`, `MAX_ENTIDADES`, `entities`/`entity`) intocables por decisión explícita. Encargo autónomo ejecutado por Claude Code, verificación de conteos exacta. Commit `0c70db0`.
-126. [DOC] Reparación del bug A-s25-1: el commit `572324a` (entrada 124) truncó las secciones de sesión 23 y 24 (entradas 117–120) al normalizar tags; reinsertadas desde `8944c2e` con tags ya en formato canónico `[CÓDIGO]`.
-127. [DOC] `POLITICA_PROYECTO.md` versionado por primera vez (antes untracked). Commit `c9841d8`.
-128. [REPO] Regeneración y deploy de `docs/index.html` con el cambio de renombrado; solo `docs/index.html` en stage (gobernanza OK). Commit `98d489f`.
+## Sesión 16 — Cierre en producción, auditoría depe4 y licencia Apache 2.0 (traspaso v16)
 
-**Delta del backlog:** 4 entradas nuevas (125–128). Total acumulado: 128.
+92. [REPO] Push de 6 commits a origin/main (los 5 de v15 + el commit del traspaso v15, `28f0bf3`); push `87a9f5d..28f0bf3`. Pages reconstruye desde `docs/`; sitio 200.
+93. [Infra] Script de auditoría efímero `verificar_depe4.R` (raíz, read-only sobre `directorio_oficial_ee.csv`, `simce_rbd.parquet` y `simce_comunal.parquet`): reconstruye el universo depe4, mide presencia en el parquet largo, calcula el embudo de filtros por año×nivel×prueba y contrasta `n_final` vs `n_estab`. No toca pipeline ni UI.
+94. [D] Auditoría depe=4 resuelta: universo = 70 EE depe4 nacionales (33 RM, 8 Bío Bío, 6 Valparaíso y O'Higgins); los 70 aparecen en `simce_rbd` (0 ausentes, 0 extra). 70 EE en 2m, solo 1 en 4b. Pérdida por filtros 1278→1254 RBD-instancias (~1.9%, toda por marca; `nalu>=10` no elimina ninguna). Delta 0 vs comunal en las 36 combinaciones. Conclusión: conteo bajo = real.
+95. [DOC] Archivo de decisión D15-1 `20260611_decision_color_por_nivel.md` en `decisiones/` (replica la decisión de color fijo por nivel: alternativas, justificación, tensión resuelta). Commit `ffe14ef`.
+96. [REPO] Licencia Apache 2.0 (en lugar del MIT que sugería la política §10): `LICENSE` (201 líneas, copyright Tomás Ignacio González Cifuentes — SLEP Costa Central), `NOTICE` (alcance solo-código + terceros: D3 BSD-3, pako MIT/zlib, React MIT) y `20260611_decision_licencia_apache.md`. Commit `a8e344e`.
+97. [REPO] Encabezado Apache en los 6 scripts del pipeline (bloque de 6 líneas tras el banner); en `00_escanear_proyecto.R` además `Autor: Tomas` → nombre completo. Commit `a6c4c23`.
+98. [DOC] Sección "Licencia" en el README: alcance código-vs-datos explícito (código Apache 2.0; datos bajo Condiciones de Uso de la Agencia de Calidad). Commit `a6c4c23`.
+
+**Delta del backlog:** 7 entradas nuevas (92–98). Posible categoría nueva LEGAL (licencia/uso), absorbible en DOC/Infra; sin reclasificación. Total acumulado: 98.
+
+## Sesión 17 — Segmentación visual pre/post traspaso (traspaso v17)
+
+99. [UI] Feature: segmentación visual pre/post traspaso (`33_motor_template.html`). Helper `SimceData.anioCorteTraspaso(entity)` que devuelve el año de traspaso solo para `kind==="slep"` con `anio_traspaso ≤ ANIO_DATOS_MAX`, y `null` en los demás casos. En `SparklineSubchart`: marcador vertical punteado "traspaso" en el año de corte; los tramos del gap 2019-2021 (`pre≤2018`/`post≥2022`) se subdividen para aplicar línea dasheada (`3,2`) + opacidad 0.4 al tramo previo. Respeta el color por nivel (solo modula opacidad/estilo, no toca `COLOR_ADEC`). Commit `4197d39`.
+100. [Infra] Fix: ruta del listado SLEP al nombre canónico (`30_construir_auxiliares.R`): el insumo fue renombrado a `listado_slep_2026.xlsx` (snake_case, política §2) pero el código apuntaba a `202602_Listado_SLEP_2026_vf.xlsx` y el build fallaba en el paso [4]. Actualizadas las 4 referencias; la ocurrencia en `_archivo/` no se tocó. Build OK (70 SLEP, 346 combinaciones). Commit `2b08eb6`.
+101. [DOC] Política v6, §10 reconoce Apache 2.0 (`POLITICA_PROYECTO.md`): bullet `LICENSE` reescrito (MIT por defecto; Apache 2.0 con NOTICE para publicación institucional), cláusula de alcance solo-código. Cierra D16-1. Commit `32b090d`. Acción manual pendiente: reemplazar también la copia en la knowledge base del Project.
+
+**Delta del backlog:** 3 entradas nuevas (99–101). Sin refinamientos de taxonomía ni reclasificaciones. Total acumulado: 101.
+
+## Sesión 18 — Deploy de la segmentación a GitHub Pages (traspaso v18)
+
+102. [REPO] Deploy: motor con segmentación a GitHub Pages (`docs/index.html`). Se regeneró el HTML con `00_build.R` (el motor de v17 no se había commiteado), se copió `40_salidas/motor_comparacion.html` (2513 KB) a `docs/index.html` y se publicó. `git status` mostró solo `docs/index.html` en stage (gobernanza OK, sin datos sensibles). Commit `39e56ef`, push `614dada..39e56ef`.
+
+**Delta del backlog:** 1 entrada nueva (102). Sin refinamientos de taxonomía ni reclasificaciones. Total acumulado: 102.
+
+## Sesión 19 — Gobernanza 4b/depe4 y suite suitedoc (traspaso v19)
+
+103. [REPO] Evaluación y cierre del pendiente 4b/depe4: se constató que `cod_depe2` es eje de segmentación real (selector "Dependencia" + `generateSeriesByDepe`) y que todo punto con `n_estab===1` ya expone el RBD (tooltip "un solo establecimiento (RBD …)") y el nombre (popup "Ver establecimientos"), lo cual es deliberado y fundado en la decisión D-nombres. Conclusión: no implementar supresión. Sin cambios de código.
+104. [DOC] Implementación de la suite `suitedoc` (`documentar.R` + 4 HTML): reverse-engineering de la API de `suitedoc` 0.3.0 desde el `documentar.R` del proyecto hermano; `cfg` poblada desde el escáner, el README, los scripts 30–33, el traspaso v18 y la decisión de nombres; contenido invertido donde difiere (agregación ponderada por evaluados, GSE inviolable); runtime/deploy verificados contra el código real (React/ReactDOM/Babel por CDN unpkg con SRI, D3/pako inline; deploy a `docs/` manual). `here::i_am()` añadido para correr vía `Rscript`.
+105. [DOC] Auditoría de la suite, ajuste y versionado: auditados los 4 HTML (fieles, sin residuos del ejemplo de fábrica, terminología SLEP correcta); único ajuste de contenido: se quitaron dos referencias al "proyecto hermano" en las decisiones de Agregación ponderada y GSE inviolable (autocontención del manual). Regenerada y versionada (`git add` de `.gitignore` + `documentar.R` + 4 HTML + `suite_estilos.css`; `fonts/` y `assets/` al `.gitignore`). Commit `e9b251d`, push `0bb504c..e9b251d`.
+
+**Delta del backlog:** 3 entradas nuevas (103–105). Sin reclasificaciones. Total acumulado: 105.
+
+## Sesión 20 — Documentación y gobernanza: decisión 4b/depe4, marcas de suite y reconstrucción del backlog (traspaso v20)
+
+106. [DOC] Archivo de decisión `20260620_decision_celda_unico_establecimiento.md` (D20-1, corolario de D-nombres): formaliza que las celdas con `n_estab=1` no se suprimen, porque la exposición de establecimientos individuales es general y deliberada en el motor y la restricción de §6.4 aplica solo a microdatos por estudiante. Documenta las dos alternativas descartadas (colapsar `depe2`; suprimir por `n_estab < k`) con su porqué. Commit `e0d4438`.
+107. [DOC] Corrección de las marcas `# REVISAR (decisión)` del `documentar.R` de la suite: las "2 marcas" anunciadas en v19 eran temas de contenido mal rotulados; se hallaron 3 marcas reales. Se corrigió una imprecisión real (el bloque de color atribuía el color "al periodo", algo que la decisión de color s15 no contempla; añadido el mecanismo de identidad por nombre/swatch/borde que la fuente sí especifica) y se confirmaron las otras dos (item A2 del diccionario y glosario de marca) fieles al backlog #57. Suite regenerada (4 HTML) y versionada. Commits `e14048f` (suite), `2488a2f` (log).
+108. [DOC] Reconstrucción del backlog histórico 61–105: se descubrió que el archivo vivo estaba congelado en la entrada 60 / sesión 13; las entradas 61–102 vivían solo en los §4 de los traspasos v14–v18, nunca anexadas. Se reconstruyeron las 45 entradas faltantes (61–105) desde el §4 de cada traspaso (no el §5, que es puntero), respetando la numeración global declarada en cada §5. Backlog en 1–105 / 19 sesiones, entradas 1–60 intactas. Commit `409b861`.
+109. [DOC] Cotejo de las 19 categorías inferidas (entradas 80–98) contra el texto verbatim de los §4 de v15/v16, que no asignan categoría por entrada; retiradas las marcas `# REVISAR (categoría)`. Único cambio real de categoría: entrada 83 (DOC/UI → UI/DOC). Incluido en el commit `409b861`.
+
+**Delta del backlog:** 4 entradas nuevas (106–109). Sin reclasificación de taxonomía (tags compuestos conservados, D20-3). Total acumulado: 109.
+
+## Sesión 21 — Mantenimiento documental y cumplimiento Ley 21.719 (traspaso v21)
+
+110. [DOC] Anexo del delta de la sesión 20 al backlog (entradas 106–109) y actualización de cobertura a 1–20. Commit `0e9d275`.
+111. [REPO] Auditoría Ley 21.719: producto publicado verificado limpio por dos caminos (código + panel adversarial); hallazgo `MRUN` (946 filas, persona natural) en insumo versionado. Sin cambios de código.
+112. [REPO] Mitigación: de-versionado de `directorio_oficial_ee.csv` going-forward (`git rm --cached` + `.gitignore` + README), residual de historial aceptado. Commit `1edc787`.
+113. [DOC] `gobernanza_datos.md` (primer archivo de gobernanza del proyecto) + decisión 21.719. Commit `1edc787`.
+
+**Delta del backlog:** 4 entradas nuevas (110–113). Sin reclasificación (tags compuestos, D20-3). Total acumulado: 113.
+
+## Sesión 22 — Suite de documentación standalone offline (traspaso v22)
+
+114. [P] Saneamiento del encargo de suite standalone: recorte a solo Fase B (Fase A obsoleta, backlog ya en 1–113) y verificación de la API real de `suitedoc` antes de redactar (firma `standalone=`, lucide 1.21.0). Sin commit de código (trabajo de análisis); materializado en el encargo versionado.
+115. [DOC] Actualización de la cfg del `documentar.R`: gobernanza Ley 21.719 + 6 decisiones formales (con `id`/`por_que` del archivo, +D20-1 +D21-1) + directorio marcado no versionado. Commit `6f94729`.
+116. [DOC] Regeneración de la suite como standalone offline (4 `*_standalone.html`, 0 red verificado) + versionado del encargo saneado y el log. Commits `6f94729`, `c5b6a17`.
+
+**Delta del backlog:** 3 entradas nuevas (114–116). Sin reclasificación (D20-3). Total acumulado: 116.
