@@ -469,7 +469,7 @@ body {
   background: var(--paper);
   border: 1px solid var(--border-1);
   /* Un estilo inline sobrescribe el borde completo con el color de la
-     entidad (1px), rodeando la ficha para identificar la columna. */
+     territorio (1px), rodeando la ficha para identificar la columna. */
   border-radius: var(--radius-3);
   padding: 10px 10px 6px;
   box-shadow: var(--shadow-1);
@@ -1002,7 +1002,7 @@ code {
   display: flex; align-items: baseline; gap: 12px; padding: 16px 0 10px;
 }
 
-/* Estab popup trigger en entidad chip */
+/* Estab popup trigger en territorio chip */
 .entity-estab-btn {
   display: inline-flex; align-items: center; gap: 4px;
   font-size: 10px; color: var(--fg-3); cursor: pointer;
@@ -1368,7 +1368,7 @@ code {
 
       // Año de corte para segmentar visualmente la serie de un SLEP en gestión
       // municipal previa (años < traspaso) vs gestión SLEP (años >= traspaso).
-      // Regla única: solo aplica a entidades kind="slep" YA traspasadas, es
+      // Regla única: solo aplica a territorios kind="slep" YA traspasados, es
       // decir, con anio_traspaso dentro del rango con datos (<= ANIO_DATOS_MAX).
       // Devuelve el año de traspaso, o null si no corresponde dibujar corte:
       //   - SLEP prospectivo (traspaso > último dato): no hay tramo "post" que
@@ -1384,7 +1384,7 @@ code {
         return at;
       }
 
-      // Una entidad depende de la clasificación SLEP (dependencia actual aplicada
+      // Un territorio depende de la clasificación SLEP (dependencia actual aplicada
       // a toda la serie) cuando es un SLEP, o cuando filtra por dependencia
       // "Servicio Local de Educación" (cod 5) en comuna/región/nacional.
       function entidadDependeSlep(entity) {
@@ -1444,7 +1444,7 @@ code {
     }
 
     // ============================================================
-    // Paleta de entidades
+    // Paleta de territorios
     // ============================================================
     const ENTITY_PALETTE = [
       "#0A3A5C", "#C45A3E", "#1F4A1F", "#8A5A8E",
@@ -1453,9 +1453,9 @@ code {
     const MAX_ENTIDADES = 4;
     // Colores fijos para los segmentos Elemental e Insuficiente (modo apilado).
     // Tonos neutros, deliberadamente distintos de ENTITY_PALETTE para no
-    // confundirse con el color de la entidad (que representa Adecuado).
-    // Colores fijos por NIVEL (no por entidad): un mismo nivel se ve igual
-    // en todas las entidades. La identidad de cada entidad se distingue por
+    // confundirse con el color del territorio (que representa Adecuado).
+    // Colores fijos por NIVEL (no por territorio): un mismo nivel se ve igual
+    // en todos los territorios. La identidad de cada territorio se distingue por
     // su nombre, su swatch en la tarjeta y el borde inferior del gráfico.
     const COLOR_ADEC  = "#0C4682";  // azul (Adecuado)
     const COLOR_ELEM  = "#6BA0CE";  // azul claro (Elemental)
@@ -1478,7 +1478,7 @@ code {
                 Datos 2014–2025 · Resultados segmentados por grupo socioeconómico (GSE)
               </p>
               <p className="app-objective">
-                El objetivo de esta herramienta de análisis interno del <strong>SLEP Costa Central</strong> es visualizar la proporción de estudiantes cuyo desempeño en los <strong>Estándares de Aprendizaje</strong>, medidos por el Simce, se encuentra en el <strong>nivel Adecuado</strong>. Su diseño permite comparar diversas "entidades", las cuales pueden ser establecimientos, comunas, SLEPs o regiones completas. Los resultados se presentan siempre segmentados por <strong>Grupo Socioeconómico (GSE)</strong>, siguiendo las normas de la <strong>Agencia de Calidad de la Educación</strong>.
+                El objetivo de esta herramienta de análisis interno del <strong>SLEP Costa Central</strong> es visualizar la proporción de estudiantes cuyo desempeño en los <strong>Estándares de Aprendizaje</strong>, medidos por el Simce, se encuentra en el <strong>nivel Adecuado</strong>. Su diseño permite comparar diversos "territorios", los cuales pueden ser establecimientos, comunas, SLEPs o regiones completas. Los resultados se presentan siempre segmentados por <strong>Grupo Socioeconómico (GSE)</strong>, siguiendo las normas de la <strong>Agencia de Calidad de la Educación</strong>.
               </p>
             </div>
           </div>
@@ -1596,7 +1596,7 @@ code {
       return (
         <section className="entities-bar">
           <div className="entities-head">
-            <h2 className="section-eyebrow">Entidades a comparar</h2>
+            <h2 className="section-eyebrow">Territorios a comparar</h2>
             <span className="entities-count">{entities.length} de {MAX_ENTIDADES} activas</span>
           </div>
           <div className="entities-list">
@@ -1614,12 +1614,12 @@ code {
             {entities.length < MAX_ENTIDADES && (
               <div className="entities-actions">
                 <button className="btn btn-primary" onClick={() => openModal(null)}>
-                  <Icon name="plus" /> Agregar entidad
+                  <Icon name="plus" /> Agregar territorio
                 </button>
               </div>
             )}
             <button className="btn btn-ghost btn-icon-only entities-reset" onClick={onReset}
-              title="Restablecer entidades iniciales" aria-label="Restablecer entidades iniciales">
+              title="Restablecer territorios iniciales" aria-label="Restablecer territorios iniciales">
               <Icon name="rotate-ccw" />
             </button>
           </div>
@@ -1738,7 +1738,7 @@ code {
       }
 
       function show(e, s, yr, svgEl) {
-        // Si hay otro tooltip pinned de otra entidad/punto, no lo sobreescribir con hover
+        // Si hay otro tooltip pinned de otro territorio/punto, no lo sobreescribir con hover
         if (_tt.pinned) return;
         const tip = document.getElementById("global-tooltip");
         tip.classList.remove("is-pinned");
@@ -2016,7 +2016,7 @@ code {
 
           if (showElemInsuf && s.pct < 100) {
             // Dos segmentos apilados sobre Adecuado: Elemental (medio) e
-            // Insuficiente (arriba). Colores fijos, no por entidad, para que la
+            // Insuficiente (arriba). Colores fijos, no por territorio, para que la
             // lectura sea consistente entre tarjetas.
             const segs = [
               { key: "ele", val: s.pct_ele, fill: COLOR_ELEM, label: "Elemental" },
@@ -2182,7 +2182,7 @@ code {
           <table className={tableClass}>
             <thead>
               <tr>
-                <th className="th-ent">Entidad</th>
+                <th className="th-ent">Territorio</th>
                 <th className="th-gse">GSE</th>
                 {YEARS.map(y => {
                   const isPrelim = SimceData.PRELIMINAR_YEARS.includes(y);
@@ -2263,7 +2263,7 @@ code {
         <div className="heat-legend">
           <div className="heat-legend-text">
             <span className="heat-legend-title">Cómo leer los colores</span>
-            <p>El color refleja el % de estudiantes en nivel Adecuado usando umbrales fijos, independientemente del GSE o la entidad.</p>
+            <p>El color refleja el % de estudiantes en nivel Adecuado usando umbrales fijos, independientemente del GSE o el territorio.</p>
             <p style={{ marginTop: 6 }}>
               <b>*</b> Dato preliminar (2025, sujeto a revisión). &nbsp;
               <b>(N)</b> Número de estudiantes a los que corresponde ese porcentaje.
@@ -2326,7 +2326,7 @@ code {
         ? SimceData.GSE_LEVELS.filter(g => g === gseFilter)
         : SimceData.GSE_LEVELS;
 
-      const rows = [["entidad", "nivel", "prueba", "gse", "gse_label", "anio", "pct_adecuado", "n_evaluados", "preliminar"]];
+      const rows = [["territorio", "nivel", "prueba", "gse", "gse_label", "anio", "pct_adecuado", "n_evaluados", "preliminar"]];
       entities.forEach(ent => {
         GSE_LEVELS.forEach(gse => {
           const series = SimceData.getSeriesForEntity(ent, gse, nivel, prueba);
@@ -2369,9 +2369,9 @@ code {
 
       // Layout del SVG compuesto
       const COL_GSE   = 110;   // ancho columna etiqueta GSE
-      const CELL_W    = 340;   // ancho de cada celda de entidad
+      const CELL_W    = 340;   // ancho de cada celda de territorio
       const CELL_H    = SPARK_H + BARS_H + 30; // sparkline + barras + cabecera celda
-      const HEADER_H  = 72;   // fila de encabezados de entidad
+      const HEADER_H  = 72;   // fila de encabezados de territorio
       const TITLE_H   = 56;   // fila de título del SVG
       const PAD       = 20;   // padding general
       const COL_GAP   = 10;   // gap entre columnas
@@ -2421,7 +2421,7 @@ code {
         "font-size": 11, fill: "#747474",
       }, titleG);
 
-      // Encabezados de entidad
+      // Encabezados de territorio
       entities.forEach((ent, ei) => {
         const cx = PAD + COL_GSE + ei * (CELL_W + COL_GAP);
         const gy = TITLE_H;
@@ -2483,7 +2483,7 @@ code {
           fill: "#0A3A5C",
         }, gseG);
 
-        // Celdas de entidad
+        // Celdas de territorio
         entities.forEach((ent, ei) => {
           const cx = PAD + COL_GSE + ei * (CELL_W + COL_GAP);
 
@@ -2619,10 +2619,10 @@ code {
     }
 
     // ============================================================
-    // EstabPopup — lista de establecimientos de una entidad
+    // EstabPopup — lista de establecimientos de un territorio
     // ============================================================
     // Props:
-    //   entity   — entidad (kind, comunas, depe2, rbds, name, _popupPos)
+    //   entity   — territorio (kind, comunas, depe2, rbds, name, _popupPos)
     //   nivel    — label de nivel activo
     //   prueba   — label de prueba activo
     //   onClose  — callback cierre
@@ -2689,7 +2689,7 @@ code {
       // construida en el pipeline). Filtrar por comuna+depe2 es incorrecto:
       // dos SLEP pueden compartir comuna, y los RBDs de un SLEP prospectivo
       // figuran como municipales. La lista de RBDs es la única fuente de verdad.
-      // Para el resto de entidades se mantiene el filtro comuna (+depe2).
+      // Para el resto de territorios se mantiene el filtro comuna (+depe2).
       let items = [];
       if (DATA.establecimientos) {
         const setCom = new Set(entity.comunas || []);
@@ -2745,11 +2745,11 @@ code {
     }
 
     // ============================================================
-    // Modal agregar entidad — v2 con tabs: Comuna | SLEP | Región | Establecimiento | Grupo
+    // Modal agregar territorio — v2 con tabs: Comuna | SLEP | Región | Establecimiento | Grupo
     // ============================================================
     // Disclaimer metodológico: la clasificación por dependencia es la ACTUAL y
     // se aplica a toda la serie, sin corte por año de traspaso. Aparece donde se
-    // puede seleccionar dependencia SLEP y como nota permanente en entidades SLEP.
+    // puede seleccionar dependencia SLEP y como nota permanente en territorios SLEP.
     function SlepDisclaimer({ compact }) {
       return (
         <div className={"slep-disclaimer" + (compact ? " is-compact" : "")}>
@@ -2923,7 +2923,7 @@ code {
         <div className="modal-backdrop" onClick={onCancel}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className="modal-title">{editing ? "Editar entidad" : "Agregar entidad"}</h3>
+              <h3 className="modal-title">{editing ? "Editar territorio" : "Agregar territorio"}</h3>
               <button className="icon-btn" onClick={onCancel}><Icon name="x" /></button>
             </div>
             <div className="modal-tabs">
@@ -3114,9 +3114,9 @@ code {
               {tab === "nacional" && (
                 <div className="form-grid">
                   <div className="field field-full">
-                    <span className="field-label">Entidad</span>
+                    <span className="field-label">Territorio</span>
                     <p style={{ fontSize: 13, color: "var(--fg-2)", margin: "4px 0 0" }}>
-                      Agrega <strong>Chile</strong> como entidad de referencia nacional.
+                      Agrega <strong>Chile</strong> como territorio de referencia nacional.
                       Incluye todos los establecimientos del país con datos disponibles en cada año.
                     </p>
                   </div>
@@ -3236,14 +3236,14 @@ code {
           if (idx >= 0) {
             const next = [...prev]; next[idx] = ent; return next;
           }
-          if (prev.length >= MAX_ENTIDADES) { alert("Máximo de comparación: 4 entidades. Elimina una antes de agregar otra."); return prev; }
+          if (prev.length >= MAX_ENTIDADES) { alert("Máximo de comparación: 4 territorios. Elimina uno antes de agregar otro."); return prev; }
           return [...prev, ent];
         });
         setModal(null);
       }
 
       // Alta en lote (multi-selección de SLEP o regiones). Respeta el tope y
-      // asigna colores distintos a cada nueva entidad.
+      // asigna colores distintos a cada nuevo territorio.
       function saveEntities(nuevas) {
         setEntities(prev => {
           const libres = MAX_ENTIDADES - prev.length;
@@ -3371,7 +3371,7 @@ code {
               <div className="table-head">
                 <div className="table-head-titles">
                   <span className="section-eyebrow">Tabla de resultados</span>
-                  <h2 className="table-title">Entidad × GSE × Año</h2>
+                  <h2 className="table-title">Territorio × GSE × Año</h2>
                 </div>
                 <div className="section-actions">
                   <GseFilter gseFilter={gseFilter} setGseFilter={setGseFilter} />
@@ -3412,7 +3412,7 @@ code {
                     </article>
                     <article className="note">
                       <h4>Fórmula de agregación ponderada</h4>
-                      <p>Para cada entidad, GSE y año, el % en nivel Adecuado se calcula como el promedio ponderado por número de estudiantes evaluados:</p>
+                      <p>Para cada territorio, GSE y año, el % en nivel Adecuado se calcula como el promedio ponderado por número de estudiantes evaluados:</p>
                       <code className="formula">%adec = Σ(nalu × palu_eda_ade / 100) / Σ(nalu) × 100</code>
                       <p>Donde <code>nalu</code> es el número de estudiantes evaluados y <code>palu_eda_ade</code> el % en nivel Adecuado, ambos por combinación de establecimiento × prueba × nivel. Este método garantiza que un establecimiento con 200 estudiantes evaluados tenga el doble de peso que uno con 100, independientemente del nivel de agrupación (comuna, SLEP, región).</p>
                     </article>
