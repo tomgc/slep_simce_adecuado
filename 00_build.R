@@ -32,6 +32,8 @@ source(here::here("30_procesamiento", "32_agregar_comunal.R"))
 message("")
 source(here::here("30_procesamiento", "33_generar_html.R"))
 message("")
+source(here::here("30_procesamiento", "35_exponer_contrato_contexto.R"))
+message("")
 
 elapsed <- round((proc.time() - t0)[["elapsed"]])
 message(sprintf("=== 00_build.R: OK en %d segundos ===", elapsed))
