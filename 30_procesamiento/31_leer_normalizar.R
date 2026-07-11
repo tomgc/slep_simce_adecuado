@@ -12,7 +12,7 @@
 #
 #   40_salidas/intermedios/simce_rbd.parquet
 #
-# Esquema final (14 columnas):
+# Esquema final (19 columnas):
 #   anio          integer    2014-2018, 2022-2025
 #   nivel         character  "4b" | "2m"
 #   prueba        character  "lect" | "mate"
@@ -27,6 +27,12 @@
 #   palu_eda_ins  double     % en estándar insuficiente
 #   marca         character  marca genérica de puntaje (decisión A2 opción a)
 #   preliminar    logical    TRUE solo para anio == 2025 (regla R3)
+#   --- Señales de la Agencia sobre PUNTAJE PROMEDIO (contrato de contexto §5) ---
+#   prom          double     puntaje promedio del establecimiento
+#   dif           double     delta de puntaje vs evaluación anterior
+#   difgru        double     desvío de puntaje vs mismo GSE (positivo = por sobre)
+#   sigdif        integer    significancia de dif, normalizada {-1,0,1,NA} (verbatim)
+#   siggru        integer    significancia de difgru, normalizada {-1,0,1,NA} (verbatim)
 #
 # Anomalía A1 manejada: en simce4b2018, los sufijos vienen como "_2m_"
 # en lugar de "_4b_". Se reescriben antes de la normalización general.
@@ -174,15 +180,58 @@ message(sprintf("    OK: %d archivos detectados (%d por nivel).",
 # Bloque 2 — Helper: extraer formato largo para una prueba
 # ============================================================================
 
-# Extrae las 7 columnas base + asigna prueba="lect" o "mate".
-extraer_prueba <- function(df_raw, nivel, prueba) {
+# Normaliza las banderas de significancia de la Agencia a {-1, 0, 1, NA}.
+#
+# POR QUÉ EXISTE (contrato de contexto §7 — no borrar este helper "simplificando"
+# a as.numeric()): las banderas siggru_* / sigdif_* llegan en DOS representaciones
+# según el año:
+#   - literal de texto en los años antiguos (2m: 2014-2017; 4b: 2014-2016):
+#       {"Negativa y significativa", "No significativa", "Positiva y significativa"}
+#   - código numérico en los años recientes: {-1, 0, 1}
+# Un as.numeric() aplicado a los literales los convierte en NA EN SILENCIO,
+# borrando toda la señal histórica sin lanzar ningún error (esto ya ocurrió en la
+# investigación previa, ver 50_documentacion/andamios/logs/20260711_dominio_
+# significancia_simce_log.md). Por eso el mapeo es explícito y FALLA RUIDOSAMENTE
+# ante cualquier valor fuera de los seis conocidos. Mapeo verificado
+# empíricamente (cruce sign(diferencia) × bandera, anti-diagonal nula).
+normalizar_bandera <- function(x, archivo, columna) {
+  xs  <- trimws(as.character(x))
+  out <- rep(NA_integer_, length(xs))
+  out[xs %in% c("-1", "Negativa y significativa")] <- -1L
+  out[xs %in% c("0",  "No significativa")]         <-  0L
+  out[xs %in% c("1",  "Positiva y significativa")] <-  1L
+  # Valores que NO son NA legítimo y NO se mapearon -> PARADA (nunca descartar
+  # a NA en silencio).
+  no_mapeados <- unique(xs[!is.na(xs) & is.na(out)])
+  if (length(no_mapeados) > 0) {
+    stop(sprintf(
+      "normalizar_bandera: valor(es) fuera de los 6 conocidos en columna '%s' de %s: {%s}",
+      columna, archivo, paste(no_mapeados, collapse = ", ")
+    ), call. = FALSE)
+  }
+  out
+}
+
+# Extrae las columnas base + las señales de la Agencia + asigna prueba.
+# Además de los estándares de aprendizaje (palu_eda_*), persiste las cinco
+# columnas de señal que antes se descartaban (prom / dif / difgru numéricas;
+# sigdif / siggru banderas normalizadas), consumidas por el contrato de contexto.
+extraer_prueba <- function(df_raw, nivel, prueba, archivo) {
   sufijo <- paste0(prueba, nivel)  # p. ej. "lect2m" o "mate4b"
 
-  col_nalu  <- paste0("nalu_",         sufijo, "_rbd")
-  col_ade   <- paste0("palu_eda_ade_", sufijo, "_rbd")
-  col_ele   <- paste0("palu_eda_ele_", sufijo, "_rbd")
-  col_ins   <- paste0("palu_eda_ins_", sufijo, "_rbd")
-  col_marca <- paste0("marca_",        sufijo, "_rbd")
+  col_nalu   <- paste0("nalu_",         sufijo, "_rbd")
+  col_ade    <- paste0("palu_eda_ade_", sufijo, "_rbd")
+  col_ele    <- paste0("palu_eda_ele_", sufijo, "_rbd")
+  col_ins    <- paste0("palu_eda_ins_", sufijo, "_rbd")
+  col_marca  <- paste0("marca_",        sufijo, "_rbd")
+  # Señales de la Agencia sobre PUNTAJE PROMEDIO (escala distinta de palu_eda_*;
+  # contrato §5). prom = puntaje; difgru = desvío vs mismo GSE; dif = delta vs
+  # evaluación anterior; siggru/sigdif = significancia (verbatim, banderas).
+  col_prom   <- paste0("prom_",   sufijo, "_rbd")
+  col_dif    <- paste0("dif_",    sufijo, "_rbd")
+  col_difgru <- paste0("difgru_", sufijo, "_rbd")
+  col_sigdif <- paste0("sigdif_", sufijo, "_rbd")
+  col_siggru <- paste0("siggru_", sufijo, "_rbd")
 
   # Coerción defensiva: si el valor viene con coma decimal, normalizar
   # antes de as.numeric/as.integer.
@@ -200,6 +249,12 @@ extraer_prueba <- function(df_raw, nivel, prueba) {
     palu_eda_ele = to_num(df_raw[[col_ele]]),
     palu_eda_ins = to_num(df_raw[[col_ins]]),
     marca        = as.character(df_raw[[col_marca]]),
+    # --- Señales de la Agencia (escala puntaje; contrato de contexto) ---
+    prom         = to_num(df_raw[[col_prom]]),
+    dif          = to_num(df_raw[[col_dif]]),
+    difgru       = to_num(df_raw[[col_difgru]]),
+    sigdif       = normalizar_bandera(df_raw[[col_sigdif]], archivo, col_sigdif),
+    siggru       = normalizar_bandera(df_raw[[col_siggru]], archivo, col_siggru),
     prueba       = prueba
   )
 }
@@ -234,7 +289,19 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
     paste0("palu_eda_ins_lect", nivel, "_rbd"),
     paste0("palu_eda_ins_mate", nivel, "_rbd"),
     paste0("marca_lect", nivel, "_rbd"),
-    paste0("marca_mate", nivel, "_rbd")
+    paste0("marca_mate", nivel, "_rbd"),
+    # Señales de la Agencia (puntaje) requeridas por el contrato de contexto.
+    # Presentes en los 18 xlsx (2m/4b, lect/mate) según el inventario previo.
+    paste0("prom_lect", nivel, "_rbd"),
+    paste0("prom_mate", nivel, "_rbd"),
+    paste0("dif_lect", nivel, "_rbd"),
+    paste0("dif_mate", nivel, "_rbd"),
+    paste0("difgru_lect", nivel, "_rbd"),
+    paste0("difgru_mate", nivel, "_rbd"),
+    paste0("sigdif_lect", nivel, "_rbd"),
+    paste0("sigdif_mate", nivel, "_rbd"),
+    paste0("siggru_lect", nivel, "_rbd"),
+    paste0("siggru_mate", nivel, "_rbd")
   )
   cols_requeridas <- c(cols_base, cols_por_prueba)
   faltan <- setdiff(cols_requeridas, names(df_raw))
@@ -313,8 +380,8 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
   }
 
   # --- Construir formato largo: lect + mate ---
-  df_lect <- extraer_prueba(df_raw, nivel, "lect")
-  df_mate <- extraer_prueba(df_raw, nivel, "mate")
+  df_lect <- extraer_prueba(df_raw, nivel, "lect", archivo)
+  df_mate <- extraer_prueba(df_raw, nivel, "mate", archivo)
   df_largo <- dplyr::bind_rows(df_lect, df_mate)
 
   # --- Columnas constantes del archivo ---
@@ -326,11 +393,14 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
   # El directorio 2025 es la fuente de verdad; RBDs sin match quedan NA.
   df_largo$cod_depe2 <- unname(mapa_rbd_depe2[df_largo$rbd])
 
-  # Orden de columnas final.
+  # Orden de columnas final. Las 5 señales del contrato de contexto se APENDIZAN
+  # al final para no alterar la posición de ninguna columna preexistente
+  # (invariante de no-regresión: consumidores actuales de simce_rbd.parquet).
   df_largo <- df_largo[, c(
     "anio", "nivel", "prueba", "rbd",
     "cod_com_rbd", "nom_com_rbd", "cod_grupo", "cod_depe2",
-    "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca", "preliminar"
+    "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca", "preliminar",
+    "prom", "dif", "difgru", "sigdif", "siggru"
   )]
 
   df_largo
@@ -431,6 +501,6 @@ print(resumen, n = Inf)
 
 message("")
 message(sprintf(
-  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (14 columnas).",
-  nrow(df_simce_rbd)
+  "31_leer_normalizar.R: OK. Total %d filas x %d columnas en simce_rbd.parquet.",
+  nrow(df_simce_rbd), ncol(df_simce_rbd)
 ))
