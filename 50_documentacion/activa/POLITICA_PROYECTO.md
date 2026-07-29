@@ -1,9 +1,39 @@
 # POLITICA_PROYECTO.md
 
-> **Versión 5.2 — vigente.** Documento maestro único de arquitectura y
+> **Versión 5.5 — vigente.** Documento maestro único de arquitectura y
 > gobernanza. Se copia a `50_documentacion/activa/` de cada proyecto y
 > vive en la knowledge base del Project. Aplica a Claude, Claude Code y
 > cualquier agente que trabaje sobre el proyecto.
+>
+> **Cambios respecto a v5.4:** (a) nueva regla 1.3.1, la del traspaso
+> vigente: `traspasos/` mantiene un solo archivo a la vista y
+> `traspasos/archivo/` guarda los superados; (b) §2 fija el prefijo `50_`
+> para los archivos de `50_documentacion/activa/` y declara de una vez las
+> excepciones por contrato de cartera (`ESTADO.md`, `gobernanza_datos.md`,
+> `backlog_acumulativo.md`, `POLITICA_PROYECTO.md`,
+> `SETTINGS_Y_PROMPTS_OPERACIONALES.md`); (c) §7.2 excluye del escáner los
+> árboles de dependencias de terceros (`node_modules/` y análogos). Origen:
+> sesión v103 de `slep_aprendizajes_ep`, donde el renombre de `ESTADO.md`
+> se ejecutó y hubo que revertirlo por no estar declarada la excepción.
+>
+> **Cambios respecto a v5.3:** nueva regla 0.6 (marcador de fuente en línea),
+> adoptada de la ficha S-01 de la auditoría de errores de la cartera, única
+> ficha que superó el criterio de adopción tras el backtest del 2026-07-25.
+> Sube a §0 porque rige a todo agente y no solo a las sesiones de proyecto;
+> su contrato completo vive en `SETTINGS_Y_PROMPTS_OPERACIONALES.md` §1.2.6
+> (v12).
+>
+> **Cambios respecto a v5.2:** sección 0.4 agrega el test de dos preguntas
+> antes de derivar cualquier tarea al usuario (guardrail GR-05, propuesta
+> P4 de la auditoría cruzada de errores del asistente, integrada junto con
+> `SETTINGS_Y_PROMPTS_OPERACIONALES.md` v8). Motivo: los dos errores de
+> patrón PAT-05 (clasificar como "mecánica del usuario" trabajo que exigía
+> producir o editar contenido) ocurrieron en la frontera entre operación
+> de plataforma y producción de contenido, que 0.4 no discriminaba por
+> criterio, solo por ejemplos. El titular pidió explícitamente una
+> solución estructural, no repetir la regla con más énfasis (registrado en
+> traspaso `slep_estado_proyectos_monitoreo` v05). El test es obligatorio,
+> respondido por escrito en una línea antes de derivar.
 >
 > **Cambios respecto a v5.1:** nueva regla 0.5 (registro obligatorio de
 > errores del asistente): toda desviación de una regla canónica, detectada
@@ -73,6 +103,21 @@ Descargar un archivo de una plataforma, arrastrarlo a una carpeta o
 reemplazarlo a mano son tareas del usuario. El asistente no genera
 scripts para ellas: indica qué hacer en una línea.
 
+Antes de derivar cualquier tarea al usuario, el asistente responde por
+escrito (una línea) el test de dos preguntas:
+
+1. ¿La tarea exige producir o editar contenido (redactar, editar un
+   documento, reparar un archivo)? Si sí, esa parte es del asistente,
+   siempre, y se entrega completa (archivo entero listo para usar), aunque
+   el paso final sea una operación de plataforma.
+2. Quitada la producción de contenido, ¿lo que resta es exclusivamente
+   mover, descargar, subir o pegar en una plataforma a la que el asistente
+   no accede? Solo esa parte se deriva, indicada en una línea.
+
+Si la tarea mezcla ambas capas, se divide: contenido completo primero,
+operación mecánica después. Derivar al usuario una tarea sin el test
+respondido es una desviación registrable (regla 0.5).
+
 ### 0.5 Registro obligatorio de errores del asistente
 
 Todo error del asistente queda registrado en la sesión en que ocurre,
@@ -106,6 +151,22 @@ mecanismo adicional para hacer visible, medible y comparable entre
 proyectos un problema que de otro modo solo vive en la memoria de cada
 sesión y se pierde al cerrarla.
 
+### 0.6 Marcador de fuente en línea
+
+Cuatro tipos de afirmación llevan marcador en la misma línea en que se
+emiten, sin tercera forma legal: (1) contenido, existencia o ruta de un
+archivo no leído en esta sesión; (2) estado de repositorio; (3) toda cifra o
+conteo comunicado; (4) toda premisa de hecho de un encargo. Formas legales:
+`(fuente: <archivo leído o comando ejecutado en esta sesión>)` o
+`(hipótesis, verificar con: <comando>)`.
+
+Vive en §0 porque aplica a Claude, a Claude Code y a cualquier agente, dentro
+y fuera de una sesión de proyecto, y porque el mecanismo que ataca (afirmar
+desde fuente secundaria teniendo la primaria disponible) es el 43,5% de las
+desviaciones registradas de la cartera. El contrato completo, con el alcance
+de cada tipo y el fundamento de por qué es slot y no recordatorio, vive en
+`SETTINGS_Y_PROMPTS_OPERACIONALES.md` §1.2.6.
+
 ---
 
 ## 1. Estructura de carpetas y nomenclatura
@@ -131,7 +192,8 @@ proyecto/                               ← repo Git
 ├── 50_documentacion/
 │   ├── activa/                         ← documentación vigente (incluye esta política)
 │   │   └── decisiones/                 ← YYYYMMDD_decision_<tema>.md
-│   ├── traspasos/                      ← handoffs entre sesiones (solo se agregan)
+│   ├── traspasos/                      ← SOLO el traspaso vigente (ultima sesion cerrada)
+│   │   └── archivo/                    ← traspasos superados (se agregan, nunca se borran)
 │   ├── andamios/                       ← scripts de refactor ejecutados (congelados)
 │   └── estructura/                     ← snapshots del escáner (sección 7)
 ├── tests/                              ← sin numerar (R: tests/testthat/)
@@ -173,10 +235,29 @@ repo no las contiene.
    `40_salidas/` con las mismas subcarpetas (incluido `publico/privado/`
    si se usa granularidad interna).
 7. **Documentación bifurcada.** `activa/` se actualiza in place;
-   `traspasos/` solo se agregan; `andamios/` se congelan (sus rutas
-   internas no se reescriben jamás); `estructura/` la gestiona el
-   escáner.
+   `traspasos/` mantiene **un solo archivo a la vista, el vigente**, y
+   manda todo lo superado a `traspasos/archivo/` (regla 1.3.1);
+   `andamios/` se congelan (sus rutas internas no se reescriben jamás);
+   `estructura/` la gestiona el escáner.
 8. **`tests/` no se numera.** Convención del lenguaje.
+
+### 1.3.1 Regla del traspaso vigente
+
+`50_documentacion/traspasos/` contiene **exactamente un** archivo
+`traspaso_cierre_vNN.md`: el de la última sesión cerrada. Al cerrar una
+sesión nueva, el traspaso anterior se mueve a `traspasos/archivo/` con
+`git mv` (nunca `cp` + `rm`, que rompería `git log --follow`) **antes** de
+depositar el nuevo.
+
+- **Por qué:** el traspaso vigente es el contrato de reapertura. Con cien
+  archivos hermanos, "el vigente" deja de ser evidente y elegir el correcto
+  pasa a depender de la memoria del agente.
+- **Invariante verificable:** `ls 50_documentacion/traspasos/*.md` devuelve
+  una sola línea. Cualquier otro resultado es un cierre a medias.
+- **`archivo/` solo se agrega.** Nunca se borra ni se reescribe: es el
+  historial de decisiones del proyecto.
+- **Alcance:** no afecta a `andamios/` (congelados) ni a `estructura/`
+  (poda por retención = 2, sección 7.4).
 
 ### 1.4 `10_utils/`
 
@@ -233,9 +314,32 @@ cobertura inicial de tests.
   finales; `.csv` solo cuando el destino lo exige; JSON con claves
   ordenadas e indentación fija cuando el destino es web/GitHub Pages.
 - **Documentos:** traspasos `traspaso_cierre_vNN.md` (correlativo
-  global, dos dígitos); documentación técnica
-  `documentacion_tecnica_vN.md`; decisiones
+  global; dos dígitos hasta v99, tres desde v100), el vigente en
+  `traspasos/` y los superados en `traspasos/archivo/` (regla 1.3.1);
+  documentación técnica `documentacion_tecnica_vN.md`; decisiones
   `YYYYMMDD_decision_<tema>.md`.
+- **Archivos de `50_documentacion/activa/`:** prefijo `50_`, por la regla
+  1.2.4 (modo "sin orden interno").
+
+  **Excepciones declaradas, cerradas:** cinco archivos conservan su nombre
+  porque **otro documento los fija por nombre**, y renombrarlos rompe un
+  contrato que excede al proyecto:
+
+  | Archivo | Quién lo fija |
+  |---|---|
+  | `ESTADO.md` | `SETTINGS_Y_PROMPTS_OPERACIONALES.md` §2.1bis (monitoreo de cartera) |
+  | `gobernanza_datos.md` | esta política, sección 10 |
+  | `backlog_acumulativo.md` | esta política, sección 10 |
+  | `POLITICA_PROYECTO.md` | su nombre es su identificador en la knowledge base |
+  | `SETTINGS_Y_PROMPTS_OPERACIONALES.md` | ídem |
+
+  **Criterio general, aplicable a casos futuros:** antes de renombrar un
+  archivo de `activa/`, grep de su nombre en esta política y en SETTINGS.
+  Si aparece fijado por nombre, no se renombra. La lista de arriba es el
+  resultado conocido de ese grep, no su reemplazo.
+
+  Los documentos fechados (`YYYYMMDD_*.md`) y los de `decisiones/` siguen
+  su propio patrón y no llevan prefijo de decena.
 
 ---
 
@@ -520,6 +624,11 @@ asistente pierde referencia (regla 0.2).
 - Escanea SOLO la raíz de código (basado en `here` + `fs`).
 - Excluye carpetas ocultas y de sistema: `.git/`, `.Rproj.user/`,
   `renv/`, `.quarto/`.
+- **Excluye árboles de dependencias de terceros:** `node_modules/`,
+  `packrat/`, `venv/`. Es código que el proyecto no escribe ni mantiene;
+  contarlo infla los totales y esconde la estructura propia bajo miles de
+  archivos ajenos. (En `slep_aprendizajes_ep`, incluirlo hacía declarar 461
+  archivos donde el proyecto tiene 289.)
 - **Jamás escanea la raíz de datos en OneDrive.** El snapshot se
   versiona en Git; mapear el data root filtraría nombres de archivos
   con información sensible. Si se necesita inventariar datos, es una
