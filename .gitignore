@@ -36,3 +36,8 @@ _archivo/
 # (minimizacion). Regenerable 1x/anio desde MINEDUC; el pipeline lo lee de disco.
 # Ver: 50_documentacion/activa/decisiones/20260622_decision_cumplimiento_ley_21719.md
 20_insumos/auxiliares/directorio_oficial_ee.csv
+
+# Gobernanza: viven en la knowledge base del Project, no en el repositorio.
+POLITICA_PROYECTO.md
+SETTINGS_Y_PROMPTS_OPERACIONALES.md
+CLAUDE.md
