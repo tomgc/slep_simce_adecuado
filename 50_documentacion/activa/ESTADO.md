@@ -7,6 +7,7 @@ sesion_actual: v24
 ultima_actividad: 2026-06-29
 maneja_sensibles: false
 tipo_pendiente: ninguno
+ventana_insumos: ./20_insumos
 ---
 ## En que vamos
 La sesión 24 fue íntegramente de mantenimiento documental: sin cambios al motor ni al pipeline. Se cerró el delta de backlog de la s23 (entradas 117–120), se versionó la reseña final espejo del data.js del portafolio, se retiraron las 7 marcas REVISAR (voz) de `documentar.R` y se normalizaron todos los tags del backlog a la taxonomía canónica de 7 códigos. El proyecto queda estable y desplegado en GitHub Pages, con working tree limpio salvo un archivo untracked por diseño.
