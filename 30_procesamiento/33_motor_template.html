@@ -295,7 +295,7 @@ body {
   border: 1px solid var(--border-2);
   border-radius: var(--radius-2);
   transition: border-color 120ms ease;
-  max-width: 340px; flex: 0 1 auto;
+  max-width: 250px; flex: 0 1 auto;
 }
 .entity-chip:hover { border-color: var(--plum); }
 .entity-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
@@ -303,6 +303,7 @@ body {
 .entity-name {
   font-family: var(--font-body);
   font-weight: 700; font-size: var(--fs-body); color: var(--fg-1);
+  overflow-wrap: anywhere;
 }
 .entity-meta { font-size: var(--fs-overline); color: var(--fg-3); margin-top: 2px; font-weight: 500; }
 .entity-btn {
@@ -1463,7 +1464,7 @@ code {
       "#0A3A5C", "#C45A3E", "#1F4A1F", "#8A5A8E",
       "#B89530", "#4A6FA5", "#A35A6F", "#5C8A6E",
     ];
-    const MAX_ENTIDADES = 4;
+    const MAX_ENTIDADES = 5;
     // Colores fijos para los segmentos Elemental e Insuficiente (modo apilado).
     // Tonos neutros, deliberadamente distintos de ENTITY_PALETTE para no
     // confundirse con el color del territorio (que representa Adecuado).
@@ -3261,7 +3262,7 @@ code {
           if (idx >= 0) {
             const next = [...prev]; next[idx] = ent; return next;
           }
-          if (prev.length >= MAX_ENTIDADES) { alert("Máximo de comparación: 4 territorios. Elimina uno antes de agregar otro."); return prev; }
+          if (prev.length >= MAX_ENTIDADES) { alert(`Máximo de comparación: ${MAX_ENTIDADES} territorios. Elimina uno antes de agregar otro.`); return prev; }
           return [...prev, ent];
         });
         setModal(null);
@@ -3350,7 +3351,7 @@ code {
                   <ChartHints showElemInsuf={showElemInsuf} />
                 </div>
               </div>
-              <div className="supergrid" style={{ gridTemplateColumns: `repeat(4, minmax(0, 1fr))` }}>
+              <div className="supergrid" style={{ gridTemplateColumns: `repeat(${entities.length}, minmax(0, 1fr))` }}>
                 {entities.map(ent => (
                   <div key={ent.id} className="supergrid-entity-head"
                     style={{ borderBottomColor: ent.color }}>
