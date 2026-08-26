@@ -270,3 +270,18 @@
 133. [DT] Aprendizaje A-s26-1 (vigencia de documentos duplicados se determina por fecha de commit real, no por autodeclaración del texto) y A-s26-2 (verificar `git status --short` tras `mv`+`add` encadenado) registrados en traspaso v26.
 
 **Delta del backlog:** 5 entradas nuevas (129–133). Total acumulado: 133.
+
+## Entre sesiones 26 y 27 — cambio sin traspaso (registrado retroactivamente en s28)
+
+134. [REPO] Los documentos normativos (`POLITICA_PROYECTO.md`, `SETTINGS_Y_PROMPTS_OPERACIONALES.md`) dejan de versionarse en el repositorio del proyecto y pasan a copia local vía `.gitignore`. Commit `65302c6` (2026-08-24). No pertenece a ninguna sesión con traspaso: se registra retroactivamente al abrir la sesión 28, y explica la discrepancia de tamaños que el traspaso v27 §9 dejó declarada sin investigar.
+
+**Delta del backlog:** 1 entrada nueva (134). Total acumulado: 134.
+
+## Sesión 27 — Terminología de la suite y escala tipográfica del motor (traspaso v27)
+
+135. [DOC] Auditoría de "entidad" en `documentar.R`: inventario sobre el archivo completo y corrección de 2 residuos de texto UI en los bloques `doc_s2_intro`/`doc_s2_cierre` ("entre distintas entidades" → "entre distintos territorios"; "Para cualquier entidad" → "Para cualquier territorio"). Identificadores de código (`entidades_tec`, `entidades_gen`) y la prosa analítica de la decisión `D-color-nivel` quedan intactos por la regla vigente. Auditoría extendida a los 4 HTML standalone ya generados: 0 referencias de red, iconos como SVG embebido, fuentes como `data:font`. Commit `6a1c8b6`.
+136. [UI] Migración de la escala tipográfica de `33_motor_template.html` a 7 variables CSS en `:root` (`--fs-overline` 12px hasta `--fs-h2` 28px) con piso tipográfico de 12px: 77 declaraciones CSS declarativas y `fontSize` inline React sustituidas, de 96 inventariadas. Overrides declarados: `.app-title` (30px) mapeado por rol a `--fs-h2`, y 9 valores bajo 12px elevados al piso. Commit `d1d04f6`.
+137. [DT] Deuda declarada: las 19 declaraciones de tamaño en D3 SVG (`.attr("font-size")`) y en objetos JS no migran a las variables CSS, excluidas por decisión D-s27-1 (decimales atípicos sin variable exacta y valores bajo 12px por diseño en gráficos compactos). Sin commit.
+138. [DT] Aprendizaje A-s27-1: un `git commit` que retorna "nothing to commit" tras una edición reportada como lista es señal de reemplazo manual no ejecutado. Nunca se asume commit exitoso porque el comando no falló: se verifica el hash resultante antes de dar la tarea por cerrada.
+
+**Delta del backlog:** 4 entradas nuevas (135–138). Sin reclasificación de taxonomía (D20-3). Total acumulado: 138.
