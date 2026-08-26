@@ -830,7 +830,8 @@ body {
   background: var(--paper);
   border-radius: var(--radius-3);
   box-shadow: var(--shadow-3);
-  width: 100%; max-width: 540px; max-height: 88vh;
+  width: fit-content; min-width: 540px; max-width: min(880px, 96vw);
+  max-height: 88vh;
   display: flex; flex-direction: column; overflow: hidden;
   animation: lift 180ms cubic-bezier(.2,.7,.2,1);
 }
@@ -847,7 +848,7 @@ body {
   letter-spacing: -0.005em; margin: 0; color: var(--plum);
 }
 .modal-tabs {
-  display: flex;
+  display: flex; flex-wrap: nowrap;
   border-bottom: 1px solid var(--border-1);
   padding: 0 22px;
 }
@@ -859,13 +860,14 @@ body {
   color: var(--fg-3); cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
+  white-space: nowrap;
 }
 .modal-tab:hover { color: var(--fg-1); }
 .modal-tab.is-active {
   color: var(--plum); font-weight: 700;
   border-bottom-color: var(--ocean);
 }
-.modal-body { padding: 22px; overflow-y: auto; flex: 1; }
+.modal-body { padding: 22px; overflow-y: auto; flex: 1; min-width: 0; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field-full { grid-column: 1 / -1; }
