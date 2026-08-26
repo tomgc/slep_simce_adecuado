@@ -628,7 +628,12 @@ body {
 }
 .data-table thead th.th-ent,
 .data-table thead th.th-gse { text-align: left; }
-.data-table thead th.th-ent { left: 0; z-index: 4; min-width: 200px; }
+.data-table thead th.th-ent {
+  left: 0; z-index: 4; min-width: 200px;
+  max-width: 260px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 .data-table thead th.th-gse { left: 200px; z-index: 4; min-width: 110px; }
 .data-table thead th.th-prelim { color: var(--ocean-80); }
 .prelim-mark { color: var(--ocean); font-weight: 900; }
@@ -679,6 +684,9 @@ body {
   position: sticky; left: 0; z-index: 2;
   background: var(--paper);
   min-width: 200px;
+  max-width: 260px;
+  white-space: normal;
+  overflow-wrap: anywhere;
   border-right: 1px solid var(--border-1);
 }
 .data-table tbody td.td-gse {
@@ -2382,6 +2390,9 @@ code {
       const TITLE_H   = 56;   // fila de título del SVG
       const PAD       = 20;   // padding general
       const COL_GAP   = 10;   // gap entre columnas
+      // Presupuestos de truncado de la cabecera de territorio.
+      const MAX_CHARS_NOMBRE = 38; // aproximación calibrada a CELL_W = 340 (14px, peso 800)
+      const MAX_CHARS_META   = 46; // aproximación calibrada a CELL_W = 340 (10px)
 
       const nEnts   = entities.length;
       const totalW  = PAD + COL_GSE + nEnts * CELL_W + (nEnts - 1) * COL_GAP + PAD;
@@ -2400,6 +2411,13 @@ code {
         const node = el("text", attrs, parent);
         node.textContent = content;
         return node;
+      }
+
+      // Trunca con puntos suspensivos: el SVG no envuelve texto y las celdas
+      // son de ancho fijo, así que las cabeceras largas se superponen.
+      function truncar(s, maxChars) {
+        const t = String(s);
+        return t.length > maxChars ? t.slice(0, maxChars - 1) + "…" : t;
       }
 
       // SVG raíz
@@ -2438,7 +2456,7 @@ code {
         el("rect", { x: 0, y: 10, width: 14, height: 14, rx: 2, fill: ent.color }, g);
 
         // Nombre
-        txt(ent.name, {
+        txt(truncar(ent.name, MAX_CHARS_NOMBRE), {
           x: 20, y: 22,
           "font-family": "system-ui, sans-serif",
           "font-size": 14, "font-weight": 800,
@@ -2453,7 +2471,7 @@ code {
           : ent.kind === "estab"  ? `RBD ${ent.rbd}`
           : ent.kind === "group"  ? `Grupo · ${ent.comunas.length} comunas`
           : ent.depe2 ? (SimceData.DEPE2_LABELS[ent.depe2] || ent.depe2) : "Comuna") + metaProsp;
-        txt(meta, {
+        txt(truncar(meta, MAX_CHARS_META), {
           x: 20, y: 38,
           "font-family": "system-ui, sans-serif",
           "font-size": 10, fill: "#747474",
