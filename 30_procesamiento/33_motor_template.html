@@ -1561,6 +1561,8 @@ code {
         : null;
       const meta = entity.kind === "slep"
         ? `SLEP · ${entity.comunas.length} comunas · ${nEstabSlep !== null ? nEstabSlep : "…"} establecimientos`
+        : entity.kind === "region"
+        ? `Región · ${entity.comunas.length} comunas`
         : entity.kind === "nacional"
         ? `Nacional · ${entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] : "Todas las dependencias"}`
         : entity.kind === "group"
@@ -2843,7 +2845,7 @@ code {
           const depe2Label = depe2 ? SimceData.DEPE2_LABELS[depe2] : "Todas las dependencias";
           onSave({
             id: editing?.id || ("e" + Date.now()),
-            name: c.nom + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
+            name: c.nom,
             kind: "comuna",
             comunas: [comunaCod],
             depe2: depe2 || null,
@@ -2856,7 +2858,7 @@ code {
             if (!reg) return null;
             return {
               id: editing?.id || ("e" + Date.now() + "_" + cod),
-              name: reg.nombre + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
+              name: reg.nombre,
               kind: "region",
               cod_reg: reg.cod_reg,
               comunas: reg.comunas.map(c => c.cod_com),
@@ -2902,7 +2904,7 @@ code {
         } else if (tab === "nacional") {
           onSave({
             id: editing?.id || ("e" + Date.now()),
-            name: "Chile" + (depe2 ? " · " + SimceData.DEPE2_LABELS[depe2] : ""),
+            name: "Chile",
             kind: "nacional",
             depe2: depe2 || null,
             color,
@@ -3267,12 +3269,11 @@ code {
         const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const slep = SimceData.SLEPS.find(s => norm(s.nombre).includes("costa central"));
         if (!slep) return [];
-        const depeLabel = SimceData.DEPE2_LABELS["5"];
         return slep.comunas.slice(0, MAX_ENTIDADES).map((cod, i) => {
           const c = SimceData.COMUNA_BY_COD.get(cod);
           return {
             id: "default_cc_" + cod,
-            name: (c ? c.nom : cod) + " · " + depeLabel,
+            name: (c ? c.nom : cod),
             kind: "comuna",
             comunas: [cod],
             depe2: "5",
