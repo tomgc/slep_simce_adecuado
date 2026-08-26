@@ -280,7 +280,13 @@ body {
   color: var(--fg-3);
   margin: 0;
 }
-.entities-count { font-size: var(--fs-caption); color: var(--fg-3); font-weight: 500; }
+.entities-count {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs-overline);
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+}
 .entities-list { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
 .entity-chip {
   display: inline-flex; align-items: flex-start; gap: 8px;
@@ -417,7 +423,6 @@ body {
   gap: 14px; font-size: var(--fs-caption);
 }
 .hint-item { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-1); }
-.hint-muted { color: var(--fg-3); font-size: var(--fs-overline); }
 .hint-box {
   display: inline-block; width: 14px; height: 12px;
   border: 1px solid rgba(0,0,0,0.12); border-radius: 1px;
@@ -460,7 +465,7 @@ body {
 }
 .sg-gse-name {
   font-family: var(--font-display);
-  font-weight: 800; font-size: var(--fs-h4);
+  font-weight: 800; font-size: var(--fs-body);
   color: #0A3A5C;
   letter-spacing: -0.005em; line-height: 1.1; margin-top: 2px;
 }
