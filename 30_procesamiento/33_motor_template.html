@@ -13,15 +13,6 @@
    ============================================================ */
 
 :root {
-  /* Escala tipografica (patron ade, piso 12px) */
-  --fs-overline: 12px;
-  --fs-caption:  14px;
-  --fs-body:     16px;
-  --fs-body-lg:  18px;
-  --fs-h4:       18px;
-  --fs-h3:       22px;
-  --fs-h2:       28px;
-
   /* Mark colors */
   --mark-red:    #EE2D49;
   --mark-pink:   #F8A0AE;
@@ -94,7 +85,7 @@
   /* Type scale */
   --fs-display-1: clamp(48px, 6vw, 88px);
   --fs-display-2: clamp(36px, 4.5vw, 64px);
-  --fs-h1: clamp(32px, 3.4vw, 44px);
+  --fs-h1: 30px;
   --fs-h2: 28px;
   --fs-h3: 22px;
   --fs-h4: 18px;
@@ -159,7 +150,7 @@ body {
 .app-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: var(--fs-h2);
+  font-size: var(--fs-h1);
   letter-spacing: -0.005em;
   color: var(--cream);
   line-height: 1.1;
@@ -2285,7 +2276,7 @@ code {
             <div className="heat-scale-bar" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
               {bands.map(b => (
                 <span key={b.cls} className={"heat-tick " + b.cls} style={{ padding: "4px 6px", borderRadius: 3, textAlign: "center" }}>
-                  <b style={{ fontSize: 12 }}>{b.label}</b>
+                  <b style={{ fontSize: "var(--fs-overline)" }}>{b.label}</b>
                   <small style={{ display: "block" }}>{b.desc}</small>
                 </span>
               ))}
@@ -2735,12 +2726,12 @@ code {
             <span className="estab-popup-title">{title}</span>
             <button className="icon-btn" onClick={onClose}><Icon name="x" /></button>
           </div>
-          <div style={{ fontSize: 11, color: "var(--fg-3)", marginBottom: 4 }}>
+          <div style={{ fontSize: "var(--fs-overline)", color: "var(--fg-3)", marginBottom: 4 }}>
             {items.length} establecimientos
           </div>
           <div className="estab-popup-list">
             {items.length === 0 ? (
-              <div style={{ fontSize: 12, color: "var(--fg-3)" }}>Sin información de establecimientos.</div>
+              <div style={{ fontSize: "var(--fs-overline)", color: "var(--fg-3)" }}>Sin información de establecimientos.</div>
             ) : items.map((it, i) => (
               <div key={i} className="estab-popup-item">
                 <span className="estab-popup-rbd">{it.rbd}</span>
@@ -2955,7 +2946,7 @@ code {
                   <div className="form-grid">
                     <label className="field field-full">
                       <span className="field-label">Buscar establecimiento</span>
-                      <span className="field-hint" style={{ fontSize: 11, color: "var(--fg-3)" }}>
+                      <span className="field-hint" style={{ fontSize: "var(--fs-overline)", color: "var(--fg-3)" }}>
                         Escribe al menos 3 caracteres (nombre o RBD)
                       </span>
                       <input
@@ -2973,7 +2964,7 @@ code {
                               style={{ cursor: "pointer" }}
                               onClick={() => { setSelectedEstab(e); setEstabSearch(e.nom); }}>
                               <span style={{ fontWeight: 500 }}>{e.nom}</span>
-                              <span style={{ fontSize: 11, color: "var(--fg-3)", marginLeft: "auto" }}>
+                              <span style={{ fontSize: "var(--fs-overline)", color: "var(--fg-3)", marginLeft: "auto" }}>
                                 RBD {e.rbd} · {e.com}
                               </span>
                             </label>
@@ -2983,7 +2974,7 @@ code {
                       {selectedEstab && (
                         <div className="check-row is-selected" style={{ marginTop: 4 }}>
                           <span style={{ fontWeight: 500 }}>{selectedEstab.nom}</span>
-                          <span style={{ fontSize: 11, color: "var(--fg-3)", marginLeft: "auto" }}>
+                          <span style={{ fontSize: "var(--fs-overline)", color: "var(--fg-3)", marginLeft: "auto" }}>
                             RBD {selectedEstab.rbd} · {selectedEstab.com}
                           </span>
                         </div>
@@ -3056,7 +3047,7 @@ code {
                           <label key={c.cod_com} className="check-row" style={{ cursor: "pointer" }}
                             onClick={() => { setComunaCod(c.cod_com); setSearch(c.nombre); }}>
                             <span style={{ fontWeight: 500 }}>{c.nombre}</span>
-                            <span style={{ fontSize: 11, color: "var(--fg-3)", marginLeft: "auto" }}>{c.region}</span>
+                            <span style={{ fontSize: "var(--fs-overline)", color: "var(--fg-3)", marginLeft: "auto" }}>{c.region}</span>
                           </label>
                         ))}
                       </div>
@@ -3124,7 +3115,7 @@ code {
                 <div className="form-grid">
                   <div className="field field-full">
                     <span className="field-label">Territorio</span>
-                    <p style={{ fontSize: 13, color: "var(--fg-2)", margin: "4px 0 0" }}>
+                    <p style={{ fontSize: "var(--fs-caption)", color: "var(--fg-2)", margin: "4px 0 0" }}>
                       Agrega <strong>Chile</strong> como territorio de referencia nacional.
                       Incluye todos los establecimientos del país con datos disponibles en cada año.
                     </p>
