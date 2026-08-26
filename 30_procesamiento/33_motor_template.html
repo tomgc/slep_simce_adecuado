@@ -440,8 +440,8 @@ body {
 
 .supergrid { display: grid; gap: 10px 12px; align-items: stretch; }
 .supergrid-entity-head {
-  display: flex; flex-direction: column;
-  gap: 4px; padding: 4px 4px 6px;
+  display: flex; flex-flow: row wrap; align-items: center;
+  gap: 4px; column-gap: 8px; padding: 4px 4px 6px;
   border-bottom: 2px solid var(--border-strong);
 }
 .supergrid-entity-head .entity-swatch { width: 16px; height: 16px; border-radius: 2px; }
@@ -451,7 +451,10 @@ body {
   color: var(--fg-1);
   letter-spacing: -0.005em; line-height: 1.1;
 }
-.sg-ent-meta { font-size: var(--fs-overline); color: var(--fg-3); font-weight: 500; }
+.sg-ent-meta {
+  flex: 0 0 100%;
+  font-size: var(--fs-overline); color: var(--fg-3); font-weight: 500;
+}
 .supergrid-gse-label {
   display: flex; flex-direction: column;
   justify-content: center;
@@ -1022,6 +1025,7 @@ code {
   font-size: var(--fs-overline); color: var(--fg-3); cursor: pointer;
   background: transparent; border: 0; padding: 0;
   font-family: var(--font-body);
+  white-space: nowrap;
 }
 .entity-estab-btn:hover { color: var(--ocean); text-decoration: underline; }
 
@@ -1613,7 +1617,7 @@ code {
         <section className="entities-bar">
           <div className="entities-head">
             <h2 className="section-eyebrow">Territorios a comparar</h2>
-            <span className="entities-count">{entities.length} de {MAX_ENTIDADES} activas</span>
+            <span className="entities-count">{entities.length} de {MAX_ENTIDADES} activos</span>
           </div>
           <div className="entities-list">
             {entities.map(e => (
