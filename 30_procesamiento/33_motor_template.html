@@ -3373,9 +3373,6 @@ code {
                     </span>
                   </div>
                 ))}
-                {Array.from({ length: Math.max(0, 4 - entities.length) }).map((_, i) => (
-                  <div key={"ph-" + i} />
-                ))}
                 {SimceData.GSE_LEVELS.map(gse => (
                   <React.Fragment key={gse}>
                     {entities.map(ent => {
@@ -3390,9 +3387,6 @@ code {
                           nivel={nivel} prueba={prueba} />
                       );
                     })}
-                    {Array.from({ length: Math.max(0, 4 - entities.length) }).map((_, i) => (
-                      <div key={"ph-" + gse + "-" + i} />
-                    ))}
                   </React.Fragment>
                 ))}
               </div>
