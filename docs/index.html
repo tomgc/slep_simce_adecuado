@@ -297,7 +297,7 @@ body {
 }
 .entity-chip:hover { border-color: var(--plum); }
 .entity-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
-.entity-text { display: flex; flex-direction: column; line-height: 1.1; }
+.entity-text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
 .entity-name {
   font-family: var(--font-body);
   font-weight: 700; font-size: var(--fs-body); color: var(--fg-1);
@@ -1021,13 +1021,18 @@ code {
 
 /* Estab popup trigger en territorio chip */
 .entity-estab-btn {
-  display: inline-flex; align-items: center; gap: 4px;
+  display: flex; align-items: center; gap: 4px; max-width: 100%;
   font-size: var(--fs-overline); color: var(--fg-3); cursor: pointer;
   background: transparent; border: 0; padding: 0;
   font-family: var(--font-body);
   white-space: nowrap;
 }
 .entity-estab-btn:hover { color: var(--ocean); text-decoration: underline; }
+/* El rotulo se recorta con puntos suspensivos cuando el contador es largo;
+   la flecha nunca encoge, para que no quede huerfana en otra linea. El
+   nowrap del boton es lo que impide ese quiebre, y por eso se conserva. */
+.entity-estab-label { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.entity-estab-arrow { flex-shrink: 0; }
 
 </style>
 </head>
@@ -1647,7 +1652,10 @@ code {
             )}
             {hasEstabs && (
               <button className="entity-estab-btn" onClick={onShowEstab}>
-                {`ver establecimientos (${contarEstablecimientos(entity, nivel, prueba) ?? "…"}) ▸`}
+                <span className="entity-estab-label">
+                  {`ver establecimientos (${contarEstablecimientos(entity, nivel, prueba) ?? "…"})`}
+                </span>
+                <span className="entity-estab-arrow">▸</span>
               </button>
             )}
           </span>
@@ -2652,26 +2660,55 @@ code {
     // Rasteriza el mismo SVG compuesto a PNG. Factor 2x para nitidez en
     // documentos/presentaciones sin inflar demasiado el peso del archivo.
     const PNG_SCALE = 2;
+    // Techo conservador de superficie de canvas de Safari. Por encima de esta
+    // area el navegador no avisa: devuelve un canvas en blanco o lanza al
+    // serializar. Se comprueba antes de crear el canvas, para poder explicarle
+    // la causa al usuario en vez de fallar sin motivo aparente.
+    const PNG_MAX_SUPERFICIE_PX = 16777216;
     function exportarGraficosPNG({ entities, nivel, prueba }) {
       const { svgStr, totalW, totalH, fnameBase } = construirSvgGraficos({ entities, nivel, prueba });
       const svgBlob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(svgBlob);
+      // Un solo punto de liberacion: el catch no puede saber si el camino
+      // feliz alcanzo a liberar la URL antes de fallar.
+      let urlLiberada = false;
+      const liberarUrl = () => {
+        if (!urlLiberada) { URL.revokeObjectURL(url); urlLiberada = true; }
+      };
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = totalW * PNG_SCALE;
-        canvas.height = totalH * PNG_SCALE;
-        const ctx = canvas.getContext("2d");
-        ctx.scale(PNG_SCALE, PNG_SCALE);
-        ctx.drawImage(img, 0, 0, totalW, totalH);
-        URL.revokeObjectURL(url);
-        canvas.toBlob(blob => {
-          if (!blob) { alert("No se pudo generar el PNG."); return; }
-          descargarBlob(blob, fnameBase + ".png");
-        }, "image/png");
+        // canvas.toBlob puede lanzar de forma sincrona (canvas contaminado,
+        // superficie rechazada). Sin este try/catch la excepcion escapa del
+        // manejador de eventos y el usuario no recibe ni alerta ni archivo.
+        try {
+          const superficie = (totalW * PNG_SCALE) * (totalH * PNG_SCALE);
+          if (superficie > PNG_MAX_SUPERFICIE_PX) {
+            liberarUrl();
+            alert(
+              "Demasiados territorios para exportar a PNG en esta escala: la imagen pedida son " +
+              Math.round(superficie / 1e6) + " millones de píxeles y el máximo seguro son " +
+              Math.round(PNG_MAX_SUPERFICIE_PX / 1e6) + ". Exporta en SVG, que no tiene ese límite."
+            );
+            return;
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = totalW * PNG_SCALE;
+          canvas.height = totalH * PNG_SCALE;
+          const ctx = canvas.getContext("2d");
+          ctx.scale(PNG_SCALE, PNG_SCALE);
+          ctx.drawImage(img, 0, 0, totalW, totalH);
+          liberarUrl();
+          canvas.toBlob(blob => {
+            if (!blob) { alert("No se pudo generar el PNG."); return; }
+            descargarBlob(blob, fnameBase + ".png");
+          }, "image/png");
+        } catch (e) {
+          liberarUrl();
+          alert("No se pudo generar el PNG: " + ((e && e.message) ? e.message : e));
+        }
       };
       img.onerror = () => {
-        URL.revokeObjectURL(url);
+        liberarUrl();
         alert("No se pudo rasterizar el SVG a PNG.");
       };
       img.src = url;
@@ -3336,12 +3373,28 @@ code {
       // Estado por defecto del motor: las comunas del SLEP Costa Central con
       // dependencia Servicio Local (depe2="5"). Se derivan EN RUNTIME desde
       // SimceData.SLEPS (sin hardcodear cod_com ni cod_slep); el nombre del SLEP
-      // se localiza por coincidencia normalizada. Respeta el tope MAX_ENTIDADES.
+      // se localiza por coincidencia normalizada.
       // Si el SLEP no aparece, devuelve [] y no rompe el render.
+      //
+      // Relacion con el tope de comparacion. La siembra queda acotada por
+      // MAX_ENTIDADES, y ese acoplamiento no se puede eliminar: el tablero no
+      // admite mas territorios de los que caben en la comparacion. Lo que si
+      // se corrige aqui es el silencio: si el SLEP tuviera mas comunas que el
+      // tope, la funcion sembraba un territorio incompleto sin ninguna senal.
+      // Hoy no hay truncamiento, porque Costa Central tiene 4 comunas.
       function entidadesPorDefecto() {
         const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const slep = SimceData.SLEPS.find(s => norm(s.nombre).includes("costa central"));
         if (!slep) return [];
+        const nComunas = slep.comunas.length;
+        const sembradas = Math.min(nComunas, MAX_ENTIDADES);
+        if (nComunas > MAX_ENTIDADES) {
+          console.warn(
+            `entidadesPorDefecto: el SLEP "${slep.nombre}" tiene ${nComunas} comunas y se sembraron ` +
+            `${sembradas}; el tope de comparacion (MAX_ENTIDADES) es ${MAX_ENTIDADES}. ` +
+            `El territorio por defecto queda incompleto.`
+          );
+        }
         return slep.comunas.slice(0, MAX_ENTIDADES).map((cod, i) => {
           const c = SimceData.COMUNA_BY_COD.get(cod);
           return {
