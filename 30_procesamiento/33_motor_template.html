@@ -83,8 +83,6 @@
   --font-mono:    ui-monospace, "SF Mono", "Menlo", monospace;
 
   /* Type scale */
-  --fs-display-1: clamp(48px, 6vw, 88px);
-  --fs-display-2: clamp(36px, 4.5vw, 64px);
   --fs-h1: 30px;
   --fs-h2: 28px;
   --fs-h3: 22px;
@@ -2916,7 +2914,6 @@ code {
           if (!comunaCod) return;
           const c = SimceData.COMUNA_BY_COD.get(comunaCod);
           if (!c) return;
-          const depe2Label = depe2 ? SimceData.DEPE2_LABELS[depe2] : "Todas las dependencias";
           onSave({
             id: editing?.id || ("e" + Date.now()),
             name: c.nom,
