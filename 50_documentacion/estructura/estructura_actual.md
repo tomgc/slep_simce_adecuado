@@ -1,8 +1,8 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-08-26 09:21:20
-- **Totales:** 23 carpetas, 152 archivos
+- **Fecha:** 2026-08-27 10:39:11
+- **Totales:** 23 carpetas, 163 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 ## Arbol
@@ -24,7 +24,7 @@ slep_simce_adecuado/
 │   │   │   ├── colors_and_type.css  (8.31K)
 │   │   │   ├── data.js  (4.48K)
 │   │   │   ├── main.jsx  (10.3K)
-│   │   │   ├── Motor SIMCE.html  (1.42K)
+│   │   │   ├── motor_simce.html  (1.42K)
 │   │   │   ├── styles.css  (27.7K)
 │   │   │   ├── table.jsx  (7.22K)
 │   │   │   └── tweaks-panel.jsx  (23.3K)
@@ -66,7 +66,7 @@ slep_simce_adecuado/
 │   ├── 31_leer_normalizar.R  (16.2K)
 │   ├── 32_agregar_comunal.R  (7.64K)
 │   ├── 33_generar_html.R  (15.4K)
-│   ├── 33_motor_template.html  (149K)
+│   ├── 33_motor_template.html  (152K)
 │   └── 34_historico_pct_adecuado_costa_central.R  (6.09K)
 ├── 40_salidas/
 │   ├── intermedios/
@@ -91,13 +91,19 @@ slep_simce_adecuado/
 │   │   ├── encargos/
 │   │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   │   ├── encargo_claude_code_simce_suite_standalone.md  (10.5K)
+│   │   │   ├── encargo_deuda_tipografica_svg_y_codigo_muerto.md  (10.7K)
+│   │   │   ├── encargo_entorno_y_suite_standalone.md  (9.04K)
+│   │   │   ├── encargo_homogeneidad_y_quinto_territorio.md  (13.7K)
+│   │   │   ├── encargo_ordenacion_repositorio.md  (10.1K)
 │   │   │   └── encargo_renombrar_entidad_territorio.md  (11.2K)
 │   │   ├── .gitkeep  (0)
+│   │   ├── 50_locale_utf8.md  (4.12K)
+│   │   ├── 50_ordenacion_repositorio.md  (4.51K)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_acumulativo.md  (32.4K)
+│   │   ├── backlog_acumulativo.md  (34.7K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
-│   │   ├── ESTADO.md  (1.41K)
+│   │   ├── ESTADO.md  (1.16K)
 │   │   ├── gobernanza_datos.md  (6.96K)
 │   │   ├── informe_auditoria_prelanzamiento.md  (10.6K)
 │   │   ├── manifiesto_insumos.md  (2.78K)
@@ -107,20 +113,24 @@ slep_simce_adecuado/
 │   │   ├── resena_slep_simce_adecuado.md  (1.4K)
 │   │   └── SETTINGS_Y_PROMPTS_OPERACIONALES.md  (137K)
 │   ├── andamios/
-│   │   └── logs/
-│   │       ├── 20260620_cotejo_marcas_suite_log.md  (6.69K)
-│   │       ├── 20260620_reconstruccion_backlog_log.md  (9.44K)
-│   │       ├── 20260622_anexo_delta_s20_backlog_log.md  (4.71K)
-│   │       ├── 20260622_auditoria_ley21719_log.md  (8.43K)
-│   │       ├── 20260622_suite_standalone_simce_log.md  (5.48K)
-│   │       └── 20260701_renombrar_entidad_territorio_log.md  (7.02K)
+│   │   ├── logs/
+│   │   │   ├── 20260620_cotejo_marcas_suite_log.md  (6.69K)
+│   │   │   ├── 20260620_reconstruccion_backlog_log.md  (9.44K)
+│   │   │   ├── 20260622_anexo_delta_s20_backlog_log.md  (4.71K)
+│   │   │   ├── 20260622_auditoria_ley21719_log.md  (8.43K)
+│   │   │   ├── 20260622_suite_standalone_simce_log.md  (5.48K)
+│   │   │   ├── 20260701_renombrar_entidad_territorio_log.md  (7.02K)
+│   │   │   ├── 20260826_homogeneidad_y_quinto_territorio_log.md  (11.2K)
+│   │   │   ├── 20260827_entorno_y_suite_standalone_log.md  (29K)
+│   │   │   └── 20260827_tipografia_svg_y_codigo_muerto_log.md  (23.3K)
+│   │   └── .DS_Store  (8K)
 │   ├── estructura/
-│   │   ├── 20260629_063257_estructura.md  (9.09K)
-│   │   ├── 20260629_063257_estructura.txt  (9.17K)
 │   │   ├── 20260701_114145_estructura.md  (9.36K)
 │   │   ├── 20260701_114145_estructura.txt  (9.45K)
-│   │   ├── estructura_actual.md  (9.36K)
-│   │   └── estructura_actual.txt  (9.45K)
+│   │   ├── 20260826_092120_estructura.md  (9.45K)
+│   │   ├── 20260826_092120_estructura.txt  (9.55K)
+│   │   ├── estructura_actual.md  (9.45K)
+│   │   └── estructura_actual.txt  (9.55K)
 │   ├── suite/
 │   │   ├── assets/
 │   │   │   ├── logo-color-stacked.png  (126K)
@@ -166,8 +176,9 @@ slep_simce_adecuado/
 │   │   ├── traspaso_cierre_v23.md  (20.1K)
 │   │   ├── traspaso_cierre_v24.md  (10.6K)
 │   │   ├── traspaso_cierre_v25.md  (16.8K)
-│   │   └── traspaso_cierre_v26.md  (12.5K)
-│   └── .DS_Store  (8K)
+│   │   ├── traspaso_cierre_v26.md  (12.5K)
+│   │   └── traspaso_cierre_v27.md  (14.8K)
+│   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.46M)
 ├── .DS_Store  (8K)
@@ -190,10 +201,10 @@ slep_simce_adecuado/
 
 | Extension | Archivos |
 |---|---|
-| md | 56 |
+| md | 66 |
 | xlsx | 24 |
+| (sin extension) | 13 |
 | r | 13 |
-| (sin extension) | 12 |
 | html | 10 |
 | otf | 6 |
 | parquet | 6 |
