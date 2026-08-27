@@ -929,3 +929,674 @@ en M3.
    reconstruye exacto al entero, la ponderación por matrícula preserva el 100%
    en las 11.837 celdas, y las columnas de desagregación existen con los mismos
    nombres en ambos archivos.
+
+---
+---
+
+# Segunda medición — 2026-08-27, cierre de las dos lagunas
+
+**Fecha:** 2026-08-27 (`date "+%Y-%m-%d %H:%M:%S %Z"` → `2026-08-27 12:09:31 -04`)
+**Motivo:** cerrar las dos lagunas declaradas en la sección "Lo que no se pudo
+medir" de la primera medición: la semántica de la columna `marca`, y la
+agregación para territorios que no son comuna. Se añade una tercera cuestión, el
+costo en el navegador.
+**Naturaleza:** solo lectura. No se editó código, no se regeneró nada.
+**Estado de partida:** árbol limpio, `## main...origin/main [ahead 1]`, HEAD en
+`2ecad9d`.
+
+> Esta sección **corrige** un dato de la primera medición. Ver N1, apartado
+> "Consecuencia sobre lo ya escrito".
+
+---
+
+## N1 — La columna `marca`
+
+### N1a — Valores únicos y presencia en cada archivo
+
+```
+=== N1a: aparece marca en ambos archivos? ===
+simce_rbd tiene columna marca:     TRUE 
+simce_comunal tiene columna marca: FALSE 
+columnas de simce_comunal: anio, nivel, prueba, cod_com_rbd, nom_com_rbd, cod_reg_rbd, nom_reg_rbd, cod_grupo, cod_depe2, pct_adecuado, pct_elemental, pct_insuficiente, n_evaluados, n_estab 
+
+=== N1a: valores unicos de marca con frecuencia (simce_rbd) ===
+                                                     marca  filas   pct
+1                                                     <NA> 173100 93.38
+2                                                        1   6151  3.32
+3                                                        2   1559  0.84
+4                                                        3   1326  0.72
+5                                    Alumnos insuficientes   1250  0.67
+6                          Ajenas a la Agencia: No reporte   1183  0.64
+7       Ajenas a la Agencia: Resultados no representativos    670  0.36
+8 Ajenas al Establecimiento: Resultados no representativos     97  0.05
+9                                                        4     42  0.02
+
+clase de la columna marca: character 
+total filas: 185378 
+```
+
+**Solo existe en `simce_rbd.parquet`.** `simce_comunal.parquet` no la tiene, y la
+razón se descubre más abajo: ese archivo ya viene filtrado por ella.
+
+**Ocho valores no nulos, en dos codificaciones distintas** que conviven: cuatro
+códigos numéricos como texto (`"1"`, `"2"`, `"3"`, `"4"`) y cuatro etiquetas
+literales. La columna es `character`.
+
+### Las dos codificaciones se reparten por época
+
+```
+=== marca por anio: se mezclan las dos codificaciones? ===
+                                                     marca 2014 2015 2016 2017
+1                          Ajenas a la Agencia: No reporte 1183    0    0    0
+2       Ajenas a la Agencia: Resultados no representativos  306    0  266   98
+3                                    Alumnos insuficientes   46    0 1201    3
+4                                                        1    0   27    0 1118
+5                                                        2    0  115    0   46
+6                                                        3    0 1273    0    9
+7                                                        4    0   42    0    0
+8 Ajenas al Establecimiento: Resultados no representativos    0    0   87   10
+  2018 2022 2023 2024 2025
+1    0    0    0    0    0
+2    0    0    0    0    0
+3    0    0    0    0    0
+4 1101 1051 1014  940  900
+5   27  440  279  265  387
+6   10   22   12    0    0
+7    0    0    0    0    0
+8    0    0    0    0    0
+```
+
+Las etiquetas de texto solo aparecen en **2014, 2016 y 2017**; los códigos
+numéricos en **2015 y 2017–2025**. **2017 es año de transición y trae ambas.**
+No se encontró en el repositorio ningún diccionario que traduzca `"1"`…`"4"` a
+las etiquetas, así que **no se puede afirmar cuál código numérico equivale a
+"Resultados no representativos"**. Queda declarado como no verificado.
+
+### N1b — Cruce contra `nalu` y dato completo
+
+```
+=== N1b: marca x nalu>=10 x dato completo ===
+                                                     marca  filas nalu_ge10 dato_completo USABLES
+1                                                     <NA> 173100    140345        140345  140345
+2                                                        1   6151        17            17      17
+3                                                        2   1559      1203          1203    1203
+4                                                        3   1326        47            47      47
+5                                    Alumnos insuficientes   1250        44            44      44
+6                          Ajenas a la Agencia: No reporte   1183         0             0       0
+7       Ajenas a la Agencia: Resultados no representativos    670       566           566     566
+8 Ajenas al Establecimiento: Resultados no representativos     97        94            94      94
+9                                                        4     42        37            37      37
+
+control: suma de USABLES = 142353 | esperado 142353 
+```
+
+Dos observaciones:
+
+- **`nalu >= 10` y "dato completo" coinciden fila a fila también dentro de cada
+  valor de `marca`** (las columnas `nalu_ge10` y `dato_completo` son idénticas en
+  las nueve filas). Refuerza el hallazgo de M4.
+- **"Ajenas a la Agencia: No reporte" desaparece por completo** con el umbral:
+  0 de 1.183 filas sobreviven. El resto sí sobrevive en parte.
+
+### N1c — Filas que sobreviven al umbral llevando marca
+
+```
+=== N1c: de las 142353 filas USABLES, que marca llevan ===
+                                                     marca  filas pct_de_usables
+1                                                     <NA> 140345         98.589
+2                                                        2   1203          0.845
+3       Ajenas a la Agencia: Resultados no representativos    566          0.398
+4 Ajenas al Establecimiento: Resultados no representativos     94          0.066
+5                                                        3     47          0.033
+6                                    Alumnos insuficientes     44          0.031
+7                                                        4     37          0.026
+8                                                        1     17          0.012
+```
+
+**2.008 filas** (1,411%) pasan el filtro de umbral llevando marca. De ellas,
+**660 dicen literalmente "Resultados no representativos"** (566 + 94).
+
+### N1d — Distribución de esas filas
+
+```
+=== N1d: filas USABLES con marca (total 2008 ) por anio ===
+  anio filas
+1 2014   309
+2 2015   136
+3 2016   301
+4 2017   128
+5 2018    27
+6 2022   382
+7 2023   229
+8 2024   195
+9 2025   301
+
+=== por dependencia (cod_depe2) ===
+  cod_depe2 filas
+1         1   565
+2         2   770
+3         3   157
+4         4    20
+5         5   496
+```
+
+```
+=== solo las que dicen literalmente no representativos ===
+filas: 660 
+  anio                                                    marca filas
+1 2014       Ajenas a la Agencia: Resultados no representativos   265
+2 2016       Ajenas a la Agencia: Resultados no representativos   217
+3 2016 Ajenas al Establecimiento: Resultados no representativos    84
+4 2017       Ajenas a la Agencia: Resultados no representativos    84
+5 2017 Ajenas al Establecimiento: Resultados no representativos    10
+
+dependencia:
+  cod_depe2 filas
+1         1   212
+2         2   185
+3         3    53
+4         4     8
+5         5   202
+
+nivel x prueba:
+  nivel prueba filas
+1    2m   lect   275
+2    2m   mate   250
+3    4b   lect    63
+4    4b   mate    72
+
+comunas distintas afectadas: 145 | establecimientos: 384 
+
+nalu de esas filas: min 10 mediana 30 max 267 
+```
+
+Las 660 filas "no representativas" **solo existen en 2014, 2016 y 2017**, o sea
+en la era de codificación textual. Afectan a 145 comunas y 384 establecimientos,
+con matrículas de 10 a 267 estudiantes (mediana 30). Se concentran en 2m (525 de
+660). La dependencia 5 (SLEP) aporta 202.
+
+**Esto importa para la vista.** Si alguien excluyera por la etiqueta de texto,
+excluiría 2014/2016/2017 y **conservaría** las filas equivalentes de 2018–2025,
+que vienen con código numérico. El resultado sería un escalón artificial en la
+serie histórica justo en el punto donde cambia la codificación — el peor
+artefacto posible en un gráfico cuyo propósito es mostrar evolución temporal.
+
+### ¿Algún script del pipeline filtra por `marca`?
+
+**Sí, en cuatro lugares, y con el mismo criterio.**
+
+`10_utils/10_utils.R`, dentro de `agregar_ponderado()`, líneas 64-69:
+
+```r
+  base <- df |>
+    dplyr::filter(
+      !is.na(nalu),
+      nalu >= 10,
+      is.na(marca),
+      !is.na(palu_eda_ade)
+    ) |>
+```
+
+con la documentación de la función, líneas 24-27:
+
+```
+#'   1. nalu no NA
+#'   2. nalu >= 10           (umbral MINEDUC)
+#'   3. marca es NA          (sin marca de supresión)
+#'   4. palu_eda_ade no NA   (defensivo)
+```
+
+y el comentario de la línea 59, decisivo para esta vista:
+
+```
+  # (nalu < 10, o marca presente) quedan fuera por igual para los tres niveles.
+```
+
+`30_procesamiento/33_generar_html.R` repite el filtro **tres veces**, en las
+líneas 166, 187 y 208:
+
+```r
+  dplyr::filter(
+    !is.na(.data$palu_eda_ade),
+    !is.na(.data$nalu), .data$nalu >= 10,
+    is.na(.data$marca)
+  ) |>
+```
+
+`30_procesamiento/32_agregar_comunal.R` líneas 34-37 documenta que
+`simce_comunal.parquet` hereda el filtro vía `agregar_ponderado()`:
+
+```
+#   2. Aplicados por agregar_ponderado() internamente:
+#        - nalu >= 10 (umbral MINEDUC)
+#        - marca es NA (sin marca de supresión)
+#        - palu_eda_ade no-NA (defensivo)
+```
+
+Y el comentario de `33_generar_html.R` líneas 194-200 explica **por qué el filtro
+se aplica en R y no en el navegador**:
+
+```
+# 8 columnas necesarias para graficar; excluye marca, nom_com_rbd, preliminar
+# (recuperables desde otros catálogos). Formato columnar para compacidad.
+# Filtro COMPLETO de producción (auditoría A2, s13): generateSeriesByRbd y
+# los conteos del motor consumen esta tabla SIN poder reaplicar el umbral
+# MINEDUC ni la marca (marca no viaja en el JSON). Si acá entran filas con
+# nalu < 10 o marca no-NA, los % de SLEP divergen del resto del motor
+# (divergencias de hasta 42.6 pp medidas en la auditoría). La regla del
+# invariante 5 se aplica una sola vez, acá, en R.
+```
+
+Contraste registrado: `34_historico_pct_adecuado_costa_central.R` línea 19
+declara la decisión **contraria**, y de forma deliberada:
+
+```
+#   - Filas con 'marca' no vacío (no representativas): SE INCLUYEN.
+```
+
+Es un script de exportación histórica a Excel, con metodología propia acordada en
+la sesión 26. No alimenta el motor.
+
+### Respuesta explícita a la pregunta final de N1
+
+**El motor actual YA excluye esas filas. No las está mostrando hoy en la vista de
+comparación.**
+
+La evidencia es triple y concordante:
+
+1. El filtro `is.na(marca)` se aplica en `10_utils.R:67` y en tres puntos de
+   `33_generar_html.R` (166, 187, 208).
+2. **`marca` no viaja en el JSON** (`33_generar_html.R:198`, textual). El
+   navegador no podría reaplicar el filtro aunque quisiera: la exclusión se
+   resuelve una sola vez, en R.
+3. La cifra cuadra al entero. El filtro de producción deja **140.345 filas**, que
+   es exactamente lo que el generador reporta en su resumen (`simce_rbd: 140345
+   filas`):
+
+```
+filas crudas: 185378 
+filas tras el filtro de PRODUCCION (palu no-NA, nalu>=10, marca NA): 140345 
+el generador reporta: 140345 -> coincide? TRUE 
+de esas, con los tres niveles presentes y suma != 0: 140345 
+filas con palu_eda_ade no-NA pero ele o ins NA: 0 
+```
+
+**La vista nueva no necesita decidir nada sobre `marca`**: si se alimenta de
+`DATA.simce_rbd` o de `DATA.datos`, la exclusión ya viene hecha. Lo que sí debe
+hacer es **no volver a leer el parquet crudo por su cuenta**, porque ahí las
+2.008 filas siguen presentes.
+
+### Consecuencia sobre lo ya escrito: corrección a la primera medición
+
+La primera medición definió el universo utilizable como
+`!(is.na(suma) | suma == 0) & nalu >= 10`, y contó **142.353 filas**. Ese criterio
+**omite `is.na(marca)`** y es por tanto **más permisivo que el de producción en
+2.008 filas**.
+
+| Criterio | Filas | Dónde se usó |
+|---|---|---|
+| Mío en la primera medición (sin `marca`) | 142.353 | M3, M4, M5 y la medición adicional de ponderación |
+| De producción (`10_utils.R:67`) | **140.345** | el motor, y el generador lo confirma |
+
+Qué cambia y qué no:
+
+- **M2 no cambia:** las 8.216 filas de suma 0 siguen siendo el hallazgo, y las
+  2.008 filas con marca tienen dato completo, así que no alteran el rango de la
+  suma.
+- **M3 no cambia en su conclusión:** la reconstrucción del N era exacta sobre
+  142.353 filas; sobre un subconjunto de 140.345 sigue siéndolo.
+- **M4 sí cambia en las cifras:** las columnas `sin_nivel` y `sin_matricula` de la
+  tabla por año están calculadas con el criterio permisivo. Con el de producción,
+  la supresión es mayor: 45.033 filas fuera en vez de 43.025.
+- **M5 sí cambia:** los conteos de `completas` por nivel × prueba están
+  sobreestimados en total 2.008 filas.
+- **La medición adicional de ponderación se rehace en N2** con el criterio
+  correcto, y el resultado se sostiene.
+
+Las tablas de la primera medición **no se reescriben**, por instrucción: quedan
+como estaban, con esta nota como corrección.
+
+---
+
+## N2 — Agregación para territorios que no son comuna
+
+Todas las celdas se calcularon sobre el universo de producción de 140.345 filas,
+con la fórmula de ponderación del proyecto extendida a los tres niveles y con GSE
+**combinado** (agregando sobre `cod_grupo`):
+
+```r
+pct_X = sum(nalu * palu_eda_X / 100) / sum(nalu) * 100
+```
+
+Universo de cada tipo: comuna por `cod_com_rbd`; región por `cod_reg_rbd` unido
+desde `comunas_chile.parquet`; SLEP por `cod_slep` unido desde
+`sleps_chile.parquet`; nacional agrupando todo; grupo personalizado como unión
+arbitraria de comunas (se midieron dos casos, el mínimo real del proyecto y el
+máximo posible); establecimiento por `rbd`.
+
+`celdas_posibles` = territorios × 9 años × 2 niveles × 2 pruebas = territorios × 36.
+
+### Tabla completa (salida literal)
+
+```
+=== N2: agregacion por tipo de territorio ===
+                             tipo territorios celdas_con_dato celdas_posibles
+                           comuna         345           11783           12420
+                           region          16             576             576
+                             SLEP          36            1296            1296
+                         nacional           1              36              36
+ grupo (4 comunas, Costa Central)           1              36              36
+     grupo (345 comunas = maximo)           1              36              36
+                  establecimiento        6729          140345          242244
+ celdas_sin_dato pct_sin_dato suma_min suma_max   max_desv fuera_de_rango
+             637          5.1   99.900  100.100 0.10000000              0
+               0          0.0   99.970  100.027 0.03028790              0
+               0          0.0   99.900  100.075 0.10000000              0
+               0          0.0   99.998  100.004 0.00405922              0
+               0          0.0   99.988  100.021 0.02059770              0
+               0          0.0   99.998  100.004 0.00405922              0
+          101899         42.1   99.900  100.100 0.10000000              0
+```
+
+### N2a — ¿Suman 100 ± 0,1 en todas las celdas?
+
+**Sí, en los siete casos, sin una sola excepción.** La columna `fuera_de_rango`
+—celdas con `|suma − 100| > 0,1 + 1e-9`— da **0** para todos los tipos, y la
+desviación máxima nunca supera `0.10000000`.
+
+Los tipos agregados quedan **mejor** que los individuales, como cabía esperar: la
+región tiene desviación máxima 0,0303 y el nacional 0,0041, porque el redondeo de
+±0,05 de cada establecimiento se promedia al ponderar por matrícula.
+
+### N2b — Celdas por tipo y celdas sin dato
+
+| Tipo | Territorios | Celdas con dato | Celdas posibles | Sin dato | % sin dato |
+|---|---|---|---|---|---|
+| Comuna | 345 | 11.783 | 12.420 | 637 | **5,1%** |
+| Región | 16 | 576 | 576 | 0 | **0%** |
+| SLEP | 36 | 1.296 | 1.296 | 0 | **0%** |
+| Nacional | 1 | 36 | 36 | 0 | **0%** |
+| Grupo (4 comunas, Costa Central) | 1 | 36 | 36 | 0 | **0%** |
+| Grupo (345 comunas, máximo) | 1 | 36 | 36 | 0 | **0%** |
+| Establecimiento | 6.729 | 140.345 | 242.244 | 101.899 | **42,1%** |
+
+**Región, SLEP, nacional y grupo nunca tienen hueco**: los 36 puntos de la serie
+existen siempre. Un panorama de esos tipos siempre se dibuja completo.
+
+Las 637 celdas faltantes de comuna se concentran:
+
+```
+celdas faltantes: 637 
+comunas con al menos una celda faltante: 64 de 345
+comunas SIN NINGUNA celda (nunca tienen dato): 7 
+
+faltantes por nivel:
+  nivel celdas
+1    2m    400
+2    4b    237
+
+top 5 comunas con mas celdas faltantes:
+  cod_com_rbd celdas      nom_com_rbd nom_reg_rbd
+1       12102     36    LAGUNA BLANCA  Magallanes
+2       12103     36        RÍO VERDE  Magallanes
+3       12104     36     SAN GREGORIO  Magallanes
+4       12303     36         TIMAUKEL  Magallanes
+5       12402     36 TORRES DEL PAINE  Magallanes
+```
+
+**Siete comunas no tienen ni una sola celda con dato** en ningún año, nivel ni
+prueba. Las cinco primeras son comunas rurales de Magallanes con muy pocos
+establecimientos, todos bajo el umbral. El selector de territorio las ofrecerá
+igual, porque se construye desde el catálogo de 345: **la vista necesita un
+estado vacío explícito** para ese caso, no una pantalla en blanco.
+
+Nótese también que 2m concentra 400 de las 637 faltantes pese a tener menos
+filas: hay comunas sin enseñanza media.
+
+### N2c — El establecimiento individual
+
+```
+=== control: una celda de establecimiento es UNA fila? ===
+     1 
+140345 
+```
+
+**Cada celda de establecimiento es exactamente una fila**: las 140.345 celdas
+`rbd × año × nivel × prueba` tienen una y solo una fila de GSE. Un RBD pertenece
+a un solo grupo socioeconómico por año, así que para este tipo de territorio "GSE
+combinado" es una operación vacía. El propio motor ya lo declara, en el
+comentario de `generateSeriesByEstab`:
+
+```
+// gse aquí es el GSE del establecimiento en el año más reciente — se ignora como filtro
+// porque un RBD pertenece a un solo GSE por año; mostramos todos los años disponibles.
+```
+
+Sobre la proporción sin dato, la cifra depende del denominador y conviene dar las
+dos:
+
+```
+=== N2c: establecimiento, denominador realista ===
+celdas rbd x anio x nivel x prueba que EXISTEN en el archivo crudo: 185378 
+celdas con dato tras el filtro de produccion: 140345 
+proporcion sin dato sobre lo que existe: 24.3 %
+establecimientos distintos: crudo 9176 | con dato 6729 
+```
+
+| Denominador | Sin dato | Lectura |
+|---|---|---|
+| 6.729 × 36 = 242.244 | 101.899 → **42,1%** | Sobreestima: un liceo que solo imparte 2m nunca tendrá celdas de 4b, y eso no es "falta de dato" |
+| Celdas que existen en el archivo crudo: 185.378 | 45.033 → **24,3%** | **Es la cifra honesta**: de las combinaciones que la Agencia sí reporta, una de cada cuatro queda suprimida |
+
+Además, **2.447 establecimientos** (9.176 − 6.729) no tienen ni una sola celda
+con dato. Para el tipo "establecimiento" el estado vacío no es un borde: es
+frecuente.
+
+---
+
+## N3 — Costo en el navegador
+
+### N3a — Volumen de una tabla larga
+
+```
+=== N3a: filas de una tabla larga territorio x anio x nivel x prueba x nivel_de_logro ===
+celdas CON DATO   : comuna 11783 + region 576 + SLEP 1296 = 13655 
+  x 3 niveles de logro = 40965 filas
+celdas POSIBLES   : comuna 12420 + region 576 + SLEP 1296 = 14292 
+  x 3 niveles de logro = 42876 filas
+
+comparacion con lo que YA viaja embebido:
+  DATA.simce_rbd : 140345 filas x 10 columnas
+  DATA.datos     :  44975 filas x 12 columnas
+  suma           : 185320 filas
+  la tabla larga del panorama seria 22.1 % de ese volumen
+```
+
+**40.965 filas** con dato, **42.876** si se materializan también las celdas
+vacías. Es el **22,1%** de lo que el motor ya embebe.
+
+Para dimensionar: el JSON plano son 13,6 MB y comprimido 2,1 MB (gzip+base64,
+15,4% del plano), y el HTML final pesa 2.582.039 bytes (`ls -la
+40_salidas/motor_comparacion.html`). Añadir 40.965 filas de 6 columnas cortas
+crecería el payload en el orden de un 10–20%, si hubiera que añadirlas. **No hay
+que añadirlas.**
+
+### N3b — ¿Se puede derivar en runtime? Respuesta con evidencia
+
+**Sí. No hace falta precalcular ni embeber absolutamente nada nuevo.**
+
+Evidencia de qué contiene hoy el JSON, tomada de `33_generar_html.R` en el punto
+donde serializa.
+
+**Payload por establecimiento** (`simce_rbd_lst`, líneas 219-231), 140.345 filas:
+
+```r
+simce_rbd_lst <- list(
+  rows       = nrow(df_simce_rbd),
+  rbd        = df_simce_rbd$rbd,
+  nivel      = df_simce_rbd$nivel,
+  prueba     = df_simce_rbd$prueba,
+  cod_grupo  = df_simce_rbd$cod_grupo,
+  anio       = as.integer(df_simce_rbd$anio),
+  nalu       = as.integer(df_simce_rbd$nalu),
+  palu       = df_simce_rbd$palu_eda_ade,
+  palu_ele   = df_simce_rbd$palu_eda_ele,
+  palu_ins   = df_simce_rbd$palu_eda_ins,
+  cod_depe2  = df_simce_rbd$cod_depe2
+)
+```
+
+**Payload comunal** (`datos_lst`, líneas 131-144), 44.975 filas:
+
+```r
+datos_lst <- list(
+  rows        = nrow(df_ord),
+  cod_com     = df_ord$cod_com_rbd,
+  nivel       = df_ord$nivel,
+  prueba      = df_ord$prueba,
+  cod_grupo   = df_ord$cod_grupo,
+  cod_depe2   = df_ord$cod_depe2,
+  anio        = as.integer(df_ord$anio),
+  pct         = round(df_ord$pct_adecuado, 2),
+  pct_ele     = round(df_ord$pct_elemental, 2),
+  pct_ins     = round(df_ord$pct_insuficiente, 2),
+  n_evaluados = as.integer(df_ord$n_evaluados),
+  n_estab     = as.integer(df_ord$n_estab)
+)
+```
+
+**Los dos payloads ya llevan los tres niveles y la matrícula**: `palu`,
+`palu_ele`, `palu_ins`, `nalu` en uno; `pct`, `pct_ele`, `pct_ins`,
+`n_evaluados`, `n_estab` en el otro. Y los dos vienen ya filtrados por el
+criterio de producción.
+
+Más aún: **la capa de series del motor ya devuelve los tres niveles**. La firma de
+`mkPunto` (línea 1197):
+
+```js
+return { year, pct, pct_ele: pe, pct_ins: pi, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
+```
+
+y `getSeriesForEntity` (1369-1380) enruta los cinco tipos de territorio a cuatro
+generadores especializados, todos devolviendo esa misma forma:
+
+```js
+      function getSeriesForEntity(entity, gse, nivel, prueba) {
+        if (entity.kind === "slep") {
+          return generateSeriesByRbd({ rbds: entity.rbds, gse, nivel, prueba });
+        }
+        if (entity.kind === "estab") {
+          return generateSeriesByEstab({ rbd: entity.rbd, gse, nivel, prueba });
+        }
+        if (entity.kind === "nacional") {
+          return generateSeriesByNacional({ gse, nivel, prueba, depe2: entity.depe2 });
+        }
+        return generateSeriesByDepe({ comunas: entity.comunas, depe2: entity.depe2, gse, nivel, prueba });
+      }
+```
+
+**Hallazgo que ahorra trabajo:** `mkPunto` ya resuelve el ±0,1 de redondeo que
+esta medición documentó. Su comentario, líneas 1180-1184:
+
+```
+      // Construye un punto de serie desde un acumulador {num,num_ele,num_ins,den,n_estab}.
+      // Normaliza los tres niveles a 100 para el apilado: Adecuado se conserva
+      // exacto (no cambia respecto al modo solo-Adecuado); Elem e Insuf se ajustan
+      // proporcionalmente para absorber el ±0.1 de redondeo de la fuente, de modo
+      // que ningún gráfico apilado sume 99.9 ni 100.1.
+```
+
+Una barra apilada construida sobre esa serie suma **exactamente 100**, sin que la
+vista tenga que renormalizar.
+
+**Lo único que falta es una ruta de código, no un dato.** Los cuatro generadores
+exigen un GSE válido y devuelven una serie de nulos si no lo reciben. Por ejemplo
+`generateSeriesByDepe`, línea 1246:
+
+```js
+        const cg = GSE_LABEL_TO_COD[gse];
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        if (!cg || !nv || !pr) return YEARS.map(y => ({ year: y, pct: null, n_eval: null, n_estab: null, preliminar: PRELIMINAR_YEARS.includes(y) }));
+```
+
+Pasar `gse` nulo **no** devuelve la serie combinada: devuelve nulos. El GSE
+combinado hay que construirlo iterando los cinco códigos y acumulando en el mismo
+`{num, num_ele, num_ins, den, n_estab}` antes de llamar a `mkPunto` — que es
+precisamente lo que ya hace el bucle interno de cada generador, extendido a un
+nivel más. Es reutilización, no invención.
+
+**Conclusión de N3b:** cero datos nuevos que precalcular, cero datos nuevos que
+embeber, cero crecimiento del payload. Una función de agregación de GSE que
+reutiliza `indicesPCG` y `mkPunto`.
+
+---
+
+## Lo que no se pudo medir en esta segunda vuelta, y por qué
+
+- **El significado de los códigos numéricos de `marca`.** No hay diccionario en el
+  repositorio. No se puede afirmar que `"2"` sea el equivalente numérico de
+  "Resultados no representativos", ni descartarlo. **No afecta a la vista**,
+  porque el pipeline excluye toda marca no nula sea cual sea, pero sí impide
+  responder qué proporción de las exclusiones corresponde a cada causa.
+- **Nada visual.** No se abre navegador. El patrón de pestañas, el apilado y el
+  estado vacío siguen sin verse funcionando.
+- **El costo real en el navegador.** N3 estimó volúmenes de datos, no tiempos. No
+  se midió cuánto tarda `getSeriesForEntity` ni cuánto tardaría el bucle de GSE
+  combinado sobre 140.345 filas. Estimar eso sin ejecutar sería inventar.
+- **El comportamiento del grupo personalizado con comunas de regiones distintas.**
+  Se midieron dos casos (4 comunas contiguas y las 345), ambos correctos, pero no
+  se exploró si algún subconjunto intermedio produce algo distinto. La fórmula es
+  la misma, así que no hay motivo para esperarlo.
+- **La cifra de M4/M5 no se recalculó con el filtro de producción.** Se declaró la
+  corrección y la diferencia (2.008 filas), pero no se rehicieron las tablas por
+  año ni por nivel × prueba, porque la instrucción prohíbe reescribir lo ya
+  escrito y el dato corregido no cambia ninguna conclusión de diseño.
+
+---
+
+## Qué falló o sorprendió en esta segunda medición
+
+1. **Sorpresa mayor, y corrige mi propio trabajo: el motor YA excluye las filas
+   con `marca`.** La laguna que declaré en la primera medición —"podría haber
+   filas con `nalu ≥ 10` que igualmente no deban mostrarse"— era real como
+   pregunta, pero la respuesta es que el pipeline la resolvió hace tiempo, en la
+   auditoría A2 de la sesión 13, con una divergencia medida entonces de hasta
+   42,6 pp. Mi universo de 142.353 filas era **más permisivo que el de producción
+   en 2.008 filas**. La cifra correcta es 140.345, y cuadra al entero con lo que
+   reporta el generador.
+
+2. **Sorpresa: `marca` tiene dos codificaciones que se reparten por época.**
+   Etiquetas de texto en 2014/2016/2017, códigos numéricos en 2015 y 2018-2025,
+   con 2017 mezclando ambas. Excluir por la etiqueta de texto produciría un
+   escalón artificial en la serie histórica exactamente donde cambia la
+   codificación. El pipeline lo evita porque excluye **toda** marca no nula, sin
+   interpretarla.
+
+3. **Falló un umbral mío por coma flotante.** La primera versión de la tabla de N2
+   reportó 109 celdas de comuna y 10.892 de establecimiento "fuera de rango" con
+   un `> 0.1` estricto. Medido el exceso: entre **8,5e-15 y 2,3e-14** sobre 0,1,
+   con desviación máxima real `0.10000000000002273737`. Es ruido de suma en punto
+   flotante, no un dato fuera de rango. Con tolerancia `> 0.1 + 1e-9` el conteo es
+   0 en los siete tipos. Registro además que mi primer control fue insuficiente:
+   probé `abs(99.9-100)` y `abs(100.1-100)`, que en `double` caen *por debajo* de
+   0,1, y por eso no reprodujeron el fenómeno; el exceso venía de sumas ponderadas
+   de muchas filas, no de esos dos literales.
+
+4. **Sorpresa grata: `mkPunto` ya normaliza los tres niveles a exactamente 100.**
+   El problema del ±0,1 que documenté en M2 como algo a resolver en la vista está
+   resuelto en el cliente desde antes, y con un criterio explícito: Adecuado se
+   conserva exacto y Elemental/Insuficiente absorben el ajuste.
+
+5. **Sorpresa: región, SLEP, nacional y grupo no tienen ni un hueco.** Los 36
+   puntos de la serie existen siempre para los cuatro tipos agregados. El hueco es
+   un problema de comuna (5,1%) y sobre todo de establecimiento (24,3% sobre lo
+   que existe).
+
+6. **Sorpresa: siete comunas no tienen ni una sola celda con dato**, y 2.447
+   establecimientos tampoco. El selector los ofrecerá igual porque se construye
+   desde el catálogo. La vista necesita un estado vacío explícito.
+
+7. **Sorpresa menor: una celda de establecimiento es siempre una sola fila.** Las
+   140.345 celdas tienen exactamente un GSE. Para ese tipo, "GSE combinado" no
+   hace nada, y el motor ya lo tenía documentado.
