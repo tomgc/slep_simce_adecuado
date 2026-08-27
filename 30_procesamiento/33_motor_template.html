@@ -3371,12 +3371,28 @@ code {
       // Estado por defecto del motor: las comunas del SLEP Costa Central con
       // dependencia Servicio Local (depe2="5"). Se derivan EN RUNTIME desde
       // SimceData.SLEPS (sin hardcodear cod_com ni cod_slep); el nombre del SLEP
-      // se localiza por coincidencia normalizada. Respeta el tope MAX_ENTIDADES.
+      // se localiza por coincidencia normalizada.
       // Si el SLEP no aparece, devuelve [] y no rompe el render.
+      //
+      // Relacion con el tope de comparacion. La siembra queda acotada por
+      // MAX_ENTIDADES, y ese acoplamiento no se puede eliminar: el tablero no
+      // admite mas territorios de los que caben en la comparacion. Lo que si
+      // se corrige aqui es el silencio: si el SLEP tuviera mas comunas que el
+      // tope, la funcion sembraba un territorio incompleto sin ninguna senal.
+      // Hoy no hay truncamiento, porque Costa Central tiene 4 comunas.
       function entidadesPorDefecto() {
         const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const slep = SimceData.SLEPS.find(s => norm(s.nombre).includes("costa central"));
         if (!slep) return [];
+        const nComunas = slep.comunas.length;
+        const sembradas = Math.min(nComunas, MAX_ENTIDADES);
+        if (nComunas > MAX_ENTIDADES) {
+          console.warn(
+            `entidadesPorDefecto: el SLEP "${slep.nombre}" tiene ${nComunas} comunas y se sembraron ` +
+            `${sembradas}; el tope de comparacion (MAX_ENTIDADES) es ${MAX_ENTIDADES}. ` +
+            `El territorio por defecto queda incompleto.`
+          );
+        }
         return slep.comunas.slice(0, MAX_ENTIDADES).map((cod, i) => {
           const c = SimceData.COMUNA_BY_COD.get(cod);
           return {
