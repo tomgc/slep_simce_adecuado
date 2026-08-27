@@ -1482,6 +1482,50 @@ code {
     const COLOR_INSUF = "#79204F";  // vino (Insuficiente)
 
     // ============================================================
+    // Escala tipográfica del SVG
+    // ============================================================
+    // Tamaños de letra que se dibujan DENTRO de SVG: por D3, vía
+    // .attr("font-size", N), y por el constructor del SVG de exportación, vía
+    // "font-size": N. En ambos casos el atributo recibe un NÚMERO, no una
+    // cadena, así que var(--fs-…) no sirve ahí. Por eso esta escala vive en
+    // constantes JS nombradas y no en variables CSS.
+    //
+    // Esta escala NO está sujeta al piso de 12px de la UI. Son etiquetas de
+    // gráfico compacto —ejes, valores sobre barra, rótulos de serie— que bajan
+    // de 12px por diseño y deben seguir haciéndolo.
+    //
+    // Los valores son los históricos, preservados uno a uno al migrarlos: el
+    // resultado se ve idéntico al anterior.
+    const FS_SVG = {
+      // Sparkline de trayectoria histórica (SparklineSubchart)
+      sparkline: {
+        marcaTraspaso:    8,     // rótulo "traspaso" sobre el marcador vertical
+        valorPunto:       10.5,  // % sobre cada punto de la serie
+        anioEje:          9.5,   // año bajo el eje X
+        marcaPreliminar:  10.5,  // asterisco de dato preliminar
+      },
+      // Barras de las últimas 3 aplicaciones (RecentBarsSubchart)
+      barras: {
+        tickEje:          9.5,   // ticks del eje Y
+        valorSegmento:    11,    // % dentro del segmento apilado
+        valorBarra:       12,    // % de la barra Adecuado
+        anioEje:          10.5,  // año bajo el eje X
+        marcaPreliminar:  13,    // asterisco de dato preliminar
+      },
+      // SVG compuesto del supergrid (construirSvgGraficos)
+      exportacion: {
+        titulo:           18,    // título del documento exportado
+        subtitulo:        11,    // procedencia y fecha de exportación
+        nombreTerritorio: 14,    // nombre en el encabezado de columna
+        metaTerritorio:   10,    // meta bajo el nombre (tipo y nº de comunas)
+        rotuloGse:        9,     // rótulo "GSE" de la columna izquierda
+        valorGse:         13,    // nivel GSE de la fila
+        celdaVacia:       11,    // mensaje "Sin datos"
+        subcabeceraCelda: 8,     // subcabeceras internas de la celda
+      },
+    };
+
+    // ============================================================
     // Header — banner azul institucional
     // ============================================================
     function Header() {
@@ -1868,7 +1912,7 @@ code {
             .attr("x", xc).attr("y", -2)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 8)
+            .attr("font-size", FS_SVG.sparkline.marcaTraspaso)
             .attr("font-weight", 700)
             .attr("fill", "#0A3A5C")
             .attr("opacity", 0.7)
@@ -1943,7 +1987,7 @@ code {
             .attr("x", cx).attr("y", labelY)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 10.5)
+            .attr("font-size", FS_SVG.sparkline.valorPunto)
             .attr("font-weight", 600)
             .attr("fill", COLOR_ADEC)
             .attr("opacity", opacity * 0.9)
@@ -1953,14 +1997,14 @@ code {
             .attr("x", cx).attr("y", ih + 13)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 9.5)
+            .attr("font-size", FS_SVG.sparkline.anioEje)
             .attr("fill", "#747474")
             .text(s.year);
           if (s.preliminar) {
             g.append("text")
               .attr("x", cx + 7).attr("y", labelY - 1)
               .attr("font-family", "system-ui, sans-serif")
-              .attr("font-size", 10.5)
+              .attr("font-size", FS_SVG.sparkline.marcaPreliminar)
               .attr("font-weight", 900)
               .attr("fill", "#0062A0")
               .text("*");
@@ -2020,7 +2064,7 @@ code {
           .call(s => s.select(".domain").remove())
           .call(s => s.selectAll("text")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 9.5)
+            .attr("font-size", FS_SVG.barras.tickEje)
             .attr("fill", "#747474"));
 
         const x = d3.scaleBand()
@@ -2068,7 +2112,7 @@ code {
                     .attr("x", xPos + bw / 2).attr("y", botY - 5)
                     .attr("text-anchor", "middle")
                     .attr("font-family", "system-ui, sans-serif")
-                    .attr("font-size", 11)
+                    .attr("font-size", FS_SVG.barras.valorSegmento)
                     .attr("font-weight", 700)
                     .attr("fill", "#FFFFFF")
                     .attr("opacity", isLowN ? 0.7 : 1)
@@ -2101,7 +2145,7 @@ code {
             .attr("x", xPos + bw / 2).attr("y", labelY)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 12)
+            .attr("font-size", FS_SVG.barras.valorBarra)
             .attr("font-weight", 700)
             .attr("fill", fill)
             .attr("opacity", isLowN ? 0.7 : 1)
@@ -2112,7 +2156,7 @@ code {
             .attr("x", xPos + bw / 2).attr("y", ih + 14)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
-            .attr("font-size", 10.5)
+            .attr("font-size", FS_SVG.barras.anioEje)
             .attr("font-weight", 500)
             .attr("fill", "#2E2230")
             .text(s.year);
@@ -2122,7 +2166,7 @@ code {
               .attr("x", xPos + bw / 2).attr("y", -3)
               .attr("text-anchor", "middle")
               .attr("font-family", "system-ui, sans-serif")
-              .attr("font-size", 13)
+              .attr("font-size", FS_SVG.barras.marcaPreliminar)
               .attr("font-weight", 900)
               .attr("fill", "#0062A0")
               .text("*");
@@ -2443,14 +2487,14 @@ code {
       txt(`Motor Simce — Adecuado · ${prueba} · ${nivel}`, {
         x: 0, y: 34,
         "font-family": "system-ui, sans-serif",
-        "font-size": 18, "font-weight": 800,
+        "font-size": FS_SVG.exportacion.titulo, "font-weight": 800,
         fill: "#0A3A5C",
       }, titleG);
       const exportDate = new Date().toLocaleDateString("es-CL", { day: "2-digit", month: "long", year: "numeric" });
       txt(`SLEP Costa Central · Exportado el ${exportDate}`, {
         x: 0, y: 52,
         "font-family": "system-ui, sans-serif",
-        "font-size": 11, fill: "#747474",
+        "font-size": FS_SVG.exportacion.subtitulo, fill: "#747474",
       }, titleG);
 
       // Encabezados de territorio
@@ -2466,7 +2510,7 @@ code {
         txt(truncar(ent.name, MAX_CHARS_NOMBRE), {
           x: 20, y: 22,
           "font-family": "system-ui, sans-serif",
-          "font-size": 14, "font-weight": 800,
+          "font-size": FS_SVG.exportacion.nombreTerritorio, "font-weight": 800,
           fill: "#1C1212",
         }, g);
 
@@ -2481,7 +2525,7 @@ code {
         txt(truncar(meta, MAX_CHARS_META), {
           x: 20, y: 38,
           "font-family": "system-ui, sans-serif",
-          "font-size": 10, fill: "#747474",
+          "font-size": FS_SVG.exportacion.metaTerritorio, fill: "#747474",
         }, g);
 
         // Línea separadora bajo encabezado
@@ -2503,7 +2547,7 @@ code {
           x: (COL_GSE - 8) / 2, y: CELL_H / 2 - 10,
           "text-anchor": "middle",
           "font-family": "system-ui, sans-serif",
-          "font-size": 9, "font-weight": 700,
+          "font-size": FS_SVG.exportacion.rotuloGse, "font-weight": 700,
           "letter-spacing": "0.1em",
           fill: "#747474",
         }, gseG);
@@ -2511,7 +2555,7 @@ code {
           x: (COL_GSE - 8) / 2, y: CELL_H / 2 + 8,
           "text-anchor": "middle",
           "font-family": "system-ui, sans-serif",
-          "font-size": 13, "font-weight": 800,
+          "font-size": FS_SVG.exportacion.valorGse, "font-weight": 800,
           fill: "#0A3A5C",
         }, gseG);
 
@@ -2535,7 +2579,7 @@ code {
               x: CELL_W / 2, y: CELL_H / 2,
               "text-anchor": "middle",
               "font-family": "system-ui, sans-serif",
-              "font-size": 11, fill: "#BCA493",
+              "font-size": FS_SVG.exportacion.celdaVacia, fill: "#BCA493",
             }, cellG);
             return;
           }
@@ -2544,7 +2588,7 @@ code {
           txt("Trayectoria histórica", {
             x: 8, y: 16,
             "font-family": "system-ui, sans-serif",
-            "font-size": 8, "font-weight": 700,
+            "font-size": FS_SVG.exportacion.subcabeceraCelda, "font-weight": 700,
             "letter-spacing": "0.08em", fill: "#747474",
           }, cellG);
 
@@ -2565,7 +2609,7 @@ code {
           txt("Últimas 3 aplicaciones", {
             x: 8, y: SPARK_H + 32,
             "font-family": "system-ui, sans-serif",
-            "font-size": 8, "font-weight": 700,
+            "font-size": FS_SVG.exportacion.subcabeceraCelda, "font-weight": 700,
             "letter-spacing": "0.08em", fill: "#747474",
           }, cellG);
 
