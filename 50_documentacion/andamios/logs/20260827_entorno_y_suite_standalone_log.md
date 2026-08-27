@@ -360,3 +360,312 @@ orden del encargo, que hace de la sincronía la precondición de la regeneració
 
 5. **El `git status` de partida no estaba limpio**, aunque por una razón inocua
    y prevista. Queda escrito, como corresponde, aunque no haya alterado nada.
+
+---
+---
+
+# Reanudación — 2026-08-27, segunda corrida
+
+**Fecha:** 2026-08-27
+**Punto de partida:** el punto de detención de la primera corrida (FASE 1,
+`renv::snapshot()` abortado).
+**Autorización adicional del titular, literal:** *"Quedas autorizado a reinstalar
+`suitedoc` desde su repositorio git remoto, si lo tiene, y a registrar el
+resultado en el lockfile. Nada más se amplía."*
+**Resultado:** **DETENIDO de nuevo en el PASO A**, por el CASO 2 de la
+bifurcación que el propio titular definió. No se instaló nada. No se hizo
+snapshot. Las FASES 2 y 3 siguen sin ejecutarse.
+**Push:** no se hizo.
+
+> La FASE 0 no se repitió, por instrucción expresa del titular. Sus mediciones
+> siguen siendo las de la sección 1 de este log.
+
+---
+
+## R1. PASO A — Medición del origen real de `suitedoc` (salida literal)
+
+### `ls -la /Users/tomgc/Projects/herramientas_dev/suitedoc`
+
+```
+total 160
+drwxr-xr-x@ 16 tomgc  staff    512 Aug 26 09:39 .
+drwxr-xr-x  16 tomgc  staff    512 Aug 26 09:39 ..
+-rw-r--r--@  1 tomgc  staff   8196 Aug 26 15:12 .DS_Store
+drwxr-xr-x@  3 tomgc  staff     96 Aug 14 06:14 .claude
+-rw-r--r--@  1 tomgc  staff    295 Jun 22 18:58 .gitignore
+-rw-r--r--@  1 tomgc  staff   4635 Aug 26 15:12 CLAUDE.md
+-rw-r--r--@  1 tomgc  staff   1337 Aug 26 15:12 DESCRIPTION
+-rw-r--r--@  1 tomgc  staff    259 Jun 22 17:37 NAMESPACE
+drwxr-xr-x@  8 tomgc  staff    256 Aug 14 06:14 R
+-rw-r--r--@  1 tomgc  staff  22824 Aug 26 15:12 README.md
+drwxr-xr-x   8 tomgc  staff    256 Aug 26 15:12 dev
+drwxr-xr-x@  8 tomgc  staff    256 Aug 26 15:13 dev_logs
+-rw-r--r--@  1 tomgc  staff  12857 Jun 22 17:28 encargo_suitedoc_inline_standalone.md
+-rw-r--r--@  1 tomgc  staff   4841 Jun 22 18:56 encargo_suitedoc_saneamiento.md
+drwxr-xr-x@  4 tomgc  staff    128 Aug 26 09:30 inst
+drwxr-xr-x@  8 tomgc  staff    256 Aug 14 06:14 man
+```
+
+Es un árbol de paquete R completo: `DESCRIPTION`, `NAMESPACE`, `R/`, `man/`,
+`inst/`. No hay `.git` propio en el listado, primer indicio de que no es un
+repositorio.
+
+### `git -C /Users/tomgc/Projects/herramientas_dev/suitedoc remote -v`
+
+```
+origin	https://github.com/tomgc/herramientas_dev.git (fetch)
+origin	https://github.com/tomgc/herramientas_dev.git (push)
+```
+
+El remoto que responde **no es de `suitedoc`**: es el de `herramientas_dev`. El
+comando funciona porque `git` sube por el árbol de directorios hasta encontrar el
+repositorio contenedor.
+
+### `git -C /Users/tomgc/Projects/herramientas_dev/suitedoc status --short --branch`
+
+```
+## main...origin/main [ahead 20]
+ M ../plantillas/90_estado_cartera.sh
+ D ../prompts/cierre_sesion_autonomo_cc_v10.md
+?? ../gobernanza/encargo_normativos_fuera_del_versionado_v1.md
+?? ../gobernanza/encargo_traer_cartera_windows_v1.md
+?? ../logs/20260824_normativos_fuera_versionado_log.md
+?? ../logs/20260824_traer_cartera_windows_log.md
+?? ../prompts/asistente_documentar_suite_cc_v6.md
+?? ../prompts/cierre_sesion_autonomo_cc_v11.md
+?? ../prompts/rutina_dos_maquinas_v1.md
+?? dev/encargo_suitedoc_codigo_destacado_v1.md
+?? dev/encargo_suitedoc_doc_total_v1.md
+?? dev/encargo_suitedoc_mapa_medido_v1.md
+?? dev/encargo_suitedoc_masthead_v2.md
+```
+
+Las rutas con `../` confirman lo anterior: el repositorio empieza un nivel más
+arriba. Trece entradas sucias y 20 commits sin publicar.
+
+### `git -C /Users/tomgc/Projects/herramientas_dev/suitedoc log --oneline -3`
+
+```
+39986e8 docs(suitedoc): version 0.5.1
+052a489 feat(suitedoc): legibilidad del arbol del repositorio
+2c11e53 feat(suitedoc): masthead fijo del documento total
+```
+
+### `grep -n "^Version\|^Package\|^Remote" /Users/tomgc/Projects/herramientas_dev/suitedoc/DESCRIPTION`
+
+```
+1:Package: suitedoc
+3:Version: 0.5.1
+```
+
+Ninguna línea `Remote*`. El `DESCRIPTION` **fuente** tampoco declara origen, igual
+que el instalado.
+
+### `Rscript -e 'cat(renv::settings$vcs.ignore.cellar(), "\n")'`
+
+```
+- The project is out-of-sync -- use `renv::status()` for details.
+TRUE
+```
+
+---
+
+## R2. Mediciones adicionales para resolver la bifurcación
+
+La tercera condición del CASO 2 —"la versión instalada no corresponde a ningún
+commit publicado"— no se puede juzgar con los seis comandos del PASO A. Se
+midió con consultas **de solo lectura**, sin `fetch` ni escritura de ningún tipo
+sobre el repositorio hermano.
+
+### `git -C /Users/tomgc/Projects/herramientas_dev/suitedoc rev-parse --show-toplevel`
+
+```
+/Users/tomgc/Projects/herramientas_dev
+```
+
+### `git -C /Users/tomgc/Projects/herramientas_dev log origin/main..HEAD --oneline | wc -l`
+
+```
+      20
+```
+
+### `git -C /Users/tomgc/Projects/herramientas_dev log origin/main..HEAD --oneline`
+
+```
+39986e8 docs(suitedoc): version 0.5.1
+052a489 feat(suitedoc): legibilidad del arbol del repositorio
+2c11e53 feat(suitedoc): masthead fijo del documento total
+91c585b docs(suitedoc): version 0.5.0
+182e5e5 feat(suitedoc): cfg_ejemplo con significados
+0026977 feat(suitedoc): validaciones del mapa y cruce inverso
+39e80a9 feat(suitedoc): render del arbol con cobertura e insignias
+00a93d7 feat(suitedoc): mapeo medido del repositorio
+77e0fcc docs(suitedoc): version 0.4.1
+ee113e3 feat(suitedoc): cfg_ejemplo con cuadros de codigo
+b134cfd feat(suitedoc): campo codigo en items del documento total
+c65e05a fix(suitedoc): ajustes de verificacion e2e
+ea35074 docs(suitedoc): version 0.4.0 y documentacion del quinto documento
+ff89c00 feat(suitedoc): cfg_ejemplo con bloque total
+101edca feat(suitedoc): inlinar_suite cubre interno/
+46da61b feat(suitedoc): generar_suite emite documentacion total en interno/
+c12bad8 feat(suitedoc): builder del documento total interno
+22089f8 feat(suitedoc): helpers de documentacion total
+a42b185 docs(suitedoc): especificacion documentacion total v1
+f1c8717 chore(suitedoc): desarchivar paquete a la raiz del kit
+```
+
+Los 20 commits sin publicar son, prácticamente todos, de `suitedoc`. El más
+antiguo, `f1c8717`, es el que **coloca el paquete donde hoy está**.
+
+### `git -C /Users/tomgc/Projects/herramientas_dev branch -r --contains 39986e8`
+
+```
+(vacío)
+```
+
+El commit que declara `Version: 0.5.1` no está contenido en **ninguna** rama
+remota.
+
+### `git -C /Users/tomgc/Projects/herramientas_dev ls-remote origin main`
+
+```
+57c05c78f7870065619a3ec052987aac43addeba	refs/heads/main
+```
+
+### `git -C /Users/tomgc/Projects/herramientas_dev rev-parse origin/main`
+
+```
+57c05c78f7870065619a3ec052987aac43addeba
+```
+
+Los dos SHA coinciden: el ref local de seguimiento **no está desactualizado**, así
+que la conclusión no depende de un `fetch` pendiente. Lo que dice el ref local es
+lo que hay hoy en GitHub.
+
+### `git -C /Users/tomgc/Projects/herramientas_dev rev-parse HEAD`
+
+```
+39986e8ac07d6c3dff9b64e0affe4341534a5ccf
+```
+
+### `git -C /Users/tomgc/Projects/herramientas_dev show origin/main:suitedoc/DESCRIPTION`
+
+```
+(no existe suitedoc/DESCRIPTION en origin/main)
+```
+
+Hallazgo terminal: en el estado publicado del remoto **no existe el paquete** en
+esa ruta. No es que esté publicada una versión vieja; es que no hay ninguna.
+
+---
+
+## R3. Resolución de la bifurcación: **CASO 2**
+
+Las tres condiciones del CASO 2 se cumplen, cada una por separado suficiente:
+
+| Condición del CASO 2 | ¿Se cumple? | Evidencia y comando |
+|---|---|---|
+| "no tiene remoto" (propio) | **Sí** | `suitedoc` no es un repositorio: `git rev-parse --show-toplevel` → `/Users/tomgc/Projects/herramientas_dev`. El `origin` que aparece es el del repo contenedor (`git remote -v`) |
+| "el árbol está sucio" | **Sí** | 13 entradas: 1 modificada, 1 borrada, 11 sin versionar; cuatro de ellas **dentro** de `suitedoc/dev/` (`git status --short --branch`) |
+| "la versión instalada no corresponde a ningún commit publicado" | **Sí** | `git branch -r --contains 39986e8` → vacío; `git show origin/main:suitedoc/DESCRIPTION` → no existe; `git ls-remote origin main` = `origin/main` local, o sea que el ref no está rancio |
+
+**Acción tomada: DETENERSE.** No se instaló desde ruta local, no se usó
+`force = TRUE`, no se tocó `ignored.packages`, exactamente como manda el CASO 2.
+
+### Decisión R-1 — por qué no se intentó `renv::install("git::…", subdir="suitedoc")`
+
+**Ambigüedad.** La autorización dice "reinstalar `suitedoc` desde su repositorio
+git remoto, **si lo tiene**". `renv` sabe instalar desde un subdirectorio de un
+repo git con `subdir=`, así que técnicamente existía un comando que probar.
+
+**Decisión.** No ejecutarlo.
+
+**Fundamento.** Fallaría con certeza, no por azar: en `origin/main` no existe
+`suitedoc/DESCRIPTION` (`git show origin/main:suitedoc/DESCRIPTION`). Y si por
+alguna variante de ruta llegara a encontrar algo, instalaría un estado del
+paquete **anterior a los 20 commits sin publicar**, es decir una versión distinta
+de la 0.5.1 con la que se generó todo lo existente. Eso cambiaría en silencio el
+generador de la suite, que es justo lo que este encargo quiere mantener bajo
+control. La condición "si lo tiene" no se cumple.
+
+**Alternativa descartada.** Ejecutarlo "a ver qué pasa" y decidir con el error en
+la mano. Se descartó porque el CASO 2 ya estaba disparado por otras dos vías
+independientes: el resultado no habría cambiado la decisión, solo habría añadido
+una escritura innecesaria a la librería del proyecto.
+
+### Decisión R-2 — por qué no se hizo `git fetch` en el repositorio hermano
+
+**Ambigüedad.** El ref `origin/main` local podía estar desactualizado, y con él
+todo el juicio sobre qué está publicado.
+
+**Decisión.** Comprobarlo con `git ls-remote`, que consulta el remoto **sin
+escribir nada** en el repositorio local.
+
+**Fundamento.** `git ls-remote origin main` devolvió `57c05c7…`, idéntico al ref
+local. La duda queda resuelta sin tocar un repositorio que este encargo no
+administra.
+
+**Alternativa descartada.** `git fetch`. Se descartó porque escribe refs en un
+repositorio ajeno al encargo y no aportaba información adicional.
+
+---
+
+## R4. Estado al detenerse por segunda vez
+
+Sin cambios respecto del cierre de la primera corrida, salvo el commit `c79a6ea`
+que ya existía:
+
+| Medición | Valor esperado | Valor medido |
+|---|---|---|
+| Instalaciones nuevas en esta corrida | ninguna | ninguna: el CASO 2 se resolvió antes de instalar |
+| `renv.lock` | intacto | intacto, 40 paquetes |
+| `openxlsx`, `Rcpp`, `zip` | instalados, sin registrar | siguen instalados y sin registrar |
+| `suitedoc` | instalado 0.5.1, sin registrar | sigue instalado 0.5.1, sin registrar |
+| Repositorio hermano `herramientas_dev` | no se modifica | no se modificó: solo lecturas y un `ls-remote` |
+| FASES 2 y 3 | pendientes | pendientes |
+
+---
+
+## R5. Qué quedó sin verificar en esta corrida
+
+Todo lo listado en la sección 5 de la primera corrida sigue igual de
+inverificado, y por la misma causa. Se añade:
+
+- **Que `renv::install` desde el remoto habría funcionado**: no se ejecutó, por la
+  decisión R-1. La afirmación "habría fallado" es una inferencia sólida a partir
+  de `git show origin/main:suitedoc/DESCRIPTION`, no una medición.
+- **Si el remoto tiene ramas o tags distintos de `main` con el paquete
+  publicado**: solo se consultó `main` (`git ls-remote origin main`) y
+  `git branch -r --contains`, que cubre las ramas de seguimiento conocidas
+  localmente. Un tag remoto publicado y nunca traído no aparecería. No se
+  verificó.
+
+---
+
+## R6. Qué falló o sorprendió en esta corrida
+
+1. **Sorpresa mayor: `suitedoc` no es un repositorio.** Toda la bifurcación del
+   titular está redactada sobre la premisa de "su repositorio git remoto". El
+   paquete es un **subdirectorio** de `herramientas_dev`, un kit de herramientas
+   que agrupa además `plantillas/`, `prompts/`, `gobernanza/` y `logs/`. La
+   pregunta "¿tiene remoto?" tiene una respuesta engañosa: `git remote -v`
+   responde con un remoto, pero es el del contenedor.
+
+2. **Sorpresa mayor: el paquete no está publicado en absoluto.** No se trata de
+   un desfase de versión. En `origin/main` no existe `suitedoc/DESCRIPTION`. Los
+   20 commits sin publicar incluyen `f1c8717 chore(suitedoc): desarchivar paquete
+   a la raiz del kit`, o sea que la ubicación actual del paquete es, ella misma,
+   trabajo sin publicar.
+
+3. **Coincidencia que conviene registrar:** las tres condiciones del CASO 2 se
+   cumplen a la vez. No hubo que afinar el juicio sobre ninguna.
+
+4. **El ref local no estaba rancio**, lo que ahorró tener que decidir si tocar el
+   repositorio hermano. `git ls-remote` y `rev-parse origin/main` coinciden.
+
+5. **La causa raíz se movió de sitio.** En la primera corrida el bloqueo parecía
+   una laguna de configuración de este proyecto (falta un cellar, falta declarar
+   un origen). Ahora se ve que el bloqueo está **fuera** de este repositorio: el
+   paquete del que depende el pipeline de documentación no está publicado en
+   ninguna parte, y eso no lo puede arreglar un encargo que solo tiene permisos
+   sobre `slep_simce_adecuado`.
