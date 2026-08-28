@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–26 (traspasos v01–v26). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s26 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–28 (traspasos v01–v28). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s28 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -48,14 +48,14 @@ detalle.
 
 | Código | Categoría | N° | % | Descripción y ejemplos |
 |--------|-----------|----|---|------------------------|
-| P | Pipeline R | 13 | 9,4% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
-| UI | Motor HTML / React / D3 | 52 | 37,7% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
-| D | Datos / Insumos | 2 | 1,4% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
-| DOC | Documentación | 35 | 25,4% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
-| REPO | Gobernanza del repo / Despliegue | 21 | 15,2% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
-| Infra | Infraestructura (escáner, orquestador, CI) | 6 | 4,3% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
-| DT | Deuda técnica | 9 | 6,5% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
-| **Total** | | **138** | **100,0%** | |
+| P | Pipeline R | 14 | 8,9% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
+| UI | Motor HTML / React / D3 | 59 | 37,6% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
+| D | Datos / Insumos | 2 | 1,3% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
+| DOC | Documentación | 40 | 25,5% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
+| REPO | Gobernanza del repo / Despliegue | 24 | 15,3% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
+| Infra | Infraestructura (escáner, orquestador, CI) | 6 | 3,8% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
+| DT | Deuda técnica | 12 | 7,6% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
+| **Total** | | **157** | **100,0%** | |
 
 ## Resumen estadístico por sesión
 
@@ -89,7 +89,8 @@ detalle.
 | 26 | v26 | 5 | no registrado | Deuda heredada e histórico % Adecuado |
 | — | — | 1 | no registrado | Normativos dejan de versionarse |
 | 27 | v27 | 4 | no registrado | Terminología de suite y escala tipográfica |
-| **Total** | | **138** | | |
+| 28 | v28 | 19 | no registrado | Migración tipográfica, quinto territorio y normalización |
+| **Total** | | **157** | | |
 
 ## Detalle cronológico
 
@@ -360,3 +361,27 @@ detalle.
 138. [DT] Aprendizaje A-s27-1: un `git commit` que retorna "nothing to commit" tras una edición reportada como lista es señal de reemplazo manual no ejecutado. Nunca se asume commit exitoso porque el comando no falló: se verifica el hash resultante antes de dar la tarea por cerrada.
 
 **Delta del backlog:** 4 entradas nuevas (135–138). Sin reclasificación de taxonomía (D20-3). Total acumulado: 138.
+
+### Sesión 28 — Cierre de la migración tipográfica, quinto territorio y normalización del backlog (traspaso v28)
+
+139. [DOC] Anexo del delta de la sesión 27 al backlog (entradas 134-138), con una entrada retroactiva para el commit `65302c6` (los normativos dejan de versionarse), que explica la discrepancia de tamaños declarada sin investigar en v27 §9. `ESTADO.md` destilado con los seis campos de candado de SETTINGS §2.1bis, que hasta entonces no tenía ninguno. Commits `31e35d7`, `1ccb4d9`.
+140. [UI] Cierre de la migración tipográfica de s27: el bloque `:root` estaba duplicado (las 10 definiciones preexistían y `d1d04f6` añadió siete idénticas), se consolidó al preexistente; `.app-title` volvió de 28px a 30px vía `--fs-h1`, corrigiendo D-s27-2, que había mapeado a `--fs-h2` bajo la premisa falsa de que no existía nivel display; y se migraron los 8 literales `fontSize` inline React que el censo de s27 nunca inventarió. Commit `7826f8e`.
+141. [UI] Eliminación de la duplicación de la etiqueta de dependencia en el nombre del territorio (cuatro construcciones) y rama `region` en el `meta` de `EntityChip`, que antes caía al `else` y perdía el tipo. Commit `d2f75ee`.
+142. [UI] Homogeneidad tipográfica: `.entities-count` alineada a `.section-eyebrow`, `.sg-gse-name` de `--fs-h4` a `--fs-body`, y `.hint-muted` sin overrides de tamaño ni color. Commit `712a9e5`.
+143. [UI] Recorte del nombre del territorio en la tabla comparativa, que desbordaba sobre las columnas sticky vecinas, y truncado de cabeceras en la exportación SVG con constantes nombradas calibradas a `CELL_W = 340`. Commit `c69335c`.
+144. [UI] Tope de comparación de 4 a 5 territorios: `MAX_ENTIDADES`, mensaje del tope interpolado, `supergrid` a `entities.length` y tarjeta a 250px. Commit `51ed157`.
+145. [UI] Eliminación de las celdas de relleno del supergrid (Bug s28-1): obsoletas con la grilla dinámica, inyectaban filas vacías con menos de cuatro territorios. La corrección propuesta inicialmente (cambiar el 4 por `MAX_ENTIDADES`) habría empeorado el defecto. Commit `9e8ecdd`.
+146. [DOC] `50_diseno_ramas_deteccion.md`: cuatro aprendizajes (A-s28-1 a A-s28-4) sobre diseño de ramas de detención y verificadores en encargos autónomos, bajo una causa común: el verificador midió el síntoma, no la afirmación. Commit `41f7026`.
+147. [DT] Escala tipográfica del SVG migrada a 17 constantes JS nombradas (`FS_SVG`, tres sub-objetos), cubriendo las 18 declaraciones de D3 y objetos JS con los valores preservados exactos, verificado por igualdad de multiconjunto. Eliminación de `depe2Label` y de `--fs-display-1/-2`, sin uso. Commits `df52516`, `89d2ac9`.
+148. [REPO] Ordenación del repositorio: `Motor SIMCE.html` renombrado a `motor_simce.html`; constancias `50_ordenacion_repositorio.md` y `50_locale_utf8.md`. Los tres `verificar_*.R` no se movieron: resultaron no versionados (`.gitignore` línea 28, patrón anclado a la raíz), de modo que moverlos habría sido un cambio de política de versionado disfrazado de ordenación. Commits `0871488`, `ec101b7`, `a340758`.
+149. [UI] Correcciones D1-D3: el enlace de establecimientos separa rótulo y flecha, recorta con elipsis y protege la flecha con `flex-shrink: 0` (Bug s28-2); `exportarGraficosPNG` gana `try/catch` y guarda de superficie; `entidadesPorDefecto()` advierte por consola si el SLEP excede el tope. Commits `8503745`, `a8386e6`, `72372b0`.
+150. [DOC] Medición de insumos para el panorama territorial: no existe N publicado por nivel de logro, la supresión viene como tres ceros y no como `NA`, `nom_com_rbd` tiene 1.018 nombres para 346 códigos con etiquetas de otra comuna, y el motor ya define los tres colores y ya apila. Commits `2ecad9d`, `c1ed238`.
+151. [DT] Corrección del universo utilizable: el filtro `is.na(marca)` de `10_utils.R:67` deja 140.345 filas, no 142.353. El panorama territorial resulta construible sin tocar el pipeline ni el payload, porque los dos payloads ya embeben los tres niveles y `mkPunto` ya normaliza a 100 exacto para apilado.
+152. [REPO] Tres despliegues verificados byte a byte con `cmp`: quinto territorio y correcciones visuales, escala tipográfica del SVG, y correcciones D1-D3. Commits `a433839`, `dbd729b`, `64bab61`.
+153. [DOC] Encargos y logs pasan a versionarse siempre, por instrucción permanente del titular (D-s28-5). Commits `06d6586`, `c79a6ea`, `9d28b5d`, `12b7434`, `f1ace49`, `c71d2dc`.
+154. [P] Encargo de entorno `renv` y suite standalone detenido por causa externa: `suitedoc` 0.5.1 no existe en ningún remoto y `herramientas_dev` tiene 20 commits sin publicar. Ningún encargo con permisos sobre este repositorio puede resolverlo.
+155. [REPO] `50_datos_versionados_autorizados.md`: seis entradas que cubren las 27 rutas de datos versionadas, exigido por el invariante I8 de la compuerta de repositorio. Las 27 se inspeccionaron una a una, incluidas 16 hojas adicionales de los SIMCE crudos; ninguna contiene persona natural. Commit `c7fb2ee`.
+156. [DOC] Normalización de `backlog_acumulativo.md` a las cinco secciones de POLITICA §10, tras detenerse el instrumento de cierre en su fase F2. Faltaban tres secciones (Objetivo del proyecto, Nota metodológica, Resumen estadístico por sesión), la Clasificación temática vivía como `## Taxonomía vigente` reducida a dos columnas, y el Detalle cronológico existía sin sección contenedora con sus bloques en `##`. Se agregaron las tres ausentes, se amplió la clasificación a cinco columnas con N°, porcentaje y descripciones con ejemplos, se construyó el resumen con 28 filas contadas del propio detalle, y los bloques bajaron a `###`. Ninguna entrada cambió: verificado por igualdad de md5 de la huella de las 138 entradas y de las 17 líneas de delta. Commits `a441c98`, `542088c`.
+157. [DT] La desviación de taxonomía del backlog resultó triple, no simple: `D` al 1,4% queda bajo el 2% que SETTINGS §2.2.5 marca para absorción, y `UI` al 37,7% y `DOC` al 25,4% superan el 25% que marca subdivisión. No se ajustó nada: reclasificar 138 entradas ya tageadas choca con el invariante append-only y es decisión del titular.
+
+**Delta del backlog:** 19 entradas nuevas (139–157). Sin cambios de taxonomía; desviación triple registrada en la entrada 157, no ajustada. Total acumulado: 157. Sesión de saldo de deuda: casi todo lo ejecutado corrige o completa trabajo de sesiones previas, y cuatro encargos descubrieron que su propia premisa era falsa. El movimiento temático real es hacia la gobernanza del proceso, con tres documentos nuevos que nacen de errores medidos en esta misma sesión. El cierre fue el primer verificador que midió el archivo contra su propia norma, y encontró 28 sesiones de desviación.
