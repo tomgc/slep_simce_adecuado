@@ -4,49 +4,124 @@
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
-## Taxonomía vigente
-
-| Código | Categoría |
-|--------|-----------|
-| P | Pipeline R |
-| UI | Motor HTML / React / D3 |
-| D | Datos / Insumos |
-| DOC | Documentación |
-| REPO | Gobernanza del repo / Despliegue |
-| Infra | Infraestructura (escáner, orquestador, CI) |
-| DT | Deuda técnica |
-
 ---
 
-## Sesión 1 — Scaffold, pipeline de datos y UI v2 (traspaso v01)
+## Objetivo del proyecto
+
+Motor de comparación interactivo de los resultados del Simce por estándares de
+aprendizaje (Adecuado, Elemental, Insuficiente). Produce un archivo HTML
+autocontenido, publicado por GitHub Pages, que permite contrastar hasta cinco
+territorios (comuna, SLEP, región, nacional, grupo personalizado o
+establecimiento) en series históricas segmentadas por grupo socioeconómico.
+
+Se construye con un pipeline en R (Arrow, dplyr, `here`) que normaliza los
+insumos públicos de la Agencia de Calidad de la Educación y del MINEDUC, y con
+una interfaz React 18 y D3 v7 embebida en un único HTML, con los datos
+comprimidos en línea.
+
+Lo usa el Área de Monitoreo y Seguimiento del SLEP Costa Central (Viña del Mar,
+Concón, Quintero y Puchuncaví), y su publicación es abierta. En desarrollo desde
+mayo de 2026.
+
+## Nota metodológica
+
+**Qué cuenta como cambio.** Una solicitud distinguible del titular, no las
+acciones técnicas que la implementan. Un rediseño de la interfaz pedido en una
+sesión es una entrada, aunque haya requerido siete commits y tres archivos.
+
+**Qué no cuenta.** Los errores del asistente corregidos de inmediato dentro del
+mismo intercambio. Sí cuentan, en cambio, los bugs que el titular reporta: su
+detección es una solicitud distinguible.
+
+**Clasificación.** Por intención primaria, no por los archivos tocados. Una
+corrección de terminología en el template del motor es documentación si su
+propósito era la consistencia del lenguaje, e interfaz si su propósito era lo que
+el usuario ve. Cuando una entrada admite dos códigos, se elige el que responde a
+por qué se pidió, no a dónde se escribió (D20-3).
+
+**Fuentes del conteo.** El detalle cronológico de este archivo es la fuente
+canónica. Las líneas de delta al pie de cada sesión y las filas del resumen
+estadístico se derivan de él, nunca al revés: ante una discrepancia, manda el
+detalle.
+
+## Clasificación temática
+
+| Código | Categoría | N° | % | Descripción y ejemplos |
+|--------|-----------|----|---|------------------------|
+| P | Pipeline R | 13 | 9,4% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
+| UI | Motor HTML / React / D3 | 52 | 37,7% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
+| D | Datos / Insumos | 2 | 1,4% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
+| DOC | Documentación | 35 | 25,4% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
+| REPO | Gobernanza del repo / Despliegue | 21 | 15,2% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
+| Infra | Infraestructura (escáner, orquestador, CI) | 6 | 4,3% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
+| DT | Deuda técnica | 9 | 6,5% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
+| **Total** | | **138** | **100,0%** | |
+
+## Resumen estadístico por sesión
+
+| Sesión | Traspaso | N° de cambios | Modelo | Foco |
+|--------|----------|---------------|--------|------|
+| 1 | v01 | 4 | no registrado | Scaffold, pipeline y UI inicial |
+| 2 | v02 | 4 | no registrado | Dimensión depe2 y rediseño UI |
+| 3 | v03 | 4 | no registrado | Bugs UI, CSV y tabla |
+| 4 | v04 | 4 | no registrado | Orquestador y entidades nuevas |
+| 5 | v05 | 5 | no registrado | Exportación SVG, tooltip y escáner |
+| 6 | v06 | 3 | no registrado | Auditoría de agregación y nacional |
+| 7 | v07 | 3 | no registrado | Portabilidad cross-OS y deuda técnica |
+| 8 | v08 | 4 | no registrado | Bugs UX y warning de pipeline |
+| 9 | v09 | 6 | no registrado | Publicación en Pages y gobernanza |
+| 10 | v10 | 6 | no registrado | Documentación visual y simplificación UI |
+| 11 | v11 | 7 | no registrado | Limpieza CSS, PNG y backlog |
+| 12 | v12 | 6 | no registrado | Gzip, SLEP prospectivo y supresión |
+| 13 | v13 | 4 | Fable 5 | Auditoría pre-lanzamiento del motor |
+| 14 | v14 | 19 | Opus 4.8 | UI/UX y toggle de tres niveles |
+| 15 | v15 | 12 | no registrado | Color fijo por nivel, default Adecuado |
+| 16 | v16 | 7 | no registrado | Producción, depe4 y licencia Apache |
+| 17 | v17 | 3 | no registrado | Segmentación visual pre/post traspaso |
+| 18 | v18 | 1 | no registrado | Deploy de la segmentación a Pages |
+| 19 | v19 | 3 | no registrado | Gobernanza 4b/depe4 y suite suitedoc |
+| 20 | v20 | 4 | no registrado | Decisión 4b/depe4 y reconstrucción del backlog |
+| 21 | v21 | 4 | no registrado | Mantenimiento documental y Ley 21.719 |
+| 22 | v22 | 3 | no registrado | Suite de documentación standalone offline |
+| 23 | v23 | 4 | no registrado | Estado por defecto y auditoría de suite |
+| 24 | v24 | 4 | no registrado | Cierre de backlog y pendientes documentales |
+| 25 | v25 | 4 | no registrado | Renombrado a territorio y backlog reparado |
+| 26 | v26 | 5 | no registrado | Deuda heredada e histórico % Adecuado |
+| — | — | 1 | no registrado | Normativos dejan de versionarse |
+| 27 | v27 | 4 | no registrado | Terminología de suite y escala tipográfica |
+| **Total** | | **138** | | |
+
+## Detalle cronológico
+
+### Sesión 1 — Scaffold, pipeline de datos y UI v2 (traspaso v01)
 
 1. Creación del repo en GitHub y scaffold completo de directorios. [REPO]
 2. Pipeline de datos completo (scripts 30–32): lectura, normalización, auxiliares y agregación comunal; 185.378 filas brutas → 32.134 agregaciones comunales × GSE, 9 años, 2 niveles, 2 pruebas. [P]
 3. Motor de comparación como HTML standalone con React + D3 (supergrid entidades × GSE, sparklines, barras de últimas 3 aplicaciones, tabla con heat map), rediseñado sobre el prototipo Claude Design. [UI]
 4. Detección y resolución de 4 anomalías en datos crudos de la Agencia (A1–A4), documentadas en `referencia_glosas_simce.md`. [D]
 
-## Sesión 2 — Dimensión depe2, sleps_chile y rediseño UI (traspaso v02)
+### Sesión 2 — Dimensión depe2, sleps_chile y rediseño UI (traspaso v02)
 
 5. Incorporación de `cod_depe2` a `simce_rbd.parquet` y `simce_comunal.parquet`. [P]
 6. Construcción de `sleps_chile.parquet` desde el listado oficial de SLEPs 2026 (cierre de P1); desbloqueó la comparación por SLEP. [P]
 7. Rediseño de la UI: flujo comuna + dependencia + nivel/prueba, modal con 3 tabs (Comuna/SLEP/Grupo), heatmap con umbrales fijos, años descendentes, foco por año, filtro GSE, popup de establecimientos. [UI]
 8. Renombre del template a prefijo `33_` según convención de auxiliares numerados. [REPO]
 
-## Sesión 3 — Bugs UI, exportación CSV y UX de tabla (traspaso v03)
+### Sesión 3 — Bugs UI, exportación CSV y UX de tabla (traspaso v03)
 
 9. Resolución de B3 (popup de establecimientos): fix de crash, extensión a toda entidad, filtrado por RBD × nivel × prueba con nuevo catálogo `establecimientos_chile.parquet`. [UI]
 10. Exportación CSV (cierre de P3) con separador `;` y BOM UTF-8 para Excel chileno. [UI]
 11. Resolución parcial de B2: semillas iniciales con `depe2="5"` (SLEP); decisión razonada de no filtrar por `depe2="1"` (comunas Costa Central sin registros municipales post-traspaso). [UI]
 12. Mejoras de UX: supergrid con columnas dinámicas, etiquetas de barras arriba, conteo de establecimientos en chip, búsqueda de comuna por input libre, límite de 4 entidades, corrección de leyendas. [UI]
 
-## Sesión 4 — Orquestador y entidades región/establecimiento (traspaso v04)
+### Sesión 4 — Orquestador y entidades región/establecimiento (traspaso v04)
 
 13. Orquestador `00_build.R` (cierre de P4): ejecuta los 4 scripts del pipeline en orden con timer. [Infra]
 14. Entidades tipo región y establecimiento (cierre de P6): tabs en modal, agregación desde `simce_comunal`, buscador 3+ caracteres con datos desde `simce_rbd.parquet`. [UI]
 15. Popup de celda GSE (cierre de P7) con nuevo catálogo `rbd_gse` inyectado en el JSON. [UI]
 16. Correcciones varias: nombres de región oficiales, nota metodológica de fórmula, texto de objetivo en header, reorden de tabs, bug de establecimiento repetido en GSEs, C stack overflow en R, corte del 100% en SVG. [UI]
 
-## Sesión 5 — Exportación SVG, tooltip interactivo y escáner (traspaso v05)
+### Sesión 5 — Exportación SVG, tooltip interactivo y escáner (traspaso v05)
 
 17. Exportación del supergrid como SVG compuesto vectorial (primera parte de P2). [UI]
 18. Tooltip interactivo: hover con datos fijos, clic fija el tooltip y habilita "Ver establecimientos (N) ▸" hacia `EstabPopup` filtrado por entidad × GSE × año. [UI]
@@ -54,26 +129,26 @@
 20. Escáner con 4 outputs (cierre de P5): aliases `.md`/`.txt` + snapshots con timestamp. [Infra]
 21. Nota metodológica sobre Estándares de Aprendizaje en el motor. [DOC]
 
-## Sesión 6 — Auditoría de agregación y entidad nacional (traspaso v06)
+### Sesión 6 — Auditoría de agregación y entidad nacional (traspaso v06)
 
 22. Auditoría de reproducibilidad de la agregación comunal desde RBD: diferencia cero en 44.975 filas; valida `simce_comunal` como fuente del cálculo nacional. [P]
 23. Entidad nacional "Chile" (cierre de P8) con resolución de 3 bugs encadenados (ramas faltantes en subcharts, guard de `entity.comunas`, orden de filtros en `EstabPopup`). [UI]
 24. Commit `b47e1d5` pusheado a main. [REPO]
 
-## Sesión 7 — Portabilidad cross-OS y cierre de deuda técnica (traspaso v07)
+### Sesión 7 — Portabilidad cross-OS y cierre de deuda técnica (traspaso v07)
 
 25. Portabilidad Windows: xlsx de SIMCE versionados en el repo (datos públicos, 22 MB), `.Rproj` con `Encoding: UTF-8`, pipeline verificado en Windows (R 4.5.1, Positron). [REPO]
 26. Cierre de DT6.2: `auditoria_agregacion_comunal.R` movida a `_archivo/`. [DT]
 27. Cierre de DT6.1: extracción de `getSeriesForEntity` en `SimceData`, eliminando cinco copias del ternario de despacho por `kind`. Regla arquitectónica vigente. [DT]
 
-## Sesión 8 — Bugs UX del motor y warning de pipeline (traspaso v08)
+### Sesión 8 — Bugs UX del motor y warning de pipeline (traspaso v08)
 
 28. Clamp del tooltip al viewport en `show()` y `pin()` (cierre de B8.1). [UI]
 29. Normalización NFD de diacríticos en los 4 buscadores del modal (cierre de B8.2). [UI]
 30. Prioridad de matches por nombre sobre matches por región en `filteredComunas` y slice de 30 → 60 (cierre de B8.3). [UI]
 31. Eliminación del warning `pivot_wider` en sanity check de `32_agregar_comunal.R` re-agregando ponderadamente antes del pivot (cierre de B8.4). [P]
 
-## Sesión 9 — Publicación y gobernanza (traspaso v09)
+### Sesión 9 — Publicación y gobernanza (traspaso v09)
 
 32. Cierre en Git del trabajo pendiente de la sesión 8. [REPO]
 33. Publicación del motor en GitHub Pages. [REPO]
@@ -82,7 +157,7 @@
 36. Limpieza de artefactos obsoletos. [REPO]
 37. Consolidación de `estructura_proyecto.md` en README. [DOC]
 
-## Sesión 10 — Documentación visual/conceptual y simplificación UI (traspaso v10)
+### Sesión 10 — Documentación visual/conceptual y simplificación UI (traspaso v10)
 
 38. Diagrama de arquitectura HTML standalone (insumos → 30 → 31 → 32 → 33 → motor), con A1–A4 representadas como normalizaciones resueltas. [DOC]
 39. Actualización de `CLAUDE.md` al estado real post-v09. [DOC]
@@ -91,7 +166,7 @@
 42. Eliminación de la franja de leyenda bajo la tabla y contacto al pie de las notas (P4 reformulado). [UI]
 43. Deploy a Pages y sincronización de snapshots. [REPO]
 
-## Sesión 11 — Limpieza CSS, POLITICA v4, exportación PNG y consolidación del backlog (traspaso v11)
+### Sesión 11 — Limpieza CSS, POLITICA v4, exportación PNG y consolidación del backlog (traspaso v11)
 
 44. Limpieza quirúrgica de CSS huérfano en `33_motor_template.html` (cierre del pendiente 2 de v10): bloque `TweaksPanel` completo (24 reglas `.twk-*`), 9 reglas `.is-compact`, `.table-legend` (2 reglas), `.dot-prelim` (huérfano adicional detectado) e icono `gear` sin uso. 3.208 → 3.098 líneas. [UI]
 45. Verificación y cierre del pendiente 4 de v10 (estado `region` huérfano en tab comuna): ya había sido resuelto en la sesión 5 (ítem 19 de este backlog); el registro de v10 estaba obsoleto. Cerrado sin cambio. [DT]
@@ -101,7 +176,7 @@
 49. Exclusión de `_archivo/` en `.gitignore` (alineación con POLITICA §1.6) y versionado del `traspaso_cierre_v10.md` que estaba sin trackear. [REPO]
 50. Dos deploys a GitHub Pages: motor sin CSS huérfano (`f0cd824`) y motor con exportación SVG/PNG (`b77eec0`). [REPO]
 
-## Sesión 12 — Compresión gzip, SLEP traspaso 2026 y auditoría de supresión (traspaso v12)
+### Sesión 12 — Compresión gzip, SLEP traspaso 2026 y auditoría de supresión (traspaso v12)
 
 51. Enlace de la documentación nueva (conceptual md/html, arquitectura html, backlog histórico) en la sección "Documentación" del `README.md`, con aclaración de que los `.html` no se publican por Pages (solo `docs/`). [DOC]
 52. Migración de la descarga de `exportarCSV` al helper `descargarBlob` (cierre del pendiente DRY de v11): una sola implementación de descarga en el motor; comportamiento del CSV idéntico. [DT]
@@ -112,7 +187,7 @@
 
 **Delta del backlog:** 6 entradas nuevas (51–56). Sin reclasificación de taxonomía. La categoría UI sigue dominante; DT y P con presencia por los dos fixes de raíz.
 
-## Sesión 13 — Auditoría pre-lanzamiento (traspaso v13)
+### Sesión 13 — Auditoría pre-lanzamiento (traspaso v13)
 
 57. [P] Filtro completo de producción (palu no-NA,
     nalu >= 10, marca NA) aplicado en 33_generar_html.R a los tres bloques
@@ -133,7 +208,7 @@
 
 **Delta del backlog:** 4 entradas nuevas (57–60). Total acumulado: 60. Modelo: Fable 5 — auditoría pre-lanzamiento.
 
-## Sesión 14 — UI/UX del motor y toggle real de tres niveles (traspaso v14)
+### Sesión 14 — UI/UX del motor y toggle real de tres niveles (traspaso v14)
 
 61. [UI] Empty state inicial: el motor arranca con cero entidades (`useState([])`); sin entidades se ocultan resultados y tabla y se muestra un recuadro guía. `buildInitialEntities()` eliminada (huérfana); el botón limpiar vacía a `[]`.
 62. [UI] Texto guía del empty state: una sola línea a 16px, color `--fg-2`. Clase `.empty-board` (renombrada desde `.empty-state` para no colisionar con el empty-state del modal).
@@ -157,7 +232,7 @@
 
 **Delta del backlog:** 19 entradas nuevas (61–79). Total acumulado: 79. Modelo: Opus 4.8 — UI/UX + toggle de tres niveles.
 
-## Sesión 15 — Ajustes finos de UI: color fijo por nivel y default Adecuado (traspaso v15)
+### Sesión 15 — Ajustes finos de UI: color fijo por nivel y default Adecuado (traspaso v15)
 
 80. [UI] Default del toggle a solo-Adecuado: `showElemInsuf` inicia en `false`; el motor abre mostrando solo el % Adecuado y el desglose es opt-in.
 81. [UI] Renombre del botón "Elem. + Insuf." → "Mostrar niveles Elemental e Insuficiente".
@@ -174,7 +249,7 @@
 
 **Delta del backlog:** 12 entradas nuevas (80–91). Sin reclasificación de taxonomía. Total acumulado: 91.
 
-## Sesión 16 — Cierre en producción, auditoría depe4 y licencia Apache 2.0 (traspaso v16)
+### Sesión 16 — Cierre en producción, auditoría depe4 y licencia Apache 2.0 (traspaso v16)
 
 92. [REPO] Push de 6 commits a origin/main (los 5 de v15 + el commit del traspaso v15, `28f0bf3`); push `87a9f5d..28f0bf3`. Pages reconstruye desde `docs/`; sitio 200.
 93. [Infra] Script de auditoría efímero `verificar_depe4.R` (raíz, read-only sobre `directorio_oficial_ee.csv`, `simce_rbd.parquet` y `simce_comunal.parquet`): reconstruye el universo depe4, mide presencia en el parquet largo, calcula el embudo de filtros por año×nivel×prueba y contrasta `n_final` vs `n_estab`. No toca pipeline ni UI.
@@ -186,7 +261,7 @@
 
 **Delta del backlog:** 7 entradas nuevas (92–98). Posible categoría nueva LEGAL (licencia/uso), absorbible en DOC/Infra; sin reclasificación. Total acumulado: 98.
 
-## Sesión 17 — Segmentación visual pre/post traspaso (traspaso v17)
+### Sesión 17 — Segmentación visual pre/post traspaso (traspaso v17)
 
 99. [UI] Feature: segmentación visual pre/post traspaso (`33_motor_template.html`). Helper `SimceData.anioCorteTraspaso(entity)` que devuelve el año de traspaso solo para `kind==="slep"` con `anio_traspaso ≤ ANIO_DATOS_MAX`, y `null` en los demás casos. En `SparklineSubchart`: marcador vertical punteado "traspaso" en el año de corte; los tramos del gap 2019-2021 (`pre≤2018`/`post≥2022`) se subdividen para aplicar línea dasheada (`3,2`) + opacidad 0.4 al tramo previo. Respeta el color por nivel (solo modula opacidad/estilo, no toca `COLOR_ADEC`). Commit `4197d39`.
 100. [Infra] Fix: ruta del listado SLEP al nombre canónico (`30_construir_auxiliares.R`): el insumo fue renombrado a `listado_slep_2026.xlsx` (snake_case, política §2) pero el código apuntaba a `202602_Listado_SLEP_2026_vf.xlsx` y el build fallaba en el paso [4]. Actualizadas las 4 referencias; la ocurrencia en `_archivo/` no se tocó. Build OK (70 SLEP, 346 combinaciones). Commit `2b08eb6`.
@@ -194,13 +269,13 @@
 
 **Delta del backlog:** 3 entradas nuevas (99–101). Sin refinamientos de taxonomía ni reclasificaciones. Total acumulado: 101.
 
-## Sesión 18 — Deploy de la segmentación a GitHub Pages (traspaso v18)
+### Sesión 18 — Deploy de la segmentación a GitHub Pages (traspaso v18)
 
 102. [REPO] Deploy: motor con segmentación a GitHub Pages (`docs/index.html`). Se regeneró el HTML con `00_build.R` (el motor de v17 no se había commiteado), se copió `40_salidas/motor_comparacion.html` (2513 KB) a `docs/index.html` y se publicó. `git status` mostró solo `docs/index.html` en stage (gobernanza OK, sin datos sensibles). Commit `39e56ef`, push `614dada..39e56ef`.
 
 **Delta del backlog:** 1 entrada nueva (102). Sin refinamientos de taxonomía ni reclasificaciones. Total acumulado: 102.
 
-## Sesión 19 — Gobernanza 4b/depe4 y suite suitedoc (traspaso v19)
+### Sesión 19 — Gobernanza 4b/depe4 y suite suitedoc (traspaso v19)
 
 103. [REPO] Evaluación y cierre del pendiente 4b/depe4: se constató que `cod_depe2` es eje de segmentación real (selector "Dependencia" + `generateSeriesByDepe`) y que todo punto con `n_estab===1` ya expone el RBD (tooltip "un solo establecimiento (RBD …)") y el nombre (popup "Ver establecimientos"), lo cual es deliberado y fundado en la decisión D-nombres. Conclusión: no implementar supresión. Sin cambios de código.
 104. [DOC] Implementación de la suite `suitedoc` (`documentar.R` + 4 HTML): reverse-engineering de la API de `suitedoc` 0.3.0 desde el `documentar.R` del proyecto hermano; `cfg` poblada desde el escáner, el README, los scripts 30–33, el traspaso v18 y la decisión de nombres; contenido invertido donde difiere (agregación ponderada por evaluados, GSE inviolable); runtime/deploy verificados contra el código real (React/ReactDOM/Babel por CDN unpkg con SRI, D3/pako inline; deploy a `docs/` manual). `here::i_am()` añadido para correr vía `Rscript`.
@@ -208,7 +283,7 @@
 
 **Delta del backlog:** 3 entradas nuevas (103–105). Sin reclasificaciones. Total acumulado: 105.
 
-## Sesión 20 — Documentación y gobernanza: decisión 4b/depe4, marcas de suite y reconstrucción del backlog (traspaso v20)
+### Sesión 20 — Documentación y gobernanza: decisión 4b/depe4, marcas de suite y reconstrucción del backlog (traspaso v20)
 
 106. [DOC] Archivo de decisión `20260620_decision_celda_unico_establecimiento.md` (D20-1, corolario de D-nombres): formaliza que las celdas con `n_estab=1` no se suprimen, porque la exposición de establecimientos individuales es general y deliberada en el motor y la restricción de §6.4 aplica solo a microdatos por estudiante. Documenta las dos alternativas descartadas (colapsar `depe2`; suprimir por `n_estab < k`) con su porqué. Commit `e0d4438`.
 107. [DOC] Corrección de las marcas `# REVISAR (decisión)` del `documentar.R` de la suite: las "2 marcas" anunciadas en v19 eran temas de contenido mal rotulados; se hallaron 3 marcas reales. Se corrigió una imprecisión real (el bloque de color atribuía el color "al periodo", algo que la decisión de color s15 no contempla; añadido el mecanismo de identidad por nombre/swatch/borde que la fuente sí especifica) y se confirmaron las otras dos (item A2 del diccionario y glosario de marca) fieles al backlog #57. Suite regenerada (4 HTML) y versionada. Commits `e14048f` (suite), `2488a2f` (log).
@@ -217,7 +292,7 @@
 
 **Delta del backlog:** 4 entradas nuevas (106–109). Sin reclasificación de taxonomía (tags compuestos conservados, D20-3). Total acumulado: 109.
 
-## Sesión 21 — Mantenimiento documental y cumplimiento Ley 21.719 (traspaso v21)
+### Sesión 21 — Mantenimiento documental y cumplimiento Ley 21.719 (traspaso v21)
 
 110. [DOC] Anexo del delta de la sesión 20 al backlog (entradas 106–109) y actualización de cobertura a 1–20. Commit `0e9d275`.
 111. [REPO] Auditoría Ley 21.719: producto publicado verificado limpio por dos caminos (código + panel adversarial); hallazgo `MRUN` (946 filas, persona natural) en insumo versionado. Sin cambios de código.
@@ -226,7 +301,7 @@
 
 **Delta del backlog:** 4 entradas nuevas (110–113). Sin reclasificación (tags compuestos, D20-3). Total acumulado: 113.
 
-## Sesión 22 — Suite de documentación standalone offline (traspaso v22)
+### Sesión 22 — Suite de documentación standalone offline (traspaso v22)
 
 114. [P] Saneamiento del encargo de suite standalone: recorte a solo Fase B (Fase A obsoleta, backlog ya en 1–113) y verificación de la API real de `suitedoc` antes de redactar (firma `standalone=`, lucide 1.21.0). Sin commit de código (trabajo de análisis); materializado en el encargo versionado.
 115. [DOC] Actualización de la cfg del `documentar.R`: gobernanza Ley 21.719 + 6 decisiones formales (con `id`/`por_que` del archivo, +D20-1 +D21-1) + directorio marcado no versionado. Commit `6f94729`.
@@ -234,7 +309,7 @@
 
 **Delta del backlog:** 3 entradas nuevas (114–116). Sin reclasificación (D20-3). Total acumulado: 116.
 
-## Sesión 23 — Estado por defecto del motor y auditoría de suite standalone (traspaso v23)
+### Sesión 23 — Estado por defecto del motor y auditoría de suite standalone (traspaso v23)
 
 117. [UI] Estado por defecto del motor = 4 comunas del SLEP Costa Central con dependencia Servicio Local (depe2="5"), en montaje y reset; derivación en runtime sin hardcodear códigos (`entidadesPorDefecto()`). Commit `4d647df`.
 118. [DOC] Regeneración de la suite standalone offline a pedido del titular; resultó determinista byte-idéntica (no-op de versionado, sin commit).
@@ -243,7 +318,7 @@
 
 **Delta del backlog:** 4 entradas nuevas (117–120). Sin reclasificación (D20-3). Total acumulado: 120.
 
-## Sesión 24 — Cierre de backlog y pendientes de documentación (traspaso v24)
+### Sesión 24 — Cierre de backlog y pendientes de documentación (traspaso v24)
 
 121. [DOC] Anexo del delta de la sesión 23 al backlog (entradas 117–120) y actualización de cobertura a 1–23. Commit `8944c2e`.
 122. [DOC] Reseña final versionada como espejo verbatim del bloque `orden: 3` de `data.js` del portafolio del Área. Commit `d4051d0`.
@@ -252,7 +327,7 @@
 
 **Delta del backlog:** 4 entradas nuevas (121–124). Sin reclasificación adicional de taxonomía. Total acumulado: 124.
 
-## Sesión 25 — Renombrado UI "entidad" → "territorio" y reparación de backlog truncado (traspaso v25)
+### Sesión 25 — Renombrado UI "entidad" → "territorio" y reparación de backlog truncado (traspaso v25)
 
 125. [UI] Renombrado del concepto de UI "entidad" a "territorio" en 33 líneas de texto visible, comentarios y header CSV exportado de `33_motor_template.html`; identificadores de código (`entidadDependeSlep`, `entidadesPorDefecto`, `MAX_ENTIDADES`, `entities`/`entity`) intocables por decisión explícita. Encargo autónomo ejecutado por Claude Code, verificación de conteos exacta. Commit `0c70db0`.
 126. [DOC] Reparación del bug A-s25-1: el commit `572324a` (entrada 124) truncó las secciones de sesión 23 y 24 (entradas 117–120) al normalizar tags; reinsertadas desde `8944c2e` con tags ya en formato canónico `[CÓDIGO]`.
@@ -261,7 +336,7 @@
 
 **Delta del backlog:** 4 entradas nuevas (125–128). Total acumulado: 128.
 
-## Sesión 26 — Auditoría de deuda heredada y sidequest histórico % Adecuado (traspaso v26)
+### Sesión 26 — Auditoría de deuda heredada y sidequest histórico % Adecuado (traspaso v26)
 
 129. [REPO] Auditoría A-s25-4: `POLITICA_PROYECTO.md` duplicado en raíz identificado como v6 obsoleta (commit `32b090d`, 2026-06-12), anterior a la vigente `50_documentacion/activa/` v5.2 (commit `c9841d8`, 2026-07-01) pese a autodeclararse "vigente y definitiva"; eliminado de raíz. Commit `7ec8461`.
 130. [DOC] Cierre A-s25-3: `backlog_historico.md` renombrado a `backlog_acumulativo.md` (nombre canónico POLITICA §10); referencia actualizada en `README.md`. Commits `34d681d`, `7af874c`.
@@ -271,13 +346,13 @@
 
 **Delta del backlog:** 5 entradas nuevas (129–133). Total acumulado: 133.
 
-## Entre sesiones 26 y 27 — cambio sin traspaso (registrado retroactivamente en s28)
+### Entre sesiones 26 y 27 — cambio sin traspaso (registrado retroactivamente en s28)
 
 134. [REPO] Los documentos normativos (`POLITICA_PROYECTO.md`, `SETTINGS_Y_PROMPTS_OPERACIONALES.md`) dejan de versionarse en el repositorio del proyecto y pasan a copia local vía `.gitignore`. Commit `65302c6` (2026-08-24). No pertenece a ninguna sesión con traspaso: se registra retroactivamente al abrir la sesión 28, y explica la discrepancia de tamaños que el traspaso v27 §9 dejó declarada sin investigar.
 
 **Delta del backlog:** 1 entrada nueva (134). Total acumulado: 134.
 
-## Sesión 27 — Terminología de la suite y escala tipográfica del motor (traspaso v27)
+### Sesión 27 — Terminología de la suite y escala tipográfica del motor (traspaso v27)
 
 135. [DOC] Auditoría de "entidad" en `documentar.R`: inventario sobre el archivo completo y corrección de 2 residuos de texto UI en los bloques `doc_s2_intro`/`doc_s2_cierre` ("entre distintas entidades" → "entre distintos territorios"; "Para cualquier entidad" → "Para cualquier territorio"). Identificadores de código (`entidades_tec`, `entidades_gen`) y la prosa analítica de la decisión `D-color-nivel` quedan intactos por la regla vigente. Auditoría extendida a los 4 HTML standalone ya generados: 0 referencias de red, iconos como SVG embebido, fuentes como `data:font`. Commit `6a1c8b6`.
 136. [UI] Migración de la escala tipográfica de `33_motor_template.html` a 7 variables CSS en `:root` (`--fs-overline` 12px hasta `--fs-h2` 28px) con piso tipográfico de 12px: 77 declaraciones CSS declarativas y `fontSize` inline React sustituidas, de 96 inventariadas. Overrides declarados: `.app-title` (30px) mapeado por rol a `--fs-h2`, y 9 valores bajo 12px elevados al piso. Commit `d1d04f6`.
