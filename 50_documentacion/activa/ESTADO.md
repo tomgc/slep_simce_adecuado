@@ -7,9 +7,9 @@ sesion_actual: v28
 ultima_actividad: 2026-08-28
 maneja_sensibles: false
 tipo_pendiente: bloqueado_externo
-sesion_abierta: false
+sesion_abierta: true
 maquina: MacBook-Pro-de-Tomas
-commit_cierre: 542088c
+commit_cierre: 5306df2
 traspaso_vigente: traspaso_cierre_v28.md
 cierre_incompleto: no
 insumos_verificados: 2026-08-28
