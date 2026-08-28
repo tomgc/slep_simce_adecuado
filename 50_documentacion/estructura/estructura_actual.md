@@ -1,8 +1,8 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-08-27 10:39:11
-- **Totales:** 23 carpetas, 163 archivos
+- **Fecha:** 2026-08-28 14:26:29
+- **Totales:** 23 carpetas, 175 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 ## Arbol
@@ -38,35 +38,37 @@ slep_simce_adecuado/
 │   │   ├── glosas_simce_resumen_cambios_simce_rbd_2014_2025.csv  (844)
 │   │   ├── glosas_simce_tabla_comparativa_simce_rbd_2014_2025.csv  (18K)
 │   │   └── listado_slep_2026.xlsx  (55.5K)
-│   └── simce/
-│       ├── 2m/
-│       │   ├── .gitkeep  (0)
-│       │   ├── simce2m2014_rbd_final.xlsx  (745K)
-│       │   ├── simce2m2015_rbd_final.xlsx  (674K)
-│       │   ├── simce2m2016_rbd_final.xlsx  (703K)
-│       │   ├── simce2m2017_rbd_final.xlsx  (711K)
-│       │   ├── simce2m2018_rbd_final.xlsx  (543K)
-│       │   ├── simce2m2022_rbd_final.xlsx  (587K)
-│       │   ├── simce2m2023_rbd_final.xlsx  (509K)
-│       │   ├── simce2m2024_rbd_final.xlsx  (509K)
-│       │   └── simce2m2025_rbd_preliminar.xlsx  (528K)
-│       └── 4b/
-│           ├── .gitkeep  (0)
-│           ├── simce4b2014_rbd_final.xlsx  (1.97M)
-│           ├── simce4b2015_rbd_final.xlsx  (1.39M)
-│           ├── simce4b2016_rbd_final.xlsx  (1.38M)
-│           ├── simce4b2017_rbd_final.xlsx  (1.31M)
-│           ├── simce4b2018_rbd_final.xlsx  (1.08M)
-│           ├── simce4b2022_rbd_final.xlsx  (1.34M)
-│           ├── simce4b2023_rbd_final.xlsx  (1.11M)
-│           ├── simce4b2024_rbd_final.xlsx  (1.09M)
-│           └── simce4b2025_rbd_preliminar.xlsx  (1.05M)
+│   ├── simce/
+│   │   ├── 2m/
+│   │   │   ├── .gitkeep  (0)
+│   │   │   ├── simce2m2014_rbd_final.xlsx  (745K)
+│   │   │   ├── simce2m2015_rbd_final.xlsx  (674K)
+│   │   │   ├── simce2m2016_rbd_final.xlsx  (703K)
+│   │   │   ├── simce2m2017_rbd_final.xlsx  (711K)
+│   │   │   ├── simce2m2018_rbd_final.xlsx  (543K)
+│   │   │   ├── simce2m2022_rbd_final.xlsx  (587K)
+│   │   │   ├── simce2m2023_rbd_final.xlsx  (509K)
+│   │   │   ├── simce2m2024_rbd_final.xlsx  (509K)
+│   │   │   └── simce2m2025_rbd_preliminar.xlsx  (528K)
+│   │   ├── 4b/
+│   │   │   ├── .gitkeep  (0)
+│   │   │   ├── simce4b2014_rbd_final.xlsx  (1.97M)
+│   │   │   ├── simce4b2015_rbd_final.xlsx  (1.39M)
+│   │   │   ├── simce4b2016_rbd_final.xlsx  (1.38M)
+│   │   │   ├── simce4b2017_rbd_final.xlsx  (1.31M)
+│   │   │   ├── simce4b2018_rbd_final.xlsx  (1.08M)
+│   │   │   ├── simce4b2022_rbd_final.xlsx  (1.34M)
+│   │   │   ├── simce4b2023_rbd_final.xlsx  (1.11M)
+│   │   │   ├── simce4b2024_rbd_final.xlsx  (1.09M)
+│   │   │   └── simce4b2025_rbd_preliminar.xlsx  (1.05M)
+│   │   └── .DS_Store  (8K)
+│   └── .DS_Store  (8K)
 ├── 30_procesamiento/
 │   ├── 30_construir_auxiliares.R  (15.6K)
 │   ├── 31_leer_normalizar.R  (16.2K)
 │   ├── 32_agregar_comunal.R  (7.64K)
 │   ├── 33_generar_html.R  (15.4K)
-│   ├── 33_motor_template.html  (152K)
+│   ├── 33_motor_template.html  (155K)
 │   └── 34_historico_pct_adecuado_costa_central.R  (6.09K)
 ├── 40_salidas/
 │   ├── intermedios/
@@ -91,16 +93,21 @@ slep_simce_adecuado/
 │   │   ├── encargos/
 │   │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   │   ├── encargo_claude_code_simce_suite_standalone.md  (10.5K)
+│   │   │   ├── encargo_correcciones_d1_d3.md  (13.7K)
 │   │   │   ├── encargo_deuda_tipografica_svg_y_codigo_muerto.md  (10.7K)
 │   │   │   ├── encargo_entorno_y_suite_standalone.md  (9.04K)
 │   │   │   ├── encargo_homogeneidad_y_quinto_territorio.md  (13.7K)
+│   │   │   ├── encargo_normalizar_backlog_politica10.md  (14.1K)
 │   │   │   ├── encargo_ordenacion_repositorio.md  (10.1K)
 │   │   │   └── encargo_renombrar_entidad_territorio.md  (11.2K)
+│   │   ├── .DS_Store  (8K)
 │   │   ├── .gitkeep  (0)
+│   │   ├── 50_datos_versionados_autorizados.md  (5.44K)
+│   │   ├── 50_diseno_ramas_deteccion.md  (7.45K)
 │   │   ├── 50_locale_utf8.md  (4.12K)
 │   │   ├── 50_ordenacion_repositorio.md  (4.51K)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_acumulativo.md  (34.7K)
+│   │   ├── backlog_acumulativo.md  (40.2K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
 │   │   ├── ESTADO.md  (1.16K)
@@ -121,16 +128,21 @@ slep_simce_adecuado/
 │   │   │   ├── 20260622_suite_standalone_simce_log.md  (5.48K)
 │   │   │   ├── 20260701_renombrar_entidad_territorio_log.md  (7.02K)
 │   │   │   ├── 20260826_homogeneidad_y_quinto_territorio_log.md  (11.2K)
+│   │   │   ├── 20260827_correcciones_d1_d3_log.md  (29.4K)
 │   │   │   ├── 20260827_entorno_y_suite_standalone_log.md  (29K)
-│   │   │   └── 20260827_tipografia_svg_y_codigo_muerto_log.md  (23.3K)
-│   │   └── .DS_Store  (8K)
+│   │   │   ├── 20260827_medicion_panorama_territorial_log.md  (65.1K)
+│   │   │   ├── 20260827_ordenacion_repositorio_log.md  (25.5K)
+│   │   │   ├── 20260827_tipografia_svg_y_codigo_muerto_log.md  (23.3K)
+│   │   │   └── 20260828_normalizacion_backlog_log.md  (21.6K)
+│   │   ├── .DS_Store  (8K)
+│   │   └── paquete_cierre_v28.md  (36.5K)
 │   ├── estructura/
-│   │   ├── 20260701_114145_estructura.md  (9.36K)
-│   │   ├── 20260701_114145_estructura.txt  (9.45K)
 │   │   ├── 20260826_092120_estructura.md  (9.45K)
 │   │   ├── 20260826_092120_estructura.txt  (9.55K)
-│   │   ├── estructura_actual.md  (9.45K)
-│   │   └── estructura_actual.txt  (9.55K)
+│   │   ├── 20260827_103911_estructura.md  (10.2K)
+│   │   ├── 20260827_103911_estructura.txt  (10.3K)
+│   │   ├── estructura_actual.md  (10.2K)
+│   │   └── estructura_actual.txt  (10.3K)
 │   ├── suite/
 │   │   ├── assets/
 │   │   │   ├── logo-color-stacked.png  (126K)
@@ -181,7 +193,7 @@ slep_simce_adecuado/
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.46M)
-├── .DS_Store  (8K)
+├── .DS_Store  (10K)
 ├── .gitignore  (1.18K)
 ├── .Renviron.example  (1.9K)
 ├── .Rprofile  (26)
@@ -201,9 +213,9 @@ slep_simce_adecuado/
 
 | Extension | Archivos |
 |---|---|
-| md | 66 |
+| md | 75 |
 | xlsx | 24 |
-| (sin extension) | 13 |
+| (sin extension) | 16 |
 | r | 13 |
 | html | 10 |
 | otf | 6 |

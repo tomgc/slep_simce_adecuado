@@ -3,23 +3,23 @@ slug: slep_simce_adecuado
 nombre_real: Motor de comparación interactivo de los resultados Simce por estándares de aprendizaje (Adecuado/Elemental/Insuficiente)
 categoria: activo
 semaforo: activo
-sesion_actual: v27
-ultima_actividad: 2026-08-26
+sesion_actual: v28
+ultima_actividad: 2026-08-28
 maneja_sensibles: false
-tipo_pendiente: deuda_tecnica
-sesion_abierta: true
+tipo_pendiente: bloqueado_externo
+sesion_abierta: false
 maquina: MacBook-Pro-de-Tomas
-commit_cierre: 6a1c8b6
-traspaso_vigente: traspaso_cierre_v27.md
+commit_cierre: 542088c
+traspaso_vigente: traspaso_cierre_v28.md
 cierre_incompleto: no
-insumos_verificados: 2026-08-26
+insumos_verificados: 2026-08-28
 ventana_insumos: ./20_insumos
 ---
 ## En que vamos
-Sesión 27 corrigió la terminología "entidad"→"territorio" en el texto UI de `documentar.R` (commit `6a1c8b6`) y migró la escala tipográfica de `33_motor_template.html` a 7 variables CSS con piso de 12px (commit `d1d04f6`, 77 de 96 declaraciones). Las 19 declaraciones de D3 SVG y objetos JS quedaron fuera por decisión D-s27-1. La migración está commiteada y pusheada pero nunca se abrió en un navegador. Sesión 28 abierta el 2026-08-26.
+Sesión 28, larga y de saldo de deuda: 19 entradas de backlog y tres despliegues. Se cerró la migración tipográfica que s27 dejó a medias (bloque `:root` duplicado, `.app-title` restaurado a 30px, 8 literales `fontSize` React omitidos del censo), se elevó el tope de comparación de 4 a 5 territorios, se migró la escala del SVG a constantes JS con los valores preservados, se ordenó el repositorio y se corrigieron dos bugs propios de la sesión. Nacieron tres documentos de gobernanza: `50_diseno_ramas_deteccion.md`, `50_datos_versionados_autorizados.md` y la normalización de `backlog_acumulativo.md` a las cinco secciones de POLITICA §10, que llevaba 28 sesiones fuera de norma. El motor publicado incluye todo lo anterior. La funcionalidad "Panorama territorial" quedó especificada y medida, no construida.
 
 ## Proximo paso
-Regenerar el motor con `33_generar_html.R` y verificar visualmente la migración tipográfica, con foco en la tabla comparativa (contenedor `min-width:1000px`) y los popups RBD.
+Publicar `herramientas_dev` en sesión propia: `suitedoc` no existe en ningún remoto y eso bloquea la reparación de `renv.lock` y la regeneración de la suite standalone. Después, construir el panorama territorial con la especificación del traspaso v28 §10.
 
 ## Bloqueantes
-ninguno
+`suitedoc` sin publicar (externo a este repositorio): bloquea `documentar.R`, `34_historico_pct_adecuado_costa_central.R` y la regeneración de la suite.
