@@ -1,5 +1,6 @@
 # Decisión: color fijo por nivel de logro (no por entidad)
 
+- **ID:** D-color-nivel
 - **Fecha:** 2026-06-11
 - **Sesión:** 15 (replicada como archivo de decisión en sesión 16)
 - **Estado:** vigente
@@ -50,7 +51,7 @@ La legibilidad semántica del nivel de logro prima sobre la densidad de
 identificación por color. El lector compara desempeño entre entidades: que el
 azul de Adecuado sea siempre el mismo permite leer el nivel de un vistazo sin
 recalibrar por entidad. La identidad no se pierde: se redistribuye a nombre,
-swatch y borde de ficha, canales suficientes con el tope de 4 entidades
+swatch y borde de ficha, canales suficientes con el tope de 5 entidades
 simultáneas (`MAX_ENTIDADES`).
 
 ## Tensión resuelta
