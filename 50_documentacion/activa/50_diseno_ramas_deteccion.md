@@ -131,6 +131,10 @@ el patrón incluye la asignación, no solo el identificador.
 8. **Si una rama se dispararía en el escenario nominal, está mal escrita.**
    Prueba mental obligatoria antes de entregar: recorre el camino feliz y
    comprueba que ninguna rama salta.
+9. **Antes de enmendar una herramienta, comprueba su referente.** Si mide
+   contra la historia del propio archivo, la herramienta admite enmienda; si
+   mide contra una norma escrita y anterior a ella, el desajuste lo tiene el
+   archivo, y enmendar la herramienta consagra la desviación.
 
 ---
 
@@ -147,3 +151,35 @@ el patrón incluye la asignación, no solo el identificador.
 - [ ] Los criterios están en forma de resultado, no de cantidad esperada.
 - [ ] El log pide salida literal, tabla de esperado contra medido, y lo que quedó
       sin verificar.
+- [ ] Si el encargo enmienda una herramienta de verificación, declaré su
+      referente y comprobé que no es una norma externa.
+
+---
+
+## 5. Una quinta falla, de otra familia
+
+### A-s28-6 — Se declaró mal calibrada una herramienta sin comprobar su referente
+
+**Qué pasó.** Ante la detención de F2 se concluyó que el instrumento modelaba un
+backlog inexistente y se propuso enmendarlo. Es falso: las tres estructuras las
+fija `POLITICA_PROYECTO.md` §10, norma escrita del proyecto y anterior al
+instrumento. La herramienta medía lo que decía medir; el desviado era el archivo.
+
+**Por qué no va en el `## 2`.** Las cuatro fallas de ese apartado son una sola,
+la que enuncia el `## 1`: el verificador midió el síntoma, no la afirmación.
+A-s28-6 no comparte esa tesis. Aquí el verificador estaba bien escrito y midió
+exactamente su afirmación; lo que falló fue el diagnóstico posterior sobre a qué
+obedece la herramienta. Es un error de atribución, no de instrumentación.
+Sumarla a la lista del `## 2` obligaría a decir "las cinco fallas son la misma",
+y no lo son.
+
+**Por qué importa.** La consecuencia de este error no es un verde falso, como en
+las cuatro anteriores, sino algo peor: enmendar el instrumento correcto. Una
+herramienta que mide contra una norma externa y detecta un desajuste está
+haciendo su trabajo. Ajustarla al archivo desviado consagra la desviación y
+destruye la única señal que la delataba.
+
+**Regla.** Antes de declarar que una herramienta de verificación está mal
+calibrada, comprueba contra qué mide. Si su referente es la historia del propio
+archivo, la herramienta admite enmienda. Si su referente es una norma escrita y
+anterior al instrumento, el desajuste lo tiene el archivo.
