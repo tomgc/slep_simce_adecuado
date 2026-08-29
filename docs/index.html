@@ -1825,6 +1825,7 @@ code {
         marcaPreliminar:  13,    // asterisco de dato preliminar
         sinDato:          10,    // rótulo "Sin datos" en un año sin medición
         leyenda:          11,    // rótulos de la leyenda de niveles
+        valorFuera:       9.5,   // % de una franja demasiado delgada, bajo el eje
       },
       // SVG compuesto del supergrid (construirSvgGraficos)
       exportacion: {
@@ -3069,9 +3070,18 @@ code {
     // que la pantalla y el SVG exportado salen del mismo código y no pueden
     // divergir. Es la lección de la exportación del supergrid, donde el
     // constructor del SVG reimplementa el layout de las tarjetas.
+    // Altura mínima que necesita una franja para llevar su porcentaje adentro.
+    // Con el área interna de PANORAMA_DIMS equivale a poco más de 7 puntos
+    // porcentuales; por debajo de eso el valor se rescata bajo el eje.
+    const ALTO_MIN_ROTULO = 15;
+
     const PANORAMA_DIMS = {
-      W: 520, H: 300,
-      M: { top: 40, right: 14, bottom: 46, left: 36 },
+      W: 520, H: 328,
+      // El margen inferior reserva, además del año y el N, hasta dos renglones
+      // para los porcentajes de franjas demasiado delgadas para llevar su
+      // rótulo dentro. Dos es el máximo posible: tres franjas bajo el umbral no
+      // pueden sumar 100.
+      M: { top: 40, right: 14, bottom: 74, left: 36 },
     };
 
     function dibujarPanoramaEnGrupo(g, { series, iw, ih }) {
@@ -3160,11 +3170,17 @@ code {
           // Los tres suman exactamente 100 (mkPunto reescala Elemental e
           // Insuficiente para absorber el redondeo de la fuente).
           const segs = [
-            { val: s.pct,     fill: COLOR_ADEC },
-            { val: s.pct_ele, fill: COLOR_ELEM },
-            { val: s.pct_ins, fill: COLOR_INSUF },
+            { val: s.pct,     fill: COLOR_ADEC, sigla: "A" },
+            { val: s.pct_ele, fill: COLOR_ELEM, sigla: "E" },
+            { val: s.pct_ins, fill: COLOR_INSUF, sigla: "I" },
           ];
           let base = 0;
+          // Franjas que no admiten su rótulo adentro. Se rescatan bajo el eje en
+          // vez de perderse: la medición de la sesión 29 mostró que el 11,9% de
+          // los puntos comunales tiene al menos una, y que en 1.529 de 1.614
+          // casos la franja muda es Adecuado. El número que desaparecía era
+          // justamente el más grave de la serie.
+          const rescatadas = [];
           segs.forEach(seg => {
             const v = seg.val == null ? 0 : seg.val;
             if (v <= 0) return;
@@ -3177,7 +3193,7 @@ code {
               .attr("x", xPos).attr("y", topY)
               .attr("width", bw).attr("height", h)
               .attr("fill", seg.fill);
-            if (h >= 15) {
+            if (h >= ALTO_MIN_ROTULO) {
               g.append("text")
                 .attr("x", xPos + bw / 2).attr("y", topY + h / 2 + 4)
                 .attr("text-anchor", "middle")
@@ -3186,7 +3202,23 @@ code {
                 .attr("font-weight", 700)
                 .attr("fill", "#FFFFFF")
                 .text(fmtPctShort(v));
+            } else {
+              rescatadas.push(seg);
             }
+          });
+          // La sigla acompaña al color porque el color solo no basta para
+          // identificar el nivel fuera de su franja. El valor va con un decimal
+          // (fmtPct, no fmtPctShort): redondear 0,2 a "0%" anularía justamente
+          // la cifra que esta línea existe para rescatar.
+          rescatadas.forEach((seg, k) => {
+            g.append("text")
+              .attr("x", xPos + bw / 2).attr("y", ih + 44 + k * 12)
+              .attr("text-anchor", "middle")
+              .attr("font-family", "system-ui, sans-serif")
+              .attr("font-size", FS_SVG.panorama.valorFuera)
+              .attr("font-weight", 700)
+              .attr("fill", seg.fill)
+              .text(seg.sigla + " " + fmtPct(seg.val));
           });
         }
 
@@ -3511,7 +3543,9 @@ code {
               cinco grupos socioeconómicos</strong> en una sola distribución, ponderada por
               el número de estudiantes evaluados. Los tres niveles suman 100% en cada año.
               El N por nivel que aparece en el CSV es <strong>derivado</strong> del porcentaje
-              publicado por la Agencia, no un recuento de la fuente.
+              publicado por la Agencia, no un recuento de la fuente. Cuando una franja es
+              demasiado delgada para llevar su cifra adentro, el valor aparece bajo el año
+              con la inicial del nivel (A, E o I) en su color.
               {SimceData.GAP_YEARS.length > 0 && (
                 <React.Fragment>
                   {" "}El eje salta de {Math.min.apply(null, SimceData.GAP_YEARS) - 1} a{" "}
