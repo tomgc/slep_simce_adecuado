@@ -3468,7 +3468,13 @@ code {
         return pruebas.some(p =>
           SimceData.generateSeriesGseCombinado(entity, nivel, p).some(s => s.pct != null)
         );
-      }, [entity && entity.id, entity && entity.kind, entity && entity.depe2, nivel]);
+      // Las dependencias incluyen la composición del territorio, no solo su id:
+      // al cambiar de territorio el modal conserva el id (`editing?.id`), así que
+      // depender del id dejaría la meta y el estado vacío en el valor anterior.
+      // Es la misma lista que usa PanoramaChart, por la misma razón.
+      }, [entity && entity.id, entity && entity.kind, entity && entity.depe2,
+          entity && entity.rbd, ((entity && entity.comunas) || []).join(","),
+          ((entity && entity.rbds) || []).join(","), nivel]);
 
       // Meta de la tarjeta: se lee de la propia serie, nunca se declara a mano.
       // Toma el año más reciente con dato entre las dos pruebas y el mayor
@@ -3494,7 +3500,13 @@ code {
           : `${fmtInt(nEstab)} ${nEstab === 1 ? "establecimiento" : "establecimientos"} con resultados`;
         return [est, nivel, "GSE combinado", anio + (prelim ? " (preliminar)" : "")]
           .filter(Boolean).join(" · ");
-      }, [entity && entity.id, entity && entity.kind, entity && entity.depe2, nivel]);
+      // Las dependencias incluyen la composición del territorio, no solo su id:
+      // al cambiar de territorio el modal conserva el id (`editing?.id`), así que
+      // depender del id dejaría la meta y el estado vacío en el valor anterior.
+      // Es la misma lista que usa PanoramaChart, por la misma razón.
+      }, [entity && entity.id, entity && entity.kind, entity && entity.depe2,
+          entity && entity.rbd, ((entity && entity.comunas) || []).join(","),
+          ((entity && entity.rbds) || []).join(","), nivel]);
 
       if (!entity) {
         return (
