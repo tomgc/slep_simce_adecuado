@@ -3397,12 +3397,30 @@ code {
       descargarBlob(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" }), fname);
     }
 
+    // La fuente entrega los nombres de comuna en mayúsculas sostenidas
+    // ("VIÑA DEL MAR"). El texto de la interfaz no usa mayúsculas sostenidas
+    // salvo en siglas, así que se convierten a nombre propio al mostrarlos.
+    // Solo se transforma lo que viene enteramente en mayúsculas: un nombre ya
+    // capitalizado en la fuente se respeta tal cual.
+    const CONECTORES_NOMBRE = ["de", "del", "la", "las", "los", "y", "e", "el"];
+    function aNombrePropio(txt) {
+      const str = String(txt);
+      if (str !== str.toLocaleUpperCase("es")) return str;
+      return str
+        .toLocaleLowerCase("es")
+        .split(" ")
+        .map((w, i) => (i > 0 && CONECTORES_NOMBRE.includes(w))
+          ? w
+          : w.charAt(0).toLocaleUpperCase("es") + w.slice(1))
+        .join(" ");
+    }
+
     // Composición del territorio: qué contiene, en palabras. La tarjeta de
     // contexto necesita decir de qué está hecho el territorio, no solo cuántas
     // piezas tiene.
     function composicionTerritorio(entity) {
       if (!entity) return "";
-      if (entity.kind === "estab") return `RBD ${entity.rbd} · ${entity.com || ""}`.trim();
+      if (entity.kind === "estab") return `RBD ${entity.rbd} · ${aNombrePropio(entity.com || "")}`.trim();
       if (entity.kind === "nacional") {
         return entity.depe2
           ? `Todos los establecimientos del país · ${SimceData.DEPE2_LABELS[entity.depe2] || ""}`.trim()
@@ -3410,8 +3428,10 @@ code {
       }
       if (entity.kind === "comuna") {
         const reg = SimceData.REGIONES.find(r => r.comunas.some(c => c.cod_com === entity.comunas[0]));
+        // El nombre de la región pasa por el mismo filtro: si viene en
+        // mayúsculas sostenidas, se muestra como nombre propio.
         const dep = entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] : "Todas las dependencias";
-        return [reg ? reg.nombre : null, dep].filter(Boolean).join(" · ");
+        return [reg ? aNombrePropio(reg.nombre) : null, dep].filter(Boolean).join(" · ");
       }
       // SLEP, región y grupo: se nombran sus comunas. Por encima de ocho la
       // lista deja de ser legible y se reemplaza por el recuento.
@@ -3420,7 +3440,7 @@ code {
       const nombres = cods
         .map(cod => {
           const c = SimceData.COMUNA_BY_COD.get(cod);
-          return c ? c.nom : cod;
+          return aNombrePropio(c ? c.nom : cod);
         })
         .sort((a, b) => String(a).localeCompare(String(b), "es"));
       if (nombres.length === 1) return nombres[0];
@@ -3436,7 +3456,7 @@ code {
             {meta && <p className="hero-card-meta">{meta}</p>}
           </div>
           <div className="hero-card-right">
-            <span className="hero-card-control-label">NIVEL</span>
+            <span className="hero-card-control-label">Nivel</span>
             <Segmented value={nivel} options={niveles} onChange={setNivel} variante="on-dark" />
           </div>
         </section>
@@ -3525,9 +3545,9 @@ code {
 
       return (
         <React.Fragment>
+        <TerritorioSelect entity={entity} onOpenSelector={onOpenSelector} />
         <PanoramaHero entity={entity} nivel={nivel} setNivel={setNivel}
           niveles={niveles} meta={meta} />
-        <TerritorioSelect entity={entity} onOpenSelector={onOpenSelector} />
         <section className="panorama-section">
           <div className="panorama-head">
             <div className="panorama-head-top">
@@ -3818,7 +3838,18 @@ code {
 
       // Límite de selección múltiple: en alta, tantos como slots libres; en edición, 1.
       const maxSel = editing ? 1 : Math.max(1, slotsLibres || 0);
+      // Con tope 1 la selección es de reemplazo, no de acumulación: es la
+      // semántica del radio que la propia lista ya usa al editar. Bloquear las
+      // demás filas dejaba el modal sin salida, porque la única seleccionada
+      // ocupaba el único cupo y ninguna otra podía tomarlo.
       function toggleSel(cod, lista, setLista) {
+        if (maxSel === 1) {
+          // En edición la selección es obligatoria: deseleccionar dejaría el
+          // territorio sin definir y el modal sin nada que guardar.
+          if (lista.includes(cod)) { if (editing) return; setLista([]); return; }
+          setLista([cod]);
+          return;
+        }
         if (lista.includes(cod)) {
           setLista(lista.filter(x => x !== cod));
         } else {
@@ -3994,7 +4025,7 @@ code {
                         .filter(r => !regionSearch || norm(r.nombre).includes(norm(regionSearch)))
                         .map(r => {
                           const checked = selectedRegions.includes(r.cod_reg);
-                          const bloqueado = !checked && selectedRegions.length >= maxSel;
+                          const bloqueado = !checked && maxSel > 1 && selectedRegions.length >= maxSel;
                           return (
                             <label key={r.cod_reg}
                               className={"check-row" + (checked ? " is-selected" : "") + (bloqueado ? " is-disabled" : "")}
@@ -4079,7 +4110,7 @@ code {
                     <div className="comuna-checklist" style={{ maxHeight: 260 }}>
                       {filteredSleps.map(s => {
                         const checked = selectedSleps.includes(s.cod_slep);
-                        const bloqueado = !checked && selectedSleps.length >= maxSel;
+                        const bloqueado = !checked && maxSel > 1 && selectedSleps.length >= maxSel;
                         return (
                           <label key={s.cod_slep}
                             className={"check-row" + (checked ? " is-selected" : "") + (bloqueado ? " is-disabled" : "")}
@@ -4092,7 +4123,7 @@ code {
                               {s.comunas.length} comunas · traspaso {s.anio_traspaso || "pendiente"}
                               {SimceData.slepEsProspectivo(s.anio_traspaso) && (
                                 <span className="badge-traspaso" title={"Traspaso " + s.anio_traspaso + ": los resultados mostrados corresponden íntegramente a la administración municipal previa al traspaso."}>
-                                  TRASPASO {s.anio_traspaso}
+                                  Traspaso {s.anio_traspaso}
                                 </span>
                               )}
                             </span>
