@@ -4237,11 +4237,10 @@ code {
         const slep = SimceData.SLEPS.find(s => norm(s.nombre).includes("costa central"));
         if (!slep) return [];
         const nComunas = slep.comunas.length;
-        const sembradas = Math.min(nComunas, MAX_ENTIDADES);
         if (nComunas > MAX_ENTIDADES) {
           console.warn(
             `entidadesPorDefecto: el SLEP "${slep.nombre}" tiene ${nComunas} comunas y se sembraron ` +
-            `${sembradas}; el tope de comparacion (MAX_ENTIDADES) es ${MAX_ENTIDADES}. ` +
+            `${Math.min(nComunas, MAX_ENTIDADES)}; el tope de comparacion (MAX_ENTIDADES) es ${MAX_ENTIDADES}. ` +
             `El territorio por defecto queda incompleto.`
           );
         }
