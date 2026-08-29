@@ -135,6 +135,16 @@ el patrón incluye la asignación, no solo el identificador.
    contra la historia del propio archivo, la herramienta admite enmienda; si
    mide contra una norma escrita y anterior a ella, el desajuste lo tiene el
    archivo, y enmendar la herramienta consagra la desviación.
+10. **Ninguna magnitud del proceso sirve de criterio.** Líneas de un `diff`,
+    líneas de `git status`, número de commits: son subproductos de cómo quedó
+    hecho el trabajo, no del trabajo. El criterio nombra el estado final: "los
+    cuatro campos quedan en el valor objetivo", no "el diff son cuatro líneas".
+    Es el caso particular de la regla 7 que la sesión 29 incumplió cuatro veces
+    seguidas pese a tenerla escrita.
+11. **Un patrón sobre prosa se ancla en una palabra, no en una frase.** `grep`
+    opera línea a línea y el texto con ajuste de línea parte las frases: una
+    frase partida no matchea nunca, y su cero se lee como ausencia. Si hace
+    falta la frase completa, normaliza antes (`tr -d '\n'`) o usa `grep -z`.
 
 ---
 
@@ -153,6 +163,12 @@ el patrón incluye la asignación, no solo el identificador.
       sin verificar.
 - [ ] Si el encargo enmienda una herramienta de verificación, declaré su
       referente y comprobé que no es una norma externa.
+- [ ] Ningún criterio cuenta líneas de `diff`, líneas de `git status` ni
+      commits.
+- [ ] La tabla de estados esperados de FASE 0 enumera los artefactos sin
+      versionar del propio encargo: su `.md` y su log.
+- [ ] Ningún patrón de verificación sobre prosa abarca más de una palabra
+      ancla.
 
 ---
 
@@ -183,3 +199,60 @@ destruye la única señal que la delataba.
 calibrada, comprueba contra qué mide. Si su referente es la historia del propio
 archivo, la herramienta admite enmienda. Si su referente es una norma escrita y
 anterior al instrumento, el desajuste lo tiene el archivo.
+
+---
+
+## 6. Reincidencia: la sesión 29 repitió dos reglas ya escritas
+
+El apartado anterior documenta fallas nuevas. Este documenta lo contrario, que
+es peor: reglas de este mismo archivo incumplidas por quien lo tenía delante.
+Ninguna de las dos exigía una regla nueva. Se registran porque una norma que se
+incumple cuatro veces en una sesión no tiene un problema de contenido, tiene un
+problema de forma: era demasiado abstracta para verse en el borrador.
+
+### A-s29-1 — Cuatro criterios expresados como cantidad de proceso
+
+**Qué pasó, cuatro veces en una sola sesión.**
+
+1. "El diff es de 4 líneas eliminadas y 4 añadidas." Dos de los cuatro campos ya
+   tenían el valor objetivo, así que el diff real fue de 2 y 2. Detención falsa.
+2. "`git status` muestra dos líneas modificadas." El motor generado está en
+   `.gitignore` y no puede aparecer nunca en `status`. Detención falsa.
+3. "`git status --porcelain`: exactamente una línea." Había dos, y la segunda era
+   el archivo del propio encargo sin versionar. Detención falsa, y además ya
+   normada por la regla 1 de este documento, que la cita textualmente.
+4. "Tres commits nuevos sobre `2e75100`." Eran dos: la tercera línea de
+   `git log --oneline -3` es la base, no un commit nuevo. Desvío reportado.
+
+**Por qué la regla 7 no bastó.** La regla decía "el criterio se expresa como
+resultado, no como cantidad", y su ejemplo hablaba de cantidades del *objeto*
+("elimina los dieciocho"). Las cuatro reincidencias son cantidades del
+*proceso*: cuánto ocupó el cambio en un `diff`, cuántas líneas imprimió un
+comando, cuántos commits salieron. Quien redacta no las reconoce como cantidades
+porque las siente descripciones de rigor. Por eso la regla 10 las nombra una por
+una: una lista cerrada es visible en el borrador, un principio no.
+
+**Regla.** Ver la regla 10 del `## 3`.
+
+### A-s29-2 — Verificador mudo por salto de línea
+
+**Qué pasó.** `grep -n "entidades simultáneas"` sobre un archivo de decisión
+devolvió 0. La premisa que lo citaba era correcta: la frase existe, partida
+entre dos líneas por el ajuste del texto.
+
+```
+53:swatch y borde de ficha, canales suficientes con el tope de 4 entidades
+54:simultáneas (`MAX_ENTIDADES`).
+```
+
+El control positivo lo delató: el mismo patrón matchea en los archivos donde la
+frase cabe en una línea. Sin ese control, el cero habría pasado por ausencia y
+la premisa por falsa.
+
+**Familia.** Es A-s28-3 con otra causa. Allí el instrumento era mudo por la
+sintaxis de `grep` en BSD; aquí, por la unidad de trabajo de `grep`, que es la
+línea y no el párrafo. La lección común: un patrón que no puede matchear en
+ningún escenario es un centinela mudo, y el control positivo es lo único que lo
+distingue de una ausencia real.
+
+**Regla.** Ver la regla 11 del `## 3`.
