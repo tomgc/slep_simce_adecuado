@@ -127,6 +127,7 @@ body {
   background: #0A3A5C;
   color: var(--fg-on-plum);
   padding: 28px 40px 26px;
+  border-bottom: 4px solid var(--coral);
 }
 .app-header-inner {
   display: flex; align-items: flex-end; justify-content: space-between;
@@ -176,10 +177,8 @@ body {
   display: flex; align-items: center; gap: 28px;
   padding: 18px 40px;
   background: var(--paper);
-  border-top: 4px solid var(--coral);
   border-bottom: 1px solid var(--border-1);
   flex-wrap: wrap;
-  position: sticky; top: 0; z-index: 50;
 }
 .control-group { display: flex; align-items: center; gap: 12px; }
 .control-label {
@@ -1034,6 +1033,179 @@ code {
 .entity-estab-label { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .entity-estab-arrow { flex-shrink: 0; }
 
+/* ============================================================
+   Pestañas de vista (comparación / panorama territorial)
+   ============================================================ */
+/* Barra blanca pegajosa bajo el banner, con la activa subrayada en coral. La
+   regla coral de separación vive ahora al pie de `.app-header`, que está en
+   todas las vistas; antes colgaba de `.controls-bar`, que el panorama no
+   muestra. Como consecuencia `.controls-bar` deja de ser pegajosa: dos
+   elementos pegados a top:0 se solapan, y la navegación entre vistas pesa más
+   que los segmentadores de nivel y prueba. */
+.view-tabs {
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-1);
+  box-shadow: 0 1px 0 rgba(74, 39, 70, 0.04);
+  position: sticky; top: 0; z-index: 40;
+}
+.view-tabs-inner {
+  display: flex; gap: 0; flex-wrap: wrap;
+  max-width: 1600px; margin: 0 auto; padding: 0 40px;
+}
+.view-tab {
+  appearance: none; background: none; border: none;
+  padding: 14px 18px;
+  font-family: var(--font-body);
+  font-weight: 700; font-size: var(--fs-body-lg);
+  color: var(--fg-3);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.view-tab:hover { color: var(--fg-1); }
+.view-tab.is-active { color: #0A3A5C; border-bottom-color: var(--coral); }
+
+/* Banner oscuro de identidad del territorio: nombre, composición, meta y el
+   selector de nivel. Homogéneo con el banner del motor IDPS. */
+.hero-card {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  margin: 16px 40px 0;
+  padding: 18px 22px;
+  background: #0A3A5C;
+  color: var(--cream);
+  border-radius: var(--radius-3);
+}
+.hero-card-left { flex: 1; min-width: 0; }
+.hero-card-title {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: var(--fs-h2);
+  line-height: 1.1; color: var(--cream);
+  margin: 0;
+}
+.hero-card-sub {
+  margin: 4px 0 0; font-size: var(--fs-caption);
+  color: var(--cream); opacity: 0.9; line-height: 1.35;
+}
+.hero-card-meta {
+  margin: 3px 0 0; font-size: var(--fs-caption);
+  color: var(--cream); opacity: 0.82;
+}
+.hero-card-right { display: flex; flex-direction: column; gap: 6px; flex: none; }
+.hero-card-control-label {
+  font-family: var(--font-body);
+  font-weight: 700; font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-overline); text-transform: uppercase;
+  color: rgba(255, 246, 224, 0.74);
+}
+.segmented.is-on-dark {
+  background: rgba(255, 246, 224, 0.12);
+  border-color: rgba(255, 246, 224, 0.28);
+  padding: 3px;
+}
+.segmented.is-on-dark .segmented-btn {
+  color: rgba(255, 246, 224, 0.7);
+  font-weight: 700;
+}
+.segmented.is-on-dark .segmented-btn:hover { color: var(--cream); }
+.segmented.is-on-dark .segmented-btn.is-active {
+  background: var(--cream); color: #0A3A5C; box-shadow: var(--shadow-1);
+}
+
+/* Picker de territorio: un control tipo select que abre el modal de todo Chile. */
+.territorio-row {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 16px 40px 0;
+}
+.territorio-label {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: var(--fs-body);
+  color: var(--fg-3);
+}
+.territorio-select {
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
+  flex: 0 1 440px; min-width: 240px;
+  padding: 9px 14px;
+  background: var(--paper);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-2);
+  color: var(--fg-link);
+  font-family: var(--font-display);
+  font-weight: 700; font-size: var(--fs-body-lg);
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+.territorio-select:hover { border-color: var(--fg-link); }
+.territorio-select-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.territorio-select-caret { display: inline-flex; flex: none; margin-left: auto; }
+.territorio-select-caret .icon { width: 16px; height: 16px; }
+
+/* ============================================================
+   Panorama territorial
+   ============================================================ */
+.panorama-section { padding: 22px 40px 8px; }
+.panorama-head {
+  display: flex; flex-direction: column; align-items: stretch;
+  gap: 14px; margin-bottom: 18px;
+}
+.panorama-head-top { display: flex; flex-direction: column; gap: 2px; }
+.panorama-title {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: var(--fs-h2);
+  letter-spacing: -0.005em;
+  color: var(--fg-1);
+  margin: 4px 0 0 0; line-height: 1.2;
+}
+.panorama-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.panorama-cell {
+  background: var(--paper);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-3);
+  padding: 12px 12px 8px;
+  box-shadow: var(--shadow-1);
+  display: flex; flex-direction: column; gap: 6px; min-width: 0;
+}
+.panorama-cell-head { display: flex; align-items: baseline; gap: 6px; }
+.panorama-cell-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: var(--fs-overline);
+  letter-spacing: var(--tracking-overline);
+  color: var(--fg-3);
+}
+.panorama-cell-title {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: var(--fs-body);
+  letter-spacing: -0.005em;
+  color: #0A3A5C;
+}
+.panorama-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.panorama-cell.is-empty {
+  align-items: center; justify-content: center;
+  min-height: 220px;
+  border-style: dashed; border-color: var(--border-2);
+  background: var(--cream-200);
+  box-shadow: none;
+}
+.panorama-empty-text {
+  font-size: var(--fs-caption); color: var(--fg-2);
+  text-align: center; margin: 0; max-width: 420px; line-height: 1.5;
+}
+.panorama-note {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 10px 12px;
+  background: var(--ocean-20);
+  border-left: 3px solid var(--ocean);
+  border-radius: var(--radius-1);
+  font-size: var(--fs-caption); color: var(--fg-2); line-height: 1.5;
+  margin-bottom: 14px;
+}
+.panorama-note .icon { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--ocean); }
+
 </style>
 </head>
 <body>
@@ -1110,6 +1282,23 @@ code {
           CACHE_IX.set(k, ix);
         }
         return CACHE_IX.get(k);
+      }
+
+      // Cache de índices por (nivel, prueba), SIN filtro de grupo socioeconómico.
+      // Lo usa exclusivamente el panorama territorial, que combina los cinco GSE
+      // en una sola distribución. No sustituye a indicesPCG: la vista de
+      // comparación sigue segmentando por GSE y esa segmentación es inviolable.
+      const CACHE_IX_PN = new Map();
+      function indicesPN(nivel, prueba) {
+        const k = nivel + "|" + prueba;
+        if (!CACHE_IX_PN.has(k)) {
+          const ix = [];
+          for (let i = 0; i < D.nivel.length; i++) {
+            if (D.nivel[i] === nivel && D.prueba[i] === prueba) ix.push(i);
+          }
+          CACHE_IX_PN.set(k, ix);
+        }
+        return CACHE_IX_PN.get(k);
       }
 
       // REGIONES: agrupar DATA.comunas por cod_reg
@@ -1337,6 +1526,113 @@ code {
         });
       }
 
+      // ----------------------------------------------------------
+      // Serie con los cinco GSE combinados — panorama territorial
+      // ----------------------------------------------------------
+      // Por qué existe una función aparte y no se reutilizan los generadores:
+      // los cuatro exigen un GSE válido y devuelven puntos YA redondeados por
+      // mkPunto. Sumar esos puntos entre GSE arrastraría el redondeo de cada
+      // uno (hasta 4 estudiantes de desvío en un territorio grande), así que
+      // la combinación se hace sobre el acumulador crudo y mkPunto se invoca
+      // una sola vez por año, igual que en las demás vistas.
+      //
+      // La segmentación por GSE de la vista de comparación no se toca: esta
+      // función es exclusiva del panorama, donde la unidad de análisis es el
+      // territorio completo.
+      //
+      // Filtro de supresión: una fila cuyos tres porcentajes son 0 no es un
+      // territorio con 0% Adecuado, es una celda suprimida por la Agencia.
+      // Sumarla inflaría el denominador sin aportar numerador. Los generadores
+      // por GSE no la excluyen porque solo leen Adecuado; aquí, que se reparte
+      // el 100% entre tres niveles, sí distorsiona.
+      function filaSuprimida(p, pe, pi) {
+        const a = p || 0, b = pe || 0, c = pi || 0;
+        return (a + b + c) === 0;
+      }
+
+      function generateSeriesGseCombinado(entity, nivel, prueba) {
+        const nv = NIVEL_LABEL_TO_COD[nivel];
+        const pr = PRUEBA_LABEL_TO_COD[prueba];
+        const vacia = () => YEARS.map(y => ({
+          year: y, pct: null, pct_ele: null, pct_ins: null,
+          n_eval: null, n_estab: null, n_adec: null, n_ele: null, n_ins: null,
+          preliminar: PRELIMINAR_YEARS.includes(y),
+        }));
+        if (!entity || !nv || !pr) return vacia();
+
+        const porAnio = new Map();
+        const acc0 = () => ({ num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 });
+
+        if (entity.kind === "slep" || entity.kind === "estab") {
+          // Fuente por establecimiento. Un RBD pertenece a un solo GSE por año,
+          // así que "combinar GSE" en un establecimiento es una identidad: la
+          // serie coincide con la de la vista de comparación.
+          if (!DATA.simce_rbd) return vacia();
+          const D2 = DATA.simce_rbd;
+          const setRbd = entity.kind === "slep"
+            ? new Set((entity.rbds || []).map(String))
+            : null;
+          for (let i = 0; i < D2.rows; i++) {
+            if (D2.nivel[i] !== nv || D2.prueba[i] !== pr) continue;
+            if (setRbd) { if (!setRbd.has(String(D2.rbd[i]))) continue; }
+            else if (D2.rbd[i] !== entity.rbd) continue;
+            const n = D2.nalu[i], p = D2.palu[i];
+            if (n == null || n === 0 || p == null) continue;
+            const pe = D2.palu_ele[i], pi = D2.palu_ins[i];
+            if (filaSuprimida(p, pe, pi)) continue;
+            const y = D2.anio[i];
+            let acc = porAnio.get(y);
+            if (!acc) { acc = acc0(); porAnio.set(y, acc); }
+            acc.num += (p * n) / 100;
+            if (pe != null) acc.num_ele += (pe * n) / 100;
+            if (pi != null) acc.num_ins += (pi * n) / 100;
+            acc.den += n;
+            acc.n_estab += 1;
+          }
+        } else {
+          // Fuente comunal agregada (comuna, grupo, región, nacional).
+          const ix = indicesPN(nv, pr);
+          const setCom = entity.kind === "nacional" ? null : new Set(entity.comunas || []);
+          const depe2 = entity.depe2;
+          for (const i of ix) {
+            if (setCom && !setCom.has(D.cod_com[i])) continue;
+            if (depe2 && D.cod_depe2 && D.cod_depe2[i] !== depe2) continue;
+            const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
+            if (p == null || n == null || n === 0) continue;
+            const pe = D.pct_ele[i], pi = D.pct_ins[i];
+            if (filaSuprimida(p, pe, pi)) continue;
+            const y = D.anio[i];
+            let acc = porAnio.get(y);
+            if (!acc) { acc = acc0(); porAnio.set(y, acc); }
+            acc.num += (p * n) / 100;
+            if (pe != null) acc.num_ele += (pe * n) / 100;
+            if (pi != null) acc.num_ins += (pi * n) / 100;
+            acc.den += n;
+            acc.n_estab += e;
+          }
+        }
+
+        return YEARS.map(year => {
+          const acc = porAnio.get(year);
+          const preliminar = PRELIMINAR_YEARS.includes(year);
+          if (!acc || acc.den <= 0) {
+            return {
+              year, pct: null, pct_ele: null, pct_ins: null,
+              n_eval: null, n_estab: null, n_adec: null, n_ele: null, n_ins: null,
+              preliminar,
+            };
+          }
+          const pt = mkPunto(year, acc, preliminar);
+          // N por nivel: derivado del acumulador en precisión completa, nunca
+          // del porcentaje ya redondeado. Se rotula como derivado en la UI y
+          // en el CSV porque la fuente publica porcentajes, no recuentos.
+          pt.n_adec = Math.round(acc.num);
+          pt.n_ele  = Math.round(acc.num_ele);
+          pt.n_ins  = Math.round(acc.num_ins);
+          return pt;
+        });
+      }
+
       // GSE del establecimiento por año más reciente (para mostrar en qué fila aparece)
       // Devuelve el cod_grupo del año más reciente con dato para ese RBD × nivel × prueba
       function gseActualDeEstab({ rbd, nivel, prueba }) {
@@ -1421,6 +1717,7 @@ code {
         generateSeriesByRbd, generateSeriesByDepe,
         generateSeriesByEstab, generateSeriesByNacional, gseActualDeEstab, ESTAB_LIST,
         getSeriesForEntity,
+        generateSeriesGseCombinado,
         REGIONES, COMUNA_BY_COD,
         SLEPS, DEPE2_LABELS, DEPE2_CODES,
         NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
@@ -1515,6 +1812,19 @@ code {
         anioEje:          10.5,  // año bajo el eje X
         marcaPreliminar:  13,    // asterisco de dato preliminar
       },
+      // Barras apiladas del panorama territorial (dibujarPanoramaEnGrupo).
+      // Escala propia: el panorama dispone de mucho más ancho por año que las
+      // tarjetas del supergrid, así que sus rótulos no comparten los tamaños
+      // comprimidos de `barras`.
+      panorama: {
+        tickEje:          10,    // ticks del eje Y
+        valorSegmento:    11,    // % dentro de cada franja apilada
+        anioEje:          11,    // año bajo el eje X
+        nEje:             9,     // N evaluados bajo el año
+        marcaPreliminar:  13,    // asterisco de dato preliminar
+        sinDato:          10,    // rótulo "Sin datos" en un año sin medición
+        leyenda:          11,    // rótulos de la leyenda de niveles
+      },
       // SVG compuesto del supergrid (construirSvgGraficos)
       exportacion: {
         titulo:           18,    // título del documento exportado
@@ -1553,10 +1863,12 @@ code {
       );
     }
 
-    function Segmented({ value, options, onChange }) {
+    // variante: "on-dark" para el control que vive dentro de la tarjeta de
+    // contexto, sobre fondo azul institucional.
+    function Segmented({ value, options, onChange, variante }) {
       const opts = options.map(o => typeof o === "string" ? { value: o, label: o } : o);
       return (
-        <div className="segmented" role="tablist">
+        <div className={"segmented" + (variante === "on-dark" ? " is-on-dark" : "")} role="tablist">
           {opts.map(o => (
             <button
               key={o.value}
@@ -1567,6 +1879,31 @@ code {
             >{o.label}</button>
           ))}
         </div>
+      );
+    }
+
+    // Pestañas de vista. Dos preguntas distintas sobre los mismos datos:
+    // comparar territorios entre sí (segmentado por GSE) o describir uno solo
+    // (con los GSE combinados).
+    function ViewTabs({ vista, setVista }) {
+      const tabs = [
+        { value: "comparacion", label: "Comparación entre territorios" },
+        { value: "panorama", label: "Panorama territorial" },
+      ];
+      return (
+        <nav className="view-tabs" aria-label="Vistas del motor">
+          <div className="view-tabs-inner" role="tablist">
+            {tabs.map(t => (
+              <button
+                key={t.value}
+                role="tab"
+                aria-selected={vista === t.value}
+                className={"view-tab" + (vista === t.value ? " is-active" : "")}
+                onClick={() => setVista(t.value)}
+              >{t.label}</button>
+            ))}
+          </div>
+        </nav>
       );
     }
 
@@ -2663,8 +3000,11 @@ code {
     // serializar. Se comprueba antes de crear el canvas, para poder explicarle
     // la causa al usuario en vez de fallar sin motivo aparente.
     const PNG_MAX_SUPERFICIE_PX = 16777216;
-    function exportarGraficosPNG({ entities, nivel, prueba }) {
-      const { svgStr, totalW, totalH, fnameBase } = construirSvgGraficos({ entities, nivel, prueba });
+    // Rasterizador compartido. Lo usan la exportación del supergrid y la del
+    // panorama territorial: el techo de superficie, el manejo del canvas y la
+    // liberación de la URL viven en un solo lugar y no se duplican por vista.
+    // Recibe la misma tupla que devuelven los constructores de SVG.
+    function rasterizarSvgAPng({ svgStr, totalW, totalH, fnameBase }) {
       const svgBlob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(svgBlob);
       // Un solo punto de liberacion: el catch no puede saber si el camino
@@ -2710,6 +3050,503 @@ code {
         alert("No se pudo rasterizar el SVG a PNG.");
       };
       img.src = url;
+    }
+
+    function exportarGraficosPNG({ entities, nivel, prueba }) {
+      rasterizarSvgAPng(construirSvgGraficos({ entities, nivel, prueba }));
+    }
+
+    // ============================================================
+    // Panorama territorial — distribución de los tres niveles de logro
+    // ============================================================
+    // Un territorio a la vez, los cinco GSE combinados, las dos pruebas del
+    // nivel activo lado a lado. Responde a una pregunta distinta de la vista de
+    // comparación: no "cómo se compara este territorio", sino "cómo se reparten
+    // sus estudiantes entre Adecuado, Elemental e Insuficiente".
+    //
+    // El dibujo vive en una sola función que recibe un <g> de destino, de modo
+    // que la pantalla y el SVG exportado salen del mismo código y no pueden
+    // divergir. Es la lección de la exportación del supergrid, donde el
+    // constructor del SVG reimplementa el layout de las tarjetas.
+    const PANORAMA_DIMS = {
+      W: 520, H: 300,
+      M: { top: 40, right: 14, bottom: 46, left: 36 },
+    };
+
+    function dibujarPanoramaEnGrupo(g, { series, iw, ih }) {
+      const y = d3.scaleLinear().domain([0, 100]).range([ih, 0]);
+      const yTicks = [0, 25, 50, 75, 100];
+
+      // Leyenda de niveles, sobre el área de dibujo. En el mismo orden en que
+      // se apilan las franjas, de abajo hacia arriba.
+      const leyenda = [
+        { label: "Adecuado", fill: COLOR_ADEC },
+        { label: "Elemental", fill: COLOR_ELEM },
+        { label: "Insuficiente", fill: COLOR_INSUF },
+      ];
+      let lx = 0;
+      leyenda.forEach(item => {
+        g.append("rect")
+          .attr("x", lx).attr("y", -24)
+          .attr("width", 10).attr("height", 10)
+          .attr("rx", 2)
+          .attr("fill", item.fill);
+        g.append("text")
+          .attr("x", lx + 14).attr("y", -15)
+          .attr("font-family", "system-ui, sans-serif")
+          .attr("font-size", FS_SVG.panorama.leyenda)
+          .attr("font-weight", 500)
+          .attr("fill", "#2E2230")
+          .text(item.label);
+        lx += 14 + item.label.length * 6.4 + 18;
+      });
+
+      g.append("g")
+        .selectAll("line")
+        .data(yTicks)
+        .join("line")
+        .attr("x1", 0).attr("x2", iw)
+        .attr("y1", d => y(d)).attr("y2", d => y(d))
+        .attr("stroke", "#E7DFC9")
+        .attr("stroke-dasharray", d => d === 0 ? "0" : "2,3")
+        .attr("stroke-width", 1);
+
+      g.append("g")
+        .call(
+          d3.axisLeft(y)
+            .tickValues(yTicks)
+            .tickFormat(d => d + "%")
+            .tickSize(0)
+            .tickPadding(6)
+        )
+        .call(s => s.select(".domain").remove())
+        .call(s => s.selectAll("text")
+          .attr("font-family", "system-ui, sans-serif")
+          .attr("font-size", FS_SVG.panorama.tickEje)
+          .attr("fill", "#747474"));
+
+      const x = d3.scaleBand()
+        .domain(series.map(s => s.year))
+        .range([0, iw])
+        .padding(0.22);
+
+      series.forEach(s => {
+        const xPos = x(s.year);
+        if (xPos == null) return;
+        const bw = x.bandwidth();
+
+        if (s.pct == null) {
+          // Año sin medición para este territorio. La columna se dibuja igual,
+          // vacía y rotulada: un hueco silencioso se lee como un cero.
+          g.append("rect")
+            .attr("x", xPos).attr("y", 0)
+            .attr("width", bw).attr("height", ih)
+            .attr("fill", "#F4E9CC")
+            .attr("stroke", "#C8BDA0")
+            .attr("stroke-dasharray", "3,3")
+            .attr("stroke-width", 1);
+          g.append("text")
+            .attr("x", xPos + bw / 2).attr("y", ih / 2)
+            .attr("text-anchor", "middle")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", FS_SVG.panorama.sinDato)
+            .attr("fill", "#747474")
+            // Con la serie completa (nueve años con medición) la columna baja de
+            // 60px y el rótulo largo se sale de su franja. El corto no.
+            .text(bw >= 60 ? "Sin datos" : "s/d");
+        } else {
+          // Apilado de abajo hacia arriba: Adecuado, Elemental, Insuficiente.
+          // Los tres suman exactamente 100 (mkPunto reescala Elemental e
+          // Insuficiente para absorber el redondeo de la fuente).
+          const segs = [
+            { val: s.pct,     fill: COLOR_ADEC },
+            { val: s.pct_ele, fill: COLOR_ELEM },
+            { val: s.pct_ins, fill: COLOR_INSUF },
+          ];
+          let base = 0;
+          segs.forEach(seg => {
+            const v = seg.val == null ? 0 : seg.val;
+            if (v <= 0) return;
+            const topY = y(Math.min(100, base + v));
+            const botY = y(Math.min(100, base));
+            const h = botY - topY;
+            base += v;
+            if (h <= 0) return;
+            g.append("rect")
+              .attr("x", xPos).attr("y", topY)
+              .attr("width", bw).attr("height", h)
+              .attr("fill", seg.fill);
+            if (h >= 15) {
+              g.append("text")
+                .attr("x", xPos + bw / 2).attr("y", topY + h / 2 + 4)
+                .attr("text-anchor", "middle")
+                .attr("font-family", "system-ui, sans-serif")
+                .attr("font-size", FS_SVG.panorama.valorSegmento)
+                .attr("font-weight", 700)
+                .attr("fill", "#FFFFFF")
+                .text(fmtPctShort(v));
+            }
+          });
+        }
+
+        g.append("text")
+          .attr("x", xPos + bw / 2).attr("y", ih + 16)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "system-ui, sans-serif")
+          .attr("font-size", FS_SVG.panorama.anioEje)
+          .attr("font-weight", 500)
+          .attr("fill", "#2E2230")
+          .text(s.year);
+
+        g.append("text")
+          .attr("x", xPos + bw / 2).attr("y", ih + 30)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "system-ui, sans-serif")
+          .attr("font-size", FS_SVG.panorama.nEje)
+          .attr("fill", "#747474")
+          .text(s.n_eval != null ? "N " + fmtInt(s.n_eval) : "—");
+
+        if (s.preliminar) {
+          g.append("text")
+            .attr("x", xPos + bw / 2).attr("y", -3)
+            .attr("text-anchor", "middle")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", FS_SVG.panorama.marcaPreliminar)
+            .attr("font-weight", 900)
+            .attr("fill", "#0062A0")
+            .text("*");
+        }
+      });
+    }
+
+    function PanoramaChart({ entity, nivel, prueba }) {
+      const ref = React.useRef(null);
+      React.useEffect(() => {
+        const { W, H, M } = PANORAMA_DIMS;
+        const iw = W - M.left - M.right;
+        const ih = H - M.top - M.bottom;
+        const svg = d3.select(ref.current);
+        svg.selectAll("*").remove();
+        const g = svg
+          .attr("viewBox", `0 0 ${W} ${H}`)
+          .attr("preserveAspectRatio", "xMidYMid meet")
+          .append("g")
+          .attr("transform", `translate(${M.left},${M.top})`);
+        const series = SimceData.generateSeriesGseCombinado(entity, nivel, prueba);
+        dibujarPanoramaEnGrupo(g, { series, iw, ih });
+      }, [entity.id, entity.kind, entity.rbd, entity.depe2,
+          (entity.comunas || []).join(","), (entity.rbds || []).join(","),
+          nivel, prueba]);
+      return <svg ref={ref} className="panorama-svg" />;
+    }
+
+    // Meta textual de un territorio (tipo y tamaño). Se usa en el chip del
+    // panorama y en la cabecera del SVG exportado.
+    function metaTerritorio(entity) {
+      if (!entity) return "";
+      if (entity.kind === "slep") return `SLEP · ${entity.comunas.length} comunas`;
+      if (entity.kind === "region") return `Región · ${entity.comunas.length} comunas`;
+      if (entity.kind === "estab") return `RBD ${entity.rbd} · ${entity.com}`;
+      if (entity.kind === "nacional") return entity.depe2 ? (SimceData.DEPE2_LABELS[entity.depe2] || "Chile") : "Todas las dependencias";
+      if (entity.kind === "group") return `Grupo · ${entity.comunas.length} comunas`;
+      return entity.depe2 ? (SimceData.DEPE2_LABELS[entity.depe2] || "Comuna") : "Comuna";
+    }
+
+    function construirSvgPanorama({ entity, nivel }) {
+      const pruebas = Object.values(DATA.meta.pruebas);
+      const { W, H, M } = PANORAMA_DIMS;
+      const iw = W - M.left - M.right;
+      const ih = H - M.top - M.bottom;
+      const PAD = 20;
+      const TITLE_H = 76;
+      const CELL_TITLE_H = 22;
+      const COL_GAP = 16;
+      const totalW = PAD + pruebas.length * W + (pruebas.length - 1) * COL_GAP + PAD;
+      const totalH = TITLE_H + CELL_TITLE_H + H + PAD;
+
+      const NS = "http://www.w3.org/2000/svg";
+      const root = document.createElementNS(NS, "svg");
+      // El atributo xmlns NO se fija a mano: createElementNS ya deja el nodo en
+      // el espacio de nombres SVG y XMLSerializer emite la declaración. Fijarlo
+      // además produce un `xmlns` duplicado en la cadena serializada, que es XML
+      // mal formado.
+      root.setAttribute("width", totalW);
+      root.setAttribute("height", totalH);
+      root.setAttribute("viewBox", `0 0 ${totalW} ${totalH}`);
+
+      const sel = d3.select(root);
+      sel.append("rect")
+        .attr("x", 0).attr("y", 0)
+        .attr("width", totalW).attr("height", totalH)
+        .attr("fill", "#FFF6E0");
+
+      sel.append("text")
+        .attr("x", PAD).attr("y", 34)
+        .attr("font-family", "system-ui, sans-serif")
+        .attr("font-size", FS_SVG.exportacion.titulo)
+        .attr("font-weight", 800)
+        .attr("fill", "#0A3A5C")
+        .text(`Panorama territorial · ${entity.name} · ${nivel}`);
+
+      const fecha = new Date().toLocaleDateString("es-CL", { day: "2-digit", month: "long", year: "numeric" });
+      sel.append("text")
+        .attr("x", PAD).attr("y", 52)
+        .attr("font-family", "system-ui, sans-serif")
+        .attr("font-size", FS_SVG.exportacion.subtitulo)
+        .attr("fill", "#747474")
+        .text(`${metaTerritorio(entity)} · GSE combinado · SLEP Costa Central · Exportado el ${fecha}`);
+
+      pruebas.forEach((prueba, i) => {
+        const x0 = PAD + i * (W + COL_GAP);
+        sel.append("text")
+          .attr("x", x0 + M.left).attr("y", TITLE_H + 14)
+          .attr("font-family", "system-ui, sans-serif")
+          .attr("font-size", FS_SVG.exportacion.nombreTerritorio)
+          .attr("font-weight", 800)
+          .attr("fill", "#0A3A5C")
+          .text(prueba);
+        const g = sel.append("g")
+          .attr("transform", `translate(${x0 + M.left},${TITLE_H + CELL_TITLE_H + M.top})`);
+        const series = SimceData.generateSeriesGseCombinado(entity, nivel, prueba);
+        dibujarPanoramaEnGrupo(g, { series, iw, ih });
+      });
+
+      const svgStr = new XMLSerializer().serializeToString(root);
+      const fnameBase = "simce_panorama_"
+        + String(entity.name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "_")
+        + "_" + nivel.replace(/[^a-zA-Z0-9]/g, "_");
+      return { svgStr, totalW, totalH, fnameBase };
+    }
+
+    function exportarPanoramaSVG({ entity, nivel }) {
+      const { svgStr, fnameBase } = construirSvgPanorama({ entity, nivel });
+      descargarBlob(new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" }), fnameBase + ".svg");
+    }
+
+    function exportarPanoramaPNG({ entity, nivel }) {
+      rasterizarSvgAPng(construirSvgPanorama({ entity, nivel }));
+    }
+
+    function exportarPanoramaCSV({ entity, nivel }) {
+      const pruebas = Object.values(DATA.meta.pruebas);
+      const rows = [[
+        "territorio", "tipo", "nivel", "prueba", "gse", "anio",
+        "pct_adecuado", "pct_elemental", "pct_insuficiente",
+        "n_evaluados", "n_adecuado_derivado", "n_elemental_derivado", "n_insuficiente_derivado",
+        "n_establecimientos", "preliminar",
+      ]];
+      pruebas.forEach(prueba => {
+        SimceData.generateSeriesGseCombinado(entity, nivel, prueba).forEach(s => {
+          rows.push([
+            entity.name,
+            entity.kind,
+            nivel,
+            prueba,
+            "combinado",
+            s.year,
+            s.pct != null ? String(s.pct).replace(".", ",") : "",
+            s.pct_ele != null ? String(s.pct_ele).replace(".", ",") : "",
+            s.pct_ins != null ? String(s.pct_ins).replace(".", ",") : "",
+            s.n_eval != null ? s.n_eval : "",
+            s.n_adec != null ? s.n_adec : "",
+            s.n_ele != null ? s.n_ele : "",
+            s.n_ins != null ? s.n_ins : "",
+            s.n_estab != null ? s.n_estab : "",
+            s.preliminar ? "1" : "0",
+          ]);
+        });
+      });
+      const csv = rows.map(r => r.map(v => {
+        const str = String(v);
+        return str.includes(";") || str.includes('"') ? '"' + str.replace(/"/g, '""') + '"' : str;
+      }).join(";")).join("\n");
+      const fname = "simce_panorama_"
+        + String(entity.name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "_")
+        + "_" + nivel.replace(/[^a-zA-Z0-9]/g, "_") + ".csv";
+      descargarBlob(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" }), fname);
+    }
+
+    // Composición del territorio: qué contiene, en palabras. La tarjeta de
+    // contexto necesita decir de qué está hecho el territorio, no solo cuántas
+    // piezas tiene.
+    function composicionTerritorio(entity) {
+      if (!entity) return "";
+      if (entity.kind === "estab") return `RBD ${entity.rbd} · ${entity.com || ""}`.trim();
+      if (entity.kind === "nacional") {
+        return entity.depe2
+          ? `Todos los establecimientos del país · ${SimceData.DEPE2_LABELS[entity.depe2] || ""}`.trim()
+          : "Todos los establecimientos del país";
+      }
+      if (entity.kind === "comuna") {
+        const reg = SimceData.REGIONES.find(r => r.comunas.some(c => c.cod_com === entity.comunas[0]));
+        const dep = entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] : "Todas las dependencias";
+        return [reg ? reg.nombre : null, dep].filter(Boolean).join(" · ");
+      }
+      // SLEP, región y grupo: se nombran sus comunas. Por encima de ocho la
+      // lista deja de ser legible y se reemplaza por el recuento.
+      const cods = entity.comunas || [];
+      if (cods.length > 8) return `${cods.length} comunas`;
+      const nombres = cods
+        .map(cod => {
+          const c = SimceData.COMUNA_BY_COD.get(cod);
+          return c ? c.nom : cod;
+        })
+        .sort((a, b) => String(a).localeCompare(String(b), "es"));
+      if (nombres.length === 1) return nombres[0];
+      return nombres.slice(0, -1).join(", ") + " y " + nombres[nombres.length - 1];
+    }
+
+    function PanoramaHero({ entity, nivel, setNivel, niveles, meta }) {
+      return (
+        <section className="hero-card">
+          <div className="hero-card-left">
+            <h2 className="hero-card-title">{entity.name}</h2>
+            <p className="hero-card-sub">{composicionTerritorio(entity)}</p>
+            {meta && <p className="hero-card-meta">{meta}</p>}
+          </div>
+          <div className="hero-card-right">
+            <span className="hero-card-control-label">Nivel</span>
+            <Segmented value={nivel} options={niveles} onChange={setNivel} variante="on-dark" />
+          </div>
+        </section>
+      );
+    }
+
+    function TerritorioSelect({ entity, onOpenSelector }) {
+      return (
+        <div className="territorio-row">
+          <span className="territorio-label">Territorio</span>
+          <button className="territorio-select" onClick={onOpenSelector}
+            title="Cambiar territorio" aria-label="Cambiar territorio">
+            <span className="territorio-select-name">
+              {entity ? entity.name : "Elegir territorio"}
+            </span>
+            <span className="territorio-select-caret"><Icon name="chevron" /></span>
+          </button>
+        </div>
+      );
+    }
+
+    function PanoramaSection({ entity, nivel, setNivel, niveles, onOpenSelector }) {
+      const pruebas = Object.values(DATA.meta.pruebas);
+      // Un territorio sin ninguna celda con dato en ningún año y ninguna prueba
+      // no es un error: hay comunas y establecimientos en esa condición. La
+      // vista lo dice en vez de mostrar dos ejes vacíos.
+      const hayDato = React.useMemo(() => {
+        if (!entity) return false;
+        return pruebas.some(p =>
+          SimceData.generateSeriesGseCombinado(entity, nivel, p).some(s => s.pct != null)
+        );
+      }, [entity && entity.id, entity && entity.kind, entity && entity.depe2, nivel]);
+
+      // Meta de la tarjeta: se lee de la propia serie, nunca se declara a mano.
+      // Toma el año más reciente con dato entre las dos pruebas y el mayor
+      // recuento de establecimientos de ese año.
+      const meta = React.useMemo(() => {
+        if (!entity) return "";
+        let anio = null, prelim = false, nEstab = null;
+        pruebas.forEach(p => {
+          const serie = SimceData.generateSeriesGseCombinado(entity, nivel, p);
+          for (let i = serie.length - 1; i >= 0; i--) {
+            const s = serie[i];
+            if (s.pct == null) continue;
+            if (anio == null || s.year > anio) {
+              anio = s.year; prelim = s.preliminar; nEstab = s.n_estab;
+            } else if (s.year === anio && s.n_estab != null) {
+              nEstab = Math.max(nEstab == null ? 0 : nEstab, s.n_estab);
+            }
+            break;
+          }
+        });
+        if (anio == null) return `${nivel} · sin resultados en el periodo`;
+        const est = nEstab == null ? null
+          : `${fmtInt(nEstab)} ${nEstab === 1 ? "establecimiento" : "establecimientos"} con resultados`;
+        return [est, nivel, "GSE combinado", anio + (prelim ? " (preliminar)" : "")]
+          .filter(Boolean).join(" · ");
+      }, [entity && entity.id, entity && entity.kind, entity && entity.depe2, nivel]);
+
+      if (!entity) {
+        return (
+          <React.Fragment>
+            <TerritorioSelect entity={null} onOpenSelector={onOpenSelector} />
+            <section className="empty-board">
+              <p className="empty-board-text">
+                Elige un territorio para ver cómo se distribuyen sus estudiantes
+                entre los niveles Adecuado, Elemental e Insuficiente.
+              </p>
+              <button className="btn btn-primary" onClick={onOpenSelector}>Elegir territorio</button>
+            </section>
+          </React.Fragment>
+        );
+      }
+
+      return (
+        <React.Fragment>
+        <PanoramaHero entity={entity} nivel={nivel} setNivel={setNivel}
+          niveles={niveles} meta={meta} />
+        <TerritorioSelect entity={entity} onOpenSelector={onOpenSelector} />
+        <section className="panorama-section">
+          <div className="panorama-head">
+            <div className="panorama-head-top">
+              <span className="section-eyebrow">Panorama territorial · GSE combinado</span>
+              <h2 className="panorama-title">
+                Distribución por niveles de logro
+              </h2>
+            </div>
+            <div className="section-actions">
+              <IconExport label="Exportar CSV" icon="download"
+                onExport={() => exportarPanoramaCSV({ entity, nivel })} />
+              <IconExport label="Exportar SVG" icon="chart"
+                onExport={() => exportarPanoramaSVG({ entity, nivel })} />
+              <IconExport label="Exportar PNG" icon="image"
+                onExport={() => exportarPanoramaPNG({ entity, nivel })} />
+            </div>
+          </div>
+
+          <div className="panorama-note">
+            <Icon name="info" />
+            <span>
+              A diferencia de la vista de comparación, esta pantalla <strong>combina los
+              cinco grupos socioeconómicos</strong> en una sola distribución, ponderada por
+              el número de estudiantes evaluados. Los tres niveles suman 100% en cada año.
+              El N por nivel que aparece en el CSV es <strong>derivado</strong> del porcentaje
+              publicado por la Agencia, no un recuento de la fuente.
+              {SimceData.GAP_YEARS.length > 0 && (
+                <React.Fragment>
+                  {" "}El eje salta de {Math.min.apply(null, SimceData.GAP_YEARS) - 1} a{" "}
+                  {Math.max.apply(null, SimceData.GAP_YEARS) + 1}: el Simce no se aplicó entre{" "}
+                  {Math.min.apply(null, SimceData.GAP_YEARS)} y {Math.max.apply(null, SimceData.GAP_YEARS)}.
+                </React.Fragment>
+              )}
+            </span>
+          </div>
+
+          {SimceData.entidadDependeSlep(entity) && <SlepDisclaimer compact />}
+
+          {!hayDato ? (
+            <div className="panorama-cell is-empty">
+              <p className="panorama-empty-text">
+                {entity.name} no registra resultados Simce en {nivel} para ninguna de las
+                dos pruebas en el periodo 2014–2025. Prueba con el otro nivel o elige
+                otro territorio.
+              </p>
+            </div>
+          ) : (
+            <div className="panorama-grid">
+              {pruebas.map(prueba => (
+                <div className="panorama-cell" key={prueba}>
+                  <div className="panorama-cell-head">
+                    <span className="panorama-cell-eyebrow">Prueba</span>
+                    <span className="panorama-cell-title">{prueba}</span>
+                  </div>
+                  <PanoramaChart entity={entity} nivel={nivel} prueba={prueba} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+        </React.Fragment>
+      );
     }
 
     // ============================================================
@@ -3302,6 +4139,13 @@ code {
       const [cellPopup, setCellPopup] = React.useState(null);   // { entity, gse, pos }
       const [chartPopup, setChartPopup] = React.useState(null); // { entity, gse } desde tooltip gráfico
 
+      // Vista activa y territorio del panorama. El panorama tiene su propia
+      // selección, independiente del tablero de comparación: son dos preguntas
+      // distintas y mezclar los estados obligaría a vaciar una para usar la otra.
+      const [vista, setVista] = React.useState("comparacion");
+      const [panoramaEntity, setPanoramaEntity] = React.useState(null);
+      const [panoramaModal, setPanoramaModal] = React.useState(false);
+
       // Parámetros de visualización. yScale fijo (panel de ajustes removido en
       // sesión 10). showElemInsuf controlable vía toggle (sesión 14).
       const [showElemInsuf, setShowElemInsuf] = React.useState(false);
@@ -3338,6 +4182,14 @@ code {
       // comunas del SLEP Costa Central (ver entidadesPorDefecto()).
       React.useEffect(() => {
         setEntities(prev => prev.length ? prev : entidadesPorDefecto());
+      }, []);
+
+      // Territorio por defecto del panorama: el SLEP Costa Central completo.
+      // La vista de comparación siembra sus cuatro comunas porque compara entre
+      // ellas; el panorama describe un territorio, y el territorio propio es el
+      // SLEP. Si no aparece en los datos, queda vacío con su invitación.
+      React.useEffect(() => {
+        setPanoramaEntity(prev => prev || territorioPanoramaPorDefecto());
       }, []);
 
       function saveEntity(ent) {
@@ -3410,13 +4262,41 @@ code {
         setEntities(entidadesPorDefecto());
       }
 
+      // Deriva el SLEP Costa Central en runtime, con la misma búsqueda
+      // normalizada que entidadesPorDefecto y sin hardcodear cod_slep.
+      function territorioPanoramaPorDefecto() {
+        const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const slep = SimceData.SLEPS.find(s => norm(s.nombre).includes("costa central"));
+        if (!slep) return null;
+        return {
+          id: "panorama_default_" + slep.cod_slep,
+          name: "SLEP " + slep.nombre,
+          kind: "slep",
+          cod_slep: slep.cod_slep,
+          comunas: slep.comunas,
+          rbds: slep.rbds,
+          anio_traspaso: slep.anio_traspaso,
+          color: ENTITY_PALETTE[0],
+        };
+      }
+
       const containerClass = "app is-comfy ";
 
       return (
         <div className={containerClass}>
           <Header />
+          <ViewTabs vista={vista} setVista={setVista} />
           <main className="app-main">
-            <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba} loading={loading} />
+            {vista === "comparacion" && (
+              <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba}
+                loading={loading} />
+            )}
+
+            {vista === "panorama" ? (
+              <PanoramaSection entity={panoramaEntity} nivel={nivel} setNivel={setNivel}
+                niveles={niveles} onOpenSelector={() => setPanoramaModal(true)} />
+            ) : (
+            <React.Fragment>
             <EntitiesBar entities={entities} setEntities={setEntities}
               openModal={(ent) => setModal({ editing: ent })} onReset={resetEntities}
               nivel={nivel} prueba={prueba}
@@ -3506,6 +4386,8 @@ code {
             </section>
             </React.Fragment>
             )}
+            </React.Fragment>
+            )}
 
             <footer className="app-footer">
               <button className={"notes-toggle" + (notesOpen ? " is-open" : "")} onClick={() => setNotesOpen(!notesOpen)}>
@@ -3584,6 +4466,22 @@ code {
               prueba={prueba}
               gse={cellPopup.gse}
               onClose={() => setCellPopup(null)}
+            />
+          )}
+
+          {panoramaModal && (
+            <AddEntityModal
+              editing={panoramaEntity}
+              takenColors={[]}
+              slotsLibres={1}
+              onSave={(ent) => { setPanoramaEntity(ent); setPanoramaModal(false); }}
+              onSaveMany={(nuevas) => {
+                if (nuevas && nuevas.length) {
+                  setPanoramaEntity({ ...nuevas[0], color: nuevas[0].color || ENTITY_PALETTE[0] });
+                }
+                setPanoramaModal(false);
+              }}
+              onCancel={() => setPanoramaModal(false)}
             />
           )}
 
