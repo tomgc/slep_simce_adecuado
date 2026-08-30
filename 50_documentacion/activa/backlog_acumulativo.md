@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–28 (traspasos v01–v28). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s28 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–29 (traspasos v01–v29). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s29 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -48,14 +48,14 @@ detalle.
 
 | Código | Categoría | N° | % | Descripción y ejemplos |
 |--------|-----------|----|---|------------------------|
-| P | Pipeline R | 14 | 8,9% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
-| UI | Motor HTML / React / D3 | 59 | 37,6% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
-| D | Datos / Insumos | 2 | 1,3% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
-| DOC | Documentación | 40 | 25,5% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
-| REPO | Gobernanza del repo / Despliegue | 24 | 15,3% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
-| Infra | Infraestructura (escáner, orquestador, CI) | 6 | 3,8% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
-| DT | Deuda técnica | 12 | 7,6% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
-| **Total** | | **157** | **100,0%** | |
+| P | Pipeline R | 14 | 8,0% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
+| UI | Motor HTML / React / D3 | 65 | 37,4% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
+| D | Datos / Insumos | 2 | 1,1% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
+| DOC | Documentación | 46 | 26,4% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
+| REPO | Gobernanza del repo / Despliegue | 27 | 15,5% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
+| Infra | Infraestructura (escáner, orquestador, CI) | 6 | 3,4% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
+| DT | Deuda técnica | 14 | 8,0% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
+| **Total** | | **174** | **100,0%** | |
 
 ## Resumen estadístico por sesión
 
@@ -90,7 +90,8 @@ detalle.
 | — | — | 1 | no registrado | Normativos dejan de versionarse |
 | 27 | v27 | 4 | no registrado | Terminología de suite y escala tipográfica |
 | 28 | v28 | 19 | no registrado | Migración tipográfica, quinto territorio y normalización |
-| **Total** | | **157** | | |
+| 29 | v29 | 17 | no registrado | Construcción y publicación del panorama territorial, con la deuda que su construcción fue destapando |
+| **Total** | | **174** | | |
 
 ## Detalle cronológico
 
@@ -385,3 +386,25 @@ detalle.
 157. [DT] La desviación de taxonomía del backlog resultó triple, no simple: `D` al 1,4% queda bajo el 2% que SETTINGS §2.2.5 marca para absorción, y `UI` al 37,7% y `DOC` al 25,4% superan el 25% que marca subdivisión. No se ajustó nada: reclasificar 138 entradas ya tageadas choca con el invariante append-only y es decisión del titular.
 
 **Delta del backlog:** 19 entradas nuevas (139–157). Sin cambios de taxonomía; desviación triple registrada en la entrada 157, no ajustada. Total acumulado: 157. Sesión de saldo de deuda: casi todo lo ejecutado corrige o completa trabajo de sesiones previas, y cuatro encargos descubrieron que su propia premisa era falsa. El movimiento temático real es hacia la gobernanza del proceso, con tres documentos nuevos que nacen de errores medidos en esta misma sesión. El cierre fue el primer verificador que midió el archivo contra su propia norma, y encontró 28 sesiones de desviación.
+
+### Sesión 29 — 2026-08-29
+
+158. [DOC] Corrección de `commit_cierre` en `ESTADO.md`, que apuntaba dos commits antes del cierre real de la sesión 28. Commit `6de714a`.
+159. [UI] Construcción del panorama territorial: segunda vista con los cinco GSE combinados, distribución de los tres niveles de logro por año y las dos pruebas del nivel activo lado a lado. Commit `b93e9eb`.
+160. [UI] Encabezado del panorama alineado al patrón del motor IDPS: pestañas blancas pegajosas, banner oscuro de identidad del territorio con el selector de nivel, y picker de territorio tipo select. Commit `b93e9eb`.
+161. [DT] Eliminación del cómputo muerto de `const sembradas` fuera del aviso. Commit `cab5b47`.
+162. [DT] Rótulos escritos en su caja tipográfica y `text-transform` eliminado de `.badge-traspaso` y `.hero-card-control-label`. Commit `b56f75e`.
+163. [REPO] Publicación del panorama territorial en `docs/index.html`. Commit `1793619`.
+164. [DOC] Incorporación de A-s28-6 a `50_diseno_ramas_deteccion.md`, con su sección propia, regla 9 y línea de comprobación. Commit `2e75100`.
+165. [DOC] Declaración del identificador `D-color-nivel` en su archivo de decisión y corrección del tope de 4 a 5 con el valor medido en el código. Commit `4f68d4b`.
+166. [DOC] Verificación de cuatro dudas abiertas por encargo de solo lectura: Pages al día, franjas sin rótulo, patrón de `xmlns` duplicado y dependencia de CDN.
+167. [UI] Rescate bajo el eje del porcentaje de las franjas demasiado delgadas para llevarlo adentro, con la inicial del nivel y un decimal. Commit `3b256e6`.
+168. [REPO] Publicación del rescate de rótulos. Commit `abf98c6`.
+169. [DOC] Auditoría de solo lectura del precedente C3 en `slep_categoria_desempeno`: mecanismo de eliminación de Babel reconstruido con archivo y línea, y traducción a este proyecto con riesgo MEDIO.
+170. [DOC] Incorporación de las reglas 10 y 11 a `50_diseno_ramas_deteccion.md` y registro de las dos reincidencias de la sesión 29. Commit `4e8f946`.
+171. [UI] Corrección de las dependencias de los dos `useMemo` del panorama, que conservaban los valores del territorio anterior al cambiar de territorio. Commit `04d9523`.
+172. [UI] Corrección de la selección única en el modal de territorio: elegir otro reemplaza en vez de quedar bloqueado. Commit `d4e3017`.
+173. [UI] Reorden del selector de territorio sobre el banner de identidad, y eliminación de mayúsculas sostenidas con conversión a nombre propio de los nombres que la fuente entrega en mayúsculas. Commit `d4e3017`.
+174. [REPO] Publicación del reorden, los nombres propios y la selección única. Commit `3b17b9b`.
+
+**Delta del backlog:** 17 entradas nuevas (158–174). Sin cambios de taxonomía. Total acumulado: 174. La sesión más larga del proyecto en volumen de entradas, y la primera en que una medición cambió el producto dos veces: el rótulo mudo pasó de limitación declarada a defecto corregido, y la auditoría de referencias de red convirtió una duda de consola en un bloqueante técnico documentado. Cuatro de las diecisiete entradas son publicaciones, lo que refleja el ciclo corto de gate visual y despliegue que se consolidó en esta sesión.
