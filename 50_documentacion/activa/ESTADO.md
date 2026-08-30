@@ -3,23 +3,23 @@ slug: slep_simce_adecuado
 nombre_real: Motor de comparación interactivo de los resultados Simce por estándares de aprendizaje (Adecuado/Elemental/Insuficiente)
 categoria: activo
 semaforo: activo
-sesion_actual: v28
-ultima_actividad: 2026-08-28
+sesion_actual: v29
+ultima_actividad: 2026-08-29
 maneja_sensibles: false
-tipo_pendiente: bloqueado_externo
-sesion_abierta: true
+tipo_pendiente: deuda_tecnica
+sesion_abierta: false
 maquina: MacBook-Pro-de-Tomas
-commit_cierre: 5306df2
-traspaso_vigente: traspaso_cierre_v28.md
+commit_cierre: 3b17b9b
+traspaso_vigente: traspaso_cierre_v29.md
 cierre_incompleto: no
 insumos_verificados: 2026-08-28
 ventana_insumos: ./20_insumos
 ---
 ## En que vamos
-Sesión 28, larga y de saldo de deuda: 19 entradas de backlog y tres despliegues. Se cerró la migración tipográfica que s27 dejó a medias (bloque `:root` duplicado, `.app-title` restaurado a 30px, 8 literales `fontSize` React omitidos del censo), se elevó el tope de comparación de 4 a 5 territorios, se migró la escala del SVG a constantes JS con los valores preservados, se ordenó el repositorio y se corrigieron dos bugs propios de la sesión. Nacieron tres documentos de gobernanza: `50_diseno_ramas_deteccion.md`, `50_datos_versionados_autorizados.md` y la normalización de `backlog_acumulativo.md` a las cinco secciones de POLITICA §10, que llevaba 28 sesiones fuera de norma. El motor publicado incluye todo lo anterior. La funcionalidad "Panorama territorial" quedó especificada y medida, no construida.
+Sesión 29, la más larga del proyecto: se construyó y publicó el panorama territorial que v28 había dejado especificado, con los cinco GSE combinados, las dos pruebas del nivel activo lado a lado y estado vacío explícito. Su encabezado se alineó a los valores literales del motor IDPS. Se agotó la deuda trivial heredada de v28, se resolvió `D-color-nivel` y se midieron cuatro dudas abiertas con encargos de solo lectura. Dos mediciones cambiaron el trabajo: el 11,9% de los puntos comunales tenía una franja sin rótulo, casi siempre Adecuado, lo que obligó a rescatar la cifra bajo el eje; y el motor resultó no ser autocontenido. Quince commits, cuatro despliegues, backlog de 157 a 174.
 
 ## Proximo paso
-Publicar `herramientas_dev` en sesión propia: `suitedoc` no existe en ningún remoto y eso bloquea la reparación de `renv.lock` y la regeneración de la suite standalone. Después, construir el panorama territorial con la especificación del traspaso v28 §10.
+Resolver la dependencia de `unpkg.com` en sesión propia: el motor carga React, ReactDOM y Babel por red y no abre sin CDN. El precedente de `slep_categoria_desempeno` ya está auditado con archivo y línea, y su traducción a este proyecto está documentada con riesgo MEDIO en el log `20260829_rescate_rotulos_y_precedente_c3_log.md`.
 
 ## Bloqueantes
-`suitedoc` sin publicar (externo a este repositorio): bloquea `documentar.R`, `34_historico_pct_adecuado_costa_central.R` y la regeneración de la suite.
+`suitedoc` sin publicar (externo a este repositorio): bloquea `documentar.R`, `34_historico_pct_adecuado_costa_central.R` y la regeneración de la suite standalone.
