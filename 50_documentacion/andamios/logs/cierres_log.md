@@ -253,3 +253,159 @@ Diff de los tres bloques de autoría contra su destino: **idénticos los tres**.
 - Las cuatro dudas de la compuerta quedan como las dejó el traspaso: registradas
   con su predicado y su medición, ninguna ejecutada en el cierre.
 - El renderizado de las dos tablas nuevas del backlog en GitHub.
+
+---
+
+## v29 — 2026-08-29
+
+**Instrumento:** `cierre_sesion_autonomo_cc_v11.md`
+**Protocolo:** SETTINGS `> **Versión 34.**`, POLITICA v5.8
+**Sesión:** 29 · **Traspaso:** v29 · **Tramo:** 158–174 (17 entradas) · **Total:** 174
+**Hash de documentación (F7):** `f4d7920`
+**Estado del push:** por publicar
+**Nota horaria:** ejecutado en la madrugada del 2026-08-30; la fecha del cierre
+es la del paquete (`fecha_cierre: 2026-08-29`), y el sello del escáner lleva la
+fecha real de ejecución.
+
+### Fases
+
+| Fase | Resultado |
+|---|---|
+| F0 Precondiciones | pasa íntegra en la tercera emisión del paquete (ver Desviaciones) |
+| F1 Copia de trabajo | `mktemp -d`, tres destinos |
+| F2 Inserciones estructurales | tres resueltas; delta como línea al pie del bloque, según decisión del titular registrada en v28 |
+| F3 Rótulos derivados | R3 y R12 disparan (catálogo aplicable completo); 10 fuera de catálogo aplicable |
+| F4 Invariantes I1–I7 | siete en verde |
+| F5 Compuerta | abre |
+| F6 Árbol real | escáner regenerado con poda (2 snapshots), v28 archivado con `git mv`, tres archivos copiados |
+| F7 Commit de documentación | `f4d7920`, 8 archivos |
+| F8 Distribución | diff vacío en los tres bloques; paquete eliminado |
+| F9 Log y commit del log | esta sección |
+
+### F0 — Precondiciones
+
+- Paquete único `paquete_cierre_v29.md`; cuatro delimitadores abren y cierran; cero placeholders.
+- Guardia de repo: `raiz_proyecto` = `pwd`.
+- Correlativo triple: `v29` = nombre del paquete = máx(v28 vigente; v23–v27 en `archivo/`) + 1.
+- Magnitudes contra disco: `backlog_total_previo: 157` = última entrada real del Detalle cronológico; tramo `158→174` = previo+1 → previo+17; bloque con 17 entradas contiguas 158…174, todas con tag de clasificación.
+- `settings_version` transcribe la línea 3 real de SETTINGS (`> **Versión 34.**`).
+- `compuerta_dudas: 5 registradas` calza con las 5 filas de tres campos (`supuesto`, `predicado`, `medición`) del §11 del traspaso.
+- Árbol limpio en traspasos, backlog y ESTADO; tres `??` ajenos al scope (listados en F7).
+
+### F3 — Rótulos
+
+**Catálogo aplicable (de la tabla v28): R3, R12.** Ambos dispararon; sin detención 7.3.
+
+| ID | Rótulo | Disparos | Texto resultante |
+|---|---|---:|---|
+| R3 | Cobertura "sesiones 1 a N" | 2 | `sesiones 1–28 (traspasos v01–v28)` → `sesiones 1–29 (traspasos v01–v29)`; `deltas s11–s28` → `deltas s11–s29` |
+| R12 | Recuento temático: denominador y porcentajes | 2 | tabla de Clasificación temática recalculada sobre 174 (7 filas: UI 59→65, DOC 40→46, REPO 24→27, DT 12→14, P/D/Infra sin cambio de conteo, porcentajes nuevos) y filas Total de Clasificación y Resumen 157→174 |
+
+`catalogo no aplicable: R1, R2, R4, R5, R6, R7, R8, R9, R10, R11 (10 de 12)`.
+
+Tags nuevos contados del propio bloque: DOC 6, UI 6, REPO 3, DT 2 (= 17).
+Cuadratura: 157 + 17 = 174 = suma de la tabla temática recalculada.
+
+Recuento temático recalculado:
+
+| Código | Antes | Nuevos | Después | % sobre 174 |
+|---|---:|---:|---:|---:|
+| P | 14 | 0 | 14 | 8,0% |
+| UI | 59 | 6 | 65 | 37,4% |
+| D | 2 | 0 | 2 | 1,1% |
+| DOC | 40 | 6 | 46 | 26,4% |
+| REPO | 24 | 3 | 27 | 15,5% |
+| Infra | 6 | 0 | 6 | 3,4% |
+| DT | 12 | 2 | 14 | 8,0% |
+| **Total** | **157** | **17** | **174** | **100,0%** |
+
+Los porcentajes redondeados a un decimal suman 99,8; la fila Total declara el
+porcentaje del total (100,0%), no la suma de redondeos, igual que en v28.
+
+**Cifras sin rótulo** en zonas declarativas: las mismas cuatro de v28
+(`2026-06-09`, `sesión 11`, `sesión 20` en la línea de Cobertura; `v09` en la de
+Propósito), ya resueltas como (b) cifra histórica legítima de tramo cerrado.
+Ninguna nueva; ninguna reaparece sin resolver.
+
+### F4 — Invariantes
+
+| # | Invariante | Resultado |
+|---|---|---|
+| I1 | Numeración contigua | verde — 1…174 sin huecos ni duplicados, solo sobre el Detalle cronológico |
+| I2 | Cuadratura | verde — las 30 filas del resumen suman 174 |
+| I3 | Filas del resumen | verde — 29 + 1 = 30 |
+| I4 | Sin magnitudes viejas | verde — cero apariciones de `157`, `1–28` o `s11–s28` en zonas declarativas tras F3 |
+| I5 | Sin autorreferencias | verde — las entradas no declaran cuántas son; las cifras viven solo en la línea de delta, compuesta por el ejecutor |
+| I6 | Gobernanza | verde — cero OneDrive, `Co-Authored-By`, RUT, credenciales y placeholders en los tres archivos; 2 `MRUN` históricos (entradas 111/119), texto sobre un hallazgo, precedente v28 |
+| I7 | Traspaso vigente | verde — v28 archivado con `git mv`, exactamente 1 vigente (v29) |
+
+Defecto de instrumento propio, corregido en el mismo turno: la primera medición
+de I2/I3 usó un regex que excluía la fila histórica `| — | — | 1 |` del resumen
+(dio 173/29); el universo de filas se corrigió y la medición real dio 174/30.
+A29-4 aplicado al propio verificador.
+
+### F7 — Commit de documentación
+
+`git add` selectivo de 9 rutas nombradas una a una (traspaso v29, archivado de
+v28, backlog, ESTADO y las cuatro salidas del escáner + dos bajas de poda).
+Commit `f4d7920`, 8 archivos (+508 −247, cifras informativas del stat).
+
+**Sucios preexistentes ajenos al cierre, no commiteados** (descuento exacto del
+predicado de F10):
+
+```
+?? 50_documentacion/activa/encargos/encargo_memos_y_rutas_no_ejercidas.md
+?? 50_documentacion/andamios/logs/20260829_memos_y_rutas_no_ejercidas_log.md
+```
+
+Ambos son artefactos de la propia sesión 29 (su encargo final y su log de
+corridas), aún sin versionar: el patrón de la sesión fue versionarlos en el
+siguiente commit de despliegue, y el último despliegue ya ocurrió. Decisión de
+versionarlos o no: del titular, en la apertura de s30.
+
+### F8 — Distribución
+
+| Bloque | Destino | Resultado |
+|---|---|---|
+| TRASPASO | `traspasos/traspaso_cierre_v29.md` | idéntico |
+| BACKLOG_ENTRADAS | bloque `### Sesión 29` del backlog | idéntico |
+| ESTADO | `activa/ESTADO.md` | idéntico |
+
+`rm` del paquete ejecutado: única eliminación sancionada.
+
+### Desviaciones y observaciones
+
+1. **El paquete se emitió tres veces**; el criterio "cero reemisiones por
+   defectos de forma" no se cumplió. Las dos detenciones fueron por **autoría
+   faltante que la convención vigente del archivo exige**: (1ª) la compuerta de
+   dudas venía en prosa sin los campos `supuesto`/`predicado`/`medición` que
+   F0.6 verifica y que v28 estableció como tabla; (2ª) las 17 entradas venían
+   sin tag `[COD]`, insumo sin el cual R12 (catálogo aplicable) no puede
+   recalcular la Clasificación temática — el cierre en seco midió la cascada:
+   I4 habría quedado en rojo con dos `157` supervivientes. **Para
+   `herramientas_dev`:** ambos son slots que el paquete podría declarar
+   obligatorios (la v7→v8 resolvió así la primera omisión de compuerta; los
+   tags piden el equivalente en la plantilla del bloque BACKLOG_ENTRADAS).
+2. **`commit_cierre` de `ESTADO.md` = `3b17b9b`** (main previo al cierre), no el
+   hash del commit del log que la v11 designa como el correspondiente. Misma
+   limitación declarada en v28 (desviación 3): el hash del log no existe al
+   redactar el paquete. La ascendencia se cumple; contrastar en la apertura de
+   s30 contra los dos hashes del eco.
+3. **Deriva menor del traspaso respecto del árbol, reportada y no editada:** §1
+   declara "Archivos principales modificados" incluyendo `ESTADO.md`, cuyo
+   cambio de sesión es obra de este cierre, no de la sesión; y §10 declara
+   "Escáner regenerado al cierre", que este cierre materializó con sello del
+   2026-08-30. Contenido de autoría; no se tocó.
+4. **Columna `Modelo` de la fila 29: `no registrado`** — el paquete no declara
+   modelo y BACKLOG_NARRATIVA no tiene ese campo; en línea con v28.
+5. **Ejecución en madrugada:** el cierre corrió el 2026-08-30 con
+   `fecha_cierre: 2026-08-29`. El bloque de sesión y el delta llevan la fecha
+   del paquete; el snapshot del escáner lleva la real. Sin efecto en rótulos
+   (R2/R11 no aplican a este archivo).
+
+### Lo que este cierre no verificó
+
+- Que Pages sirva el build vigente (`c9747962…`): el cierre no toca `docs/` ni
+  la red; es la duda 1 de la compuerta, con su predicado y su medición.
+- Las otras cuatro dudas de la compuerta: registradas, ninguna ejecutada.
+- El render de la tabla temática recalculada y del bloque s29 en GitHub.
