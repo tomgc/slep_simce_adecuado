@@ -61,3 +61,15 @@ Se vuelca a §15 del traspaso v31 con los diez campos de SETTINGS §2.2.15.
 - `gatillo_observable`: otro: archivo editado entregado sin leer su `diff`.
 - `intentos_previos`: 0.
 - `costo`: una línea corregida por el ejecutor.
+
+**ERR-31-06**
+- `momento`: redacción de `encargo_retiro_cdn_v8_adenda.md`.
+- `disparador`: el ejecutor lo detectó (Duda 1 de la adenda, ADVIERTE R-16).
+- `que_paso`: agregué al ALCANCE de la adenda el registro de errores, que vive en `andamios/`, y dejé heredado sin cambio el 🔒 5 que admitía solo el LOG en esa carpeta.
+- `regla_violada`: `50_diseno_ramas_deteccion.md`, regla 8 (recorrer el camino nominal antes de entregar).
+- `causa_raiz`: edité el ALCANCE en un segundo paso, para cuadrar FASE 0, y no volví a leer los invariantes heredados contra el cambio.
+- `salvaguarda_presente`: `50_diseno_ramas_deteccion.md`.
+- `patron`: PAT-07, sobre una restricción propia no propagada a otra sección del mismo encargo.
+- `gatillo_observable`: encargos-premisas: una ruta nueva en ALCANCE cae bajo un 🔒 heredado que la excluye.
+- `intentos_previos`: 0.
+- `costo`: una duda abierta; el ejecutor aplicó la lectura correcta y no hubo rehecho.
