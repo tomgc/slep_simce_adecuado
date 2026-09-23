@@ -2812,7 +2812,11 @@ code {
       // Layout del SVG compuesto
       const COL_GSE   = 110;   // ancho columna etiqueta GSE
       const CELL_W    = 340;   // ancho de cada celda de territorio
-      const CELL_H    = SPARK_H + BARS_H + 30; // sparkline + barras + cabecera celda
+      // Alto de celda: las barras se clonan en y = SPARK_H + 36 (más abajo), así
+      // que la celda debe cubrir SPARK_H + 36 + BARS_H y un aire. Con 30 las
+      // barras sobresalían 6 px y cortaban el segundo renglón de cifras
+      // rescatadas bajo el año (s31).
+      const CELL_H    = SPARK_H + 36 + BARS_H + 6;
       const HEADER_H  = 72;   // fila de encabezados de territorio
       const TITLE_H   = 56;   // fila de título del SVG
       const PAD       = 20;   // padding general
