@@ -190,11 +190,28 @@ nom_de <- function(cod) {
 deg_char     <- intToUtf8(0x00B0)  # ° (grado)
 a_acute_char <- intToUtf8(0x00E1)  # á
 
+# Años preliminares: los que 31_leer_normalizar.R leyó desde un archivo
+# *_preliminar.xlsx (columna `preliminar` de simce_rbd.parquet). Se derivan de
+# los insumos para que el asterisco desaparezca solo cuando la Agencia publica
+# la base final (s31; antes era el literal 2025L).
+anios_preliminar <- arrow::read_parquet(
+  here::here("40_salidas", "intermedios", "simce_rbd.parquet"),
+  col_select = c("anio", "preliminar")
+) |>
+  dplyr::filter(preliminar) |>
+  dplyr::pull(anio) |>
+  unique() |>
+  as.integer() |>
+  sort()
+message(sprintf("    Años preliminares: %s",
+                if (length(anios_preliminar) == 0) "ninguno"
+                else paste(anios_preliminar, collapse = ", ")))
+
 meta <- list(
   fecha_generacion = format(Sys.Date()),
   anios = sort(unique(as.integer(df_comunal$anio))),
-  # Importante: I() fuerza que se serialice como array [2025], no escalar.
-  anios_preliminar = I(c(2025L)),
+  # Importante: I() fuerza que se serialice como array ([2025] o []), no escalar.
+  anios_preliminar = I(anios_preliminar),
   anios_sin_simce = c(2019L, 2020L, 2021L),
   # Niveles y pruebas: un solo objeto {codigo: label} cada uno.
   niveles = list(

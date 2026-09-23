@@ -26,7 +26,7 @@
 #   palu_eda_ele  double     % en estándar elemental
 #   palu_eda_ins  double     % en estándar insuficiente
 #   marca         character  marca genérica de puntaje (decisión A2 opción a)
-#   preliminar    logical    TRUE solo para anio == 2025 (regla R3)
+#   preliminar    logical    TRUE si el año se leyó de un *_preliminar.xlsx (regla R3)
 #
 # Anomalía A1 manejada: en simce4b2018, los sufijos vienen como "_2m_"
 # en lugar de "_4b_". Se reescriben antes de la normalización general.

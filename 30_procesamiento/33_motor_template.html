@@ -2111,7 +2111,7 @@ code {
         if (s.preliminar) {
           const warn = document.createElement("div");
           warn.className = "tt-warn";
-          warn.textContent = "* Dato preliminar 2025";
+          warn.textContent = "* Dato preliminar " + yr;
           tip.appendChild(warn);
         }
 
@@ -2668,7 +2668,11 @@ code {
             <span className="heat-legend-title">Cómo leer los colores</span>
             <p>El color refleja el % de estudiantes en nivel Adecuado usando umbrales fijos, independientemente del GSE o el territorio.</p>
             <p style={{ marginTop: 6 }}>
-              <b>*</b> Dato preliminar (2025, sujeto a revisión). &nbsp;
+              {SimceData.PRELIMINAR_YEARS.length > 0 && (
+                <>
+                  <b>*</b> Dato preliminar ({SimceData.PRELIMINAR_YEARS.join(", ")}, sujeto a revisión). &nbsp;
+                </>
+              )}
               <b>(N)</b> Número de estudiantes a los que corresponde ese porcentaje.
             </p>
             <p style={{ marginTop: 6 }}>
@@ -4494,10 +4498,12 @@ code {
                       <h4>Gap 2019–2021</h4>
                       <p>La aplicación del Simce en 2019, 2020 y 2021 fue interrumpida por el estallido social y la pandemia. En los gráficos aparece una banda sombreada y las líneas no se conectan a través del gap.</p>
                     </article>
-                    <article className="note">
-                      <h4>Datos preliminares 2025</h4>
-                      <p>Los resultados de 2025 son <b>preliminares</b> y están sujetos a revisión por la Agencia de Calidad de la Educación. Se marcan con asterisco (*) en todos los gráficos y tablas.</p>
-                    </article>
+                    {SimceData.PRELIMINAR_YEARS.length > 0 && (
+                      <article className="note">
+                        <h4>Datos preliminares {SimceData.PRELIMINAR_YEARS.join(", ")}</h4>
+                        <p>Los resultados de {SimceData.PRELIMINAR_YEARS.join(", ")} son <b>preliminares</b> y están sujetos a revisión por la Agencia de Calidad de la Educación. Se marcan con asterisco (*) en todos los gráficos y tablas.</p>
+                      </article>
+                    )}
                   </div>
                   <div className="notes-sources">
                     <span>Fuente: Agencia de Calidad de la Educación · Bases Simce 2014–2025. Procesamiento: SLEP Costa Central.</span>
