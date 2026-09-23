@@ -543,3 +543,114 @@ después de F7.2 en esta corrida; declarada para que la degradación sea medible
 - Las cinco dudas de la compuerta del traspaso v30: registradas, ninguna
   ejecutada por este cierre (son trabajo de sesión, no del instrumento).
 - Que Pages sirva un build distinto: esta sesión no tocó `docs/` ni el pipeline.
+
+## v31 — 2026-09-23
+
+Instrumento: cierre_sesion_autonomo_cc_v15.md | kit 63b3233
+F0.0 — kit: sincronizado (fetch + merge --ff-only, sin divergencia). normativos:
+al día (`POLITICA_PROYECTO.md` v5.8 y `SETTINGS_Y_PROMPTS_OPERACIONALES.md` v38,
+iguales en el kit y en `activa/`; sin copia).
+
+**Sesión:** 31 · **Traspaso:** v31 · **Tramo:** 195–201 (7 entradas) · **Total:** 201
+**Renumeración:** sin desplazamiento (k = 0; provisional 195→201 = disco 195→201).
+
+### Tabla de severidades
+
+| condicion | severidad | resultado |
+|---|---|---|
+| F0.0.a kit sincronizado | BLOQUEA | pasa |
+| F0.0.b normativos vs kit | REPARA | pasa (POLITICA y SETTINGS ya al día, sin copia necesaria) |
+| F0.1 `.git` y `traspasos/` existen | BLOQUEA | pasa |
+| F0.2 paquete único, front matter completo, delimitadores, cero placeholders | BLOQUEA | pasa |
+| F0.3 guardia de repo (`raiz_proyecto` = `pwd`) | BLOQUEA | pasa |
+| F0.4 correlativo triple (v31 = paquete = máx(v30)+1) | BLOQUEA | pasa |
+| F0.5 `n` = `backlog_entradas_nuevas` (7 = 7) | BLOQUEA | pasa |
+| F0.5 numeración provisional contigua (195→201) | BLOQUEA | pasa |
+| F0.5 desplazamiento `k` | REPARA | reparada: k = 0, sin desplazamiento (no aplicó) |
+| F0.5 `sesion_nueva` = último + 1 (30+1=31) | ADVIERTE | pasa |
+| F0.5 `fecha_cierre` = fecha de máquina (2026-09-23) | ADVIERTE | pasa |
+| F0.5bis reparto contra disco, control positivo | BLOQUEA | pasa |
+| F0.6 `settings_version` transcribe línea del kit sincronizado | BLOQUEA | pasa |
+| F0.6 `compuerta_dudas` = sección del traspaso (4 = 4) | BLOQUEA | pasa |
+| F0.7 árbol limpio en rutas que el cierre escribe | BLOQUEA | pasa |
+| F0.7bis árbol fuera de esas rutas: > 50 MB o dato sensible | BLOQUEA | pasa (única ruta: `activa/decisiones/20260923_decision_transpilacion_en_build.md`) |
+| F0.8 marcadores ESTADO literalmente `<<EJECUTOR>>` | BLOQUEA | pasa |
+| F2 encabezados estructurales únicos y presentes | BLOQUEA | pasa |
+| F2 fila del paquete normalizada al formato de la tabla | REPARA | pasa (formato ya calzaba, sin normalización) |
+| F3 rótulo del catálogo aplicable sin disparo | ADVIERTE | pasa (R3 y R12 dispararon) |
+| F3 cifras sin rótulo en zonas declarativas | ADVIERTE | pasa (ninguna detectada) |
+| I1 numeración 1→N contigua | BLOQUEA | pasa |
+| I2 cuadratura del resumen (suma = 201) | BLOQUEA | pasa |
+| I2bis cuadratura temática (N=201, %≈100,0, reparto 1:1, sin N<0) | BLOQUEA | pasa |
+| I3 filas del resumen (32+1=33) | BLOQUEA | pasa |
+| I4 sin magnitudes viejas sobrevivientes | ADVIERTE | pasa (única aparición de `194` es la autorreferencia de la propia entrada 176 a la entrada 194, contexto histórico legítimo) |
+| I5 sin autorreferencias de cifras | ADVIERTE | pasa |
+| I6 gobernanza (RUT, OneDrive, credenciales, coautoría, placeholders) | BLOQUEA | pasa |
+| I7 traspaso: exactamente 1 vigente tras archivado | BLOQUEA | pasa |
+| F7.1 staging por rutas explícitas, sin disparo de I6 | BLOQUEA | pasa (ver desviación 1) |
+| F8 diff de distribución de los tres bloques de autoría | BLOQUEA | pasa (idéntico en TRASPASO, BACKLOG_ENTRADAS, ESTADO) |
+
+### F3 — Rótulos
+
+**Catálogo aplicable (de la tabla v30): R3, R12.**
+
+| ID | Rótulo | Disparos | Texto resultante |
+|---|---:|---:|---|
+| R3 | Cobertura "sesiones 1 a N" | 3 | `sesiones 1–30 (traspasos v01–v30)` → `sesiones 1–31 (traspasos v01–v31)`; `deltas s11–s30` → `deltas s11–s31` |
+| R12 | Recuento temático: columna N, denominador y porcentajes | 7 | tabla de Clasificación temática recalculada sobre 201 (P sin cambio 15, UI 76→79, D 4→6, DOC 51→52, REPO 28→29, Infra sin cambio, DT sin cambio) y filas Total de Clasificación y Resumen 194→201 |
+
+`catalogo no aplicable: R1, R2, R4, R5, R6, R7, R8, R9, R10, R11, R13 (11 de 13)`.
+
+Tags nuevos contados del propio bloque: REPO 1, DOC 1, UI 3, D 2 (= 7).
+Cuadratura: 194 + 7 = 201 = suma de la tabla temática recalculada.
+
+**Cifras sin rótulo** en zonas declarativas: ninguna nueva detectada.
+
+### F4 — Invariantes
+
+| # | Invariante | Resultado |
+|---|---|---|
+| I1 | Numeración contigua | verde — 1…201 sin huecos ni duplicados, solo sobre el Detalle cronológico |
+| I2 | Cuadratura | verde — las 32 filas de sesión del resumen suman 201 |
+| I2bis | Cuadratura temática | verde — columna N suma 201; % suman 100,1 (7,5+39,3+3,0+25,9+14,4+3,0+7,0, dentro del redondeo); cada una de las 7 entradas del tramo aparece exactamente una vez en `reparto`; ninguna categoría con N<0 |
+| I3 | Filas del resumen | verde — 32 + 1 = 33 |
+| I4 | Sin magnitudes viejas | verde — la única aparición de `194` en el archivo es la autorreferencia de la entrada 176 a la entrada 194 (contexto histórico legítimo del propio Detalle) |
+| I5 | Sin autorreferencias | verde — las entradas no declaran cuántas son; las cifras viven solo en la línea de delta, compuesta por el ejecutor |
+| I6 | Gobernanza | verde — cero OneDrive, `Co-Authored-By`, RUT, credenciales y placeholders en los archivos tocados |
+| I7 | Traspaso vigente | verde — v30 archivado con `git mv`, exactamente 1 vigente (v31) |
+
+### F7 — Commits
+
+**Hash de trabajo (F7.1):** `68f3f6d` — 1 ruta de F0 7bis:
+`50_documentacion/activa/decisiones/20260923_decision_transpilacion_en_build.md`.
+
+**Hash de documentación (F7.2):** `47134bd` — traspaso v31 (nuevo), backlog,
+cuatro salidas del escáner (con poda de 2 snapshots antiguos, detectada por git
+como rename 78%).
+
+**Desviación (secuencia F6/F7.1):** el `git mv` de archivado de
+`traspasos/traspaso_cierre_v30.md` (F6) quedó ya en el índice al momento de
+`git add` de F7.1, y viajó en el mismo commit `68f3f6d` junto con la única ruta
+de F0 7bis, en vez de esperar al commit de documentación de F7.2. Ningún dato
+ni bloque de autoría se vio afectado, y la ruta archivada es exactamente la que
+F6 debía mover; el defecto es de secuencia de comandos en esta corrida, no del
+instrumento. **Para `herramientas_dev`:** F7.1 debería anteponer `git restore
+--staged -- <rutas de punto 7>` antes de su `git add` explícito, para blindar
+la separación cuando F6 dejó algo en el índice.
+
+### F8 — Distribución
+
+| Bloque | Destino | Resultado |
+|---|---|---|
+| TRASPASO | `traspasos/traspaso_cierre_v31.md` | idéntico |
+| BACKLOG_ENTRADAS | bloque `### Sesión 31` del backlog | idéntico |
+| ESTADO | `activa/ESTADO.md` | idéntico |
+
+`rm` del paquete ejecutado: única eliminación sancionada.
+
+### Lo que este cierre no verificó
+
+- Las cuatro dudas de la compuerta del traspaso v31: registradas, ninguna
+  ejecutada por este cierre (son trabajo de sesión, no del instrumento).
+- Que Pages sirva el build de esta sesión: ya verificado por el titular dentro
+  de la propia sesión (md5 contra `docs/index.html`), no por este cierre.
