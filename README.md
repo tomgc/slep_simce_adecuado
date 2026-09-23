@@ -144,7 +144,7 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
 | palu_eda_ele  | double    | % en estándar elemental              |
 | palu_eda_ins  | double    | % en estándar insuficiente           |
 | marca         | character | Marca de supresión (NA si válido)    |
-| preliminar    | logical   | TRUE solo para 2025                  |
+| preliminar    | logical   | TRUE si viene de un `_preliminar`    |
 
 ### simce_comunal.parquet
 
