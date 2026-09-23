@@ -85,3 +85,15 @@ Se vuelca a §15 del traspaso v31 con los diez campos de SETTINGS §2.2.15.
 - `gatillo_observable`: encargos-premisas: un 🔒 byte a byte contra un archivo no versionado cuya procedencia no se midió.
 - `intentos_previos`: 0.
 - `costo`: T2 congelada, push retenido, una vuelta de dudas.
+
+**ERR-31-08**
+- `momento`: gates visuales en Chromium del retiro del CDN y de la base 2025 final.
+- `disparador`: usuario lo señaló sin nombrarlo error (captura con rótulos superpuestos en la vista de comparación).
+- `que_paso`: di por revisado el render comparando píxeles contra la versión publicada y mirando solo la captura del panorama; nunca miré las barras «Últimas 3 aplicaciones» de la vista de comparación, donde los rótulos de Adecuado y Elemental se pisan cuando Adecuado es delgado.
+- `regla_violada`: aviso 9 del mensaje de apertura de esta sesión (mirar lo visual renderizado con una lista de forma, no solo de datos); aprendizaje 6 del traspaso v30.
+- `causa_raiz`: una comparación de píxeles contra el publicado prueba que no hubo regresión, no que la forma esté bien; la usé como si probara lo segundo, y la lista de forma no existió.
+- `salvaguarda_presente`: mensaje de apertura del titular y traspaso v30 §7.6.
+- `patron`: PAT-NUEVO-revision-visual-sin-lista, segunda sesión con el mismo mecanismo (propuesta del traspaso v30).
+- `gatillo_observable`: otro: gate visual declarado sin recorrer cada tipo de gráfico con una lista de forma.
+- `intentos_previos`: 0.
+- `costo`: un defecto de forma publicado llegó al titular por segunda sesión seguida.
