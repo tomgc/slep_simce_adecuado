@@ -1,8 +1,8 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-09-23 12:41:31
-- **Totales:** 24 carpetas, 196 archivos
+- **Fecha:** 2026-09-23 17:21:49
+- **Totales:** 24 carpetas, 207 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 ## Arbol
@@ -14,8 +14,11 @@ slep_simce_adecuado/
 ├── 10_utils/
 │   ├── 10_utils.R  (8.67K)
 │   ├── 10_validar_portabilidad.R  (16.4K)
+│   ├── babel.min.js  (2.99M)
 │   ├── d3.min.js  (273K)
-│   └── pako.min.js  (45.8K)
+│   ├── pako.min.js  (45.8K)
+│   ├── react-dom.production.min.js  (129K)
+│   └── react.production.min.js  (10.5K)
 ├── 20_insumos/
 │   ├── auxiliares/
 │   │   ├── prototipo_design/
@@ -49,7 +52,7 @@ slep_simce_adecuado/
 │   │   │   ├── simce2m2022_rbd_final.xlsx  (587K)
 │   │   │   ├── simce2m2023_rbd_final.xlsx  (509K)
 │   │   │   ├── simce2m2024_rbd_final.xlsx  (509K)
-│   │   │   └── simce2m2025_rbd_preliminar.xlsx  (528K)
+│   │   │   └── simce2m2025_rbd_final.xlsx  (528K)
 │   │   ├── 4b/
 │   │   │   ├── .gitkeep  (0)
 │   │   │   ├── simce4b2014_rbd_final.xlsx  (1.97M)
@@ -60,15 +63,15 @@ slep_simce_adecuado/
 │   │   │   ├── simce4b2022_rbd_final.xlsx  (1.34M)
 │   │   │   ├── simce4b2023_rbd_final.xlsx  (1.11M)
 │   │   │   ├── simce4b2024_rbd_final.xlsx  (1.09M)
-│   │   │   └── simce4b2025_rbd_preliminar.xlsx  (1.05M)
+│   │   │   └── simce4b2025_rbd_final.xlsx  (1.05M)
 │   │   └── .DS_Store  (8K)
 │   └── .DS_Store  (10K)
 ├── 30_procesamiento/
 │   ├── 30_construir_auxiliares.R  (15.6K)
 │   ├── 31_leer_normalizar.R  (16.2K)
 │   ├── 32_agregar_comunal.R  (7.64K)
-│   ├── 33_generar_html.R  (15.4K)
-│   ├── 33_motor_template.html  (197K)
+│   ├── 33_generar_html.R  (21.9K)
+│   ├── 33_motor_template.html  (199K)
 │   └── 34_historico_pct_adecuado_costa_central.R  (6.09K)
 ├── 40_salidas/
 │   ├── intermedios/
@@ -76,11 +79,11 @@ slep_simce_adecuado/
 │   │   ├── comunas_chile.parquet  (7.18K)
 │   │   ├── establecimientos_chile.parquet  (260K)
 │   │   ├── simce_comunal.parquet  (988K)
-│   │   ├── simce_rbd.parquet  (2.23M)
+│   │   ├── simce_rbd.parquet  (1.59M)
 │   │   ├── slep_cc_establecimientos.parquet  (5.68K)
 │   │   └── sleps_chile.parquet  (58.7K)
 │   ├── historico_pct_adecuado_costa_central.xlsx  (12K)
-│   └── motor_comparacion.html  (2.5M)
+│   └── motor_comparacion.html  (2.66M)
 ├── 50_documentacion/
 │   ├── activa/
 │   │   ├── decisiones/
@@ -89,7 +92,8 @@ slep_simce_adecuado/
 │   │   │   ├── 20260611_decision_nombres_establecimientos.md  (1.85K)
 │   │   │   ├── 20260611_decision_repo_publico.md  (1.32K)
 │   │   │   ├── 20260620_decision_celda_unico_establecimiento.md  (3.77K)
-│   │   │   └── 20260622_decision_cumplimiento_ley_21719.md  (5.35K)
+│   │   │   ├── 20260622_decision_cumplimiento_ley_21719.md  (5.35K)
+│   │   │   └── 20260923_decision_transpilacion_en_build.md  (1.69K)
 │   │   ├── encargos/
 │   │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   │   ├── encargo_claude_code_simce_suite_standalone.md  (10.5K)
@@ -103,26 +107,29 @@ slep_simce_adecuado/
 │   │   │   ├── encargo_pendientes_inmediatos_s29.md  (29.1K)
 │   │   │   ├── encargo_renombrar_entidad_territorio.md  (11.2K)
 │   │   │   ├── encargo_rescate_rotulos_y_precedente_c3.md  (14.3K)
+│   │   │   ├── encargo_retiro_cdn_v8_adenda.md  (3.44K)
+│   │   │   ├── encargo_retiro_cdn_v8.md  (17.2K)
+│   │   │   ├── encargo_simce2025_final.md  (12K)
 │   │   │   └── encargo_verificacion_dudas_s29.md  (18.6K)
 │   │   ├── .DS_Store  (8K)
 │   │   ├── .gitkeep  (0)
 │   │   ├── 50_datos_versionados_autorizados.md  (6.01K)
-│   │   ├── 50_diseno_ramas_deteccion.md  (13.2K)
+│   │   ├── 50_diseno_ramas_deteccion.md  (15.4K)
 │   │   ├── 50_locale_utf8.md  (4.12K)
 │   │   ├── 50_ordenacion_repositorio.md  (4.51K)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_acumulativo.md  (50.2K)
+│   │   ├── backlog_acumulativo.md  (58K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
-│   │   ├── ESTADO.md  (1.72K)
+│   │   ├── ESTADO.md  (1.45K)
 │   │   ├── gobernanza_datos.md  (6.96K)
 │   │   ├── informe_auditoria_prelanzamiento.md  (10.6K)
-│   │   ├── manifiesto_insumos.md  (2.78K)
+│   │   ├── manifiesto_insumos.md  (3.16K)
 │   │   ├── POLITICA_PROYECTO.md  (42.8K)
 │   │   ├── publicacion_github_pages.md  (2.62K)
 │   │   ├── referencia_glosas_simce.md  (9.28K)
 │   │   ├── resena_slep_simce_adecuado.md  (1.4K)
-│   │   └── SETTINGS_Y_PROMPTS_OPERACIONALES.md  (137K)
+│   │   └── SETTINGS_Y_PROMPTS_OPERACIONALES.md  (120K)
 │   ├── andamios/
 │   │   ├── logs/
 │   │   │   ├── 20260620_cotejo_marcas_suite_log.md  (6.69K)
@@ -144,23 +151,26 @@ slep_simce_adecuado/
 │   │   │   ├── 20260829_rescate_rotulos_y_precedente_c3_log.md  (26.6K)
 │   │   │   ├── 20260829_verificacion_dudas_s29_log.md  (32.1K)
 │   │   │   ├── 20260911_sesion30_errores_asistente.md  (5.01K)
-│   │   │   ├── 20260923_sesion31_errores_asistente.md  (1.33K)
-│   │   │   └── cierres_log.md  (20.9K)
+│   │   │   ├── 20260923_retiro_cdn_v8_adenda_log.md  (48.9K)
+│   │   │   ├── 20260923_retiro_cdn_v8_log.md  (86.2K)
+│   │   │   ├── 20260923_sesion31_errores_asistente.md  (8.04K)
+│   │   │   ├── 20260923_simce2025_final_log.md  (81.1K)
+│   │   │   └── cierres_log.md  (29K)
 │   │   ├── .DS_Store  (8K)
 │   │   ├── 20260909_plan_spinoff_trayectoria_traspasos.md  (6.22K)
 │   │   ├── 20260911_brief_diseno_spinoff.md  (14.4K)
 │   │   ├── 20260911_filas_anomalas_simce_rbd.xlsx  (198K)
 │   │   ├── 20260917_instruccion_spinoff_trayectorias.md  (9.1K)
 │   │   ├── mockup_trayectoria_traspasos.html  (1.6M)
-│   │   ├── paquete_cierre_v30.md  (57.2K)
+│   │   ├── paquete_cierre_v31.md  (36.3K)
 │   │   └── verificar_trayectorias.R  (6.25K)
 │   ├── estructura/
-│   │   ├── 20260828_142629_estructura.md  (11K)
-│   │   ├── 20260828_142629_estructura.txt  (11.1K)
 │   │   ├── 20260830_000553_estructura.md  (12K)
 │   │   ├── 20260830_000553_estructura.txt  (12.1K)
-│   │   ├── estructura_actual.md  (12K)
-│   │   └── estructura_actual.txt  (12.1K)
+│   │   ├── 20260923_124131_estructura.md  (12.6K)
+│   │   ├── 20260923_124131_estructura.txt  (12.7K)
+│   │   ├── estructura_actual.md  (12.6K)
+│   │   └── estructura_actual.txt  (12.7K)
 │   ├── suite/
 │   │   ├── assets/
 │   │   │   ├── logo-color-stacked.png  (126K)
@@ -209,12 +219,13 @@ slep_simce_adecuado/
 │   │   │   ├── traspaso_cierre_v25.md  (16.8K)
 │   │   │   ├── traspaso_cierre_v26.md  (12.5K)
 │   │   │   ├── traspaso_cierre_v27.md  (14.8K)
-│   │   │   └── traspaso_cierre_v28.md  (27.4K)
+│   │   │   ├── traspaso_cierre_v28.md  (27.4K)
+│   │   │   └── traspaso_cierre_v29.md  (20.8K)
 │   │   ├── .gitkeep  (0)
-│   │   └── traspaso_cierre_v29.md  (20.8K)
+│   │   └── traspaso_cierre_v30.md  (47.1K)
 │   └── .DS_Store  (14K)
 ├── docs/
-│   └── index.html  (2.5M)
+│   └── index.html  (2.66M)
 ├── .DS_Store  (10K)
 ├── .gitignore  (1.18K)
 ├── .Renviron.example  (1.9K)
@@ -235,17 +246,17 @@ slep_simce_adecuado/
 
 | Extension | Archivos |
 |---|---|
-| md | 92 |
+| md | 100 |
 | xlsx | 25 |
 | (sin extension) | 17 |
 | r | 14 |
 | html | 11 |
+| js | 6 |
 | otf | 6 |
 | parquet | 6 |
 | jsx | 5 |
 | css | 3 |
 | csv | 3 |
-| js | 3 |
 | png | 3 |
 | txt | 3 |
 | example | 1 |
