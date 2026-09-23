@@ -25,6 +25,7 @@ Este archivo declara esa práctica. No la introduce.
 40_salidas/*.xlsx               # historico ponderado de % Adecuado de Costa Central; agregados por anio, sin desagregacion siquiera a comuna
 renv/settings.json              # configuracion del gestor de dependencias; sin datos del proyecto
 50_documentacion/andamios/20260911_filas_anomalas_simce_rbd.xlsx   # diagnostico de filas anomalas de simce_rbd.parquet (sesion 30); hojas Resumen, Sin nalu y Nalu cero; nivel establecimiento, sin persona natural
+40_salidas/publico/contexto_simce.parquet   # contrato de contexto v1 (paso 35), solo en la rama feat/contrato-contexto (31befa2); 61.853 filas de senales por RBD, anio y eje; nivel establecimiento, sin persona natural
 ```
 
 Al 2026-08-27 estas seis entradas cubren 27 rutas versionadas con extensión de
@@ -51,6 +52,7 @@ Cada una de las 27 rutas se inspeccionó, no se autorizó por su carpeta:
 | 1 `.xlsx` de `40_salidas/` | Las 4 hojas | `anio`, `n_rbds`, `n_estudiantes_evaluados`, `n_estudiantes_adecuado`, `pct_adecuado`; agregados por año |
 | `renv/settings.json` | Contenido completo | Ajustes de `renv`: `bioconductor.version`, `external.libraries`, `snapshot.type`, reglas `vcs.ignore` |
 | `andamios/20260911_filas_anomalas_simce_rbd.xlsx` (2026-09-23, sesión 31) | Las 3 hojas | `Resumen`: texto y conteos por situación. `Sin nalu` y `Nalu cero`: `Año`, `Nivel`, `Prueba`, `RBD`, `Nombre del establecimiento`, `Código comuna`, `Comuna`, `Dependencia`, `GSE`, `Evaluados`, tres porcentajes de nivel y `Puntaje promedio`. Ni RUT, ni MRUN, ni nombre de persona |
+| `40_salidas/publico/contexto_simce.parquet` (2026-09-23, sesión 32) | Las 15 columnas, leídas del blob de `31befa2` | `rbd`, `anio`, `eje`, `eje_etiqueta`, `segmento`, `escala`, `valor`, `desvio_gse`, `mejora_sobre_gse`, `mejora_ano_ano`, `cod_grupo`, `proyecto_origen`, `periodo`, `fecha_calculo`, `version_contrato`. Ni RUT, ni MRUN, ni nombre de persona. Solo existe en la rama `feat/contrato-contexto`; la entrada va en `main` porque el verificador lee la lista del árbol de trabajo desde el que se publica |
 
 ---
 
