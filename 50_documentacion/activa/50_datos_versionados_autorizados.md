@@ -24,6 +24,7 @@ Este archivo declara esa práctica. No la introduce.
 20_insumos/simce/4b/*.xlsx      # resultados SIMCE de 4o basico por RBD publicados por la Agencia, 2014-2018 y 2022-2025; nivel establecimiento
 40_salidas/*.xlsx               # historico ponderado de % Adecuado de Costa Central; agregados por anio, sin desagregacion siquiera a comuna
 renv/settings.json              # configuracion del gestor de dependencias; sin datos del proyecto
+50_documentacion/andamios/20260911_filas_anomalas_simce_rbd.xlsx   # diagnostico de filas anomalas de simce_rbd.parquet (sesion 30); hojas Resumen, Sin nalu y Nalu cero; nivel establecimiento, sin persona natural
 ```
 
 Al 2026-08-27 estas seis entradas cubren 27 rutas versionadas con extensión de
@@ -49,6 +50,7 @@ Cada una de las 27 rutas se inspeccionó, no se autorizó por su carpeta:
 | Hojas adicionales | 16 hojas `Hoja2`/`Hoja3` en 7 de los 18 archivos | Vacías o ilegibles. Se revisaron porque el archivo se versiona entero, aunque el pipeline lea solo la primera hoja |
 | 1 `.xlsx` de `40_salidas/` | Las 4 hojas | `anio`, `n_rbds`, `n_estudiantes_evaluados`, `n_estudiantes_adecuado`, `pct_adecuado`; agregados por año |
 | `renv/settings.json` | Contenido completo | Ajustes de `renv`: `bioconductor.version`, `external.libraries`, `snapshot.type`, reglas `vcs.ignore` |
+| `andamios/20260911_filas_anomalas_simce_rbd.xlsx` (2026-09-23, sesión 31) | Las 3 hojas | `Resumen`: texto y conteos por situación. `Sin nalu` y `Nalu cero`: `Año`, `Nivel`, `Prueba`, `RBD`, `Nombre del establecimiento`, `Código comuna`, `Comuna`, `Dependencia`, `GSE`, `Evaluados`, tres porcentajes de nivel y `Puntaje promedio`. Ni RUT, ni MRUN, ni nombre de persona |
 
 ---
 
