@@ -73,3 +73,15 @@ Se vuelca a §15 del traspaso v31 con los diez campos de SETTINGS §2.2.15.
 - `gatillo_observable`: encargos-premisas: una ruta nueva en ALCANCE cae bajo un 🔒 heredado que la excluye.
 - `intentos_previos`: 0.
 - `costo`: una duda abierta; el ejecutor aplicó la lectura correcta y no hubo rehecho.
+
+**ERR-31-07**
+- `momento`: redacción de `encargo_simce2025_final.md`, 🔒 2.
+- `disparador`: el ejecutor lo detectó (T2 congelada, R-11 BLOQUEA).
+- `que_paso`: tomé como línea base los parquet de `40_salidas/intermedios/` sin comprobar de qué build venían; `simce_rbd.parquet` era del 2026-07-11 y salió de la rama local `feat/contrato-contexto`, con cinco columnas que `main` no escribe.
+- `regla_violada`: SETTINGS §1.2.6, marcador S-01 tipo 4 (premisa de hecho de un encargo) y «fuente primaria de una estructura es su inspección».
+- `causa_raiz`: la carpeta está ignorada por git y la traté como si fuera producto de `HEAD`; la fecha del parquet (11 de julio, anterior a sesiones de `main` que no lo reconstruyeron) estaba a la vista en el `ls -la` que yo mismo corrí al inicio de la sesión.
+- `salvaguarda_presente`: SETTINGS.
+- `patron`: PAT-01, sobre el origen de un artefacto ignorado por git supuesto y no medido.
+- `gatillo_observable`: encargos-premisas: un 🔒 byte a byte contra un archivo no versionado cuya procedencia no se midió.
+- `intentos_previos`: 0.
+- `costo`: T2 congelada, push retenido, una vuelta de dudas.
