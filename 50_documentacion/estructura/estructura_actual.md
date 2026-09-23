@@ -1,8 +1,8 @@
 # Estructura actual — slep_simce_adecuado
 
 - **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-08-30 00:05:53
-- **Totales:** 24 carpetas, 186 archivos
+- **Fecha:** 2026-09-23 12:41:31
+- **Totales:** 24 carpetas, 196 archivos
 - **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
 ## Arbol
@@ -62,7 +62,7 @@ slep_simce_adecuado/
 │   │   │   ├── simce4b2024_rbd_final.xlsx  (1.09M)
 │   │   │   └── simce4b2025_rbd_preliminar.xlsx  (1.05M)
 │   │   └── .DS_Store  (8K)
-│   └── .DS_Store  (8K)
+│   └── .DS_Store  (10K)
 ├── 30_procesamiento/
 │   ├── 30_construir_auxiliares.R  (15.6K)
 │   ├── 31_leer_normalizar.R  (16.2K)
@@ -106,15 +106,15 @@ slep_simce_adecuado/
 │   │   │   └── encargo_verificacion_dudas_s29.md  (18.6K)
 │   │   ├── .DS_Store  (8K)
 │   │   ├── .gitkeep  (0)
-│   │   ├── 50_datos_versionados_autorizados.md  (5.44K)
+│   │   ├── 50_datos_versionados_autorizados.md  (6.01K)
 │   │   ├── 50_diseno_ramas_deteccion.md  (13.2K)
 │   │   ├── 50_locale_utf8.md  (4.12K)
 │   │   ├── 50_ordenacion_repositorio.md  (4.51K)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_acumulativo.md  (46.9K)
+│   │   ├── backlog_acumulativo.md  (50.2K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
-│   │   ├── ESTADO.md  (1.76K)
+│   │   ├── ESTADO.md  (1.72K)
 │   │   ├── gobernanza_datos.md  (6.96K)
 │   │   ├── informe_auditoria_prelanzamiento.md  (10.6K)
 │   │   ├── manifiesto_insumos.md  (2.78K)
@@ -143,16 +143,24 @@ slep_simce_adecuado/
 │   │   │   ├── 20260829_rescate_rotulos_y_precedente_c3_log_reanudacion.md  (15.7K)
 │   │   │   ├── 20260829_rescate_rotulos_y_precedente_c3_log.md  (26.6K)
 │   │   │   ├── 20260829_verificacion_dudas_s29_log.md  (32.1K)
-│   │   │   └── cierres_log.md  (12.7K)
+│   │   │   ├── 20260911_sesion30_errores_asistente.md  (5.01K)
+│   │   │   ├── 20260923_sesion31_errores_asistente.md  (1.33K)
+│   │   │   └── cierres_log.md  (20.9K)
 │   │   ├── .DS_Store  (8K)
-│   │   └── paquete_cierre_v29.md  (26.4K)
+│   │   ├── 20260909_plan_spinoff_trayectoria_traspasos.md  (6.22K)
+│   │   ├── 20260911_brief_diseno_spinoff.md  (14.4K)
+│   │   ├── 20260911_filas_anomalas_simce_rbd.xlsx  (198K)
+│   │   ├── 20260917_instruccion_spinoff_trayectorias.md  (9.1K)
+│   │   ├── mockup_trayectoria_traspasos.html  (1.6M)
+│   │   ├── paquete_cierre_v30.md  (57.2K)
+│   │   └── verificar_trayectorias.R  (6.25K)
 │   ├── estructura/
-│   │   ├── 20260827_103911_estructura.md  (10.2K)
-│   │   ├── 20260827_103911_estructura.txt  (10.3K)
 │   │   ├── 20260828_142629_estructura.md  (11K)
 │   │   ├── 20260828_142629_estructura.txt  (11.1K)
-│   │   ├── estructura_actual.md  (11K)
-│   │   └── estructura_actual.txt  (11.1K)
+│   │   ├── 20260830_000553_estructura.md  (12K)
+│   │   ├── 20260830_000553_estructura.txt  (12.1K)
+│   │   ├── estructura_actual.md  (12K)
+│   │   └── estructura_actual.txt  (12.1K)
 │   ├── suite/
 │   │   ├── assets/
 │   │   │   ├── logo-color-stacked.png  (126K)
@@ -165,6 +173,7 @@ slep_simce_adecuado/
 │   │   │   ├── MuseoSans_500.otf  (61K)
 │   │   │   ├── MuseoSans_700.otf  (62.1K)
 │   │   │   └── MuseoSans-300.otf  (61.5K)
+│   │   ├── .DS_Store  (6K)
 │   │   ├── arquitectura_general_slep_simce_adecuado_standalone.html  (442K)
 │   │   ├── arquitectura_slep_simce_adecuado_standalone.html  (445K)
 │   │   ├── documentacion_general_slep_simce_adecuado_standalone.html  (434K)
@@ -199,9 +208,10 @@ slep_simce_adecuado/
 │   │   │   ├── traspaso_cierre_v24.md  (10.6K)
 │   │   │   ├── traspaso_cierre_v25.md  (16.8K)
 │   │   │   ├── traspaso_cierre_v26.md  (12.5K)
-│   │   │   └── traspaso_cierre_v27.md  (14.8K)
+│   │   │   ├── traspaso_cierre_v27.md  (14.8K)
+│   │   │   └── traspaso_cierre_v28.md  (27.4K)
 │   │   ├── .gitkeep  (0)
-│   │   └── traspaso_cierre_v28.md  (27.4K)
+│   │   └── traspaso_cierre_v29.md  (20.8K)
 │   └── .DS_Store  (14K)
 ├── docs/
 │   └── index.html  (2.5M)
@@ -225,11 +235,11 @@ slep_simce_adecuado/
 
 | Extension | Archivos |
 |---|---|
-| md | 86 |
-| xlsx | 24 |
-| (sin extension) | 16 |
-| r | 13 |
-| html | 10 |
+| md | 92 |
+| xlsx | 25 |
+| (sin extension) | 17 |
+| r | 14 |
+| html | 11 |
 | otf | 6 |
 | parquet | 6 |
 | jsx | 5 |
