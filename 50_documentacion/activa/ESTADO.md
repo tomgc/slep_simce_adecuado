@@ -7,7 +7,7 @@ sesion_actual: v30
 ultima_actividad: 2026-09-23
 maneja_sensibles: false
 tipo_pendiente: bloqueante
-sesion_abierta: false
+sesion_abierta: true
 maquina: MacBook-Pro-de-Tomas.local
 commit_cierre: 9c6671c
 traspaso_vigente: traspaso_cierre_v30.md
