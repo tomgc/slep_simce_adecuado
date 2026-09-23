@@ -409,3 +409,137 @@ versionarlos o no: del titular, en la apertura de s30.
   la red; es la duda 1 de la compuerta, con su predicado y su medición.
 - Las otras cuatro dudas de la compuerta: registradas, ninguna ejecutada.
 - El render de la tabla temática recalculada y del bloque s29 en GitHub.
+
+## v30 — 2026-09-23
+
+Instrumento: cierre_sesion_autonomo_cc_v15.md | kit c81552c
+F0.0 — kit: sincronizado (fetch + merge --ff-only, sin divergencia). normativos:
+actualizados desde el kit (`SETTINGS_Y_PROMPTS_OPERACIONALES.md`, v34 → v38 en
+`activa/`; POLITICA_PROYECTO.md ya estaba al día, v5.8 en ambos). La copia de
+`activa/SETTINGS_Y_PROMPTS_OPERACIONALES.md` no se versiona (`.gitignore`,
+decisión de la entrada 134 del backlog): la actualización queda en disco, no en
+el commit de documentación.
+
+**Sesión:** 30 · **Traspaso:** v30 · **Tramo:** 175–194 (20 entradas) · **Total:** 194
+**Renumeración:** sin desplazamiento (k = 0; provisional 175→194 = disco 175→194).
+
+### Tabla de severidades
+
+| condicion | severidad | resultado |
+|---|---|---|
+| F0.0.a kit sincronizado | BLOQUEA | pasa |
+| F0.0.b normativos vs kit | REPARA | reparada: SETTINGS `**Versión 34.**` (activa) → `**Versión 38.**` (kit) |
+| F0.1 `.git` y `traspasos/` existen | BLOQUEA | pasa |
+| F0.2 paquete único, front matter completo, delimitadores, cero placeholders | BLOQUEA | pasa |
+| F0.3 guardia de repo (`raiz_proyecto` = `pwd`) | BLOQUEA | pasa |
+| F0.4 correlativo triple (v30 = paquete = máx(v29)+1) | BLOQUEA | pasa |
+| F0.5 `n` = `backlog_entradas_nuevas` (20 = 20) | BLOQUEA | pasa |
+| F0.5 numeración provisional contigua (175→194) | BLOQUEA | pasa |
+| F0.5 desplazamiento `k` | REPARA | reparada: k = 0, sin desplazamiento (no aplicó) |
+| F0.5 `sesion_nueva` = último + 1 (29+1=30) | ADVIERTE | pasa |
+| F0.5 `fecha_cierre` = fecha de máquina (2026-09-23) | ADVIERTE | pasa |
+| F0.5bis reparto contra disco, control positivo | BLOQUEA | pasa |
+| F0.6 `settings_version` transcribe línea del kit sincronizado | BLOQUEA | pasa |
+| F0.6 `compuerta_dudas` = sección del traspaso (5 = 5) | BLOQUEA | pasa |
+| F0.7 árbol limpio en rutas que el cierre escribe | BLOQUEA | pasa |
+| F0.7bis árbol fuera de esas rutas: > 50 MB o dato sensible | BLOQUEA | pasa |
+| F0.8 marcadores ESTADO literalmente `<<EJECUTOR>>` | BLOQUEA | pasa |
+| F2 encabezados estructurales únicos y presentes | BLOQUEA | pasa |
+| F2 fila del paquete normalizada al formato de la tabla | REPARA | advertencia: no requirió normalización (formato ya calzaba) |
+| F3 rótulo del catálogo aplicable sin disparo | ADVIERTE | pasa (R3 y R12 dispararon) |
+| F3 cifras sin rótulo en zonas declarativas | ADVIERTE | pasa (ninguna detectada) |
+| I1 numeración 1→N contigua | BLOQUEA | pasa |
+| I2 cuadratura del resumen (suma = 194) | BLOQUEA | pasa |
+| I2bis cuadratura temática (N=194, %=100, reparto 1:1, sin N<0) | BLOQUEA | pasa |
+| I3 filas del resumen (30+1=31) | BLOQUEA | pasa |
+| I4 sin magnitudes viejas sobrevivientes | ADVIERTE | reparada: rótulo R3 (línea de Cobertura) omitido en el primer commit de documentación, corregido en commit aparte `6ba5bb2` antes de F9 |
+| I5 sin autorreferencias de cifras | ADVIERTE | pasa |
+| I6 gobernanza (RUT, OneDrive, credenciales, coautoría, placeholders) | BLOQUEA | pasa |
+| I7 traspaso: exactamente 1 vigente tras archivado | BLOQUEA | pasa |
+| F7.1 staging por rutas explícitas, sin disparo de I6 | BLOQUEA | pasa |
+| F8 diff de distribución de los tres bloques de autoría | BLOQUEA | pasa (idéntico en TRASPASO, BACKLOG_ENTRADAS, ESTADO) |
+
+### F3 — Rótulos
+
+**Catálogo aplicable (de la tabla v29): R3, R12.**
+
+| ID | Rótulo | Disparos | Texto resultante |
+|---|---|---:|---|
+| R3 | Cobertura "sesiones 1 a N" | 3 | `sesiones 1–29 (traspasos v01–v29)` → `sesiones 1–30 (traspasos v01–v30)`; `deltas s11–s29` → `deltas s11–s30` |
+| R12 | Recuento temático: columna N, denominador y porcentajes | 7 | tabla de Clasificación temática recalculada sobre 194 (P 14→15, UI 65→76, D 2→4, DOC 46→51, REPO 27→28, Infra sin cambio, DT sin cambio) y filas Total de Clasificación y Resumen 174→194 |
+
+`catalogo no aplicable: R1, R2, R4, R5, R6, R7, R8, R9, R10, R11, R13 (11 de 13)`.
+
+Tags nuevos contados del propio bloque: DOC 5, UI 11, D 2, P 1, REPO 1 (= 20).
+Cuadratura: 174 + 20 = 194 = suma de la tabla temática recalculada.
+
+**Cifras sin rótulo** en zonas declarativas: ninguna nueva detectada.
+
+### F4 — Invariantes
+
+| # | Invariante | Resultado |
+|---|---|---|
+| I1 | Numeración contigua | verde — 1…194 sin huecos ni duplicados, solo sobre el Detalle cronológico |
+| I2 | Cuadratura | verde — las 31 filas del resumen suman 194 |
+| I2bis | Cuadratura temática | verde — columna N suma 194; % suman 100,0 (7,7+39,2+2,1+26,3+14,4+3,1+7,2); cada una de las 20 entradas del tramo aparece exactamente una vez en `reparto`; ninguna categoría con N<0 |
+| I3 | Filas del resumen | verde — 30 + 1 = 31 |
+| I4 | Sin magnitudes viejas | verde tras la reparación del rótulo R3 (commit `6ba5bb2`); las apariciones de `174` que quedan en el archivo son las propias de la sección "Sesión 29" (contexto histórico legítimo) |
+| I5 | Sin autorreferencias | verde — las entradas no declaran cuántas son; las cifras viven solo en la línea de delta, compuesta por el ejecutor |
+| I6 | Gobernanza | verde — cero OneDrive, `Co-Authored-By`, RUT, credenciales y placeholders en los archivos tocados |
+| I7 | Traspaso vigente | verde — v29 archivado con `git mv`, exactamente 1 vigente (v30) |
+
+### F7 — Commits
+
+**Hash de trabajo (F7.1):** `b4902ab` — 11 rutas: `50_documentacion/activa/50_datos_versionados_autorizados.md`,
+`50_documentacion/activa/encargos/encargo_memos_y_rutas_no_ejercidas.md`,
+`50_documentacion/andamios/20260909_plan_spinoff_trayectoria_traspasos.md`,
+`50_documentacion/andamios/20260911_brief_diseno_spinoff.md`,
+`50_documentacion/andamios/20260911_filas_anomalas_simce_rbd.xlsx`,
+`50_documentacion/andamios/20260917_instruccion_spinoff_trayectorias.md`,
+`50_documentacion/andamios/logs/20260829_memos_y_rutas_no_ejercidas_log.md`,
+`50_documentacion/andamios/logs/20260911_sesion30_errores_asistente.md`,
+`50_documentacion/andamios/logs/20260923_sesion31_errores_asistente.md`,
+`50_documentacion/andamios/mockup_trayectoria_traspasos.html`,
+`50_documentacion/andamios/verificar_trayectorias.R`.
+
+**Hash de documentación (F7.2):** `4cdfb0e` — traspaso v30 (nuevo), traspaso v29
+(archivado), backlog, cuatro salidas del escáner (con poda de 2 snapshots
+antiguos).
+
+**Hash de reparación (rótulo R3, ver I4):** `6ba5bb2` — corrección puntual de la
+línea de Cobertura del backlog, aplicada antes de F9 porque F3 se ejecutó
+después de F7.2 en esta corrida; declarada para que la degradación sea medible.
+
+### F8 — Distribución
+
+| Bloque | Destino | Resultado |
+|---|---|---|
+| TRASPASO | `traspasos/traspaso_cierre_v30.md` | idéntico |
+| BACKLOG_ENTRADAS | bloque `### Sesión 30` del backlog | idéntico |
+| ESTADO | `activa/ESTADO.md` | idéntico |
+
+`rm` del paquete ejecutado: única eliminación sancionada.
+
+### Desviaciones y observaciones
+
+1. **F3 se ejecutó después del commit de documentación (F7.2), no antes.** El
+   rótulo R3 (línea de Cobertura) quedó sin actualizar en `4cdfb0e` y se corrigió
+   en un commit aparte (`6ba5bb2`) antes de F9. Ningún dato ni bloque de autoría
+   se vio afectado: la Clasificación temática (R12) sí se aplicó correctamente
+   dentro de F2, antes de F7.2. **Para `herramientas_dev`:** el orden de fases
+   del §4 (F3 antes de F6) es correcto; el defecto es de ejecución en esta
+   corrida, no del instrumento.
+2. **Normativo del kit no versionado.** `SETTINGS_Y_PROMPTS_OPERACIONALES.md`
+   se copió a `activa/` (F0.0.b, REPARA) pero el archivo está en `.gitignore`
+   desde la entrada 134 del backlog (decisión permanente del titular): la
+   actualización de v34 a v38 queda en disco de esta estación y no viaja por
+   git. `settings_version` del paquete se verificó contra la línea real del kit
+   sincronizado, no contra la copia ignorada.
+3. **`commit_cierre` de `ESTADO.md` queda como `<<EJECUTOR>>` hasta F9.3**, como
+   en todos los cierres desde v12.
+
+### Lo que este cierre no verificó
+
+- Las cinco dudas de la compuerta del traspaso v30: registradas, ninguna
+  ejecutada por este cierre (son trabajo de sesión, no del instrumento).
+- Que Pages sirva un build distinto: esta sesión no tocó `docs/` ni el pipeline.
