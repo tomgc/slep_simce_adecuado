@@ -2477,6 +2477,8 @@ var FS_SVG = {
     // % dentro del segmento apilado
     valorBarra: 12,
     // % de la barra Adecuado
+    valorFuera: 10,
+    // % rescatado bajo el año (franja sin espacio)
     anioEje: 10.5,
     // año bajo el eje X
     marcaPreliminar: 13 // asterisco de dato preliminar
@@ -3053,6 +3055,26 @@ function SparklineSubchart(_ref22) {
 // ============================================================
 // Bar chart — últimas 3 aplicaciones
 // ============================================================
+// Dimensiones compartidas por la pantalla y por construirSvgGraficos, que
+// clona este SVG: si viven en dos sitios, cambiar una descuadra la otra.
+// El margen inferior reserva, además del año, dos renglones para las cifras
+// rescatadas (tres franjas bajo el umbral no pueden sumar 100).
+var RECENT_DIMS = {
+  W: 320,
+  H: 189,
+  M: {
+    top: 28,
+    right: 10,
+    bottom: 48,
+    left: 28
+  }
+};
+// Regla única de rotulado (la de slep_idps s29 y la del panorama s29): una
+// franja lleva su cifra adentro solo si la cifra cabe entera; si no, la cifra
+// baja completa bajo el año, con la inicial del nivel en su color. Nunca una
+// cifra encima de otra, nunca la misma cifra dentro y fuera. 16 px es el alto
+// del rótulo interno (FS_SVG.barras.valorBarra 12 px) más su aire.
+var ALTO_MIN_ROTULO_BARRAS = 16;
 function RecentBarsSubchart(_ref23) {
   var entity = _ref23.entity,
     gse = _ref23.gse,
@@ -3066,14 +3088,9 @@ function RecentBarsSubchart(_ref23) {
   React.useEffect(function () {
     var svg = d3.select(ref.current);
     svg.selectAll("*").remove();
-    var W = 320,
-      H = 165;
-    var M = {
-      top: 28,
-      right: 10,
-      bottom: 24,
-      left: 28
-    };
+    var W = RECENT_DIMS.W,
+      H = RECENT_DIMS.H,
+      M = RECENT_DIMS.M;
     var iw = W - M.left - M.right;
     var ih = H - M.top - M.bottom;
     var g = svg.attr("viewBox", "0 0 ".concat(W, " ").concat(H)).attr("preserveAspectRatio", "xMidYMid meet").append("g").attr("transform", "translate(".concat(M.left, ",").concat(M.top, ")"));
@@ -3117,7 +3134,9 @@ function RecentBarsSubchart(_ref23) {
       var bw = x.bandwidth();
       var isLowN = s.n_estab === 1;
       var opacity = isLowN ? 0.45 : 1;
-      if (showElemInsuf && s.pct < 100) {
+      var stacked = showElemInsuf && s.pct < 100;
+      var rescatadas = [];
+      if (stacked) {
         // Dos segmentos apilados sobre Adecuado: Elemental (medio) e
         // Insuficiente (arriba). Colores fijos, no por territorio, para que la
         // lectura sea consistente entre tarjetas.
@@ -3125,12 +3144,14 @@ function RecentBarsSubchart(_ref23) {
           key: "ele",
           val: s.pct_ele,
           fill: COLOR_ELEM,
-          label: "Elemental"
+          label: "Elemental",
+          sigla: "E"
         }, {
           key: "ins",
           val: s.pct_ins,
           fill: COLOR_INSUF,
-          label: "Insuficiente"
+          label: "Insuficiente",
+          sigla: "I"
         }];
         var base = s.pct; // apila desde el tope de Adecuado
         segs.forEach(function (seg) {
@@ -3146,10 +3167,12 @@ function RecentBarsSubchart(_ref23) {
               e.stopPropagation();
               tt.pin(e, s, s.year, ref.current);
             });
-            // Etiqueta % del segmento, en blanco, a la base de su franja.
-            // Solo si la franja tiene alto suficiente para no amontonar texto.
-            if (h >= 16) {
+            // Etiqueta % del segmento, en blanco, a la base de su franja,
+            // solo si cabe; si no, se rescata bajo el año.
+            if (h >= ALTO_MIN_ROTULO_BARRAS) {
               g.append("text").attr("x", xPos + bw / 2).attr("y", botY - 5).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.valorSegmento).attr("font-weight", 700).attr("fill", "#FFFFFF").attr("opacity", isLowN ? 0.7 : 1).style("pointer-events", "none").text(fmtPctShort(seg.val));
+            } else {
+              rescatadas.push(seg);
             }
           }
         });
@@ -3163,13 +3186,27 @@ function RecentBarsSubchart(_ref23) {
         tt.pin(e, s, s.year, ref.current);
       });
 
-      // En modo apilado la etiqueta va a la base de Adecuado, en blanco,
-      // para no caer sobre el segmento Elemental. En modo solo-Adecuado
-      // se mantiene encima de la barra, en color Adecuado.
-      var stacked = showElemInsuf && s.pct < 100;
-      var labelY = stacked ? Math.min(ih - 7, yAdec + 16) : yAdec - 5;
-      var fill = stacked ? "#FFFFFF" : COLOR_ADEC;
-      g.append("text").attr("x", xPos + bw / 2).attr("y", labelY).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.valorBarra).attr("font-weight", 700).attr("fill", fill).attr("opacity", isLowN ? 0.7 : 1).style("pointer-events", "none").text(fmtPctShort(s.pct));
+      // En modo apilado la etiqueta va dentro de Adecuado, en blanco, solo
+      // si la franja la aloja entera; si no, se rescata bajo el año (antes se
+      // dibujaba siempre y caía sobre la cifra de Elemental, s31). En modo
+      // solo-Adecuado se mantiene encima de la barra, en color Adecuado.
+      var adecCabe = hAdec >= ALTO_MIN_ROTULO_BARRAS;
+      if (!stacked || adecCabe) {
+        g.append("text").attr("x", xPos + bw / 2).attr("y", stacked ? yAdec + 16 : yAdec - 5).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.valorBarra).attr("font-weight", 700).attr("fill", stacked ? "#FFFFFF" : COLOR_ADEC).attr("opacity", isLowN ? 0.7 : 1).style("pointer-events", "none").text(fmtPctShort(s.pct));
+      } else {
+        rescatadas.unshift({
+          val: s.pct,
+          fill: COLOR_ADEC,
+          sigla: "A"
+        });
+      }
+
+      // Cifras rescatadas, bajo el año, en orden A, E, I. La sigla acompaña
+      // al color porque el color solo no identifica el nivel fuera de su
+      // franja; un decimal (fmtPct) para no escribir "0%" sobre un 0,4.
+      rescatadas.forEach(function (seg, k) {
+        g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 28 + k * 12).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.valorFuera).attr("font-weight", 700).attr("fill", seg.fill).attr("opacity", isLowN ? 0.7 : 1).style("pointer-events", "none").text(seg.sigla + " " + fmtPct(seg.val));
+      });
       g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 14).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.anioEje).attr("font-weight", 500).attr("fill", "#2E2230").text(s.year);
       if (s.preliminar) {
         g.append("text").attr("x", xPos + bw / 2).attr("y", -3).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.marcaPreliminar).attr("font-weight", 900).attr("fill", "#0062A0").text("*");
@@ -3539,13 +3576,17 @@ function construirSvgGraficos(_ref28) {
   // Dimensiones de cada SVG fuente (deben coincidir con viewBox de cada subchart)
   var SPARK_W = 320,
     SPARK_H = 90;
-  var BARS_W = 320,
-    BARS_H = 165;
+  var BARS_W = RECENT_DIMS.W,
+    BARS_H = RECENT_DIMS.H;
 
   // Layout del SVG compuesto
   var COL_GSE = 110; // ancho columna etiqueta GSE
   var CELL_W = 340; // ancho de cada celda de territorio
-  var CELL_H = SPARK_H + BARS_H + 30; // sparkline + barras + cabecera celda
+  // Alto de celda: las barras se clonan en y = SPARK_H + 36 (más abajo), así
+  // que la celda debe cubrir SPARK_H + 36 + BARS_H y un aire. Con 30 las
+  // barras sobresalían 6 px y cortaban el segundo renglón de cifras
+  // rescatadas bajo el año (s31).
+  var CELL_H = SPARK_H + 36 + BARS_H + 6;
   var HEADER_H = 72; // fila de encabezados de territorio
   var TITLE_H = 56; // fila de título del SVG
   var PAD = 20; // padding general
