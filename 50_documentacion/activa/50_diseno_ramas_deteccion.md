@@ -145,6 +145,12 @@ el patrón incluye la asignación, no solo el identificador.
     opera línea a línea y el texto con ajuste de línea parte las frases: una
     frase partida no matchea nunca, y su cero se lee como ausencia. Si hace
     falta la frase completa, normaliza antes (`tr -d '\n'`) o usa `grep -z`.
+12. **El alcance del instrumento iguala el alcance de la afirmación.** Si la
+    afirmación es local a un bloque (una función, una sección, un tramo del
+    template), el verificador mide ese bloque y nada más: se extrae por anclas
+    (regla 11) y la extracción lleva su propio control positivo (sale no vacía y
+    contiene un marcador conocido del bloque). Medir el archivo completo para
+    probar algo local produce ceros y conteos que pertenecen a otro universo.
 
 ---
 
@@ -169,6 +175,9 @@ el patrón incluye la asignación, no solo el identificador.
       versionar del propio encargo: su `.md` y su log.
 - [ ] Ningún patrón de verificación sobre prosa abarca más de una palabra
       ancla.
+- [ ] Cada verificador declara su universo (archivo, bloque o función) y ese
+      universo es el mismo de la afirmación; si es un bloque, se extrae por
+      anclas y la extracción tiene control positivo.
 
 ---
 
@@ -256,3 +265,34 @@ ningún escenario es un centinela mudo, y el control positivo es lo único que l
 distingue de una ausencia real.
 
 **Regla.** Ver la regla 11 del `## 3`.
+
+---
+
+## 7. Una falla de alcance: el universo del instrumento, más ancho que la afirmación
+
+### A29-4. Tres verificadores midieron el archivo cuando la afirmación era de un bloque
+
+**Qué pasó, tres veces en la sesión 29.** El esperado-0 de
+`fmtPctShort(seg.val)`, el estado esperado de T4 y los `??` de FASE 0 se
+midieron sobre el archivo o el árbol completo, cuando cada afirmación era local
+a un bloque. El primero costó una duda que exigió cuatro mediciones para
+descartarse (traspaso v29, §15, error 6).
+
+**Familia.** Pertenece a la del `## 1`: el verificador no midió la afirmación.
+Pero la causa es otra que en A-s28-2 a A-s28-4. El patrón estaba bien escrito y
+matcheaba lo que debía; lo que sobraba era el universo de búsqueda. Por eso no
+lo cubre la regla 6, que habla de qué prueba la fuente y no de dónde se busca.
+
+**Por qué importa.** Un universo más ancho que la afirmación produce dos
+errores simétricos: un cero que no prueba ausencia en el bloque (porque el
+conteo del archivo puede cancelarse o venir de otro sitio) y un conteo mayor
+que cero que no prueba presencia en el bloque (porque la coincidencia puede
+estar fuera de él). En los dos casos el resultado es una duda que se resuelve
+midiendo otra vez, que es exactamente el costo que el verificador existía para
+evitar.
+
+**Regla.** Ver la regla 12 del `## 3`.
+
+**Comprobación.** Para cada verificador del encargo, escribir en una línea
+"afirma X sobre U" y "mide sobre U'". Si U' ≠ U, el verificador no está listo.
+
