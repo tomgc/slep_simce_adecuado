@@ -13,7 +13,10 @@
 #   2. Construye el JSON con meta + catálogos + datos columnares.
 #   3. Comprime el JSON (gzip + base64); el template lo descomprime en cliente
 #      con pako.inflate. Lee la plantilla, el D3 minificado y pako.
-#   4. Reemplaza placeholders __D3_INLINE__, __PAKO_INLINE__ y __JSON_DATA__.
+#   4. Reemplaza placeholders __D3_INLINE__, __PAKO_INLINE__, __JSON_DATA__,
+#      __REACT_INLINE__ y __REACTDOM_INLINE__, y transpila el bloque JSX de la
+#      app con Babel standalone dentro de V8 (s31). El HTML resultante no
+#      carga nada por red: React y ReactDOM van inline y Babel no viaja.
 #   5. Escribe 40_salidas/motor_comparacion.html (UTF-8).
 #
 # Salida: 40_salidas/motor_comparacion.html
@@ -23,6 +26,105 @@
 # ----------------------------------------------------------------------------
 
 library(here)
+
+
+# ============================================================================
+# Bloque 0 — Constantes y funciones auxiliares (s31, retiro de unpkg.com)
+# ============================================================================
+
+# Dependencias JavaScript vendorizadas en 10_utils/. El sha384 (base64) es el
+# mismo SRI que la plantilla usaba contra unpkg.com hasta la sesión 30: si el
+# archivo en disco no lo reproduce, el build se detiene. La URL solo sirve
+# para volver a descargarlo a mano; el build no usa la red.
+VENDOR_JS <- list(
+  react = list(
+    ruta = here::here("10_utils", "react.production.min.js"),
+    sri  = "DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z",
+    url  = "https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+  ),
+  reactdom = list(
+    ruta = here::here("10_utils", "react-dom.production.min.js"),
+    sri  = "gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1",
+    url  = "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+  ),
+  babel = list(
+    ruta = here::here("10_utils", "babel.min.js"),
+    sri  = "m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y",
+    url  = "https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+  )
+)
+
+# Ancla del bloque de la app en la plantilla. Se edita como JSX; el generador
+# lo reemplaza por su transpilado. Presets iguales a los que Babel usaba en el
+# navegador (env, react), con runtime "classic" fijado: el automático emite
+# _jsx(), que el motor inline no resuelve (A34 de slep_categoria_desempeno).
+ANCLA_JSX_APERTURA <- '<script type="text/babel" data-presets="env,react">'
+ANCLA_JSX_CIERRE   <- "</script>"
+OPCIONES_BABEL <- paste0(
+  "{presets: ['env', ['react', {runtime: 'classic'}]], ",
+  "sourceType: 'script', comments: true, compact: false}"
+)
+
+for (paquete in c("V8", "openssl")) {
+  if (!requireNamespace(paquete, quietly = TRUE)) {
+    stop("Falta el paquete ", paquete, ". Instalar con: install.packages(\"",
+         paquete, "\")")
+  }
+}
+
+# Lee un archivo de texto completo como una sola cadena UTF-8.
+leer_texto <- function(ruta) {
+  paste(readLines(ruta, encoding = "UTF-8", warn = FALSE), collapse = "\n")
+}
+
+# Verifica que el archivo exista y que su sha384 sea el declarado.
+verificar_vendor <- function(dep) {
+  if (!file.exists(dep$ruta)) {
+    stop("No existe ", dep$ruta, "\n  Descargar con: curl -fsSL ", dep$url,
+         " -o ", fs::path_rel(dep$ruta, here::here()))
+  }
+  con <- file(dep$ruta, open = "rb")
+  on.exit(close(con))
+  sri <- openssl::base64_encode(openssl::sha384(con))
+  if (!identical(sri, dep$sri)) {
+    stop("sha384 inesperado en ", dep$ruta, "\n  esperado: ", dep$sri,
+         "\n  obtenido: ", sri)
+  }
+  invisible(TRUE)
+}
+
+# Reemplaza la única aparición de `marcador` por `valor`, sin interpretar
+# barras invertidas ni expresiones regulares en `valor` (el código minificado
+# las contiene). Se detiene si el marcador no aparece exactamente una vez.
+reemplazar_literal <- function(texto, marcador, valor) {
+  pos <- gregexpr(marcador, texto, fixed = TRUE)[[1]]
+  if (length(pos) != 1L || pos[1] < 0) {
+    stop("El marcador debe aparecer exactamente una vez: ", marcador,
+         " (apariciones: ", sum(pos > 0), ")")
+  }
+  paste0(substr(texto, 1L, pos - 1L), valor,
+         substr(texto, pos + nchar(marcador), nchar(texto)))
+}
+
+# Transpila JSX a JavaScript con Babel standalone dentro de V8. Devuelve el
+# código; se detiene si la salida no es JavaScript válido o conserva rastros
+# del runtime automático.
+transpilar_jsx <- function(jsx, babel_code) {
+  ctx <- V8::v8()
+  ctx$eval(babel_code)
+  ctx$assign("fuente_jsx", jsx)
+  ctx$eval(paste0("var salida_babel = Babel.transform(fuente_jsx, ",
+                  OPCIONES_BABEL, ").code;"))
+  salida <- ctx$get("salida_babel")
+  if (!isTRUE(ctx$validate(salida))) {
+    stop("La salida de Babel no es JavaScript válido.")
+  }
+  if (grepl("_jsx(", salida, fixed = TRUE) ||
+      grepl("react/jsx-runtime", salida, fixed = TRUE)) {
+    stop("La salida usa el runtime automático de JSX; se esperaba classic.")
+  }
+  salida
+}
 
 
 # ============================================================================
@@ -328,6 +430,40 @@ message(sprintf("    pako:      %d caracteres (%.0f KB)",
 
 
 # ============================================================================
+# Bloque 3b — React vendorizado y transpilación de la app (s31)
+# ============================================================================
+
+message("[3b] Verificando dependencias vendorizadas y transpilando la app...")
+
+invisible(lapply(VENDOR_JS, verificar_vendor))
+react_code    <- leer_texto(VENDOR_JS$react$ruta)
+reactdom_code <- leer_texto(VENDOR_JS$reactdom$ruta)
+babel_code    <- leer_texto(VENDOR_JS$babel$ruta)
+
+ini_jsx <- gregexpr(ANCLA_JSX_APERTURA, plantilla, fixed = TRUE)[[1]]
+if (length(ini_jsx) != 1L || ini_jsx[1] < 0) {
+  stop("La plantilla debe contener una sola vez: ", ANCLA_JSX_APERTURA)
+}
+cuerpo_desde <- ini_jsx[1] + nchar(ANCLA_JSX_APERTURA)
+resto        <- substr(plantilla, cuerpo_desde, nchar(plantilla))
+fin_rel      <- regexpr(ANCLA_JSX_CIERRE, resto, fixed = TRUE)
+if (fin_rel < 0) stop("El bloque JSX de la plantilla no tiene cierre.")
+app_jsx <- substr(resto, 1L, fin_rel - 1L)
+app_js  <- transpilar_jsx(app_jsx, babel_code)
+
+plantilla <- paste0(
+  substr(plantilla, 1L, ini_jsx[1] - 1L),
+  "<script>\n", app_js, "\n  ",
+  substr(resto, fin_rel, nchar(resto))
+)
+
+message(sprintf("    React:     %d caracteres", nchar(react_code)))
+message(sprintf("    ReactDOM:  %d caracteres", nchar(reactdom_code)))
+message(sprintf("    App JSX:   %d caracteres -> JS %d caracteres",
+                nchar(app_jsx), nchar(app_js)))
+
+
+# ============================================================================
 # Bloque 4 — Reemplazar placeholders y escribir HTML
 # ============================================================================
 
@@ -350,6 +486,8 @@ if (!grepl("__JSON_DATA__", plantilla, fixed = TRUE)) {
 html <- sub("__D3_INLINE__",   d3_code,   plantilla, fixed = TRUE)
 html <- sub("__PAKO_INLINE__", pako_code, html,      fixed = TRUE)
 html <- sub("__JSON_DATA__",   json_b64,  html,      fixed = TRUE)
+html <- reemplazar_literal(html, "__REACT_INLINE__",    react_code)
+html <- reemplazar_literal(html, "__REACTDOM_INLINE__", reactdom_code)
 
 # Escribir como UTF-8.
 ruta_salida <- here::here("40_salidas", "motor_comparacion.html")
@@ -368,6 +506,7 @@ n_simce_rbd <- nrow(df_simce_rbd)
 # Liberar objetos grandes antes del GC automático para evitar C stack overflow.
 # json_str, json_b64 y html pueden superar 14 MB combinados en memoria.
 rm(json_str, json_gzip, json_b64, html, d3_code, pako_code, plantilla,
+   react_code, reactdom_code, babel_code, app_jsx, app_js, resto,
    simce_rbd_lst, df_simce_rbd)
 gc(verbose = FALSE)
 
