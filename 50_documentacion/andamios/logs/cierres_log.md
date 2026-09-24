@@ -869,3 +869,102 @@ rename, no como alta+baja separadas).
   cambió en esta sesión (`docs/index.html` sin modificar).
 
 **Estado del push:** por publicar (push_autorizado: si).
+
+## v34 — 2026-09-24
+
+**Instrumento:** `cierre_sesion_autonomo_cc_v15.md` | kit `63b3233`
+**kit:** sincronizado (`fetch` + `merge --ff-only`, sin divergencia)
+**normativos:** al día (POLITICA v5.8, SETTINGS v38 — iguales al kit)
+
+### Tabla de severidades
+
+| condicion | severidad | resultado |
+|---|---|---|
+| F0.0.a kit sincronizado | BLOQUEA | pasa |
+| F0.0.b normativos vs kit | REPARA | pasa (POLITICA y SETTINGS ya al día, sin copia necesaria) |
+| F0.1 `.git` y `traspasos/` existen | BLOQUEA | pasa |
+| F0.2 paquete único, front matter completo, delimitadores, cero placeholders | BLOQUEA | pasa |
+| F0.3 guardia de repo (`raiz_proyecto` = `pwd`) | BLOQUEA | pasa |
+| F0.4 correlativo triple (v34 = paquete = máx(v33)+1) | BLOQUEA | pasa |
+| F0.5 `n` = `backlog_entradas_nuevas` (6 = 6) | BLOQUEA | pasa |
+| F0.5 numeración provisional contigua (211→216) | BLOQUEA | pasa |
+| F0.5 desplazamiento `k` | REPARA | pasa (k = 0, sin desplazamiento) |
+| F0.5 `sesion_nueva` = último + 1 (33+1=34) | ADVIERTE | pasa |
+| F0.5 `fecha_cierre` = fecha de máquina (2026-09-24) | ADVIERTE | pasa |
+| F0.5bis reparto contra disco, control positivo | BLOQUEA | pasa |
+| F0.6 `settings_version` transcribe línea del kit sincronizado | BLOQUEA | pasa |
+| F0.6 `compuerta_dudas` = sección del traspaso (2 = 2) | BLOQUEA | pasa |
+| F0.7 árbol limpio en rutas que el cierre escribe | BLOQUEA | pasa |
+| F0.7bis árbol fuera de esas rutas: > 50 MB o dato sensible | BLOQUEA | pasa (única ruta: `andamios/logs/20260924_sesion34_errores_asistente.md`) |
+| F0.8 marcadores ESTADO literalmente `<<EJECUTOR>>` | BLOQUEA | pasa |
+| F2 encabezados estructurales únicos y presentes | BLOQUEA | pasa |
+| F2 fila del paquete normalizada al formato de la tabla | REPARA | pasa (paquete sin fila propia; resumen y delta compuestos por el ejecutor) |
+| F3 rótulo del catálogo aplicable sin disparo | ADVIERTE | pasa (R3 y R12 dispararon, catálogo aplicable sin miembros mudos) |
+| F3 cifras sin rótulo en zonas declarativas | ADVIERTE | pasa (ninguna detectada) |
+| I1 numeración 1→N contigua | BLOQUEA | pasa |
+| I2 cuadratura del resumen (suma = 216) | BLOQUEA | pasa |
+| I2bis cuadratura temática (N=216, %=100,0, reparto 1:1, sin N<0) | BLOQUEA | pasa |
+| I3 filas del resumen (34+1=35) | BLOQUEA | pasa |
+| I4 sin magnitudes viejas sobrevivientes | ADVIERTE | pasa (apariciones de `210` son autorreferencias legítimas del propio Detalle cronológico: la entrada 210 y el delta de la Sesión 33) |
+| I5 sin autorreferencias de cifras | ADVIERTE | pasa |
+| I6 gobernanza (RUT, OneDrive, credenciales, coautoría, placeholders) | BLOQUEA | pasa |
+| I7 traspaso: exactamente 1 vigente tras archivado | BLOQUEA | pasa |
+| F7.1 staging por rutas explícitas, sin disparo de I6 | BLOQUEA | pasa |
+| F8 diff de distribución de los tres bloques de autoría | BLOQUEA | pasa (idéntico en TRASPASO, BACKLOG_ENTRADAS, ESTADO) |
+
+**renumeracion:** sin desplazamiento (k = 0).
+
+### F3 — Rótulos
+
+**Catálogo aplicable (de la tabla v33): R3, R12.**
+
+| ID | Rótulo | Disparos | Texto resultante |
+|---|---:|---:|---|
+| R3 | Cobertura "sesiones 1 a N" | 1 | `sesiones 1–33 (traspasos v01–v33)` → `sesiones 1–34 (traspasos v01–v34)`; `deltas s11–s33` → `deltas s11–s34` |
+| R12 | Recuento temático: columna N, denominador y porcentajes | 7 | tabla de Clasificación temática recalculada sobre 216 (P 17 sin cambio de N, % 8,1→7,9; UI 82→83, % 39,0→38,4; D 8→9, % 3,8→4,2; DOC 53→54, % 25,2→25,0; REPO 30→31, % 14,3→14,4; Infra 6→7, % 2,9→3,2; DT 14→15, % 6,7→6,9) y fila Total 210→216 |
+
+`catalogo no aplicable: R1, R2, R4, R5, R6, R7, R8, R9, R10, R11, R13 (11 de 13)`.
+
+**Cifras sin rótulo** en zonas declarativas: ninguna nueva detectada.
+
+### F4 — Invariantes
+
+| # | Invariante | Resultado |
+|---|---|---|
+| I1 | Numeración contigua | verde — 1…216 sin huecos ni duplicados, solo sobre el Detalle cronológico |
+| I2 | Cuadratura | verde — las 34 filas de sesión del resumen (más la fila histórica sin número de sesión) suman 216 |
+| I2bis | Cuadratura temática | verde — columna N suma 216; % suman 100,0; cada una de las 6 entradas del tramo aparece exactamente una vez en `reparto`; ninguna categoría con N<0 |
+| I3 | Filas del resumen | verde — 34 + 1 = 35 |
+| I4 | Sin magnitudes viejas | verde — apariciones de `210` fuera de tabla son autorreferencias legítimas dentro del propio Detalle cronológico (entrada 210 y el delta de la Sesión 33) |
+| I5 | Sin autorreferencias | verde — las entradas no declaran cuántas son; las cifras viven solo en la línea de delta, compuesta por el ejecutor |
+| I6 | Gobernanza | verde — cero OneDrive, `Co-Authored-By`, RUT, credenciales y placeholders en los archivos tocados |
+| I7 | Traspaso vigente | verde — v33 archivado con `git mv`, exactamente 1 vigente (v34) |
+
+### F7 — Commits
+
+**Hash de trabajo (F7.1):** `e629a8b` — 1 ruta de F0 7bis:
+`50_documentacion/andamios/logs/20260924_sesion34_errores_asistente.md`.
+
+**Hash de documentación (F7.2):** `2c6d0e8` — traspaso v34 (nuevo), traspaso v33
+(archivado), backlog, dos salidas del escáner (con poda de 2 snapshots antiguos,
+detectada por git como rename 85%).
+
+### F8 — Distribución
+
+| Bloque | Destino | Resultado |
+|---|---|---|
+| TRASPASO | `traspasos/traspaso_cierre_v34.md` | idéntico |
+| BACKLOG_ENTRADAS | bloque `### Sesión 34` del backlog | idéntico |
+| ESTADO | `activa/ESTADO.md` | idéntico |
+
+`rm` del paquete ejecutado: única eliminación sancionada.
+
+### Lo que este cierre no verificó
+
+- Las dos dudas de la compuerta del traspaso v34: registradas, ninguna
+  ejecutada por este cierre (son trabajo de sesión, no del instrumento).
+- Que Pages sirva el build de esta sesión: no aplica, el motor publicado no
+  cambió en esta sesión salvo el contraste de Elemental ya publicado en
+  `50323ab`, previo a este cierre.
+
+**Estado del push:** por publicar (push_autorizado: si).
