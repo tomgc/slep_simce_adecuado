@@ -25,6 +25,14 @@
 #   - construir_datos_trayectorias(insumos): la lista DATA que consume la
 #     plantilla (anios, meta, nac, datos, nube, comunas).
 #   - datos_a_json(DATA): el JSON compacto que se inserta en la plantilla.
+#   - cifras_notas(insumos, DATA): las cifras de las notas metodológicas, ya
+#     formateadas, que el generador inserta en los marcadores __NOTA_*__.
+#
+# Regla de filas (sesión 33, decisión del titular): la misma del motor
+# (invariante 5, 33_generar_html.R), es decir, sin marca de la Agencia y con al
+# menos UMBRAL_EVALUADOS evaluados. El mockup de la sesión 30 incluía las filas
+# marcadas; `excluir_marcadas = FALSE` reproduce su regla y solo lo usa la
+# prueba D10, que coteja la maquinaria de agregación contra él.
 #
 # Universos (reconstruidos del mockup y comprobados celda a celda contra él en
 # la sesión 32, prueba D10 de 36_verificar_trayectorias.R: solo difieren
@@ -49,6 +57,12 @@ DEPE_MUNICIPAL <- "1"
 # redondeo anómalo de la Agencia.
 SUMA_NIVELES_MIN <- 99
 SUMA_NIVELES_MAX <- 101
+# Umbral MINEDUC de evaluados por fila: el mismo que aplica el motor
+# (33_generar_html.R, invariante 5). En la base de la vista no descarta ninguna
+# fila, porque la Agencia no publica porcentajes por nivel bajo ese umbral
+# (sesión 33); se declara igual para que la regla sea la del motor y no dependa
+# de esa práctica de publicación.
+UMBRAL_EVALUADOS <- 10
 
 # Decimales de los porcentajes publicados en la vista. El redondeo ocurre una
 # sola vez, al final, sobre numeradores acumulados (A29-5).
@@ -105,7 +119,8 @@ leer_insumos_trayectorias <- function() {
     simce = leer_intermedio(
       "simce_rbd.parquet",
       c("anio", "nivel", "prueba", "rbd", "cod_com_rbd", "cod_grupo",
-        "cod_depe2", "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins")
+        "cod_depe2", "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins",
+        "marca")
     ),
     sleps = leer_intermedio(
       "sleps_chile.parquet",
@@ -122,17 +137,23 @@ leer_insumos_trayectorias <- function() {
 # ---- Base y agregación -----------------------------------------------------
 
 # Filas con los tres niveles y el número de evaluados publicados, y con una
-# suma de niveles coherente. Agrega la clave nivel_prueba y los numeradores
-# crudos de Adecuado e Insuficiente.
-base_valida <- function(simce) {
-  simce |>
+# suma de niveles coherente; con `excluir_marcadas = TRUE` (la regla vigente),
+# además sin marca de la Agencia y con al menos UMBRAL_EVALUADOS evaluados.
+# Agrega la clave nivel_prueba y los numeradores crudos de Adecuado e
+# Insuficiente.
+base_valida <- function(simce, excluir_marcadas = TRUE) {
+  base <- simce |>
     dplyr::filter(
       !is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins),
       !is.na(nalu)
     ) |>
     dplyr::mutate(suma_niveles = palu_eda_ade + palu_eda_ele + palu_eda_ins) |>
     dplyr::filter(suma_niveles >= SUMA_NIVELES_MIN,
-                  suma_niveles <= SUMA_NIVELES_MAX) |>
+                  suma_niveles <= SUMA_NIVELES_MAX)
+  if (excluir_marcadas) {
+    base <- base |> dplyr::filter(is.na(marca), nalu >= UMBRAL_EVALUADOS)
+  }
+  base |>
     dplyr::mutate(
       rbd     = as.character(rbd),
       anio    = as.integer(anio),
@@ -220,11 +241,13 @@ orden_gse <- function(g) ifelse(g == GSE_TOTAL, "0", g)
 # `conservar_brutos = TRUE` agrega a `datos` y `nube` los numeradores y el
 # denominador enteros (ade_num, ins_num, den); solo lo usa la verificación,
 # para distinguir un empate de redondeo de una diferencia real.
-construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE) {
+# `excluir_marcadas` pasa a base_valida(); FALSE solo para la prueba D10.
+construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
+                                         excluir_marcadas = TRUE) {
   catalogo <- insumos$sleps |>
     dplyr::mutate(rbd = as.character(rbd), cod_slep = as.character(cod_slep))
 
-  base <- base_valida(insumos$simce)
+  base <- base_valida(insumos$simce, excluir_marcadas)
 
   anios   <- sort(unique(base$anio))
   n_anios <- length(anios)
@@ -313,4 +336,126 @@ datos_a_json <- function(DATA) {
     DATA, dataframe = "values", auto_unbox = TRUE, digits = NA,
     null = "null", na = "null"
   )))
+}
+
+
+# ---- Cifras de las notas metodológicas -------------------------------------
+# Las notas de la vista citan cifras de los datos. Hasta la sesión 32 eran
+# literales copiados del mockup y quedaban obsoletas con cualquier cambio de
+# regla o de año; desde la sesión 33 las calcula esta función y el generador
+# las inserta en los marcadores __NOTA_<NOMBRE>__ de la plantilla.
+#
+# Definiciones (sesión 33). Movimiento anual: cambio absoluto de % Adecuado
+# entre años medidos consecutivos, por Servicio Local y por nivel y prueba, en
+# el total de grupos y el panel de todos los establecimientos; la mediana sobre
+# los Servicios Locales y el máximo del referente. Correlación: Pearson entre
+# ese cambio y el cambio nacional del mismo nivel, prueba y año. Las cifras
+# 2,9 y 0,53 que traía el mockup no se reproducen con ninguna definición
+# medida sobre su propio DATA; con esta, el mockup da 2,1 y 0,52. El ejemplo
+# de la nube (Palena, 2018) es una ilustración elegida a mano: queda literal en
+# la plantilla y la prueba D11 comprueba que sigue en los datos.
+
+# Serie en que se mide la variación de la composición: la que la vista abre por
+# defecto (4° básico, Lectura).
+NP_NOTAS <- "4b_lect"
+# Variación de la composición que la nota declara: (máximo - mínimo) / máximo
+# de los establecimientos con resultado, por Servicio Local.
+UMBRAL_COMPOSICION <- 0.20
+
+# Formato de cifras en español: miles con punto y decimales con coma. Los
+# decimales se redondean con los empates hacia arriba, como el resto de la
+# vista (el margen absorbe el error de representación binaria).
+fmt_entero <- function(x) {
+  formatC(as.numeric(x), format = "f", digits = 0, big.mark = ".",
+          decimal.mark = ",")
+}
+fmt_decimal <- function(x, decimales) {
+  escala <- 10^decimales
+  formatC(floor(x * escala + 0.5 + 1e-9) / escala, format = "f",
+          digits = decimales, big.mark = ".", decimal.mark = ",")
+}
+
+# Cambio absoluto de % Adecuado entre años medidos consecutivos de una serie
+# (2018 a 2022 cuenta como consecutivo: no hay medición entre ellos).
+cambios_anuales <- function(df, claves) {
+  df |>
+    dplyr::arrange(anio) |>
+    dplyr::mutate(.by = dplyr::all_of(claves), d_ade = ade - dplyr::lag(ade)) |>
+    dplyr::filter(!is.na(d_ade))
+}
+
+# Devuelve una lista con nombre: cada elemento es el texto que reemplaza al
+# marcador __NOTA_<nombre>__.
+cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
+  catalogo <- insumos$sleps |>
+    dplyr::mutate(rbd = as.character(rbd), cod_slep = as.character(cod_slep))
+  np_pruebas <- setdiff(unique(DATA$datos$np), NP_TODO)
+
+  # -- Filas de los Servicios Locales: qué entra y qué se cae --
+  filas_slep <- insumos$simce |>
+    dplyr::mutate(rbd = as.character(rbd)) |>
+    dplyr::semi_join(dplyr::distinct(catalogo, rbd), by = "rbd") |>
+    dplyr::mutate(
+      con_pct = !is.na(palu_eda_ade) & !is.na(palu_eda_ele) &
+        !is.na(palu_eda_ins) & !is.na(nalu),
+      suma = palu_eda_ade + palu_eda_ele + palu_eda_ins,
+      coherente = con_pct & suma >= SUMA_NIVELES_MIN & suma <= SUMA_NIVELES_MAX,
+      marcada = coherente & (!is.na(marca) | nalu < UMBRAL_EVALUADOS)
+    )
+  n_marcadas <- if (excluir_marcadas) sum(filas_slep$marcada) else 0L
+  pct_marcadas <- 100 * sum(filas_slep$nalu[filas_slep$marcada]) /
+    sum(filas_slep$nalu[filas_slep$coherente])
+
+  # -- Pares Servicio Local por grupo y grupos que cambian entre niveles --
+  base <- base_valida(insumos$simce, excluir_marcadas)
+  pares_existen <- base |>
+    dplyr::inner_join(dplyr::distinct(catalogo, cod_slep, rbd), by = "rbd") |>
+    dplyr::filter(!is.na(cod_grupo)) |>
+    dplyr::distinct(cod_slep, cod_grupo) |>
+    nrow()
+  grupos_escuela <- base |>
+    dplyr::filter(!is.na(cod_grupo)) |>
+    dplyr::summarise(.by = c(rbd, anio), grupos = dplyr::n_distinct(cod_grupo))
+
+  # -- Movimiento anual: Servicios Locales, referente y país --
+  series <- DATA$datos |>
+    dplyr::filter(g == GSE_TOTAL, panel == 0L, np %in% np_pruebas)
+  mov_slep <- cambios_anuales(dplyr::filter(series, id != ID_REFERENTE), c("id", "np"))
+  mov_ref  <- cambios_anuales(dplyr::filter(series, id == ID_REFERENTE), c("id", "np"))
+  nac_df <- do.call(rbind, lapply(names(DATA$nac), function(k) {
+    partes <- strsplit(k, "|", fixed = TRUE)[[1]]
+    data.frame(np = partes[1], g = partes[2],
+               anio = as.integer(names(DATA$nac[[k]])),
+               ade = vapply(DATA$nac[[k]], `[`, numeric(1), 1))
+  }))
+  mov_nac <- cambios_anuales(
+    dplyr::filter(nac_df, g == GSE_TOTAL, np %in% np_pruebas), "np"
+  )
+  cotejo_nac <- dplyr::inner_join(mov_slep, mov_nac, by = c("np", "anio"),
+                                  suffix = c("", "_nac"))
+
+  # -- Composición: variación de los establecimientos con resultado --
+  composicion <- DATA$datos |>
+    dplyr::filter(g == GSE_TOTAL, panel == 0L, np == NP_NOTAS, id != ID_REFERENTE) |>
+    dplyr::summarise(.by = id, var = (max(e) - min(e)) / max(e))
+
+  list(
+    N_REFERENTE      = fmt_entero(DATA$meta[[ID_REFERENTE]]$cat),
+    N_COMUNAS        = fmt_entero(length(DATA$comunas)),
+    MOV_MEDIANA      = fmt_decimal(stats::median(abs(mov_slep$d_ade)), 1),
+    MOV_REF_MAX      = fmt_decimal(max(abs(mov_ref$d_ade)), 1),
+    CORR_NAC         = fmt_decimal(stats::cor(cotejo_nac$d_ade, cotejo_nac$d_ade_nac), 2),
+    N_COMPOSICION    = fmt_entero(sum(composicion$var > UMBRAL_COMPOSICION)),
+    FILAS_TOTAL      = fmt_entero(nrow(filas_slep)),
+    FILAS_SIN_PCT    = fmt_entero(sum(!filas_slep$con_pct)),
+    FILAS_SUPRIMIDAS = fmt_entero(sum(filas_slep$con_pct & !filas_slep$coherente)),
+    FILAS_MARCADAS   = fmt_entero(n_marcadas),
+    PCT_MARCADAS     = fmt_decimal(pct_marcadas, 1),
+    FILAS_VALIDAS    = fmt_entero(sum(filas_slep$coherente) - n_marcadas),
+    PARES_EXISTEN    = fmt_entero(pares_existen),
+    GSE_MEZCLA       = fmt_entero(sum(grupos_escuela$grupos > 1)),
+    GSE_PARES        = fmt_entero(nrow(grupos_escuela)),
+    UMBRAL           = fmt_entero(UMBRAL_EVALUADOS),
+    UMBRAL_COMPOSICION = fmt_entero(100 * UMBRAL_COMPOSICION)
+  )
 }
