@@ -2428,6 +2428,15 @@ var MAX_ENTIDADES = 5;
 var COLOR_ADEC = "#0C4682"; // azul (Adecuado)
 var COLOR_ELEM = "#6BA0CE"; // azul claro (Elemental)
 var COLOR_INSUF = "#79204F"; // vino (Insuficiente)
+// Tinta de cada nivel cuando su cifra se escribe como texto sobre la celda
+// blanca (cifras rescatadas bajo el año). El azul claro de la franja
+// Elemental da 2,78:1 sobre blanco; su tinta es el mismo tono, más oscuro,
+// con 4,95:1 (WCAG AA ≥ 4,5:1), y sigue más clara que la de Adecuado. Las
+// franjas conservan el color del nivel (D-color-nivel).
+var TINTA_ELEM = "#3874A9";
+var tintaNivel = function tintaNivel(fill) {
+  return fill === COLOR_ELEM ? TINTA_ELEM : fill;
+};
 
 // ============================================================
 // Escala tipográfica del SVG
@@ -3138,7 +3147,7 @@ function RecentBarsSubchart(_ref22) {
       // al color porque el color solo no identifica el nivel fuera de su
       // franja; un decimal (fmtPct) para no escribir "0%" sobre un 0,4.
       rescatadas.forEach(function (seg, k) {
-        g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 28 + k * 12).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.valorFuera).attr("font-weight", 700).attr("fill", seg.fill).attr("opacity", isLowN ? 0.7 : 1).style("pointer-events", "none").text(seg.sigla + " " + fmtPct(seg.val));
+        g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 28 + k * 12).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.valorFuera).attr("font-weight", 700).attr("fill", tintaNivel(seg.fill)).attr("opacity", isLowN ? 0.7 : 1).style("pointer-events", "none").text(seg.sigla + " " + fmtPct(seg.val));
       });
       g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 14).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.barras.anioEje).attr("font-weight", 500).attr("fill", "#2E2230").text(s.year);
       if (s.preliminar) {
@@ -4012,7 +4021,7 @@ function dibujarPanoramaEnGrupo(g, _ref33) {
       // (fmtPct, no fmtPctShort): redondear 0,2 a "0%" anularía justamente
       // la cifra que esta línea existe para rescatar.
       rescatadas.forEach(function (seg, k) {
-        g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 44 + k * 12).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.panorama.valorFuera).attr("font-weight", 700).attr("fill", seg.fill).text(seg.sigla + " " + fmtPct(seg.val));
+        g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 44 + k * 12).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.panorama.valorFuera).attr("font-weight", 700).attr("fill", tintaNivel(seg.fill)).text(seg.sigla + " " + fmtPct(seg.val));
       });
     }
     g.append("text").attr("x", xPos + bw / 2).attr("y", ih + 16).attr("text-anchor", "middle").attr("font-family", "system-ui, sans-serif").attr("font-size", FS_SVG.panorama.anioEje).attr("font-weight", 500).attr("fill", "#2E2230").text(s.year);
