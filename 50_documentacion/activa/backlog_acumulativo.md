@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–31 (traspasos v01–v31). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s31 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–32 (traspasos v01–v32). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s32 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -48,14 +48,14 @@ detalle.
 
 | Código | Categoría | N° | % | Descripción y ejemplos |
 |--------|-----------|----|---|------------------------|
-| P | Pipeline R | 15 | 7,5% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
-| UI | Motor HTML / React / D3 | 79 | 39,3% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
-| D | Datos / Insumos | 6 | 3,0% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
-| DOC | Documentación | 52 | 25,9% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
-| REPO | Gobernanza del repo / Despliegue | 29 | 14,4% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
-| Infra | Infraestructura (escáner, orquestador, CI) | 6 | 3,0% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
-| DT | Deuda técnica | 14 | 7,0% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
-| **Total** | | **201** | **100,0%** | |
+| P | Pipeline R | 17 | 8,3% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
+| UI | Motor HTML / React / D3 | 79 | 38,5% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
+| D | Datos / Insumos | 7 | 3,4% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
+| DOC | Documentación | 52 | 25,4% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
+| REPO | Gobernanza del repo / Despliegue | 30 | 14,6% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
+| Infra | Infraestructura (escáner, orquestador, CI) | 6 | 2,9% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
+| DT | Deuda técnica | 14 | 6,8% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
+| **Total** | | **205** | **100,0%** | |
 
 ## Resumen estadístico por sesión
 
@@ -93,7 +93,8 @@ detalle.
 | 29 | v29 | 17 | no registrado | Construcción y publicación del panorama territorial, con la deuda que su construcción fue destapando |
 | 30 | v30 | 20 | no registrado | Tercera vista del proyecto: trayectorias de los Servicios Locales tras el traspaso, construida autocontenida y auditada, pendiente de trasladar fuera de andamios |
 | 31 | v31 | 7 | no registrado | Apertura de emergencia, motor sin CDN, base Simce 2025 final y rotulado de barras con la regla de slep_idps |
-| **Total** | | **201** | | |
+| 32 | v32 | 4 | no registrado | Rama local publicada y vista de trayectorias trasladada al pipeline en R, con redondeo reproducible |
+| **Total** | | **205** | | |
 
 ## Detalle cronológico
 
@@ -447,3 +448,12 @@ detalle.
 201. [UI] Rotulado de las barras de «Últimas 3 aplicaciones» con la regla de `slep_idps`: cada cifra va dentro de su franja solo si cabe; si no, baja bajo el año con la inicial del nivel. Cifras encimadas: de 56 a 0. `RECENT_DIMS` pasa a ser la fuente única de medidas para pantalla y exportación, y se corrigió la celda del SVG exportado, que cortaba el segundo renglón. Commits `cdae5b8` y `88dc7af`, publicado en `5608f9b`.
 
 **Delta del backlog:** 7 entradas nuevas (195–201). Sin cambios de taxonomía. Total acumulado: 201. Sesión de cierre de deuda del motor más que de construcción: tres de las siete entradas resuelven pendientes heredados (CDN, regla 12, rótulos) y la categoría de datos sigue creciendo porque los insumos nuevos se revisaron antes de usarse. Interfaz continúa sobre el umbral de subdivisión, sin ajustarse por la misma razón declarada en la entrada 157.
+
+### Sesión 32 — 2026-09-24
+
+202. [REPO] Rama local `feat/contrato-contexto` medida y publicada sin integrar (D32-1): de sus 9 commits fuera de `main`, 6 ya tenían parche equivalente (incluido el cierre de la sesión 26) y solo 2 son trabajo propio para `slep_minuta_buenas_senales`. El hook pre-push rechazó el primer push por el parquet sin autorizar; la autorización se escribió en `main` (`760ce01`), porque el hook lee la lista del árbol de trabajo, y la rama quedó en `origin` en `31befa2`. Resuelve el pendiente 1 de v31.
+203. [D] Diagnóstico de B31-4 corregido: el mockup de la vista de trayectorias nunca excluyó el grupo 5; el referente y la nube se anclan a los municipales con resultado en 2014, y el único municipal fuera de los Servicios Locales con grupo alto no tiene resultado ese año. El titular mantuvo el ancla (D32-2): Las Condes, 4° básico Lectura 2023, da 271 y no 344. Decisión en `20260924_decision_datos_vista_trayectorias.md`.
+204. [P] Vista de trayectorias trasladada al paso 36: generador en R (`36_funciones_trayectorias.R`, `36_generar_trayectorias.R`), plantilla con el literal de datos reemplazado por un marcador y batería trasladada y ampliada a 17 pruebas con controles positivos (`36_verificar_trayectorias.R`); `00_build.R` gana el paso y la salida queda ignorada. Sin red, fiel al mockup y sin regresiones de forma en 332 estados recorridos. Commit `7768383`, publicado en `4c5cc3a`. Resuelve el pendiente 2 de v31.
+205. [P] Redondeo de la vista de trayectorias en aritmética entera, con los empates hacia arriba (D32-3): la coma flotante resolvía 655 empates según la plataforma y el orden de las filas; ahora el HTML es idéntico byte a byte en x86_64 y en la estación aarch64, y 316 cifras quedan un décimo arriba del mockup, todas empates exactos.
+
+**Delta del backlog:** 4 entradas nuevas (202–205). Sin cambios de taxonomía. Total acumulado: 205. Pipeline R vuelve a crecer porque la vista de trayectorias entra al pipeline. Datos suma un diagnóstico que corrige una afirmación del traspaso anterior en vez de agregar un hallazgo nuevo.
