@@ -34,6 +34,7 @@
 
 library(here)
 source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
+source(here::here("10_utils", "10_html.R"))           # reemplazar_literal(), insertar_sitio()
 
 source(here::here("30_procesamiento", "36_funciones_trayectorias.R"))
 
@@ -53,21 +54,6 @@ PATRON_NOTA  <- "__NOTA_[A-Z_]+__"
 # Patrón de carga por red que el HTML no puede contener (invariante del traspaso
 # v31: la vista de trayectorias no depende de la red).
 PATRON_RED <- '(src|href)="https?:'
-
-# Reemplaza la única aparición de `marcador` por `valor`, sin interpretar
-# expresiones regulares ni barras invertidas en `valor`. Se detiene si el
-# marcador no aparece exactamente una vez. Copia de la función homónima de
-# 33_generar_html.R: el paso 33 no se puede cargar sin ejecutarse entero.
-reemplazar_literal_tray <- function(texto, marcador, valor) {
-  pos <- gregexpr(marcador, texto, fixed = TRUE)[[1]]
-  if (length(pos) != 1L || pos[1] < 0) {
-    stop("El marcador debe aparecer exactamente una vez: ", marcador,
-         " (apariciones: ", sum(pos > 0), ")")
-  }
-  paste0(substr(texto, 1L, pos - 1L), valor,
-         substr(texto, pos + nchar(marcador), nchar(texto)))
-}
-
 
 # ============================================================================
 # Bloque 1 — Datos
@@ -97,9 +83,10 @@ message(sprintf(
 message("[36] Insertando datos en la plantilla...")
 plantilla_tray <- paste(readLines(RUTA_PLANTILLA_TRAY, encoding = "UTF-8", warn = FALSE),
                         collapse = "\n")
-html_tray <- plantilla_tray
+# Encabezado y menú de vistas desde la fuente única del sitio (s34).
+html_tray <- insertar_sitio(plantilla_tray, "trayectorias")
 for (nombre in names(notas_tray)) {
-  html_tray <- reemplazar_literal_tray(html_tray, paste0(PREFIJO_NOTA, nombre, "__"),
+  html_tray <- reemplazar_literal(html_tray, paste0(PREFIJO_NOTA, nombre, "__"),
                                        notas_tray[[nombre]])
 }
 if (grepl(PATRON_NOTA, html_tray)) {
@@ -107,7 +94,7 @@ if (grepl(PATRON_NOTA, html_tray)) {
        paste(unique(regmatches(html_tray, gregexpr(PATRON_NOTA, html_tray))[[1]]),
              collapse = ", "))
 }
-html_tray <- reemplazar_literal_tray(html_tray, MARCADOR_DATA_TRAY, json_tray)
+html_tray <- reemplazar_literal(html_tray, MARCADOR_DATA_TRAY, json_tray)
 
 if (grepl(MARCADOR_DATA_TRAY, html_tray, fixed = TRUE)) {
   stop("El HTML conserva el marcador ", MARCADOR_DATA_TRAY)

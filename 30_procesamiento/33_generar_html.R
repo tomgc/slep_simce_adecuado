@@ -27,6 +27,7 @@
 
 library(here)
 source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
+source(here::here("10_utils", "10_html.R"))           # reemplazar_literal(), insertar_sitio()
 
 
 # ============================================================================
@@ -92,19 +93,6 @@ verificar_vendor <- function(dep) {
          "\n  obtenido: ", sri)
   }
   invisible(TRUE)
-}
-
-# Reemplaza la única aparición de `marcador` por `valor`, sin interpretar
-# barras invertidas ni expresiones regulares en `valor` (el código minificado
-# las contiene). Se detiene si el marcador no aparece exactamente una vez.
-reemplazar_literal <- function(texto, marcador, valor) {
-  pos <- gregexpr(marcador, texto, fixed = TRUE)[[1]]
-  if (length(pos) != 1L || pos[1] < 0) {
-    stop("El marcador debe aparecer exactamente una vez: ", marcador,
-         " (apariciones: ", sum(pos > 0), ")")
-  }
-  paste0(substr(texto, 1L, pos - 1L), valor,
-         substr(texto, pos + nchar(marcador), nchar(texto)))
 }
 
 # Transpila JSX a JavaScript con Babel standalone dentro de V8. Devuelve el
@@ -435,6 +423,8 @@ if (!file.exists(pako_path)) {
 
 plantilla <- paste(readLines(plantilla_path, encoding = "UTF-8"),
                    collapse = "\n")
+# Encabezado y menú de vistas desde la fuente única del sitio (s34).
+plantilla <- insertar_sitio(plantilla, "motor")
 d3_code <- paste(readLines(d3_path, encoding = "UTF-8"),
                  collapse = "\n")
 pako_code <- paste(readLines(pako_path, encoding = "UTF-8"),
