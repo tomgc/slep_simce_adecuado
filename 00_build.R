@@ -8,8 +8,9 @@
 # ----------------------------------------------------------------------------
 # Orquestador del pipeline slep_simce_adecuado.
 #
-# Ejecuta en orden los pasos de 30_procesamiento/ y produce el artefacto
-# final 40_salidas/motor_comparacion.html.
+# Ejecuta en orden los pasos de 30_procesamiento/ y produce los artefactos
+# finales 40_salidas/motor_comparacion.html y
+# 40_salidas/trayectorias_traspasos.html (paso 36, sesión 32).
 #
 # Uso:
 #   source("00_build.R")
@@ -31,6 +32,8 @@ message("")
 source(here::here("30_procesamiento", "32_agregar_comunal.R"))
 message("")
 source(here::here("30_procesamiento", "33_generar_html.R"))
+message("")
+source(here::here("30_procesamiento", "36_generar_trayectorias.R"))
 message("")
 
 elapsed <- round((proc.time() - t0)[["elapsed"]])
