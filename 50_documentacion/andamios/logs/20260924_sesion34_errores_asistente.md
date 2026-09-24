@@ -13,3 +13,15 @@ Registro en el momento en que se identifica (SETTINGS §2.2.15, diez campos).
 - `gatillo_observable`: encargos-premisas: una instrucción a Claude Code que regenera desde archivos editados en la sesión sin nombrarlos ni dar su md5.
 - `intentos_previos`: 0.
 - `costo`: una verificación extra del ejecutor (`git diff --stat` y `ls -lT`); ningún archivo tocado de más.
+
+**ERR-34-02**
+- `momento`: compuertas de dudas previas a las dos publicaciones de la sesión (enlace de la vista, `cc7fd64`; fragmento común, `a095a50`).
+- `disparador`: asistente lo señaló espontáneamente, al preparar el cierre.
+- `que_paso`: entregué la instrucción de commit y push en el mismo mensaje que la comprobación de Safari que cerraba la duda 1, condicionada solo en prosa («si pasan»), y las dos veces el push corrió antes de que el resultado llegara al chat.
+- `regla_violada`: SETTINGS §2.1, compuerta de dudas, gatillo 2 (antes de una operación de efecto público), y §1.2.6, «Generar, verificar, consumar: en ese orden».
+- `causa_raiz`: optimicé turnos juntando medición y consumo en un solo mensaje; la condición quedó en una frase para el titular y no en la instrucción al ejecutor, que no puede evaluarla.
+- `salvaguarda_presente`: SETTINGS §2.1 y §1.2.6.
+- `patron`: PAT-02, consumo entregado antes de que llegara la verificación intermedia.
+- `gatillo_observable`: costo-sobre-regla: un mensaje que contiene a la vez una medición pendiente del titular y la instrucción de push que depende de ella.
+- `intentos_previos`: 1 (la segunda publicación repitió la forma de la primera).
+- `costo`: dos publicaciones hechas antes de cerrar su duda; ambas verificadas después en Safari sobre Pages (4 de 4), sin cifra ni enlace erróneo publicado.
