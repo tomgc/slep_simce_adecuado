@@ -3,23 +3,23 @@ slug: slep_simce_adecuado
 nombre_real: Motor de comparación interactivo de los resultados Simce por estándares de aprendizaje (Adecuado/Elemental/Insuficiente)
 categoria: activo
 semaforo: activo
-sesion_actual: v32
+sesion_actual: v33
 ultima_actividad: 2026-09-24
 maneja_sensibles: false
-tipo_pendiente: deuda_heredada
-sesion_abierta: true
+tipo_pendiente: nuevo
+sesion_abierta: false
 maquina: MacBook-Pro-de-Tomas.local
-commit_cierre: 8fe8453
-traspaso_vigente: traspaso_cierre_v32.md
+commit_cierre: ce54db8
+traspaso_vigente: traspaso_cierre_v33.md
 cierre_incompleto: no
 insumos_verificados: 2026-09-24
 ventana_insumos: ./20_insumos
 ---
 ## En que vamos
-Sesión 32: la rama local `feat/contrato-contexto` quedó publicada sin integrar y la vista de trayectorias salió de `andamios/`: la regenera el paso 36 en R, sin red, con redondeo en aritmética entera que da el mismo HTML en toda estación. B31-4 se cerró como diagnóstico errado: el referente y la nube se anclan a 2014 por decisión del titular.
+Sesión 33: la vista de trayectorias usa la regla de filas del motor, tiene su identidad visual con el menú de vistas compartido y no trae los defectos de forma catalogados; batería en 19 de 19 y HTML idéntico en dos plataformas. La publicación está decidida como tercera entrada del menú del motor, pero no ejecutada.
 
 ## Proximo paso
-Corregir los nueve defectos de forma de la vista de trayectorias heredados del mockup, con lista de forma y capturas antes y después.
+Con la revisión en Safari aprobada, enlazar la vista desde el motor y publicarla en `docs/trayectorias.html`.
 
 ## Bloqueantes
 `suitedoc` sin publicar (externo a este repositorio): bloquea `renv.lock` con `V8` y `openssl`, `documentar.R`, `34_historico_pct_adecuado_costa_central.R` y la suite standalone.
