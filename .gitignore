@@ -11,6 +11,12 @@
 
 # Producto final HTML (regenerable; se publica por separado)
 40_salidas/motor_comparacion.html
+40_salidas/trayectorias_traspasos.html
+40_salidas/trayectorias_traspasos.html.tmp
+
+# Copias que la app de escritorio deja al entregar archivos en el chat con una
+# carpeta conectada (sesión 32, ERR-32-04). No son parte del proyecto.
+Claude outputs/
 
 # Sistema operativo
 .DS_Store
