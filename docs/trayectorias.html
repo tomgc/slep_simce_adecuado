@@ -41,27 +41,44 @@ html,body{margin:0;padding:0}
 body{background:var(--s0);color:var(--t1);font-size:var(--f2);font-family:var(--font-body);
   -webkit-font-smoothing:antialiased}
 
-/* ---- Encabezado del sitio y menú de vistas (copia del motor) ---- */
-.app-header{background:#0A3A5C;color:var(--cream);padding:28px 40px 26px;border-bottom:4px solid var(--coral)}
-.app-header-inner{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;max-width:1600px;margin:0 auto}
-.app-header-left{min-width:0}
-.app-title{font-family:var(--font-display);font-weight:800;font-size:var(--fs-h1);letter-spacing:-0.005em;
-  color:var(--cream);line-height:1.1;margin:0 0 6px 0}
-.app-title-sub{font-weight:400;font-size:var(--fs-h3);color:var(--cream);opacity:0.78}
-.app-subtitle{font-family:var(--font-body);color:var(--cream);opacity:0.75;margin:0;font-size:var(--fs-body);line-height:1.5}
-.app-objective{font-family:var(--font-body);color:var(--cream);opacity:0.82;margin:8px 0 0 0;
-  font-size:var(--fs-caption);line-height:1.6;max-width:820px}
-.app-objective strong{font-weight:700;opacity:1}
-.view-tabs{background:var(--paper);border-bottom:1px solid var(--line-motor);
-  box-shadow:0 1px 0 rgba(74,39,70,0.04);position:sticky;top:0;z-index:40}
-.view-tabs-inner{display:flex;gap:0;flex-wrap:wrap;max-width:1600px;margin:0 auto;padding:0 40px}
-.view-tab{appearance:none;background:none;border:none;padding:14px 18px;font-family:var(--font-body);
-  font-weight:700;font-size:var(--fs-body-lg);color:var(--slate);cursor:pointer;
-  border-bottom:3px solid transparent;white-space:nowrap;text-decoration:none;
-  transition:color 120ms ease,border-color 120ms ease}
-.view-tab:hover{color:var(--ink)}
-.view-tab.is-active{color:#0A3A5C;border-bottom-color:var(--coral)}
-.view-tab:focus-visible{outline:2px solid var(--ocean);outline-offset:-2px}
+/* ---- Encabezado del sitio y menú de vistas: vienen de 30_procesamiento/
+   33_fragmento_sitio.html, fuente única compartida con el motor (los inserta
+   36_generar_trayectorias.R). ---- */
+/* Encabezado del sitio y menú de vistas (33_fragmento_sitio.html) */
+.app-header { background: #0A3A5C; color: var(--cream); padding: 28px 40px 26px;
+  border-bottom: 4px solid var(--coral); }
+.app-header-inner { display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; max-width: 1600px; margin: 0 auto; }
+.app-header-left { min-width: 0; }
+.app-title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h1);
+  letter-spacing: -0.005em; color: var(--cream); line-height: 1.1; margin: 0 0 6px 0; }
+.app-title-sub { font-weight: 400; font-size: var(--fs-h3); color: var(--cream); opacity: 0.78; }
+.app-subtitle { font-family: var(--font-body); color: var(--cream); opacity: 0.75; margin: 0;
+  font-size: var(--fs-body); line-height: 1.5; }
+.app-objective { font-family: var(--font-body); color: var(--cream); opacity: 0.82;
+  margin: 8px 0 0 0; font-size: var(--fs-caption); line-height: 1.6; max-width: 820px; }
+.app-objective strong { font-weight: 700; opacity: 1; }
+/* Barra blanca pegajosa bajo el banner, con la entrada activa subrayada en
+   coral. Las tres entradas son enlaces: las dos del motor cambian la dirección
+   (#comparacion, #panorama) y la tercera abre otra página (D33-2). */
+.view-tabs { background: var(--paper); border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(74, 39, 70, 0.04); position: sticky; top: 0; z-index: 40; }
+.view-tabs-inner { display: flex; gap: 0; flex-wrap: wrap; max-width: 1600px;
+  margin: 0 auto; padding: 0 40px; }
+.view-tab { padding: 14px 18px; font-family: var(--font-body); font-weight: 700;
+  font-size: var(--fs-body-lg); line-height: normal; color: var(--slate); cursor: pointer;
+  border-bottom: 3px solid transparent; white-space: nowrap; text-decoration: none;
+  transition: color 120ms ease, border-color 120ms ease; }
+.view-tab:hover { color: var(--ink); }
+.view-tab.is-active { color: #0A3A5C; border-bottom-color: var(--coral); }
+.view-tab:focus-visible { outline: 2px solid var(--ocean); outline-offset: -2px; }
+/* Pantallas angostas: el encabezado se ajusta y el menú se reparte en líneas
+   en vez de desbordar la página. */
+@media (max-width: 640px) {
+  .app-header { padding: 20px 16px 18px; }
+  .view-tabs-inner { padding: 0 8px; }
+  .view-tab { white-space: normal; padding: 12px 10px; font-size: var(--fs-body); }
+}
 
 /* ---- La vista: ocupa la pantalla bajo el menú ---- */
 .app{height:calc(100dvh - var(--tabs-h));min-height:600px;display:grid;
@@ -71,12 +88,10 @@ body.pres .app-header,body.pres .view-tabs{display:none}
 body.pres .app{height:100dvh;max-width:none;padding:var(--u) calc(var(--u)*2)}
 
 .hdacc{display:flex;gap:var(--u);align-items:center;flex:none;margin-left:auto;align-self:end}
-/* Pantallas angostas: el menú y la barra de acciones se reparten en líneas en
-   vez de desbordar la página (a 375 px desbordaban desde el mockup). */
+/* Pantallas angostas: la barra de acciones se reparte en líneas en vez de
+   desbordar la página (a 375 px desbordaba desde el mockup); el encabezado y
+   el menú traen su propia regla en el fragmento del sitio. */
 @media (max-width:640px){
-  .app-header{padding:20px 16px 18px}
-  .view-tabs-inner{padding:0 8px}
-  .view-tab{white-space:normal;padding:12px 10px;font-size:var(--fs-body)}
   .app{padding-left:16px;padding-right:16px}
   .hdacc{flex-wrap:wrap}
 }
@@ -236,9 +251,6 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 </style>
 </head>
 <body>
-<!-- Encabezado y menú de vistas del sitio: el mismo texto y las mismas clases
-     que Header() y ViewTabs() de 33_motor_template.html (D33-2, D33-3). Si el
-     encabezado del motor cambia, se cambia aquí también. -->
 <header class="app-header">
   <div class="app-header-inner">
     <div class="app-header-left">
@@ -250,9 +262,9 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 </header>
 <nav class="view-tabs" aria-label="Vistas del motor">
   <div class="view-tabs-inner">
-    <a class="view-tab" href="index.html">Comparación entre territorios</a>
-    <a class="view-tab" href="index.html#panorama">Panorama territorial</a>
-    <a class="view-tab is-active" href="trayectorias.html" aria-current="page">Trayectorias de los Servicios Locales</a>
+    <a class="view-tab" data-vista="comparacion" href="index.html">Comparación entre territorios</a>
+    <a class="view-tab" data-vista="panorama" href="index.html#panorama">Panorama territorial</a>
+    <a class="view-tab is-active" aria-current="page" data-vista="trayectorias" href="trayectorias.html">Trayectorias de los Servicios Locales</a>
   </div>
 </nav>
 <div class="app" id="app">
