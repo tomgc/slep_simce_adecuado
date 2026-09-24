@@ -25,3 +25,15 @@ Registro en el momento en que ocurren (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: comando-entorno: un comando de verificación entregado a Claude Code sin haberse ejecutado antes en ningún entorno.
 - `intentos_previos`: 0.
 - `costo`: una verificación rehecha por el ejecutor en dos comandos; ninguno hacia fuera.
+
+**ERR-32-03**
+- `momento`: redacción de `encargo_traslado_trayectorias.md`, paso 3 de FASE 1 (esperado de D10).
+- `disparador`: el ejecutor lo detectó (D10 dio 13 cifras distintas contra 3 esperadas; T1 congelada por la cláusula residual, R-14 BLOQUEA).
+- `que_paso`: fijé como esperado el número exacto de cifras distintas del mockup («3») medido en mi entorno x86_64, cuando ese número depende de cómo la coma flotante resuelve empates en cada plataforma y orden de suma; lo que la meta afirma es «ninguna diferencia fuera de empates».
+- `regla_violada`: ⚠️ del traspaso v31 («NO expresar criterios como cantidad de líneas...»: un conteo como criterio) y encargo v1.6 §2.6 (criterio calibrado sobre la afirmación, no sobre un proxy).
+- `causa_raiz`: vi que las 3 diferencias eran empates y no pregunté por qué había empates que la aritmética resolvía distinto; traté un síntoma del entorno como constante del dato.
+- `salvaguarda_presente`: traspaso v31 §12, encargo v1.6 §2.6, regla 12 de `50_diseno_ramas_deteccion.md`.
+- `patron`: PAT-13, criterio que mide un proxy (conteo de diferencias) y no el riesgo (diferencias fuera de empate).
+- `gatillo_observable`: encargos-premisas: un esperado numérico derivado de una sola corrida en otra plataforma para una magnitud sensible al redondeo.
+- `intentos_previos`: 0.
+- `costo`: T1 congelada sin commit, una corrida completa del encargo y una decisión devuelta al titular.
