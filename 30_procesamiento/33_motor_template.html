@@ -1064,6 +1064,17 @@ code {
 }
 .view-tab:hover { color: var(--fg-1); }
 .view-tab.is-active { color: #0A3A5C; border-bottom-color: var(--coral); }
+/* La tercera entrada abre otra página (docs/trayectorias.html, D33-2): es un
+   enlace fuera de la lista de pestañas, con el aspecto de las pestañas. El
+   `line-height: normal` iguala su alto al de los botones. */
+.view-tabs-group { display: flex; gap: 0; flex-wrap: wrap; }
+a.view-tab { text-decoration: none; line-height: normal; }
+/* Pantallas angostas: el menú se reparte en líneas en vez de desbordar la
+   página; misma regla que el menú de la vista de trayectorias. */
+@media (max-width: 640px) {
+  .view-tabs-inner { padding: 0 8px; }
+  .view-tab { white-space: normal; padding: 12px 10px; font-size: var(--fs-body); }
+}
 
 /* Banner oscuro de identidad del territorio: nombre, composición, meta y el
    selector de nivel. Homogéneo con el banner del motor IDPS. */
@@ -1879,7 +1890,8 @@ code {
 
     // Pestañas de vista. Dos preguntas distintas sobre los mismos datos:
     // comparar territorios entre sí (segmentado por GSE) o describir uno solo
-    // (con los GSE combinados).
+    // (con los GSE combinados). La tercera entrada es un enlace a la vista de
+    // trayectorias, que vive en su propio archivo y no se incrusta (D33-2).
     function ViewTabs({ vista, setVista }) {
       const tabs = [
         { value: "comparacion", label: "Comparación entre territorios" },
@@ -1887,16 +1899,19 @@ code {
       ];
       return (
         <nav className="view-tabs" aria-label="Vistas del motor">
-          <div className="view-tabs-inner" role="tablist">
-            {tabs.map(t => (
-              <button
-                key={t.value}
-                role="tab"
-                aria-selected={vista === t.value}
-                className={"view-tab" + (vista === t.value ? " is-active" : "")}
-                onClick={() => setVista(t.value)}
-              >{t.label}</button>
-            ))}
+          <div className="view-tabs-inner">
+            <div className="view-tabs-group" role="tablist">
+              {tabs.map(t => (
+                <button
+                  key={t.value}
+                  role="tab"
+                  aria-selected={vista === t.value}
+                  className={"view-tab" + (vista === t.value ? " is-active" : "")}
+                  onClick={() => setVista(t.value)}
+                >{t.label}</button>
+              ))}
+            </div>
+            <a className="view-tab" href="trayectorias.html">Trayectorias de los Servicios Locales</a>
           </div>
         </nav>
       );
@@ -4255,7 +4270,26 @@ code {
       // Vista activa y territorio del panorama. El panorama tiene su propia
       // selección, independiente del tablero de comparación: son dos preguntas
       // distintas y mezclar los estados obligaría a vaciar una para usar la otra.
-      const [vista, setVista] = React.useState("comparacion");
+      // La dirección `#panorama` abre el panorama: es el enlace de vuelta desde
+      // la vista de trayectorias (D33-2). Cualquier otra dirección abre la
+      // comparación.
+      const vistaDesdeDireccion = () =>
+        window.location.hash === "#panorama" ? "panorama" : "comparacion";
+      const [vista, setVista] = React.useState(vistaDesdeDireccion);
+      React.useEffect(() => {
+        const alCambiar = () => setVista(vistaDesdeDireccion());
+        window.addEventListener("hashchange", alCambiar);
+        return () => window.removeEventListener("hashchange", alCambiar);
+      }, []);
+      // La dirección sigue a la pestaña, para que recargar o copiar el enlace
+      // conserve la vista. Si el navegador no lo permite, la vista no cambia.
+      React.useEffect(() => {
+        const destino = vista === "panorama" ? "#panorama"
+          : window.location.pathname + window.location.search;
+        if (vista !== vistaDesdeDireccion()) {
+          try { window.history.replaceState(null, "", destino); } catch (e) {}
+        }
+      }, [vista]);
       const [panoramaEntity, setPanoramaEntity] = React.useState(null);
       const [panoramaModal, setPanoramaModal] = React.useState(false);
 

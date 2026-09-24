@@ -1,27 +1,40 @@
 # Publicación en GitHub Pages — slep_simce_adecuado
 
-> Documentación activa. Describe cómo se publica y cómo se actualiza el motor
-> de comparación SIMCE en GitHub Pages.
+> Documentación activa. Describe cómo se publican y cómo se actualizan el motor
+> de comparación SIMCE y la vista de trayectorias en GitHub Pages.
 
 ## Qué se publica
 
-El archivo `40_salidas/motor_comparacion.html` (~15 MB, autocontenido, con JSON
-agregado público embebido) se copia a `docs/index.html` y se sirve mediante
-GitHub Pages desde la rama `main`, carpeta `/docs`.
+Dos archivos autocontenidos, generados por el pipeline y copiados íntegros a
+`docs/`, que GitHub Pages sirve desde la rama `main`, carpeta `/docs`:
+
+| Salida local | Archivo publicado | Paso que la genera |
+|---|---|---|
+| `40_salidas/motor_comparacion.html` | `docs/index.html` | `33_generar_html.R` |
+| `40_salidas/trayectorias_traspasos.html` | `docs/trayectorias.html` | `36_generar_trayectorias.R` |
+
+Las dos páginas comparten el menú de vistas: el motor enlaza a
+`trayectorias.html` y la vista vuelve a `index.html` o a `index.html#panorama`,
+que abre la pestaña Panorama territorial (D33-2). La vista no se incrusta en el
+motor. Ninguna de las dos carga nada por red.
 
 - **URL pública:** https://tomgc.github.io/slep_simce_adecuado/
 - **Repo:** privado (`tomgc/slep_simce_adecuado`).
-- **Contenido expuesto:** solo `/docs/index.html`. El código R, los xlsx de
-  insumos y los traspasos permanecen privados.
+- **Vista de trayectorias:** https://tomgc.github.io/slep_simce_adecuado/trayectorias.html
+- **Contenido expuesto:** solo `/docs/index.html` y `/docs/trayectorias.html`.
+  El código R, los xlsx de insumos y los traspasos permanecen privados.
 
 ## Gobernanza
 
-- El HTML contiene **únicamente datos agregados públicos** extraídos de la
+- Los dos HTML contienen **únicamente datos agregados públicos** extraídos de la
   Agencia de Calidad de la Educación (SIMCE a nivel RBD, ponderado por GSE).
 - No contiene resultados individuales ni datos personales de menores.
 - La segmentación por GSE es inviolable y se mantiene en el output publicado.
 - Antes de cada republicación, verificar que el JSON embebido sigue siendo
   solo agregado público (invariante metodológico del pipeline).
+- Antes de republicar la vista de trayectorias, la batería del paso 36 debe
+  pasar completa (`Rscript 30_procesamiento/36_verificar_trayectorias.R`,
+  código 0).
 
 ## Configuración inicial (ya realizada — referencia)
 
@@ -36,18 +49,26 @@ Cada vez que se regenere el HTML con un nuevo build del pipeline:
 ```bash
 cd ~/Projects/slep_simce_adecuado
 
-# 1. Regenerar el HTML (corre el pipeline completo)
+# 1. Regenerar los dos HTML (corre el pipeline completo, pasos 33 y 36)
 Rscript 00_build.R
 
-# 2. Copiar el output a la carpeta de publicacion
-cp 40_salidas/motor_comparacion.html docs/index.html
+# 2. Batería de la vista de trayectorias (debe terminar con código 0)
+Rscript 30_procesamiento/36_verificar_trayectorias.R
 
-# 3. Verificacion de gobernanza: solo debe aparecer docs/index.html
-git add docs/index.html
+# 3. Copia íntegra de cada salida a la carpeta de publicación
+cp 40_salidas/motor_comparacion.html docs/index.html
+cp 40_salidas/trayectorias_traspasos.html docs/trayectorias.html
+
+# 4. Verificación: sin cargas por red (ambos deben dar 0)
+grep -c 'src="http' docs/index.html
+grep -c 'src="http' docs/trayectorias.html
+
+# 5. Verificación de gobernanza: solo deben aparecer los dos archivos de docs/
+git add docs/index.html docs/trayectorias.html
 git status
 
-# 4. Commit y push (solo tras confirmar el status)
-git commit -m "deploy: actualizar motor de comparacion SIMCE"
+# 6. Commit y push (solo tras confirmar el status)
+git commit -m "deploy: actualizar motor y vista de trayectorias"
 git push origin main
 ```
 
@@ -61,6 +82,9 @@ Abrir https://tomgc.github.io/slep_simce_adecuado/ y verificar:
 2. Buscador con diacríticos: "valparaiso" devuelve VALPARAÍSO primero.
 3. Tooltip se voltea hacia adentro en los extremos del viewport.
 4. Datos segmentados por GSE.
+5. «Trayectorias de los Servicios Locales» abre la vista; desde ella,
+   «Panorama territorial» abre el motor en esa pestaña y «Comparación entre
+   territorios» en la comparación.
 
 ## Optimización pendiente (opcional, no urgente)
 

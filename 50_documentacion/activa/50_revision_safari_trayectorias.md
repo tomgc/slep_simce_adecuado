@@ -24,27 +24,27 @@ Cmd+Mayús+4). El resultado entra al mensaje de apertura de la próxima sesión.
 
 | # | Estado a preparar | Qué debe verse | Resultado | Observación |
 |---|---|---|---|---|
-| 1 | Recién abierta | Encabezado azul del motor, menú con «Trayectorias de los Servicios Locales» subrayado en coral, fondo crema. Ningún recuadro vacío ni ícono roto (señal de algo que se intentó cargar por red) | | |
-| 2 | Recién abierta, desplázate hacia abajo | El menú de vistas queda fijo arriba y la vista ocupa la pantalla bajo él, con la línea de tiempo visible abajo sin desplazarse más | | |
-| 3 | Cohorte 2018, sin tocar nada | Texto de contexto «5 mediciones desde el traspaso» (sin tilde en «mediciones») | | |
-| 4 | Pasa el cursor sobre la burbuja 1 | Tooltip con coma decimal: «Adecuado 21,8%» | | |
-| 5 | Abre el menú «Grupo socioeconómico» | «Solo grupo alto (sin datos)» aparece desactivado (gris, no se puede elegir) | | |
-| 6 | Cohorte 2021 y activa «Solo establecimientos con serie completa»; abre «Nivel y asignatura» | Las opciones sin datos aparecen desactivadas con «(sin datos)»; el plano nunca queda vacío | | |
-| 7 | Cohorte 2025 | Los números de las 11 burbujas se leen sin encimarse; ninguna burbuja invade los números del eje vertical | | |
-| 8 | Cohorte 2018; haz clic en cada año de la línea de tiempo y pasa el cursor sobre el círculo gris punteado | En los nueve años aparece el tooltip «Referente municipal» | | |
-| 9 | Compara el tamaño del texto de los ejes con el de la leyenda | Ejes y leyenda de tamaño parecido; nada diminuto | | |
-| 10 | Cohorte 2025, tabla lateral | Se ven todos los Servicios Locales, o se nota con una sombra al pie que hay más filas y la tabla se desplaza | | |
-| 11 | Botón «Notas metodológicas»; baja hasta el final, cierra y vuelve a abrir | Ningún título queda solo al pie de una columna; al reabrir, el texto parte arriba | | |
-| 12 | Botón ▶ (reproducir) | La animación recorre de 2014 a 2025; en 2019 a 2021 aparece el recuadro «2019, 2020 y 2021 no tienen medición Simce» y las burbujas se atenúan | | |
-| 13 | Botón de pantalla completa (las cuatro esquinas); luego tecla Esc | Se ocultan el encabezado, el menú y los controles; con Esc todo vuelve | | |
-| 14 | Activa «Sostenedores municipales» | Aparece la nube de puntos grises; la leyenda dice «Sostenedores municipales (180 comunas)» y «Referente: municipales por traspasar» | | |
+| 1 | Recién abierta | Encabezado azul del motor, menú con «Trayectorias de los Servicios Locales» subrayado en coral, fondo crema. Ningún recuadro vacío ni ícono roto (señal de algo que se intentó cargar por red) | sí | |
+| 2 | Recién abierta, desplázate hacia abajo | El menú de vistas queda fijo arriba y la vista ocupa la pantalla bajo él, con la línea de tiempo visible abajo sin desplazarse más | sí | |
+| 3 | Cohorte 2018, sin tocar nada | Texto de contexto «5 mediciones desde el traspaso» (sin tilde en «mediciones») | sí | |
+| 4 | Pasa el cursor sobre la burbuja 1 | Tooltip con coma decimal: «Adecuado 21,8%» | sí | |
+| 5 | Abre el menú «Grupo socioeconómico» | «Solo grupo alto (sin datos)» aparece desactivado (gris, no se puede elegir) | sí | |
+| 6 | Cohorte 2021 y activa «Solo establecimientos con serie completa»; abre «Nivel y asignatura» | Las opciones sin datos aparecen desactivadas con «(sin datos)»; el plano nunca queda vacío | sí | |
+| 7 | Cohorte 2025 | Los números de las 11 burbujas se leen sin encimarse; ninguna burbuja invade los números del eje vertical | sí | |
+| 8 | Cohorte 2018; haz clic en cada año de la línea de tiempo y pasa el cursor sobre el círculo gris punteado | En los nueve años aparece el tooltip «Referente municipal» | sí | |
+| 9 | Compara el tamaño del texto de los ejes con el de la leyenda | Ejes y leyenda de tamaño parecido; nada diminuto | sí | |
+| 10 | Cohorte 2025, tabla lateral | Se ven todos los Servicios Locales, o se nota con una sombra al pie que hay más filas y la tabla se desplaza | sí | |
+| 11 | Botón «Notas metodológicas»; baja hasta el final, cierra y vuelve a abrir | Ningún título queda solo al pie de una columna; al reabrir, el texto parte arriba | sí | |
+| 12 | Botón ▶ (reproducir) | La animación recorre de 2014 a 2025; en 2019 a 2021 aparece el recuadro «2019, 2020 y 2021 no tienen medición Simce» y las burbujas se atenúan | sí | |
+| 13 | Botón de pantalla completa (las cuatro esquinas); luego tecla Esc | Se ocultan el encabezado, el menú y los controles; con Esc todo vuelve | sí | |
+| 14 | Activa «Sostenedores municipales» | Aparece la nube de puntos grises; la leyenda dice «Sostenedores municipales (180 comunas)» y «Referente: municipales por traspasar» | sí | |
 
 ## Resultado global
 
-- Puntos que pasan: __ de 14.
-- Puntos que fallan: (números).
-- Versión de Safari (menú Safari → Acerca de Safari): ______.
-- Fecha de la revisión: ______.
+- Puntos que pasan: 14 de 14 (aprobado por el titular, 2026-09-24).
+- Puntos que fallan: ninguno.
+- Versión de Safari (menú Safari → Acerca de Safari): no informada.
+- Fecha de la revisión: 2026-09-24, sin red, sobre el HTML de md5 `ebee5acf417f9aebaa46366c167588d7`.
 
 Los enlaces «Comparación entre territorios» y «Panorama territorial» abiertos desde
 `40_salidas/` dan «archivo no encontrado»: es lo esperado, porque apuntan a
