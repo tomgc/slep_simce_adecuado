@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–32 (traspasos v01–v32). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s32 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–33 (traspasos v01–v33). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s33 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -48,14 +48,14 @@ detalle.
 
 | Código | Categoría | N° | % | Descripción y ejemplos |
 |--------|-----------|----|---|------------------------|
-| P | Pipeline R | 17 | 8,3% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
-| UI | Motor HTML / React / D3 | 79 | 38,5% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
-| D | Datos / Insumos | 7 | 3,4% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
-| DOC | Documentación | 52 | 25,4% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
-| REPO | Gobernanza del repo / Despliegue | 30 | 14,6% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
+| P | Pipeline R | 17 | 8,1% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
+| UI | Motor HTML / React / D3 | 82 | 39,0% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
+| D | Datos / Insumos | 8 | 3,8% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
+| DOC | Documentación | 53 | 25,2% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
+| REPO | Gobernanza del repo / Despliegue | 30 | 14,3% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
 | Infra | Infraestructura (escáner, orquestador, CI) | 6 | 2,9% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
-| DT | Deuda técnica | 14 | 6,8% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
-| **Total** | | **205** | **100,0%** | |
+| DT | Deuda técnica | 14 | 6,7% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
+| **Total** | | **210** | **100,0%** | |
 
 ## Resumen estadístico por sesión
 
@@ -94,7 +94,8 @@ detalle.
 | 30 | v30 | 20 | no registrado | Tercera vista del proyecto: trayectorias de los Servicios Locales tras el traspaso, construida autocontenida y auditada, pendiente de trasladar fuera de andamios |
 | 31 | v31 | 7 | no registrado | Apertura de emergencia, motor sin CDN, base Simce 2025 final y rotulado de barras con la regla de slep_idps |
 | 32 | v32 | 4 | no registrado | Rama local publicada y vista de trayectorias trasladada al pipeline en R, con redondeo reproducible |
-| **Total** | | **205** | | |
+| 33 | v33 | 5 | no registrado | Vista de trayectorias con la regla de filas del motor, su identidad visual compartida y sin los defectos de forma heredados del mockup |
+| **Total** | | **210** | | |
 
 ## Detalle cronológico
 
@@ -457,3 +458,13 @@ detalle.
 205. [P] Redondeo de la vista de trayectorias en aritmética entera, con los empates hacia arriba (D32-3): la coma flotante resolvía 655 empates según la plataforma y el orden de las filas; ahora el HTML es idéntico byte a byte en x86_64 y en la estación aarch64, y 316 cifras quedan un décimo arriba del mockup, todas empates exactos.
 
 **Delta del backlog:** 4 entradas nuevas (202–205). Sin cambios de taxonomía. Total acumulado: 205. Pipeline R vuelve a crecer porque la vista de trayectorias entra al pipeline. Datos suma un diagnóstico que corrige una afirmación del traspaso anterior en vez de agregar un hallazgo nuevo.
+
+### Sesión 33 — 2026-09-24
+
+206. [D] Regla de filas de la vista de trayectorias alineada con la del motor (D33-1): se excluyen las filas con marca de la Agencia y las de menos de 10 evaluados. En la base de la vista el umbral no descarta ninguna fila; las marcadas son 2.008 en el país y 610 en los Servicios Locales (2,1% de sus evaluados), y el referente pasa de 1.333 a 1.299 establecimientos. Las cifras de las notas metodológicas pasan a calcularse desde los datos (`cifras_notas()`, D33-6). Batería de 17 a 19 pruebas. Commit `498981b`. Resuelve el pendiente 4 de v32.
+207. [UI] La vista de trayectorias adopta la identidad visual del motor (D33-3): encabezado y menú de vistas compartidos, con «Trayectorias de los Servicios Locales» como tercera entrada; paleta, componentes y fuente del sistema del motor; sin tema oscuro ni gobCL incrustada. Commit `3de223d`.
+208. [UI] Corregidos los nueve defectos de forma heredados del mockup y la leyenda del referente (errata, coma decimal, aviso de grupo sin datos, cifras superpuestas y burbujas fuera del plano, referente tapado, contraste, texto del SVG que escalaba con el ancho, tabla lateral, notas), con mediciones antes y después en Chromium sin red. Commit `1d6c4ce`. Resuelve el pendiente 1 de v32.
+209. [UI] Los menús de grupo socioeconómico y de nivel desactivan, con «(sin datos)», las opciones sin datos para la cohorte y la cobertura elegidas, y vuelven a una opción con datos cuando la elegida se vacía; ninguna combinación elegible deja el plano vacío. Commit `1d6c4ce`.
+210. [DOC] Decisiones de la sesión 33 registradas en `20260924_decision_regla_filas_y_publicacion_trayectorias.md` (regla de filas, publicación como tercera entrada del menú del motor, identidad visual, migración a gobCL, revisión en Safari posterior, cifras de las notas desde los datos) y lista de revisión en Safari de 14 puntos en `50_revision_safari_trayectorias.md`. Resuelve el pendiente 3 de v32 en su parte de decisión.
+
+**Delta del backlog:** 5 entradas nuevas (206–210). Sin cambios de taxonomía. Total acumulado: 210. La interfaz vuelve a concentrar el trabajo, ahora en la vista de trayectorias; Datos suma una regla de universo que iguala la vista al motor en vez de un hallazgo sobre el insumo.
