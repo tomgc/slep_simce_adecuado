@@ -1710,6 +1710,13 @@ code {
     const COLOR_ADEC  = "#0C4682";  // azul (Adecuado)
     const COLOR_ELEM  = "#6BA0CE";  // azul claro (Elemental)
     const COLOR_INSUF = "#79204F";  // vino (Insuficiente)
+    // Tinta de cada nivel cuando su cifra se escribe como texto sobre la celda
+    // blanca (cifras rescatadas bajo el año). El azul claro de la franja
+    // Elemental da 2,78:1 sobre blanco; su tinta es el mismo tono, más oscuro,
+    // con 4,95:1 (WCAG AA ≥ 4,5:1), y sigue más clara que la de Adecuado. Las
+    // franjas conservan el color del nivel (D-color-nivel).
+    const TINTA_ELEM  = "#3874A9";
+    const tintaNivel  = fill => fill === COLOR_ELEM ? TINTA_ELEM : fill;
 
     // ============================================================
     // Escala tipográfica del SVG
@@ -2405,7 +2412,7 @@ code {
               .attr("font-family", "system-ui, sans-serif")
               .attr("font-size", FS_SVG.barras.valorFuera)
               .attr("font-weight", 700)
-              .attr("fill", seg.fill)
+              .attr("fill", tintaNivel(seg.fill))
               .attr("opacity", isLowN ? 0.7 : 1)
               .style("pointer-events", "none")
               .text(seg.sigla + " " + fmtPct(seg.val));
@@ -3139,7 +3146,7 @@ code {
               .attr("font-family", "system-ui, sans-serif")
               .attr("font-size", FS_SVG.panorama.valorFuera)
               .attr("font-weight", 700)
-              .attr("fill", seg.fill)
+              .attr("fill", tintaNivel(seg.fill))
               .text(seg.sigla + " " + fmtPct(seg.val));
           });
         }
