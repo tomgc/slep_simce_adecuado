@@ -30,6 +30,7 @@
 suppressPackageStartupMessages({
   library(arrow); library(dplyr); library(here)
 })
+source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
 
 source(here::here("30_procesamiento", "36_funciones_trayectorias.R"))
 
