@@ -1,17 +1,16 @@
-# Estructura actual — slep_simce_adecuado
+ESCANEO DE ESTRUCTURA — slep_simce_adecuado
+Raiz   : /Users/tomgc/Projects/slep_simce_adecuado
+Fecha  : 2026-09-24 16:31:30
+Totales: 24 carpetas, 232 archivos
+Nota   : todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
 
-- **Raiz:** `/Users/tomgc/Projects/slep_simce_adecuado`
-- **Fecha:** 2026-09-24 09:17:40
-- **Totales:** 24 carpetas, 221 archivos
-- **Nota:** todos los datos son publicos (Agencia de Calidad) y se versionan en el repo.
-
-## Arbol
-
-```
 slep_simce_adecuado/
 ├── .claude/
 │   └── settings.local.json  (3.12K)
 ├── 10_utils/
+│   ├── 10_configuracion.R  (1.03K)
+│   ├── 10_html.R  (3.82K)
+│   ├── 10_locale.R  (11.5K)
 │   ├── 10_utils.R  (8.67K)
 │   ├── 10_validar_portabilidad.R  (16.4K)
 │   ├── babel.min.js  (2.99M)
@@ -67,16 +66,17 @@ slep_simce_adecuado/
 │   │   └── .DS_Store  (8K)
 │   └── .DS_Store  (10K)
 ├── 30_procesamiento/
-│   ├── 30_construir_auxiliares.R  (15.6K)
-│   ├── 31_leer_normalizar.R  (16.2K)
-│   ├── 32_agregar_comunal.R  (7.64K)
-│   ├── 33_generar_html.R  (21.9K)
-│   ├── 33_motor_template.html  (199K)
-│   ├── 34_historico_pct_adecuado_costa_central.R  (6.09K)
-│   ├── 36_funciones_trayectorias.R  (12.8K)
-│   ├── 36_generar_trayectorias.R  (5.06K)
-│   ├── 36_trayectorias_template.html  (205K)
-│   └── 36_verificar_trayectorias.R  (16.3K)
+│   ├── 30_construir_auxiliares.R  (15.7K)
+│   ├── 31_leer_normalizar.R  (16.3K)
+│   ├── 32_agregar_comunal.R  (7.74K)
+│   ├── 33_fragmento_sitio.html  (4.67K)
+│   ├── 33_generar_html.R  (21.6K)
+│   ├── 33_motor_template.html  (196K)
+│   ├── 34_historico_pct_adecuado_costa_central.R  (6.19K)
+│   ├── 36_funciones_trayectorias.R  (20.1K)
+│   ├── 36_generar_trayectorias.R  (5.45K)
+│   ├── 36_trayectorias_template.html  (60K)
+│   └── 36_verificar_trayectorias.R  (19.5K)
 ├── 40_salidas/
 │   ├── intermedios/
 │   │   ├── .gitkeep  (0)
@@ -88,7 +88,7 @@ slep_simce_adecuado/
 │   │   └── sleps_chile.parquet  (58.7K)
 │   ├── historico_pct_adecuado_costa_central.xlsx  (12K)
 │   ├── motor_comparacion.html  (2.66M)
-│   └── trayectorias_traspasos.html  (1.59M)
+│   └── trayectorias_traspasos.html  (1.42M)
 ├── 50_documentacion/
 │   ├── activa/
 │   │   ├── decisiones/
@@ -99,7 +99,8 @@ slep_simce_adecuado/
 │   │   │   ├── 20260620_decision_celda_unico_establecimiento.md  (3.77K)
 │   │   │   ├── 20260622_decision_cumplimiento_ley_21719.md  (5.35K)
 │   │   │   ├── 20260923_decision_transpilacion_en_build.md  (1.69K)
-│   │   │   └── 20260924_decision_datos_vista_trayectorias.md  (2.75K)
+│   │   │   ├── 20260924_decision_datos_vista_trayectorias.md  (2.75K)
+│   │   │   └── 20260924_decision_regla_filas_y_publicacion_trayectorias.md  (5.73K)
 │   │   ├── encargos/
 │   │   │   ├── encargo_auditoria_slep_simce_adecuado.md  (9.39K)
 │   │   │   ├── encargo_claude_code_simce_suite_standalone.md  (10.5K)
@@ -124,18 +125,19 @@ slep_simce_adecuado/
 │   │   ├── .gitkeep  (0)
 │   │   ├── 50_datos_versionados_autorizados.md  (6.73K)
 │   │   ├── 50_diseno_ramas_deteccion.md  (15.4K)
-│   │   ├── 50_locale_utf8.md  (4.12K)
+│   │   ├── 50_locale_utf8.md  (5.77K)
 │   │   ├── 50_ordenacion_repositorio.md  (4.51K)
+│   │   ├── 50_revision_safari_trayectorias.md  (4.03K)
 │   │   ├── arquitectura_slep_simce_adecuado.html  (20K)
-│   │   ├── backlog_acumulativo.md  (61K)
+│   │   ├── backlog_acumulativo.md  (65.5K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.html  (18K)
 │   │   ├── documentacion_proyecto_slep_simce_adecuado.md  (9.77K)
-│   │   ├── ESTADO.md  (1.28K)
+│   │   ├── ESTADO.md  (1.14K)
 │   │   ├── gobernanza_datos.md  (6.96K)
 │   │   ├── informe_auditoria_prelanzamiento.md  (10.6K)
 │   │   ├── manifiesto_insumos.md  (3.16K)
 │   │   ├── POLITICA_PROYECTO.md  (42.8K)
-│   │   ├── publicacion_github_pages.md  (2.62K)
+│   │   ├── publicacion_github_pages.md  (3.97K)
 │   │   ├── referencia_glosas_simce.md  (9.28K)
 │   │   ├── resena_slep_simce_adecuado.md  (1.4K)
 │   │   └── SETTINGS_Y_PROMPTS_OPERACIONALES.md  (120K)
@@ -168,22 +170,24 @@ slep_simce_adecuado/
 │   │   │   ├── 20260923_traslado_trayectorias_adenda_log.md  (53.7K)
 │   │   │   ├── 20260923_traslado_trayectorias_log.md  (106K)
 │   │   │   ├── 20260923_traslado_trayectorias_reanudacion_log.md  (86.1K)
-│   │   │   └── cierres_log.md  (35.6K)
+│   │   │   ├── 20260924_sesion33_errores_asistente.md  (3.37K)
+│   │   │   ├── 20260924_sesion34_errores_asistente.md  (2.68K)
+│   │   │   └── cierres_log.md  (48.4K)
 │   │   ├── .DS_Store  (8K)
 │   │   ├── 20260909_plan_spinoff_trayectoria_traspasos.md  (6.22K)
 │   │   ├── 20260911_brief_diseno_spinoff.md  (14.4K)
 │   │   ├── 20260911_filas_anomalas_simce_rbd.xlsx  (198K)
 │   │   ├── 20260917_instruccion_spinoff_trayectorias.md  (9.1K)
 │   │   ├── mockup_trayectoria_traspasos.html  (1.6M)
-│   │   ├── paquete_cierre_v32.md  (31.8K)
+│   │   ├── paquete_cierre_v34.md  (31.4K)
 │   │   └── verificar_trayectorias.R  (6.25K)
 │   ├── estructura/
-│   │   ├── 20260923_124131_estructura.md  (12.6K)
-│   │   ├── 20260923_124131_estructura.txt  (12.7K)
-│   │   ├── 20260923_172149_estructura.md  (13.3K)
-│   │   ├── 20260923_172149_estructura.txt  (13.4K)
-│   │   ├── estructura_actual.md  (13.3K)
-│   │   └── estructura_actual.txt  (13.4K)
+│   │   ├── 20260924_091740_estructura.md  (14.2K)
+│   │   ├── 20260924_091740_estructura.txt  (14.3K)
+│   │   ├── 20260924_141324_estructura.md  (14.5K)
+│   │   ├── 20260924_141324_estructura.txt  (14.6K)
+│   │   ├── estructura_actual.md  (14.5K)
+│   │   └── estructura_actual.txt  (14.6K)
 │   ├── suite/
 │   │   ├── assets/
 │   │   │   ├── logo-color-stacked.png  (126K)
@@ -234,17 +238,20 @@ slep_simce_adecuado/
 │   │   │   ├── traspaso_cierre_v27.md  (14.8K)
 │   │   │   ├── traspaso_cierre_v28.md  (27.4K)
 │   │   │   ├── traspaso_cierre_v29.md  (20.8K)
-│   │   │   └── traspaso_cierre_v30.md  (47.1K)
+│   │   │   ├── traspaso_cierre_v30.md  (47.1K)
+│   │   │   ├── traspaso_cierre_v31.md  (31.4K)
+│   │   │   └── traspaso_cierre_v32.md  (27.5K)
 │   │   ├── .gitkeep  (0)
-│   │   └── traspaso_cierre_v31.md  (31.4K)
+│   │   └── traspaso_cierre_v33.md  (28K)
 │   └── .DS_Store  (14K)
 ├── docs/
-│   └── index.html  (2.66M)
+│   ├── index.html  (2.66M)
+│   └── trayectorias.html  (1.42M)
 ├── .DS_Store  (10K)
 ├── .gitignore  (1.42K)
 ├── .Renviron.example  (1.9K)
 ├── .Rprofile  (26)
-├── 00_build.R  (1.38K)
+├── 00_build.R  (1.48K)
 ├── 00_escanear_proyecto.R  (9.31K)
 ├── LICENSE  (11.1K)
 ├── NOTICE  (1.76K)
@@ -254,27 +261,23 @@ slep_simce_adecuado/
 ├── verificar_depe4.R  (6.46K)
 ├── verificar_elem_insuf_2023_2024.R  (4.07K)
 └── verificar_elem_insuf.R  (6.15K)
-```
 
-## Conteo por extension
-
-| Extension | Archivos |
-|---|---|
-| md | 109 |
-| xlsx | 25 |
-| (sin extension) | 17 |
-| r | 17 |
-| html | 13 |
-| js | 6 |
-| otf | 6 |
-| parquet | 6 |
-| jsx | 5 |
-| css | 3 |
-| csv | 3 |
-| png | 3 |
-| txt | 3 |
-| example | 1 |
-| json | 1 |
-| lock | 1 |
-| pdf | 1 |
-| rproj | 1 |
+Conteo por extension:
+  md                 115
+  xlsx               25
+  r                  20
+  (sin extension)    17
+  html               15
+  js                 6
+  otf                6
+  parquet            6
+  jsx                5
+  css                3
+  csv                3
+  png                3
+  txt                3
+  example            1
+  json               1
+  lock               1
+  pdf                1
+  rproj              1
