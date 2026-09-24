@@ -37,3 +37,15 @@ Registro en el momento en que ocurren (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: encargos-premisas: un esperado numérico derivado de una sola corrida en otra plataforma para una magnitud sensible al redondeo.
 - `intentos_previos`: 0.
 - `costo`: T1 congelada sin commit, una corrida completa del encargo y una decisión devuelta al titular.
+
+**ERR-32-04**
+- `momento`: entrega de los dos scripts con redondeo entero, después de depositar la adenda del traslado.
+- `disparador`: el ejecutor lo detectó (`?? "Claude outputs/"` en FASE 0 de la adenda; regla 2, sesión detenida).
+- `que_paso`: entregué en el chat dos archivos que ya estaban en la carpeta conectada, y la app de escritorio dejó sus copias en `Claude outputs/` dentro de la raíz del repositorio, 12 segundos después de fijar el estado de partida de la adenda.
+- `regla_violada`: SETTINGS §1.2.6, «ningún comando asume el entorno»: el estado de partida de un encargo lo cambió una acción mía posterior a su medición; encargo v1.6 §2.2 regla 3 por analogía (sobrescribir es hipótesis).
+- `causa_raiz`: no medí el efecto de la entrega en el chat sobre la carpeta conectada; la traté como una acción sin efecto en el árbol y la hice después de medir el `git status` que la adenda declara.
+- `salvaguarda_presente`: SETTINGS; ERR-31-07 (artefactos no versionados que cambian el estado supuesto).
+- `patron`: PAT-03, efecto de una herramienta propia sobre el entorno del ejecutor no medido.
+- `gatillo_observable`: comando-entorno: una entrega de archivos al chat con carpeta conectada, hecha después de medir el `git status` que un encargo declara como premisa.
+- `intentos_previos`: 0.
+- `costo`: una corrida de la adenda detenida en FASE 0 y un commit de log sin la meta cumplida.
