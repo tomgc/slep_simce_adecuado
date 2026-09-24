@@ -41,6 +41,7 @@
 # ----------------------------------------------------------------------------
 
 library(here)
+source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
 
 # ---- Constantes (decisiones metodológicas nombradas, C.10) ----
 COMUNAS_COSTA_CENTRAL_COD <- c("5109", "5103", "5107", "5105")

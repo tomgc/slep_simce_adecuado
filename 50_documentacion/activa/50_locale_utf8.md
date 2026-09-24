@@ -5,7 +5,9 @@
 **Log de la ejecución:** `50_documentacion/andamios/logs/20260827_ordenacion_repositorio_log.md`
 
 Constancia de qué existe hoy en este repositorio respecto de la guarda
-`asegurar_locale_utf8`. Registra lo medido, no lo supuesto. **No instala nada.**
+`asegurar_locale_utf8`. Registra lo medido, no lo supuesto. Las secciones 1 a 4
+son el estado del 2026-08-27, sin guarda; la sección 5 registra su instalación
+en la sesión 34 (2026-09-24).
 
 ---
 
@@ -112,3 +114,33 @@ Rscript -e 'cat(isTRUE(l10n_info()[["UTF-8"]]), "\n")'
 
 El último comando informa si el locale de la sesión actual es UTF-8, que es
 exactamente lo que evalúa el check `locale_utf8`.
+
+---
+
+## 5. Instalación (sesión 34, 2026-09-24)
+
+**Decisión del titular:** opción A, `10_utils/10_configuracion.R` canónico como
+punto de arranque común (POLITICA 5.2bis; SETTINGS §1.2.2 punto 4ter).
+
+**Motivo medido:** una regeneración del motor con R en locale C escribió en el
+JSON embebido «Servicio Local de Educaci<c3><b3>n P<c3><ba>blica» en vez del
+texto con tildes, sin error ni prueba que fallara.
+
+| Pieza | Estado |
+|---|---|
+| `10_utils/10_locale.R` | Copia idéntica de `herramientas_dev/plantillas/10_locale.R` (md5 `dc900c1b0d2d252c9e5730875be5d632`) |
+| `10_utils/10_configuracion.R` | Nuevo; su primera línea ejecutable, tras el `source()` de la guarda, es `asegurar_locale_utf8("10_configuracion")` |
+| Invocadores | `00_build.R` y los ocho scripts ejecutables de `30_procesamiento/` que se corren sueltos (30, 31, 32, 33, 34, 36 generar, 36 verificar), en la línea siguiente a `library(here)` |
+
+**Verificación (en la réplica del asistente, R 4.3.3):**
+
+- `90_verificar_locale.R` del kit: V1 a V4 en OK («GUARDA INSTALADA»).
+- Se la vio fallar: con la invocación comentada, V2, V3 y V4 fallan; restaurado
+  el archivo, es idéntico al instalado.
+- `33_generar_html.R` bajo `LANG=C`: la guarda avisa la corrección a C.UTF-8 y el
+  JSON queda igual al publicado (salvo la fecha de generación).
+- `36_generar_trayectorias.R` bajo `LANG=C`: md5 `ebee5acf417f9aebaa46366c167588d7`,
+  el mismo de la versión publicada; batería 19 de 19.
+
+**Fuera de alcance:** `10_utils/10_validar_portabilidad.R` sigue sin invocador
+(pendiente heredado).
