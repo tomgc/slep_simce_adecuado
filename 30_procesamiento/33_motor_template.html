@@ -122,18 +122,10 @@ body {
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .app.is-comfy   { font-size: var(--fs-body-lg); }
 
-/* Header */
-.app-header {
-  background: #0A3A5C;
-  color: var(--fg-on-plum);
-  padding: 28px 40px 26px;
-  border-bottom: 4px solid var(--coral);
-}
-.app-header-inner {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 24px; max-width: 1600px; margin: 0 auto;
-}
-.app-header-left { min-width: 0; }
+/* Encabezado del sitio y menú de vistas: vienen de 30_procesamiento/
+   33_fragmento_sitio.html, fuente única compartida con la vista de
+   trayectorias (los inserta 33_generar_html.R). */
+/*__SITIO_CSS__*/
 .app-header-right { display: flex; align-items: center; gap: 8px; }
 .brand-lockup { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .brand-eyebrow {
@@ -146,29 +138,6 @@ body {
 }
 .brand-eyebrow-muted { opacity: 0.6; font-weight: 400; }
 .brand-divider { color: var(--cream); opacity: 0.4; }
-.app-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: var(--fs-h1);
-  letter-spacing: -0.005em;
-  color: var(--cream);
-  line-height: 1.1;
-  margin: 0 0 6px 0;
-}
-.app-title-sub { font-weight: 400; font-size: var(--fs-h3); color: var(--cream); opacity: 0.78; }
-.app-subtitle {
-  font-family: var(--font-body);
-  color: var(--cream); opacity: 0.75;
-  margin: 0; font-size: var(--fs-body); line-height: 1.5;
-}
-.app-objective {
-  font-family: var(--font-body);
-  color: var(--cream); opacity: 0.82;
-  margin: 8px 0 0 0; font-size: var(--fs-caption); line-height: 1.6;
-  max-width: 820px;
-}
-.app-objective strong { font-weight: 700; opacity: 1; }
-
 /* Main */
 .app-main { flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
 
@@ -1032,50 +1001,6 @@ code {
 .entity-estab-label { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .entity-estab-arrow { flex-shrink: 0; }
 
-/* ============================================================
-   Pestañas de vista (comparación / panorama territorial)
-   ============================================================ */
-/* Barra blanca pegajosa bajo el banner, con la activa subrayada en coral. La
-   regla coral de separación vive ahora al pie de `.app-header`, que está en
-   todas las vistas; antes colgaba de `.controls-bar`, que el panorama no
-   muestra. Como consecuencia `.controls-bar` deja de ser pegajosa: dos
-   elementos pegados a top:0 se solapan, y la navegación entre vistas pesa más
-   que los segmentadores de nivel y prueba. */
-.view-tabs {
-  background: var(--paper);
-  border-bottom: 1px solid var(--border-1);
-  box-shadow: 0 1px 0 rgba(74, 39, 70, 0.04);
-  position: sticky; top: 0; z-index: 40;
-}
-.view-tabs-inner {
-  display: flex; gap: 0; flex-wrap: wrap;
-  max-width: 1600px; margin: 0 auto; padding: 0 40px;
-}
-.view-tab {
-  appearance: none; background: none; border: none;
-  padding: 14px 18px;
-  font-family: var(--font-body);
-  font-weight: 700; font-size: var(--fs-body-lg);
-  color: var(--fg-3);
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  white-space: nowrap;
-  transition: color 120ms ease, border-color 120ms ease;
-}
-.view-tab:hover { color: var(--fg-1); }
-.view-tab.is-active { color: #0A3A5C; border-bottom-color: var(--coral); }
-/* La tercera entrada abre otra página (docs/trayectorias.html, D33-2): es un
-   enlace fuera de la lista de pestañas, con el aspecto de las pestañas. El
-   `line-height: normal` iguala su alto al de los botones. */
-.view-tabs-group { display: flex; gap: 0; flex-wrap: wrap; }
-a.view-tab { text-decoration: none; line-height: normal; }
-/* Pantallas angostas: el menú se reparte en líneas en vez de desbordar la
-   página; misma regla que el menú de la vista de trayectorias. */
-@media (max-width: 640px) {
-  .view-tabs-inner { padding: 0 8px; }
-  .view-tab { white-space: normal; padding: 12px 10px; font-size: var(--fs-body); }
-}
-
 /* Banner oscuro de identidad del territorio: nombre, composición, meta y el
    selector de nivel. Homogéneo con el banner del motor IDPS. */
 .hero-card {
@@ -1219,6 +1144,7 @@ a.view-tab { text-decoration: none; line-height: normal; }
 </style>
 </head>
 <body>
+  <!--__SITIO_HTML__-->
   <div id="root"></div>
   <div id="global-tooltip" class="tooltip" style="display:none"></div>
   <div id="tooltip-overlay" style="display:none;position:fixed;inset:0;z-index:9998;"></div>
@@ -1844,31 +1770,6 @@ a.view-tab { text-decoration: none; line-height: normal; }
       },
     };
 
-    // ============================================================
-    // Header — banner azul institucional
-    // ============================================================
-    function Header() {
-      return (
-        <header className="app-header">
-          <div className="app-header-inner">
-            <div className="app-header-left">
-
-              <h1 className="app-title">
-                Motor de comparación Simce
-                <span className="app-title-sub"> — proporción de estudiantes en nivel Adecuado</span>
-              </h1>
-              <p className="app-subtitle">
-                Datos 2014–2025 · Resultados segmentados por grupo socioeconómico (GSE)
-              </p>
-              <p className="app-objective">
-                El objetivo de esta herramienta de análisis interno del <strong>SLEP Costa Central</strong> es visualizar la proporción de estudiantes cuyo desempeño en los <strong>Estándares de Aprendizaje</strong>, medidos por el Simce, se encuentra en el <strong>nivel Adecuado</strong>. Su diseño permite comparar diversos "territorios", los cuales pueden ser establecimientos, comunas, SLEPs o regiones completas. Los resultados se presentan siempre segmentados por <strong>Grupo Socioeconómico (GSE)</strong>, siguiendo las normas de la <strong>Agencia de Calidad de la Educación</strong>.
-              </p>
-            </div>
-          </div>
-        </header>
-      );
-    }
-
     // variante: "on-dark" para el control que vive dentro de la tarjeta de
     // contexto, sobre fondo azul institucional.
     function Segmented({ value, options, onChange, variante }) {
@@ -1885,35 +1786,6 @@ a.view-tab { text-decoration: none; line-height: normal; }
             >{o.label}</button>
           ))}
         </div>
-      );
-    }
-
-    // Pestañas de vista. Dos preguntas distintas sobre los mismos datos:
-    // comparar territorios entre sí (segmentado por GSE) o describir uno solo
-    // (con los GSE combinados). La tercera entrada es un enlace a la vista de
-    // trayectorias, que vive en su propio archivo y no se incrusta (D33-2).
-    function ViewTabs({ vista, setVista }) {
-      const tabs = [
-        { value: "comparacion", label: "Comparación entre territorios" },
-        { value: "panorama", label: "Panorama territorial" },
-      ];
-      return (
-        <nav className="view-tabs" aria-label="Vistas del motor">
-          <div className="view-tabs-inner">
-            <div className="view-tabs-group" role="tablist">
-              {tabs.map(t => (
-                <button
-                  key={t.value}
-                  role="tab"
-                  aria-selected={vista === t.value}
-                  className={"view-tab" + (vista === t.value ? " is-active" : "")}
-                  onClick={() => setVista(t.value)}
-                >{t.label}</button>
-              ))}
-            </div>
-            <a className="view-tab" href="trayectorias.html">Trayectorias de los Servicios Locales</a>
-          </div>
-        </nav>
       );
     }
 
@@ -4270,9 +4142,11 @@ a.view-tab { text-decoration: none; line-height: normal; }
       // Vista activa y territorio del panorama. El panorama tiene su propia
       // selección, independiente del tablero de comparación: son dos preguntas
       // distintas y mezclar los estados obligaría a vaciar una para usar la otra.
-      // La dirección `#panorama` abre el panorama: es el enlace de vuelta desde
-      // la vista de trayectorias (D33-2). Cualquier otra dirección abre la
-      // comparación.
+      // La vista la fija la dirección: `#panorama` abre el panorama y cualquier
+      // otra, la comparación. El menú es marcado estático del fragmento del
+      // sitio (33_fragmento_sitio.html): sus dos primeras entradas cambian la
+      // dirección (#comparacion, #panorama) y la vista de trayectorias vuelve
+      // con index.html#panorama (D33-2).
       const vistaDesdeDireccion = () =>
         window.location.hash === "#panorama" ? "panorama" : "comparacion";
       const [vista, setVista] = React.useState(vistaDesdeDireccion);
@@ -4281,14 +4155,14 @@ a.view-tab { text-decoration: none; line-height: normal; }
         window.addEventListener("hashchange", alCambiar);
         return () => window.removeEventListener("hashchange", alCambiar);
       }, []);
-      // La dirección sigue a la pestaña, para que recargar o copiar el enlace
-      // conserve la vista. Si el navegador no lo permite, la vista no cambia.
+      // Entrada activa del menú estático: la que corresponde a la vista.
       React.useEffect(() => {
-        const destino = vista === "panorama" ? "#panorama"
-          : window.location.pathname + window.location.search;
-        if (vista !== vistaDesdeDireccion()) {
-          try { window.history.replaceState(null, "", destino); } catch (e) {}
-        }
+        document.querySelectorAll(".view-tab[data-vista]").forEach(a => {
+          const activa = a.dataset.vista === vista;
+          a.classList.toggle("is-active", activa);
+          if (activa) a.setAttribute("aria-current", "page");
+          else a.removeAttribute("aria-current");
+        });
       }, [vista]);
       const [panoramaEntity, setPanoramaEntity] = React.useState(null);
       const [panoramaModal, setPanoramaModal] = React.useState(false);
@@ -4430,8 +4304,6 @@ a.view-tab { text-decoration: none; line-height: normal; }
 
       return (
         <div className={containerClass}>
-          <Header />
-          <ViewTabs vista={vista} setVista={setVista} />
           <main className="app-main">
             {vista === "comparacion" && (
               <ControlsBar nivel={nivel} setNivel={setNivel} prueba={prueba} setPrueba={setPrueba}
