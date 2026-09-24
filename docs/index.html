@@ -122,18 +122,44 @@ body {
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .app.is-comfy   { font-size: var(--fs-body-lg); }
 
-/* Header */
-.app-header {
-  background: #0A3A5C;
-  color: var(--fg-on-plum);
-  padding: 28px 40px 26px;
-  border-bottom: 4px solid var(--coral);
-}
-.app-header-inner {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 24px; max-width: 1600px; margin: 0 auto;
-}
+/* Encabezado del sitio y menú de vistas: vienen de 30_procesamiento/
+   33_fragmento_sitio.html, fuente única compartida con la vista de
+   trayectorias (los inserta 33_generar_html.R). */
+/* Encabezado del sitio y menú de vistas (33_fragmento_sitio.html) */
+.app-header { background: #0A3A5C; color: var(--cream); padding: 28px 40px 26px;
+  border-bottom: 4px solid var(--coral); }
+.app-header-inner { display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; max-width: 1600px; margin: 0 auto; }
 .app-header-left { min-width: 0; }
+.app-title { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h1);
+  letter-spacing: -0.005em; color: var(--cream); line-height: 1.1; margin: 0 0 6px 0; }
+.app-title-sub { font-weight: 400; font-size: var(--fs-h3); color: var(--cream); opacity: 0.78; }
+.app-subtitle { font-family: var(--font-body); color: var(--cream); opacity: 0.75; margin: 0;
+  font-size: var(--fs-body); line-height: 1.5; }
+.app-objective { font-family: var(--font-body); color: var(--cream); opacity: 0.82;
+  margin: 8px 0 0 0; font-size: var(--fs-caption); line-height: 1.6; max-width: 820px; }
+.app-objective strong { font-weight: 700; opacity: 1; }
+/* Barra blanca pegajosa bajo el banner, con la entrada activa subrayada en
+   coral. Las tres entradas son enlaces: las dos del motor cambian la dirección
+   (#comparacion, #panorama) y la tercera abre otra página (D33-2). */
+.view-tabs { background: var(--paper); border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(74, 39, 70, 0.04); position: sticky; top: 0; z-index: 40; }
+.view-tabs-inner { display: flex; gap: 0; flex-wrap: wrap; max-width: 1600px;
+  margin: 0 auto; padding: 0 40px; }
+.view-tab { padding: 14px 18px; font-family: var(--font-body); font-weight: 700;
+  font-size: var(--fs-body-lg); line-height: normal; color: var(--slate); cursor: pointer;
+  border-bottom: 3px solid transparent; white-space: nowrap; text-decoration: none;
+  transition: color 120ms ease, border-color 120ms ease; }
+.view-tab:hover { color: var(--ink); }
+.view-tab.is-active { color: #0A3A5C; border-bottom-color: var(--coral); }
+.view-tab:focus-visible { outline: 2px solid var(--ocean); outline-offset: -2px; }
+/* Pantallas angostas: el encabezado se ajusta y el menú se reparte en líneas
+   en vez de desbordar la página. */
+@media (max-width: 640px) {
+  .app-header { padding: 20px 16px 18px; }
+  .view-tabs-inner { padding: 0 8px; }
+  .view-tab { white-space: normal; padding: 12px 10px; font-size: var(--fs-body); }
+}
 .app-header-right { display: flex; align-items: center; gap: 8px; }
 .brand-lockup { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .brand-eyebrow {
@@ -146,29 +172,6 @@ body {
 }
 .brand-eyebrow-muted { opacity: 0.6; font-weight: 400; }
 .brand-divider { color: var(--cream); opacity: 0.4; }
-.app-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: var(--fs-h1);
-  letter-spacing: -0.005em;
-  color: var(--cream);
-  line-height: 1.1;
-  margin: 0 0 6px 0;
-}
-.app-title-sub { font-weight: 400; font-size: var(--fs-h3); color: var(--cream); opacity: 0.78; }
-.app-subtitle {
-  font-family: var(--font-body);
-  color: var(--cream); opacity: 0.75;
-  margin: 0; font-size: var(--fs-body); line-height: 1.5;
-}
-.app-objective {
-  font-family: var(--font-body);
-  color: var(--cream); opacity: 0.82;
-  margin: 8px 0 0 0; font-size: var(--fs-caption); line-height: 1.6;
-  max-width: 820px;
-}
-.app-objective strong { font-weight: 700; opacity: 1; }
-
 /* Main */
 .app-main { flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
 
@@ -1032,50 +1035,6 @@ code {
 .entity-estab-label { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .entity-estab-arrow { flex-shrink: 0; }
 
-/* ============================================================
-   Pestañas de vista (comparación / panorama territorial)
-   ============================================================ */
-/* Barra blanca pegajosa bajo el banner, con la activa subrayada en coral. La
-   regla coral de separación vive ahora al pie de `.app-header`, que está en
-   todas las vistas; antes colgaba de `.controls-bar`, que el panorama no
-   muestra. Como consecuencia `.controls-bar` deja de ser pegajosa: dos
-   elementos pegados a top:0 se solapan, y la navegación entre vistas pesa más
-   que los segmentadores de nivel y prueba. */
-.view-tabs {
-  background: var(--paper);
-  border-bottom: 1px solid var(--border-1);
-  box-shadow: 0 1px 0 rgba(74, 39, 70, 0.04);
-  position: sticky; top: 0; z-index: 40;
-}
-.view-tabs-inner {
-  display: flex; gap: 0; flex-wrap: wrap;
-  max-width: 1600px; margin: 0 auto; padding: 0 40px;
-}
-.view-tab {
-  appearance: none; background: none; border: none;
-  padding: 14px 18px;
-  font-family: var(--font-body);
-  font-weight: 700; font-size: var(--fs-body-lg);
-  color: var(--fg-3);
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  white-space: nowrap;
-  transition: color 120ms ease, border-color 120ms ease;
-}
-.view-tab:hover { color: var(--fg-1); }
-.view-tab.is-active { color: #0A3A5C; border-bottom-color: var(--coral); }
-/* La tercera entrada abre otra página (docs/trayectorias.html, D33-2): es un
-   enlace fuera de la lista de pestañas, con el aspecto de las pestañas. El
-   `line-height: normal` iguala su alto al de los botones. */
-.view-tabs-group { display: flex; gap: 0; flex-wrap: wrap; }
-a.view-tab { text-decoration: none; line-height: normal; }
-/* Pantallas angostas: el menú se reparte en líneas en vez de desbordar la
-   página; misma regla que el menú de la vista de trayectorias. */
-@media (max-width: 640px) {
-  .view-tabs-inner { padding: 0 8px; }
-  .view-tab { white-space: normal; padding: 12px 10px; font-size: var(--fs-body); }
-}
-
 /* Banner oscuro de identidad del territorio: nombre, composición, meta y el
    selector de nivel. Homogéneo con el banner del motor IDPS. */
 .hero-card {
@@ -1219,6 +1178,22 @@ a.view-tab { text-decoration: none; line-height: normal; }
 </style>
 </head>
 <body>
+  <header class="app-header">
+  <div class="app-header-inner">
+    <div class="app-header-left">
+      <h1 class="app-title">Motor de comparación Simce<span class="app-title-sub"> — proporción de estudiantes en nivel Adecuado</span></h1>
+      <p class="app-subtitle">Datos 2014–2025 · Resultados segmentados por grupo socioeconómico (GSE)</p>
+      <p class="app-objective">El objetivo de esta herramienta de análisis interno del <strong>SLEP Costa Central</strong> es visualizar la proporción de estudiantes cuyo desempeño en los <strong>Estándares de Aprendizaje</strong>, medidos por el Simce, se encuentra en el <strong>nivel Adecuado</strong>. Su diseño permite comparar diversos "territorios", los cuales pueden ser establecimientos, comunas, SLEPs o regiones completas. Los resultados se presentan siempre segmentados por <strong>Grupo Socioeconómico (GSE)</strong>, siguiendo las normas de la <strong>Agencia de Calidad de la Educación</strong>.</p>
+    </div>
+  </div>
+</header>
+<nav class="view-tabs" aria-label="Vistas del motor">
+  <div class="view-tabs-inner">
+    <a class="view-tab is-active" aria-current="page" data-vista="comparacion" href="#comparacion">Comparación entre territorios</a>
+    <a class="view-tab" data-vista="panorama" href="#panorama">Panorama territorial</a>
+    <a class="view-tab" data-vista="trayectorias" href="trayectorias.html">Trayectorias de los Servicios Locales</a>
+  </div>
+</nav>
   <div id="root"></div>
   <div id="global-tooltip" class="tooltip" style="display:none"></div>
   <div id="tooltip-overlay" style="display:none;position:fixed;inset:0;z-index:9998;"></div>
@@ -2535,27 +2510,6 @@ var FS_SVG = {
   }
 };
 
-// ============================================================
-// Header — banner azul institucional
-// ============================================================
-function Header() {
-  return /*#__PURE__*/React.createElement("header", {
-    className: "app-header"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "app-header-inner"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "app-header-left"
-  }, /*#__PURE__*/React.createElement("h1", {
-    className: "app-title"
-  }, "Motor de comparaci\xF3n Simce", /*#__PURE__*/React.createElement("span", {
-    className: "app-title-sub"
-  }, " \u2014 proporci\xF3n de estudiantes en nivel Adecuado")), /*#__PURE__*/React.createElement("p", {
-    className: "app-subtitle"
-  }, "Datos 2014\u20132025 \xB7 Resultados segmentados por grupo socioecon\xF3mico (GSE)"), /*#__PURE__*/React.createElement("p", {
-    className: "app-objective"
-  }, "El objetivo de esta herramienta de an\xE1lisis interno del ", /*#__PURE__*/React.createElement("strong", null, "SLEP Costa Central"), " es visualizar la proporci\xF3n de estudiantes cuyo desempe\xF1o en los ", /*#__PURE__*/React.createElement("strong", null, "Est\xE1ndares de Aprendizaje"), ", medidos por el Simce, se encuentra en el ", /*#__PURE__*/React.createElement("strong", null, "nivel Adecuado"), ". Su dise\xF1o permite comparar diversos \"territorios\", los cuales pueden ser establecimientos, comunas, SLEPs o regiones completas. Los resultados se presentan siempre segmentados por ", /*#__PURE__*/React.createElement("strong", null, "Grupo Socioecon\xF3mico (GSE)"), ", siguiendo las normas de la ", /*#__PURE__*/React.createElement("strong", null, "Agencia de Calidad de la Educaci\xF3n"), "."))));
-}
-
 // variante: "on-dark" para el control que vive dentro de la tarjeta de
 // contexto, sobre fondo azul institucional.
 function Segmented(_ref11) {
@@ -2584,59 +2538,21 @@ function Segmented(_ref11) {
     }, o.label);
   }));
 }
-
-// Pestañas de vista. Dos preguntas distintas sobre los mismos datos:
-// comparar territorios entre sí (segmentado por GSE) o describir uno solo
-// (con los GSE combinados). La tercera entrada es un enlace a la vista de
-// trayectorias, que vive en su propio archivo y no se incrusta (D33-2).
-function ViewTabs(_ref12) {
-  var vista = _ref12.vista,
-    setVista = _ref12.setVista;
-  var tabs = [{
-    value: "comparacion",
-    label: "Comparación entre territorios"
-  }, {
-    value: "panorama",
-    label: "Panorama territorial"
-  }];
-  return /*#__PURE__*/React.createElement("nav", {
-    className: "view-tabs",
-    "aria-label": "Vistas del motor"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "view-tabs-inner"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "view-tabs-group",
-    role: "tablist"
-  }, tabs.map(function (t) {
-    return /*#__PURE__*/React.createElement("button", {
-      key: t.value,
-      role: "tab",
-      "aria-selected": vista === t.value,
-      className: "view-tab" + (vista === t.value ? " is-active" : ""),
-      onClick: function onClick() {
-        return setVista(t.value);
-      }
-    }, t.label);
-  })), /*#__PURE__*/React.createElement("a", {
-    className: "view-tab",
-    href: "trayectorias.html"
-  }, "Trayectorias de los Servicios Locales")));
-}
-function ControlsBar(_ref13) {
-  var nivel = _ref13.nivel,
-    setNivel = _ref13.setNivel,
-    prueba = _ref13.prueba,
-    setPrueba = _ref13.setPrueba,
-    loading = _ref13.loading;
-  var niveles = Object.entries(DATA.meta.niveles).sort(function (_ref14, _ref15) {
+function ControlsBar(_ref12) {
+  var nivel = _ref12.nivel,
+    setNivel = _ref12.setNivel,
+    prueba = _ref12.prueba,
+    setPrueba = _ref12.setPrueba,
+    loading = _ref12.loading;
+  var niveles = Object.entries(DATA.meta.niveles).sort(function (_ref13, _ref14) {
+    var _ref15 = _slicedToArray(_ref13, 1),
+      a = _ref15[0];
     var _ref16 = _slicedToArray(_ref14, 1),
-      a = _ref16[0];
-    var _ref17 = _slicedToArray(_ref15, 1),
-      b = _ref17[0];
+      b = _ref16[0];
     return a === "4b" ? -1 : 1;
-  }).map(function (_ref18) {
-    var _ref19 = _slicedToArray(_ref18, 2),
-      v = _ref19[1];
+  }).map(function (_ref17) {
+    var _ref18 = _slicedToArray(_ref17, 2),
+      v = _ref18[1];
     return v;
   });
   var pruebas = Object.values(DATA.meta.pruebas);
@@ -2692,14 +2608,14 @@ function contarEstablecimientos(entity, nivel, prueba) {
     return rbdsNP.has(String(r.rbd));
   }).length;
 }
-function EntityChip(_ref20) {
+function EntityChip(_ref19) {
   var _contarEstablecimient;
-  var entity = _ref20.entity,
-    onRemove = _ref20.onRemove,
-    onEdit = _ref20.onEdit,
-    onShowEstab = _ref20.onShowEstab,
-    nivel = _ref20.nivel,
-    prueba = _ref20.prueba;
+  var entity = _ref19.entity,
+    onRemove = _ref19.onRemove,
+    onEdit = _ref19.onEdit,
+    onShowEstab = _ref19.onShowEstab,
+    nivel = _ref19.nivel,
+    prueba = _ref19.prueba;
   var nEstabSlep = entity.kind === "slep" && DATA.establecimientos ? function () {
     var rbdsSlep = new Set((entity.rbds || []).map(String));
     return DATA.establecimientos.filter(function (r) {
@@ -2747,14 +2663,14 @@ function EntityChip(_ref20) {
     name: "x"
   })));
 }
-function EntitiesBar(_ref21) {
-  var entities = _ref21.entities,
-    setEntities = _ref21.setEntities,
-    openModal = _ref21.openModal,
-    onReset = _ref21.onReset,
-    _onShowEstab = _ref21.onShowEstab,
-    nivel = _ref21.nivel,
-    prueba = _ref21.prueba;
+function EntitiesBar(_ref20) {
+  var entities = _ref20.entities,
+    setEntities = _ref20.setEntities,
+    openModal = _ref20.openModal,
+    onReset = _ref20.onReset,
+    _onShowEstab = _ref20.onShowEstab,
+    nivel = _ref20.nivel,
+    prueba = _ref20.prueba;
   function removeEntity(id) {
     setEntities(entities.filter(function (e) {
       return e.id !== id;
@@ -2943,11 +2859,11 @@ function makeTooltip(entity, gse, nivel, prueba) {
 // ============================================================
 // Sparkline — trayectoria histórica
 // ============================================================
-function SparklineSubchart(_ref22) {
-  var entity = _ref22.entity,
-    gse = _ref22.gse,
-    nivel = _ref22.nivel,
-    prueba = _ref22.prueba;
+function SparklineSubchart(_ref21) {
+  var entity = _ref21.entity,
+    gse = _ref21.gse,
+    nivel = _ref21.nivel,
+    prueba = _ref21.prueba;
   var ref = React.useRef(null);
   React.useEffect(function () {
     var svg = d3.select(ref.current);
@@ -3092,15 +3008,15 @@ var RECENT_DIMS = {
 // cifra encima de otra, nunca la misma cifra dentro y fuera. 16 px es el alto
 // del rótulo interno (FS_SVG.barras.valorBarra 12 px) más su aire.
 var ALTO_MIN_ROTULO_BARRAS = 16;
-function RecentBarsSubchart(_ref23) {
-  var entity = _ref23.entity,
-    gse = _ref23.gse,
-    nivel = _ref23.nivel,
-    prueba = _ref23.prueba,
-    showElemInsuf = _ref23.showElemInsuf,
-    yScale = _ref23.yScale,
-    _ref23$recentN = _ref23.recentN,
-    recentN = _ref23$recentN === void 0 ? 3 : _ref23$recentN;
+function RecentBarsSubchart(_ref22) {
+  var entity = _ref22.entity,
+    gse = _ref22.gse,
+    nivel = _ref22.nivel,
+    prueba = _ref22.prueba,
+    showElemInsuf = _ref22.showElemInsuf,
+    yScale = _ref22.yScale,
+    _ref22$recentN = _ref22.recentN,
+    recentN = _ref22$recentN === void 0 ? 3 : _ref22$recentN;
   var ref = React.useRef(null);
   React.useEffect(function () {
     var svg = d3.select(ref.current);
@@ -3317,12 +3233,12 @@ function heatClass(pct) {
 function isAlert(pct) {
   return pct != null && pct <= 25;
 }
-function ResultsTable(_ref24) {
-  var entities = _ref24.entities,
-    nivel = _ref24.nivel,
-    prueba = _ref24.prueba,
-    gseFilter = _ref24.gseFilter,
-    onCellClick = _ref24.onCellClick;
+function ResultsTable(_ref23) {
+  var entities = _ref23.entities,
+    nivel = _ref23.nivel,
+    prueba = _ref23.prueba,
+    gseFilter = _ref23.gseFilter,
+    onCellClick = _ref23.onCellClick;
   var YEARS = SimceData.YEARS.slice().reverse();
   var GSE_LEVELS = gseFilter ? SimceData.GSE_LEVELS.filter(function (g) {
     return g === gseFilter;
@@ -3494,8 +3410,8 @@ function HeatLegend() {
     }, b.desc));
   }))));
 }
-function ChartHints(_ref25) {
-  var showElemInsuf = _ref25.showElemInsuf;
+function ChartHints(_ref24) {
+  var showElemInsuf = _ref24.showElemInsuf;
   return /*#__PURE__*/React.createElement("div", {
     className: "chart-hints"
   }, /*#__PURE__*/React.createElement("span", {
@@ -3531,10 +3447,10 @@ function ChartHints(_ref25) {
     }
   }), /*#__PURE__*/React.createElement("span", null, "Insuficiente")));
 }
-function IconExport(_ref26) {
-  var label = _ref26.label,
-    icon = _ref26.icon,
-    onExport = _ref26.onExport;
+function IconExport(_ref25) {
+  var label = _ref25.label,
+    icon = _ref25.icon,
+    onExport = _ref25.onExport;
   return /*#__PURE__*/React.createElement("button", {
     className: "icon-export",
     title: label,
@@ -3550,11 +3466,11 @@ function IconExport(_ref26) {
 }
 
 // Genera y descarga un CSV con los datos actuales de la tabla
-function exportarCSV(_ref27) {
-  var entities = _ref27.entities,
-    nivel = _ref27.nivel,
-    prueba = _ref27.prueba,
-    gseFilter = _ref27.gseFilter;
+function exportarCSV(_ref26) {
+  var entities = _ref26.entities,
+    nivel = _ref26.nivel,
+    prueba = _ref26.prueba,
+    gseFilter = _ref26.gseFilter;
   var YEARS = SimceData.YEARS.slice().reverse();
   var GSE_LEVELS = gseFilter ? SimceData.GSE_LEVELS.filter(function (g) {
     return g === gseFilter;
@@ -3584,10 +3500,10 @@ function exportarCSV(_ref27) {
 // ============================================================
 // construirSvgGraficos — SVG compuesto del supergrid (base de export SVG/PNG)
 // ============================================================
-function construirSvgGraficos(_ref28) {
-  var entities = _ref28.entities,
-    nivel = _ref28.nivel,
-    prueba = _ref28.prueba;
+function construirSvgGraficos(_ref27) {
+  var entities = _ref27.entities,
+    nivel = _ref27.nivel,
+    prueba = _ref27.prueba;
   var GSE_LEVELS = SimceData.GSE_LEVELS;
 
   // Dimensiones de cada SVG fuente (deben coincidir con viewBox de cada subchart)
@@ -3620,10 +3536,10 @@ function construirSvgGraficos(_ref28) {
     var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var parent = arguments.length > 2 ? arguments[2] : undefined;
     var node = document.createElementNS(NS, tag);
-    Object.entries(attrs).forEach(function (_ref29) {
-      var _ref30 = _slicedToArray(_ref29, 2),
-        k = _ref30[0],
-        v = _ref30[1];
+    Object.entries(attrs).forEach(function (_ref28) {
+      var _ref29 = _slicedToArray(_ref28, 2),
+        k = _ref29[0],
+        v = _ref29[1];
       return node.setAttribute(k, v);
     });
     if (parent) parent.appendChild(node);
@@ -3874,10 +3790,10 @@ function descargarBlob(blob, fname) {
   a.click();
   URL.revokeObjectURL(url);
 }
-function exportarGraficosSVG(_ref31) {
-  var entities = _ref31.entities,
-    nivel = _ref31.nivel,
-    prueba = _ref31.prueba;
+function exportarGraficosSVG(_ref30) {
+  var entities = _ref30.entities,
+    nivel = _ref30.nivel,
+    prueba = _ref30.prueba;
   var _construirSvgGraficos = construirSvgGraficos({
       entities: entities,
       nivel: nivel,
@@ -3902,11 +3818,11 @@ var PNG_MAX_SUPERFICIE_PX = 16777216;
 // panorama territorial: el techo de superficie, el manejo del canvas y la
 // liberación de la URL viven en un solo lugar y no se duplican por vista.
 // Recibe la misma tupla que devuelven los constructores de SVG.
-function rasterizarSvgAPng(_ref32) {
-  var svgStr = _ref32.svgStr,
-    totalW = _ref32.totalW,
-    totalH = _ref32.totalH,
-    fnameBase = _ref32.fnameBase;
+function rasterizarSvgAPng(_ref31) {
+  var svgStr = _ref31.svgStr,
+    totalW = _ref31.totalW,
+    totalH = _ref31.totalH,
+    fnameBase = _ref31.fnameBase;
   var svgBlob = new Blob([svgStr], {
     type: "image/svg+xml;charset=utf-8"
   });
@@ -3957,10 +3873,10 @@ function rasterizarSvgAPng(_ref32) {
   };
   img.src = url;
 }
-function exportarGraficosPNG(_ref33) {
-  var entities = _ref33.entities,
-    nivel = _ref33.nivel,
-    prueba = _ref33.prueba;
+function exportarGraficosPNG(_ref32) {
+  var entities = _ref32.entities,
+    nivel = _ref32.nivel,
+    prueba = _ref32.prueba;
   rasterizarSvgAPng(construirSvgGraficos({
     entities: entities,
     nivel: nivel,
@@ -3998,10 +3914,10 @@ var PANORAMA_DIMS = {
     left: 36
   }
 };
-function dibujarPanoramaEnGrupo(g, _ref34) {
-  var series = _ref34.series,
-    iw = _ref34.iw,
-    ih = _ref34.ih;
+function dibujarPanoramaEnGrupo(g, _ref33) {
+  var series = _ref33.series,
+    iw = _ref33.iw,
+    ih = _ref33.ih;
   var y = d3.scaleLinear().domain([0, 100]).range([ih, 0]);
   var yTicks = [0, 25, 50, 75, 100];
 
@@ -4106,10 +4022,10 @@ function dibujarPanoramaEnGrupo(g, _ref34) {
     }
   });
 }
-function PanoramaChart(_ref35) {
-  var entity = _ref35.entity,
-    nivel = _ref35.nivel,
-    prueba = _ref35.prueba;
+function PanoramaChart(_ref34) {
+  var entity = _ref34.entity,
+    nivel = _ref34.nivel,
+    prueba = _ref34.prueba;
   var ref = React.useRef(null);
   React.useEffect(function () {
     var W = PANORAMA_DIMS.W,
@@ -4144,9 +4060,9 @@ function metaTerritorio(entity) {
   if (entity.kind === "group") return "Grupo \xB7 ".concat(entity.comunas.length, " comunas");
   return entity.depe2 ? SimceData.DEPE2_LABELS[entity.depe2] || "Comuna" : "Comuna";
 }
-function construirSvgPanorama(_ref36) {
-  var entity = _ref36.entity,
-    nivel = _ref36.nivel;
+function construirSvgPanorama(_ref35) {
+  var entity = _ref35.entity,
+    nivel = _ref35.nivel;
   var pruebas = Object.values(DATA.meta.pruebas);
   var W = PANORAMA_DIMS.W,
     H = PANORAMA_DIMS.H,
@@ -4197,9 +4113,9 @@ function construirSvgPanorama(_ref36) {
     fnameBase: fnameBase
   };
 }
-function exportarPanoramaSVG(_ref37) {
-  var entity = _ref37.entity,
-    nivel = _ref37.nivel;
+function exportarPanoramaSVG(_ref36) {
+  var entity = _ref36.entity,
+    nivel = _ref36.nivel;
   var _construirSvgPanorama = construirSvgPanorama({
       entity: entity,
       nivel: nivel
@@ -4210,17 +4126,17 @@ function exportarPanoramaSVG(_ref37) {
     type: "image/svg+xml;charset=utf-8"
   }), fnameBase + ".svg");
 }
-function exportarPanoramaPNG(_ref38) {
-  var entity = _ref38.entity,
-    nivel = _ref38.nivel;
+function exportarPanoramaPNG(_ref37) {
+  var entity = _ref37.entity,
+    nivel = _ref37.nivel;
   rasterizarSvgAPng(construirSvgPanorama({
     entity: entity,
     nivel: nivel
   }));
 }
-function exportarPanoramaCSV(_ref39) {
-  var entity = _ref39.entity,
-    nivel = _ref39.nivel;
+function exportarPanoramaCSV(_ref38) {
+  var entity = _ref38.entity,
+    nivel = _ref38.nivel;
   var pruebas = Object.values(DATA.meta.pruebas);
   var rows = [["territorio", "tipo", "nivel", "prueba", "gse", "anio", "pct_adecuado", "pct_elemental", "pct_insuficiente", "n_evaluados", "n_adecuado_derivado", "n_elemental_derivado", "n_insuficiente_derivado", "n_establecimientos", "preliminar"]];
   pruebas.forEach(function (prueba) {
@@ -4287,12 +4203,12 @@ function composicionTerritorio(entity) {
   if (nombres.length === 1) return nombres[0];
   return nombres.slice(0, -1).join(", ") + " y " + nombres[nombres.length - 1];
 }
-function PanoramaHero(_ref40) {
-  var entity = _ref40.entity,
-    nivel = _ref40.nivel,
-    setNivel = _ref40.setNivel,
-    niveles = _ref40.niveles,
-    meta = _ref40.meta;
+function PanoramaHero(_ref39) {
+  var entity = _ref39.entity,
+    nivel = _ref39.nivel,
+    setNivel = _ref39.setNivel,
+    niveles = _ref39.niveles,
+    meta = _ref39.meta;
   return /*#__PURE__*/React.createElement("section", {
     className: "hero-card"
   }, /*#__PURE__*/React.createElement("div", {
@@ -4314,9 +4230,9 @@ function PanoramaHero(_ref40) {
     variante: "on-dark"
   })));
 }
-function TerritorioSelect(_ref41) {
-  var entity = _ref41.entity,
-    onOpenSelector = _ref41.onOpenSelector;
+function TerritorioSelect(_ref40) {
+  var entity = _ref40.entity,
+    onOpenSelector = _ref40.onOpenSelector;
   return /*#__PURE__*/React.createElement("div", {
     className: "territorio-row"
   }, /*#__PURE__*/React.createElement("span", {
@@ -4334,12 +4250,12 @@ function TerritorioSelect(_ref41) {
     name: "chevron"
   }))));
 }
-function PanoramaSection(_ref42) {
-  var entity = _ref42.entity,
-    nivel = _ref42.nivel,
-    setNivel = _ref42.setNivel,
-    niveles = _ref42.niveles,
-    onOpenSelector = _ref42.onOpenSelector;
+function PanoramaSection(_ref41) {
+  var entity = _ref41.entity,
+    nivel = _ref41.nivel,
+    setNivel = _ref41.setNivel,
+    niveles = _ref41.niveles,
+    onOpenSelector = _ref41.onOpenSelector;
   var pruebas = Object.values(DATA.meta.pruebas);
   // Un territorio sin ninguna celda con dato en ningún año y ninguna prueba
   // no es un error: hay comunas y establecimientos en esa condición. La
@@ -4482,9 +4398,9 @@ function PanoramaSection(_ref42) {
 // ============================================================
 // GseFilter — selector de GSE para tabla
 // ============================================================
-function GseFilter(_ref43) {
-  var gseFilter = _ref43.gseFilter,
-    setGseFilter = _ref43.setGseFilter;
+function GseFilter(_ref42) {
+  var gseFilter = _ref42.gseFilter,
+    setGseFilter = _ref42.setGseFilter;
   return /*#__PURE__*/React.createElement("div", {
     className: "gse-filter"
   }, /*#__PURE__*/React.createElement("span", {
@@ -4513,13 +4429,13 @@ function GseFilter(_ref43) {
 //   prueba   — label de prueba activo
 //   onClose  — callback cierre
 //   gse      — (opcional) código GSE; si viene, filtra por ese GSE
-function EstabPopup(_ref44) {
-  var entity = _ref44.entity,
-    nivel = _ref44.nivel,
-    prueba = _ref44.prueba,
-    onClose = _ref44.onClose,
-    gse = _ref44.gse,
-    year = _ref44.year;
+function EstabPopup(_ref43) {
+  var entity = _ref43.entity,
+    nivel = _ref43.nivel,
+    prueba = _ref43.prueba,
+    onClose = _ref43.onClose,
+    gse = _ref43.gse,
+    year = _ref43.year;
   var ref = React.useRef(null);
   React.useEffect(function () {
     function handleClick(e) {
@@ -4654,22 +4570,22 @@ function EstabPopup(_ref44) {
 // Disclaimer metodológico: la clasificación por dependencia es la ACTUAL y
 // se aplica a toda la serie, sin corte por año de traspaso. Aparece donde se
 // puede seleccionar dependencia SLEP y como nota permanente en territorios SLEP.
-function SlepDisclaimer(_ref45) {
-  var compact = _ref45.compact;
+function SlepDisclaimer(_ref44) {
+  var compact = _ref44.compact;
   return /*#__PURE__*/React.createElement("div", {
     className: "slep-disclaimer" + (compact ? " is-compact" : "")
   }, /*#__PURE__*/React.createElement(Icon, {
     name: "info"
   }), /*#__PURE__*/React.createElement("span", null, "Los establecimientos se clasifican seg\xFAn su dependencia ", /*#__PURE__*/React.createElement("strong", null, "actual"), ". Un Servicio Local de Educaci\xF3n P\xFAblica (SLEP) agrupa a sus establecimientos en toda la serie hist\xF3rica, incluidos los a\xF1os anteriores a su traspaso, cuando la gesti\xF3n era municipal. Las cifras previas al a\xF1o de traspaso no son atribuibles a la gesti\xF3n del SLEP."));
 }
-function AddEntityModal(_ref46) {
+function AddEntityModal(_ref45) {
   var _editing$comunas;
-  var editing = _ref46.editing,
-    onSave = _ref46.onSave,
-    onSaveMany = _ref46.onSaveMany,
-    onCancel = _ref46.onCancel,
-    takenColors = _ref46.takenColors,
-    slotsLibres = _ref46.slotsLibres;
+  var editing = _ref45.editing,
+    onSave = _ref45.onSave,
+    onSaveMany = _ref45.onSaveMany,
+    onCancel = _ref45.onCancel,
+    takenColors = _ref45.takenColors,
+    slotsLibres = _ref45.slotsLibres;
   var _React$useState3 = React.useState((editing === null || editing === void 0 ? void 0 : editing.kind) === "slep" ? "slep" : (editing === null || editing === void 0 ? void 0 : editing.kind) === "region" ? "region" : (editing === null || editing === void 0 ? void 0 : editing.kind) === "nacional" ? "nacional" : (editing === null || editing === void 0 ? void 0 : editing.kind) === "estab" ? "estab" : (editing === null || editing === void 0 ? void 0 : editing.kind) === "group" ? "group" : "estab"),
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     tab = _React$useState4[0],
@@ -4747,13 +4663,13 @@ function AddEntityModal(_ref46) {
   var filteredComunas = function () {
     if (!search) return allComunas;
     var s = norm(search);
-    var byNombre = allComunas.filter(function (_ref47) {
-      var nombre = _ref47.nombre;
+    var byNombre = allComunas.filter(function (_ref46) {
+      var nombre = _ref46.nombre;
       return norm(nombre).includes(s);
     });
-    var byRegion = allComunas.filter(function (_ref48) {
-      var nombre = _ref48.nombre,
-        rn = _ref48.region;
+    var byRegion = allComunas.filter(function (_ref47) {
+      var nombre = _ref47.nombre,
+        rn = _ref47.region;
       return !norm(nombre).includes(s) && norm(rn).includes(s);
     });
     return [].concat(_toConsumableArray(byNombre), _toConsumableArray(byRegion));
@@ -5252,10 +5168,10 @@ function AddEntityModal(_ref46) {
     }
   }), /*#__PURE__*/React.createElement("div", {
     className: "comuna-checklist"
-  }, filteredComunas.map(function (_ref49) {
-    var cod_com = _ref49.cod_com,
-      nombre = _ref49.nombre,
-      rn = _ref49.region;
+  }, filteredComunas.map(function (_ref48) {
+    var cod_com = _ref48.cod_com,
+      nombre = _ref48.nombre,
+      rn = _ref48.region;
     return /*#__PURE__*/React.createElement("label", {
       key: cod_com,
       className: "check-row"
@@ -5287,15 +5203,15 @@ function AddEntityModal(_ref46) {
 // App principal
 // ============================================================
 function App() {
-  var niveles = Object.entries(DATA.meta.niveles).sort(function (_ref50, _ref51) {
+  var niveles = Object.entries(DATA.meta.niveles).sort(function (_ref49, _ref50) {
+    var _ref51 = _slicedToArray(_ref49, 1),
+      a = _ref51[0];
     var _ref52 = _slicedToArray(_ref50, 1),
-      a = _ref52[0];
-    var _ref53 = _slicedToArray(_ref51, 1),
-      b = _ref53[0];
+      b = _ref52[0];
     return a === "4b" ? -1 : 1;
-  }).map(function (_ref54) {
-    var _ref55 = _slicedToArray(_ref54, 2),
-      v = _ref55[1];
+  }).map(function (_ref53) {
+    var _ref54 = _slicedToArray(_ref53, 2),
+      v = _ref54[1];
     return v;
   });
   var pruebas = Object.values(DATA.meta.pruebas);
@@ -5343,9 +5259,11 @@ function App() {
   // Vista activa y territorio del panorama. El panorama tiene su propia
   // selección, independiente del tablero de comparación: son dos preguntas
   // distintas y mezclar los estados obligaría a vaciar una para usar la otra.
-  // La dirección `#panorama` abre el panorama: es el enlace de vuelta desde
-  // la vista de trayectorias (D33-2). Cualquier otra dirección abre la
-  // comparación.
+  // La vista la fija la dirección: `#panorama` abre el panorama y cualquier
+  // otra, la comparación. El menú es marcado estático del fragmento del
+  // sitio (33_fragmento_sitio.html): sus dos primeras entradas cambian la
+  // dirección (#comparacion, #panorama) y la vista de trayectorias vuelve
+  // con index.html#panorama (D33-2).
   var vistaDesdeDireccion = function vistaDesdeDireccion() {
     return window.location.hash === "#panorama" ? "panorama" : "comparacion";
   };
@@ -5362,15 +5280,13 @@ function App() {
       return window.removeEventListener("hashchange", alCambiar);
     };
   }, []);
-  // La dirección sigue a la pestaña, para que recargar o copiar el enlace
-  // conserve la vista. Si el navegador no lo permite, la vista no cambia.
+  // Entrada activa del menú estático: la que corresponde a la vista.
   React.useEffect(function () {
-    var destino = vista === "panorama" ? "#panorama" : window.location.pathname + window.location.search;
-    if (vista !== vistaDesdeDireccion()) {
-      try {
-        window.history.replaceState(null, "", destino);
-      } catch (e) {}
-    }
+    document.querySelectorAll(".view-tab[data-vista]").forEach(function (a) {
+      var activa = a.dataset.vista === vista;
+      a.classList.toggle("is-active", activa);
+      if (activa) a.setAttribute("aria-current", "page");else a.removeAttribute("aria-current");
+    });
   }, [vista]);
   var _React$useState47 = React.useState(null),
     _React$useState48 = _slicedToArray(_React$useState47, 2),
@@ -5547,10 +5463,7 @@ function App() {
   var containerClass = "app is-comfy ";
   return /*#__PURE__*/React.createElement("div", {
     className: containerClass
-  }, /*#__PURE__*/React.createElement(Header, null), /*#__PURE__*/React.createElement(ViewTabs, {
-    vista: vista,
-    setVista: setVista
-  }), /*#__PURE__*/React.createElement("main", {
+  }, /*#__PURE__*/React.createElement("main", {
     className: "app-main"
   }, vista === "comparacion" && /*#__PURE__*/React.createElement(ControlsBar, {
     nivel: nivel,
@@ -5714,10 +5627,10 @@ function App() {
     nivel: nivel,
     prueba: prueba,
     gseFilter: gseFilter,
-    onCellClick: function onCellClick(_ref56) {
-      var entity = _ref56.entity,
-        gse = _ref56.gse,
-        ev = _ref56.ev;
+    onCellClick: function onCellClick(_ref55) {
+      var entity = _ref55.entity,
+        gse = _ref55.gse,
+        ev = _ref55.ev;
       return setCellPopup({
         entity: _objectSpread(_objectSpread({}, entity), {}, {
           _popupPos: {
