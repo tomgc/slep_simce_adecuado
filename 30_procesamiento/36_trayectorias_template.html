@@ -65,18 +65,12 @@ body{background:var(--s0);color:var(--t1);font-size:var(--f2);font-family:var(--
 
 /* ---- La vista: ocupa la pantalla bajo el menú ---- */
 .app{height:calc(100dvh - var(--tabs-h));min-height:600px;display:grid;
-  grid-template-rows:auto auto minmax(0,1fr) auto;gap:var(--u);
+  grid-template-rows:auto minmax(0,1fr) auto;gap:var(--u);
   padding:calc(var(--u)*1.5) 40px calc(var(--u)*1.5);max-width:1600px;margin:0 auto}
 body.pres .app-header,body.pres .view-tabs{display:none}
 body.pres .app{height:100dvh;max-width:none;padding:var(--u) calc(var(--u)*2)}
 
-.hd{display:flex;align-items:flex-end;justify-content:space-between;gap:calc(var(--u)*3);min-height:var(--h)}
-.tit{min-width:0;display:flex;flex-direction:column;gap:4px}
-.eyebrow{font-family:var(--font-display);font-weight:700;font-size:var(--fs-overline);
-  letter-spacing:var(--tracking-overline);color:var(--t3);margin:0}
-h1,h2.titvista{font-family:var(--font-display);font-size:var(--f1);margin:0;font-weight:800;
-  letter-spacing:-.005em;line-height:1.15;color:var(--t1)}
-.hdacc{display:flex;gap:var(--u);align-items:center;flex:none}
+.hdacc{display:flex;gap:var(--u);align-items:center;flex:none;margin-left:auto;align-self:end}
 /* Pantallas angostas: el menú y la barra de acciones se reparten en líneas en
    vez de desbordar la página (a 375 px desbordaban desde el mockup). */
 @media (max-width:640px){
@@ -84,7 +78,7 @@ h1,h2.titvista{font-family:var(--font-display);font-size:var(--f1);margin:0;font
   .view-tabs-inner{padding:0 8px}
   .view-tab{white-space:normal;padding:12px 10px;font-size:var(--fs-body)}
   .app{padding-left:16px;padding-right:16px}
-  .hd,.hdacc{flex-wrap:wrap}
+  .hdacc{flex-wrap:wrap}
 }
 
 .ctls{display:flex;flex-wrap:wrap;gap:calc(var(--u)*1.5) calc(var(--u)*2.5);align-items:end;
@@ -138,7 +132,17 @@ select.angosto{max-width:210px}
 .card .baja b{color:var(--t2);font-weight:700}
 .card h2{margin:0;font-size:var(--f2);font-weight:700;color:var(--t1)}
 
-.tw{overflow:auto;min-height:0;flex:1}
+.tw{overflow:auto;min-height:0;flex:1;
+  /* Sombra de desplazamiento: indica que hay más filas abajo o arriba (defecto g). */
+  background:linear-gradient(var(--s1) 30%,rgba(255,255,255,0)) center top,
+    linear-gradient(rgba(255,255,255,0),var(--s1) 70%) center bottom,
+    radial-gradient(farthest-side at 50% 0,rgba(74,39,70,.16),transparent) center top,
+    radial-gradient(farthest-side at 50% 100%,rgba(74,39,70,.16),transparent) center bottom;
+  background-repeat:no-repeat;background-size:100% 28px,100% 28px,100% 12px,100% 12px;
+  background-attachment:local,local,scroll,scroll}
+/* Con más de ocho Servicios Locales las filas se compactan (defecto g). */
+table.denso td{padding-top:3px;padding-bottom:3px}
+table.denso .num{min-width:20px;height:20px}
 table{width:100%;border-collapse:collapse;font-size:var(--f2)}
 th{font-family:var(--font-display);font-size:var(--fs-overline);letter-spacing:.06em;color:var(--t3);font-weight:700;
   padding:6px 6px;border-bottom:1px solid var(--line);text-align:center;position:sticky;top:0;background:var(--s1);white-space:nowrap}
@@ -183,6 +187,9 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
   color:var(--azo);opacity:0;transition:opacity .22s;pointer-events:none;white-space:nowrap;
   box-shadow:0 8px 24px rgba(74,39,70,.12)}
 .gapb.on{opacity:1}
+.vacio{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);max-width:min(520px,80%);
+  background:var(--s1);border:1px solid var(--line-strong);border-radius:4px;padding:14px 18px;
+  font-size:var(--f2);line-height:1.5;color:var(--t2);text-align:center;box-shadow:var(--sh)}
 .seg button.ic{padding:0 12px}
 .seg button.ic svg{width:21px;height:17px;display:block;fill:currentColor}
 
@@ -210,7 +217,9 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 .modal p{margin:0 0 11px;break-inside:avoid}
 .modal b{color:var(--t1);font-weight:700}
 .modal h4{margin:16px 0 8px;font-size:var(--f2);color:var(--plum);font-weight:700;break-inside:avoid}
-.modal h4:first-child{margin-top:0}
+.modal h4:first-child,.modal .bloque:first-child h4{margin-top:0}
+/* Cada título va con su primer párrafo: nunca queda solo al pie de una columna (defecto i). */
+.modal .bloque{break-inside:avoid}
 
 .tip{position:fixed;pointer-events:none;z-index:99;background:var(--s1);border:1px solid var(--line);
   border-radius:4px;padding:10px 13px;font-size:var(--f2);line-height:1.5;box-shadow:0 8px 24px rgba(74,39,70,.14);
@@ -219,7 +228,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 .tip b{display:block;font-size:var(--f2);margin-bottom:4px}
 .tip .kv{color:var(--t2);font-variant-numeric:tabular-nums}
 .tip .kv i{font-style:normal;color:var(--t1);font-weight:700}
-.app.pres .hd,.app.pres .ctls{display:none}
+.app.pres .ctls{display:none}
 .app.pres{grid-template-rows:minmax(0,1fr) auto}
 .pout{flex:none;align-self:center}
 .app:not(.pres) .pout{display:none!important}
@@ -247,26 +256,6 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
   </div>
 </nav>
 <div class="app" id="app">
-<header class="hd">
-  <div class="tit">
-    <p class="eyebrow">Itinerario según los niveles de logro de los estándares de aprendizaje</p>
-    <h2 class="titvista">Trayectorias de aprendizaje</h2>
-  </div>
-  <div class="hdacc">
-    <button class="btn" id="b-notas">Notas metodológicas</button>
-    <div class="seg" id="c-vel">
-    <button class="ic" data-v="1.9" aria-pressed="false" title="Lento" aria-label="Lento">
-      <svg viewBox="0 0 24 16"><path d="M7 2v12l9-6z"/></svg></button>
-    <button class="ic" data-v="1" aria-pressed="true" title="Normal" aria-label="Normal">
-      <svg viewBox="0 0 24 16"><path d="M2 2v12l8-6zM12 2v12l8-6z"/></svg></button>
-    <button class="ic" data-v="0.55" aria-pressed="false" title="Rápido" aria-label="Rápido">
-      <svg viewBox="0 0 24 16"><path d="M0 2v12l6.5-6zM8 2v12l6.5-6zM16 2v12l6.5-6z"/></svg></button></div>
-    <button class="btn ico" id="b-pres" title="Modo presentación" aria-label="Modo presentación">
-      <svg viewBox="0 0 20 20"><path d="M2 7V2h5M18 7V2h-5M2 13v5h5M18 13v5h-5" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-  </div>
-</header>
-
 <div class="ctls">
   <div class="f"><span>Cohorte de traspaso</span><div class="seg" id="c-coh">
     <button data-v="2018" aria-pressed="true">2018 <em>4</em></button>
@@ -302,6 +291,22 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
     <label class="sw" id="sw-nube" data-on="0"><input type="checkbox" id="c-nube"> Sostenedores municipales</label>
     </div></div>
 
+  <!-- Acciones de la vista: al extremo derecho de la barra de controles, como en
+       el motor, sin una fila de título propia (la pestaña ya nombra la vista). -->
+  <div class="hdacc">
+    <button class="btn" id="b-notas">Notas metodológicas</button>
+    <div class="seg" id="c-vel">
+    <button class="ic" data-v="1.9" aria-pressed="false" title="Lento" aria-label="Lento">
+      <svg viewBox="0 0 24 16"><path d="M7 2v12l9-6z"/></svg></button>
+    <button class="ic" data-v="1" aria-pressed="true" title="Normal" aria-label="Normal">
+      <svg viewBox="0 0 24 16"><path d="M2 2v12l8-6zM12 2v12l8-6z"/></svg></button>
+    <button class="ic" data-v="0.55" aria-pressed="false" title="Rápido" aria-label="Rápido">
+      <svg viewBox="0 0 24 16"><path d="M0 2v12l6.5-6zM8 2v12l6.5-6zM16 2v12l6.5-6z"/></svg></button></div>
+    <button class="btn ico" id="b-pres" title="Modo presentación" aria-label="Modo presentación">
+      <svg viewBox="0 0 20 20"><path d="M2 7V2h5M18 7V2h-5M2 13v5h5M18 13v5h-5" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+
 </div>
 
 <div class="main">
@@ -319,6 +324,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
       <p class="ejeY" id="ejeY"></p>
       <svg class="chart" id="g"></svg>
       <div class="gapb" id="gapb">2019, 2020 y 2021 no tienen medición Simce</div>
+      <div class="vacio" id="vacio" role="status" hidden></div>
     </section>
   </div>
 </div>
@@ -337,25 +343,39 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
  <div class="modal">
   <header><h3>Notas metodológicas</h3><button class="btn" id="b-cerrar">Cerrar</button></header>
   <div class="body"><div class="cols">
+   <div class="bloque">
    <h4>Qué muestra y qué no</h4>
    <p>Esto describe trayectorias; no mide el efecto del traspaso. Atribuirle un efecto exigiría un contrafactual que estos datos no contienen.</p>
+   </div>
    <p>El círculo gris punteado marca dónde está el conjunto de referencia: los __NOTA_N_REFERENTE__ establecimientos que en 2014 eran municipales y que no figuran en el catálogo de Servicios Locales. El conjunto está congelado, así que son las mismas escuelas en los nueve años. Su tamaño en pantalla es fijo y no sigue la escala de área: reúne decenas de miles de estudiantes y, a escala, taparía el gráfico entero. Cada punto de la nube sí sigue la escala, porque una comuna es comparable con un Servicio Local.</p>
    <p>El interruptor «Sostenedores municipales» dibuja una nube con un punto por comuna (__NOTA_N_COMUNAS__ en total), cada una con sus escuelas municipales agregadas y sin estela. Sirve para ver dónde cae un Servicio Local dentro de la distribución completa de la educación municipal, y no solo respecto de su promedio. Con la nube encendida, los ejes del promedio municipal parten el plano en cuadrantes, y cada punto entrega su comuna y sus cifras al pasar el cursor. Ojo con los extremos: las posiciones más llamativas suelen ser comunas muy chicas (Palena aparece con 72,7% en Adecuado sobre 11 estudiantes evaluados), y por eso su punto es también el más pequeño.</p>
+   <div class="bloque">
    <h4>Cómo leer el plano</h4>
    <p>Horizontal, porcentaje de estudiantes en nivel Adecuado, que aumenta hacia la derecha. Vertical, porcentaje en nivel Insuficiente, que disminuye hacia arriba. Avanzar es moverse hacia la esquina superior derecha.</p>
+   </div>
    <p>Los dos ejes arrancan en 0 y llegan al máximo de la combinación elegida, redondeado a decenas; con los sostenedores municipales en pantalla pasan a 0 a 100 en ambos, porque la distribución municipal completa ocupa casi todo el rango. El marco se calcula sobre los 36 Servicios Locales, no sobre la cohorte en pantalla, así que no se mueve al cambiar de cohorte ni durante la animación: solo cambia al cambiar de nivel evaluado o de grupo socioeconómico. El vértice inferior derecho queda siempre vacío porque Adecuado e Insuficiente pertenecen a la misma distribución de tres niveles y su suma no puede pasar de 100.</p>
+   <div class="bloque">
    <h4>Años sin medición</h4>
    <p>No existe Simce 2019, 2020 ni 2021. El tramo se recorre con las burbujas atenuadas y sin valores intermedios: no se interpola.</p>
+   </div>
+   <div class="bloque">
    <h4>El movimiento habitual no es cero</h4>
    <p>Entre dos años consecutivos un Servicio Local se mueve __NOTA_MOV_MEDIANA__ puntos en la mediana, y el referente municipal llega a moverse __NOTA_MOV_REF_MAX__ puntos de un año a otro sin que ocurra ningún traspaso. Un desplazamiento pequeño no es una señal.</p>
+   </div>
    <p>El cambio anual de cada Servicio Local correlaciona __NOTA_CORR_NAC__ con el cambio nacional del mismo año: buena parte de lo que se ve moverse es el país entero, no el territorio.</p>
+   <div class="bloque">
    <h4>La composición cambia entre años</h4>
    <p>El conjunto de establecimientos con resultado utilizable varía año a año, y en __NOTA_N_COMPOSICION__ de los 36 Servicios Locales esa variación supera el __NOTA_UMBRAL_COMPOSICION__% de su máximo. El interruptor «Solo establecimientos con serie completa» fija el conjunto: si la trayectoria no cambia, la composición no la explica.</p>
+   </div>
+   <div class="bloque">
    <h4>Cómo se calculan las cifras</h4>
    <p>Fuente: resultados Simce por establecimiento de la Agencia de Calidad de la Educación, 2014 a 2025, cruzados con el catálogo de Servicios Locales de Educación Pública.</p>
+   </div>
    <p>Se acumulan los numeradores crudos (estudiantes evaluados por el porcentaje de cada nivel) y se redondea una sola vez al final. Cada establecimiento pesa según su número de estudiantes evaluados, así que la cifra del Servicio Local es la de sus estudiantes y no el promedio de sus escuelas.</p>
+   <div class="bloque">
    <h4>Qué queda fuera y qué entra</h4>
    <p>De las __NOTA_FILAS_TOTAL__ filas Simce de establecimientos de Servicios Locales sobreviven __NOTA_FILAS_VALIDAS__. Se caen __NOTA_FILAS_SIN_PCT__ que no traen los porcentajes por nivel (muy pocos evaluados, resultados no reportados o no representativos, o filas sin ningún dato), __NOTA_FILAS_SUPRIMIDAS__ celdas suprimidas por la Agencia y __NOTA_FILAS_MARCADAS__ filas con marca de la Agencia (resultados no representativos u otras observaciones), que suman un __NOTA_PCT_MARCADAS__% de los estudiantes evaluados. Es la misma regla del motor de comparación: sin marca de la Agencia y con al menos __NOTA_UMBRAL__ evaluados.</p>
+   </div>
    <p>De los 180 pares posibles de Servicio Local por grupo socioeconómico, solo __NOTA_PARES_EXISTEN__ existen alguna vez. En la tabla, un guión significa que el par no existe; un cero, que existe y ese año no tuvo resultado utilizable. En la vista «todas las pruebas y niveles» el desglose no suma el total, porque la Agencia clasifica el grupo socioeconómico por nivel y una misma escuela puede pertenecer a grupos distintos en 4° básico y en 2° medio (ocurre en __NOTA_GSE_MEZCLA__ de __NOTA_GSE_PARES__ pares de escuela y año).</p>
   </div></div>
  </div>
@@ -405,6 +425,8 @@ function visible(id){return !esRef(id)&&deCoh(id)&&!S.ocultos[id];}
 function clave(g,p){return S.np+'|'+(g||S.gse)+'|'+(p===undefined?S.panel:p);}
 function anioAct(){var sg=SEGS[S.seg];return S.t<.5?sg.a:sg.b;}
 function fmt(n){return Math.round(n).toLocaleString('es-CL');}
+/* porcentaje con un decimal y coma decimal, como el resto de la vista (defecto b) */
+function fmtPct(v){return (+v).toFixed(1).replace('.',',')+'%';}
 function ids(){return Object.keys(META).filter(deCoh).sort(function(a,b){return META[a].nom.localeCompare(META[b].nom,'es');});}
 var NUM={};function numerar(){NUM={};ids().forEach(function(id,i){NUM[id]=i+1;});}
 
@@ -439,7 +461,12 @@ function dominio(){
   return {x:[0,Math.min(100,Math.max(30,Math.ceil(ma/10)*10))],
           y:[0,Math.min(100,Math.max(30,Math.ceil(mi/10)*10))]};
 }
-function ticks(d){var a=d[0],b=d[1],s=(b-a)<=30?5:((b-a)<=120?10:20),o=[];
+/* Separación mínima, en píxeles, entre dos marcas de un eje: con el dibujo en
+   píxeles reales, un plano bajo ya no amontona los rótulos. */
+var TICK_MIN_PX={x:46,y:24};
+var PASOS=[5,10,20,25,50,100];
+function ticks(d,px,min){var a=d[0],b=d[1],s=(b-a)<=30?5:((b-a)<=120?10:20),o=[];
+  for(var i=0;i<PASOS.length&&px*s/(b-a)<min;i++)if(PASOS[i]>s)s=PASOS[i];
   for(var v=Math.ceil(a/s)*s;v<=b+.001;v+=s)o.push(Math.round(v));return o;}
 
 /* ---------- gráfico ---------- */
@@ -447,15 +474,31 @@ var W=1000,H=620,M={l:46,r:26,t:16,b:62},P={};
 function build(){
   var svg=document.getElementById('g');svg.innerHTML='';
   var caja=svg.getBoundingClientRect();
-  H=Math.max(360,Math.round(W*(caja.height||560)/(caja.width||1000)));
+  /* El sistema de coordenadas es el tamaño real en píxeles: así FS2 y FS3 son
+     píxeles en cualquier ancho y el texto no escala con la pantalla (defecto h). */
+  W=Math.max(200,Math.round(caja.width||1000));
+  H=Math.max(120,Math.round(caja.height||560));
   svg.setAttribute('viewBox','0 0 '+W+' '+H);
   svg.setAttribute('preserveAspectRatio','xMidYMid meet');
   var D=dominio(),X0=D.x[0],X1=D.x[1],Y0=D.y[0],Y1=D.y[1];
   var x=function(v){return M.l+(v-X0)/(X1-X0)*(W-M.l-M.r);};
   var y=function(v){return M.t+(v-Y0)/(Y1-Y0)*(H-M.t-M.b);};   /* invertido */
-  var gG=el('g',{}),gA=el('g',{}),gN=el('g',{}),gR=el('g',{}),gT=el('g',{}),gM=el('g',{}),gL=el('g',{});
-  [gG,gA,gN,gR,gT,gM,gL].forEach(function(g){svg.appendChild(g);});
-  var TX=ticks(D.x),TY=ticks(D.y);
+  /* Capas, de abajo arriba: grilla, ejes, nube, estelas, burbujas, referente,
+     cifras y nombres. El referente va sobre las burbujas (translúcido) para que
+     nunca quede tapado (defecto e); las cifras van en una capa propia sobre todo
+     lo dibujado, con halo, para que ninguna burbuja vecina las cruce (defecto d).
+     Nube, estelas, burbujas y referente se recortan al plano: una burbuja con
+     Adecuado cerca de 0 ya no invade el eje ni sus rótulos (defecto d). */
+  var defs=el('defs',{}),cp=el('clipPath',{id:'plano'});
+  cp.appendChild(el('rect',{x:x(X0),y:y(Y0),width:x(X1)-x(X0),height:y(Y1)-y(Y0)}));
+  defs.appendChild(cp);svg.appendChild(defs);
+  var gG=el('g',{}),gA=el('g',{}),gN=el('g',{'clip-path':'url(#plano)'}),gT=el('g',{'clip-path':'url(#plano)'}),
+      gM=el('g',{'clip-path':'url(#plano)'}),gR=el('g',{'clip-path':'url(#plano)'}),gC=el('g',{}),gL=el('g',{});
+  [gG,gA,gN,gT,gM,gR,gC,gL].forEach(function(g){svg.appendChild(g);});
+  var TX=ticks(D.x,W-M.l-M.r,TICK_MIN_PX.x),TY=ticks(D.y,H-M.t-M.b,TICK_MIN_PX.y);
+  /* Las burbujas se achican en un plano bajo, en la proporción que antes daba el
+     escalado del dibujo completo; el texto ya no se achica con ellas. */
+  K=Math.max(ESCALA_MIN,Math.min(1,(H-M.t-M.b)/ALTO_PLANO_REF));
   TX.forEach(function(v){gG.appendChild(el('line',{x1:x(v),x2:x(v),y1:y(Y0),y2:y(Y1),stroke:'var(--grid)','stroke-width':1.1}));});
   TY.forEach(function(v){gG.appendChild(el('line',{y1:y(v),y2:y(v),x1:x(X0),x2:x(X1),stroke:'var(--grid)','stroke-width':1.1}));});
   gA.appendChild(el('line',{x1:x(X0),x2:x(X1),y1:y(Y1),y2:y(Y1),stroke:'var(--line)','stroke-width':1.6}));
@@ -474,15 +517,24 @@ function build(){
   var marks={};
   Object.keys(META).sort(function(a,b){return (esRef(a)?-1:0)-(esRef(b)?-1:0);}).forEach(function(id){
     var g=el('g',{}),c1=el('circle',{}),c2=el('circle',{}),n1=el('text',{}),n2=el('text',{});
-    [c1,n1,c2,n2].forEach(function(e){g.appendChild(e);});gM.appendChild(g);
+    [c1,c2].forEach(function(e){g.appendChild(e);});gM.appendChild(g);
+    [n1,n2].forEach(function(e){gC.appendChild(e);});
     marks[id]={g:g,a:c1,b:c2,na:n1,nb:n2};
   });
-  P={svg:svg,x:x,y:y,gN:gN,gR:gR,gT:gT,gL:gL,marks:marks,D:D};
+  P={svg:svg,x:x,y:y,gN:gN,gR:gR,gT:gT,gC:gC,gL:gL,marks:marks,D:D};
   hover();
 }
 /* El radio sigue la raíz del número de evaluados, de modo que el área es
    proporcional. El mínimo es 12 para que el número quepa siempre dentro. */
-function radio(n){return Math.max(12,Math.min(46,Math.sqrt(n)*.85));}
+var K=1,ALTO_PLANO_REF=420,ESCALA_MIN=.5;
+function radio(n){return Math.max(12,Math.min(46,Math.sqrt(n)*.85))*K;}
+/* Opacidad del relleno de una burbuja traspasada: con .70 la cifra blanca quedaba
+   bajo 4,5:1 (defecto f); con .88 sobre blanco da 4,9:1. */
+var LLENO_OPAC=.88;
+/* Desde cuántos Servicios Locales la tabla lateral compacta sus filas. */
+var FILAS_COMPACTAS=8;
+/* Radio, en píxeles, del núcleo del referente donde su tooltip gana a las burbujas. */
+var REF_NUCLEO=10;
 
 function paint(){
   var SR=S_(clave()),sg=SEGS[S.seg],te=ease(S.t),sm=smooth(S.t);
@@ -502,14 +554,14 @@ function paint(){
     var ua=da?null:ult(sg.a), ub=db?null:ult(sg.b);
     var fa=da||(ua&&ua.d), fb=db||(ub&&ub.d);
     var ya=da?sg.a:(ua&&ua.y), yb=db?sg.b:(ub&&ub.y);
-    if(!fa&&!fb){m.g.setAttribute('display','none');return;}
+    if(!fa&&!fb){m.g.setAttribute('display','none');m.na.textContent='';m.nb.textContent='';return;}
     var col=rf?'var(--ref)':'var(--az)';
     function set(c,tx,d,al,yr,real){
       if(!d||al<=.01){c.setAttribute('r',0);c.setAttribute('opacity',0);tx.textContent='';return;}
-      var tr=rf?true:(yr>=mt.tras), lleno=tr&&real, r=rf?15:radio(d.n);
+      var tr=rf?true:(yr>=mt.tras), lleno=tr&&real, r=rf?15*K:radio(d.n);
       c.setAttribute('cx',P.x(d.ade));c.setAttribute('cy',P.y(d.ins));c.setAttribute('r',r);
       c.setAttribute('fill',rf?col:(lleno?col:'var(--s1)'));
-      c.setAttribute('fill-opacity',rf?.13:(lleno?.70:.82));
+      c.setAttribute('fill-opacity',rf?.13:(lleno?LLENO_OPAC:.82));
       c.setAttribute('stroke',rf?col:(lleno?'var(--s1)':col));
       c.setAttribute('stroke-width',rf?2.4:(lleno?2.4:2.4));
       c.setAttribute('stroke-dasharray',rf?'6 4':(real?'':'5 4'));
@@ -521,7 +573,9 @@ function paint(){
         tx.setAttribute('x',P.x(d.ade));tx.setAttribute('y',P.y(d.ins)+Math.min(6,r*.33));
         tx.setAttribute('text-anchor','middle');tx.setAttribute('font-size',Math.min(19,Math.max(11,r*.9)));
         tx.setAttribute('font-weight',700);tx.setAttribute('fill',lleno?'var(--s1)':'var(--az)');
-        tx.removeAttribute('stroke');tx.setAttribute('opacity',al);tx.textContent=NUM[id]||'';
+        tx.setAttribute('paint-order','stroke');tx.setAttribute('stroke',lleno?'var(--az)':'var(--s1)');
+        tx.setAttribute('stroke-width',3);tx.setAttribute('stroke-linejoin','round');
+        tx.setAttribute('opacity',al);tx.textContent=NUM[id]||'';
       } else {
         tx.setAttribute('x',P.x(d.ade)+r+4);tx.setAttribute('y',P.y(d.ins)-r-2);
         tx.setAttribute('text-anchor','start');tx.setAttribute('font-size',FS3);tx.setAttribute('font-weight',700);
@@ -529,6 +583,7 @@ function paint(){
         tx.setAttribute('stroke','var(--s1)');tx.setAttribute('stroke-width',4);
         tx.setAttribute('stroke-linejoin','round');tx.setAttribute('opacity',al);tx.textContent=NUM[id]||'';
       }
+      tx.dataset.cx=P.x(d.ade);tx.dataset.cy=P.y(d.ins);tx.dataset.r=r;
       var prev=lab[id];
       if(!prev||al>prev.a) lab[id]={x:P.x(d.ade),y:P.y(d.ins),r:r,a:al,mt:mt,rf:rf,id:id};
     }
@@ -544,6 +599,7 @@ function paint(){
       set(m.a,m.na,d,1,yr,real,yd);set(m.b,m.nb,null,0,yr,real,yd);
     }
   });
+  acomodaCifras();
   /* Las burbujas chicas se dibujan encima de las grandes, para que ninguna quede tapada. */
   var orden=Object.keys(P.marks).filter(function(id){return visible(id);})
     .map(function(id){return {id:id,r:+(P.marks[id].a.getAttribute('r')||0)};})
@@ -562,7 +618,7 @@ function paint(){
     Object.keys(nb).forEach(function(com){
       var c=nb[com],a=c[sg.a],b2=c[sg.b];
       if(!a&&!b2)return;
-      var rr=function(d){return Math.max(3,Math.min(15,Math.sqrt(d.n)*.17));};
+      var rr=function(d){return Math.max(3,Math.min(15,Math.sqrt(d.n)*.17)*K);};
       if(sg.gap&&a&&b2){   /* mismo cruce con deriva que usan los Servicios Locales */
         pto(P.x(lerp(a.ade,b2.ade,DRIFT*te)),P.y(lerp(a.ins,b2.ins,DRIFT*te)),rr(a),Math.pow(1-sm,.85),com,a,sg.a);
         pto(P.x(lerp(b2.ade,a.ade,DRIFT*(1-te))),P.y(lerp(b2.ins,a.ins,DRIFT*(1-te))),rr(b2),Math.pow(sm,.85),com,b2,sg.b);
@@ -582,7 +638,7 @@ function paint(){
       if(sg.gap){ rx=P.x(lerp(r0.ade,r1.ade,DRIFT*te)); ry=P.y(lerp(r0.ins,r1.ins,DRIFT*te)); al=Math.pow(1-sm,.85); }
       else { rx=P.x(lerp(r0.ade,r1.ade,te)); ry=P.y(lerp(r0.ins,r1.ins,te)); }
       function pinta(cx,cy,alpha,d){
-        var p=el('circle',{cx:cx,cy:cy,r:15,fill:'var(--ref)','fill-opacity':.16,stroke:'var(--ref)',
+        var p=el('circle',{cx:cx,cy:cy,r:Math.max(9,15*K),fill:'var(--ref)','fill-opacity':.16,stroke:'var(--ref)',
           'stroke-width':2.2,'stroke-dasharray':'5 3',opacity:alpha});
         p.dataset.ref='1';p.dataset.ade=d.ade;p.dataset.ins=d.ins;p.dataset.n=d.n;p.dataset.e=d.e;
         p.dataset.yr=(alpha===al?sg.a:sg.b);
@@ -626,12 +682,44 @@ function paint(){
   });
 }
 
+/* Cifras que chocan (cohortes grandes, burbujas amontonadas; defecto d): las de
+   burbujas mayores se quedan en su centro; la que choca con una ya puesta sale al
+   borde de su burbuja, en el primer ángulo libre, con halo para leerse sobre las
+   vecinas. */
+var ANGULOS=[-45,-135,45,135,-90,90,0,180],ANILLOS=3;
+function acomodaCifras(){
+  var ts=[].slice.call(P.gC.querySelectorAll('text')).filter(function(t){
+    return t.textContent&&+t.getAttribute('opacity')>.3;});
+  ts.sort(function(a,b){return (+b.dataset.r)-(+a.dataset.r);});
+  var puestas=[];
+  function choca(bb){return puestas.some(function(q){
+    return bb.x<q.x+q.width+2&&bb.x+bb.width+2>q.x&&bb.y<q.y+q.height+1&&bb.y+bb.height+1>q.y;});}
+  var X0=P.x(P.D.x[0]),X1=P.x(P.D.x[1]),Y0=P.y(P.D.y[0]),Y1=P.y(P.D.y[1]);
+  function dentro(bb){return bb.x>=X0+2&&bb.x+bb.width<=X1&&bb.y>=Y0&&bb.y+bb.height<=Y1;}
+  ts.forEach(function(t){
+    var bb=t.getBBox();
+    if(choca(bb)){
+      var cx=+t.dataset.cx,cy=+t.dataset.cy,r=+t.dataset.r;
+      for(var i=0;i<ANGULOS.length*ANILLOS;i++){
+        var an=ANGULOS[i%ANGULOS.length]*Math.PI/180,k=Math.floor(i/ANGULOS.length),
+            dx=Math.cos(an)*(r+bb.width/2+3+k*bb.width),dy=Math.sin(an)*(r+bb.height/2+1+k*bb.height);
+        var nb={x:cx+dx-bb.width/2,y:cy+dy-bb.height/2,width:bb.width,height:bb.height};
+        if(!choca(nb)&&dentro(nb)){t.setAttribute('x',cx+dx);t.setAttribute('y',cy+dy+bb.height*.33);
+          t.setAttribute('text-anchor','middle');t.setAttribute('fill','var(--az)');
+          t.setAttribute('stroke','var(--s1)');bb=nb;break;}
+      }
+    }
+    puestas.push(bb);
+  });
+}
+
 /* ---------- tarjeta ---------- */
 function tarjeta(){
   var yr=anioAct(),L=ids(),th=document.getElementById('th'),tb=document.getElementById('tb');
-  var SRT=S_(clave('T')),SRG={};
+  var SRT=S_(clave()),SRG={};   /* conteos del grupo elegido, no del total (defecto c) */
   if(S.detalle)['1','2','3','4','5'].forEach(function(g){SRG[g]=S_(clave(g));});
   th.innerHTML='<th class="nm">Servicio Local</th><th>Establecimientos</th>';
+  th.closest('table').classList.toggle('denso',L.length>FILAS_COMPACTAS);
   tb.innerHTML='';
   var vis=0,tot=0;
   L.forEach(function(id){
@@ -667,7 +755,7 @@ function tarjeta(){
   });
   var cat=L.reduce(function(a,id){return a+META[id].cat;},0);
   document.getElementById('cnt').innerHTML=
-    vis+' de '+L.length+' en pantalla · <b>'+fmt(tot)+'</b> establecimientos con resultado en '+yr+
+    vis+' de '+L.length+' en pantalla · <b>'+fmt(tot)+'</b> establecimientos'+(S.gse==='T'?'':' del '+GSE_N[S.gse])+' con resultado en '+yr+
     ', de <b>'+fmt(cat)+'</b> que la cohorte administra.';
   document.getElementById('pie').innerHTML=
     '<button class="btn" id="b-det" style="height:32px;font-size:var(--f3);padding:0 11px">'+
@@ -694,17 +782,25 @@ function chrome(){
   var L=ids(),post=L.length?META[L[0]].post:0;
   document.getElementById('ctx').innerHTML=
     '<b>Cohorte '+S.coh+'</b> · '+L.length+' Servicios Locales · '+
-    (post===0?'sin medición posterior al traspaso':post+' medición'+(post>1?'es':'')+' desde el traspaso')+
+    (post===0?'sin medición posterior al traspaso':(post===1?'1 medición':post+' mediciones')+' desde el traspaso')+
     ' · '+NP_N[S.np]+' · '+(S.gse==='T'?'todos los grupos socioeconómicos':'solo '+GSE_N[S.gse])+
     (S.panel?' · solo establecimientos con los nueve años':'');
   document.getElementById('ejeY').innerHTML='<b>% Insuficiente</b> disminuye hacia arriba';
-  var refN=null,idR=Object.keys(META).filter(esRef)[0],srR=S_(clave('T'));
+  /* Aviso cuando ningún Servicio Local de la cohorte tiene datos en la combinación
+     elegida: el plano vacío sin explicación parecía un error (defecto c). */
+  var SRv=S_(clave()),conDato=L.some(function(id){return SRv[id]&&Object.keys(SRv[id]).length>0;});
+  var av=document.getElementById('vacio');
+  av.hidden=conDato;
+  if(!conDato)av.textContent='Ningún Servicio Local de la cohorte '+S.coh+' tiene establecimientos'+
+    (S.gse==='T'?'':' del '+GSE_N[S.gse])+' con resultado en '+NP_N[S.np]+
+    (S.panel?' con los nueve años':'')+'.';
+  var refN=null,idR=Object.keys(META).filter(esRef)[0],srR=S_(clave());
   if(idR&&srR[idR]){var dr=srR[idR][anioAct()]||srR[idR][ANIOS[0]];refN=dr?dr.e:null;}
   document.getElementById('lg').innerHTML=
     '<span class="it"><span class="d"></span>Traspasado</span>'+
     '<span class="it"><span class="d ho"></span>Aún no traspasado</span>'+
-    (S.nube?'<span class="it"><span class="d nu"></span>Sostenedores municipales (180 comunas)</span>':'')+
-    '<span class="it"><span class="d rf"></span>Municipales no traspasados ('+(refN?fmt(refN):'—')+')</span>'+
+    (S.nube?'<span class="it"><span class="d nu"></span>Sostenedores municipales ('+Object.keys(DATA.comunas).length+' comunas)</span>':'')+
+    '<span class="it"><span class="d rf"></span>Referente: municipales por traspasar ('+(refN?fmt(refN):'—')+')</span>'+
     
     
     '<span class="it">El área equivale a los estudiantes evaluados</span>';
@@ -762,14 +858,24 @@ function pintaPista(){
 var tip=document.getElementById('tip');
 function hover(){
   P.svg.addEventListener('mousemove',function(ev){
-    var b=P.svg.getBoundingClientRect(),sx=(ev.clientX-b.left)/b.width*W,sy=(ev.clientY-b.top)/b.height*H,best=null,bd=1e9;
+    /* Del cursor a las coordenadas del dibujo con la matriz del propio SVG: vale
+       aunque la caja haya cambiado de tamaño después de dibujar. */
+    var pt=P.svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;
+    var loc=pt.matrixTransform(P.svg.getScreenCTM().inverse()),sx=loc.x,sy=loc.y,best=null,bd=1e9;
+    /* El referente tiene prioridad dentro de su núcleo: si no, una burbuja que lo
+       cubre lo dejaba sin tooltip (defecto e). */
+    var refCerca=null;
+    P.gR.querySelectorAll('[data-ref]').forEach(function(p){
+      var dd=Math.sqrt(Math.pow(+p.getAttribute('cx')-sx,2)+Math.pow(+p.getAttribute('cy')-sy,2));
+      if(dd<REF_NUCLEO&&+p.getAttribute('opacity')>.3)refCerca=p;});
+    if(!refCerca)
     Object.keys(P.marks).forEach(function(id){
       if(!visible(id))return;
       [P.marks[id].a,P.marks[id].b].forEach(function(c){
         var r=+c.getAttribute('r')||0;if(r<=0||+c.getAttribute('opacity')<.25)return;
         var dx=+c.getAttribute('cx')-sx,dy=+c.getAttribute('cy')-sy,d=Math.sqrt(dx*dx+dy*dy);
         if(d<Math.max(r,14)&&d<bd){bd=d;best=c;}});});
-    if(!best&&S.nube){
+    if(!best&&!refCerca&&S.nube){
       var nn=null,nd=1e9;
       P.gN.querySelectorAll('[data-com]').forEach(function(c){
         var r=+c.getAttribute('r'),dx=+c.getAttribute('cx')-sx,dy=+c.getAttribute('cy')-sy;
@@ -778,7 +884,7 @@ function hover(){
       if(nn){
         S.hover=null;
         tip.innerHTML='<b>'+(DATA.comunas[nn.dataset.com]||'Comuna '+nn.dataset.com)+'</b>'+
-          '<div class="kv">Adecuado <i>'+(+nn.dataset.ade).toFixed(1)+'%</i> · Insuficiente <i>'+(+nn.dataset.ins).toFixed(1)+'%</i></div>'+
+          '<div class="kv">Adecuado <i>'+fmtPct(nn.dataset.ade)+'</i> · Insuficiente <i>'+fmtPct(nn.dataset.ins)+'</i></div>'+
           '<div class="kv">'+fmt(nn.dataset.n)+' estudiantes evaluados, '+nn.dataset.yr+'</div>'+
           '<div class="kv">Sostenedor municipal</div>';
         tip.style.left=Math.min(window.innerWidth-292,ev.clientX+15)+'px';
@@ -792,23 +898,24 @@ function hover(){
         var cx=+p.getAttribute('cx'),cy=+p.getAttribute('cy');
         var dd=Math.sqrt((cx-sx)*(cx-sx)+(cy-sy)*(cy-sy));
         if(dd<18&&dd<rd&&+p.getAttribute('opacity')>.3){rd=dd;rr=p;}});
+      if(refCerca)rr=refCerca;
       if(rr){
         S.hover=null;
-        tip.innerHTML='<b>Municipales no traspasados</b>'+
-          '<div class="kv">Adecuado <i>'+(+rr.dataset.ade).toFixed(1)+'%</i> · Insuficiente <i>'+(+rr.dataset.ins).toFixed(1)+'%</i></div>'+
+        tip.innerHTML='<b>Referente municipal</b>'+
+          '<div class="kv">Adecuado <i>'+fmtPct(rr.dataset.ade)+'</i> · Insuficiente <i>'+fmtPct(rr.dataset.ins)+'</i></div>'+
           '<div class="kv">'+fmt(rr.dataset.n)+' estudiantes evaluados en '+fmt(rr.dataset.e)+' establecimientos, '+rr.dataset.yr+'</div>'+
-          '<div class="kv">Conjunto de referencia congelado en 2014; la marca no usa la escala de tamaño</div>';
+          '<div class="kv">Municipales en 2014 que no están en los 36 Servicios Locales del catálogo: los traspasan las olas siguientes. Conjunto fijo; la marca no usa la escala de tamaño</div>';
         tip.style.left=Math.min(window.innerWidth-292,ev.clientX+15)+'px';
         tip.style.top=Math.max(8,ev.clientY-16)+'px';tip.classList.add('on');
         paint();return;
       }
     }
     if(best){
-      var id=best.dataset.id,m=META[id],real=best.dataset.real==='1',sg='%';
+      var id=best.dataset.id,m=META[id],real=best.dataset.real==='1';
       S.hover=id;
       tip.innerHTML='<b>'+m.nom+'</b>'+
-        '<div class="kv">Adecuado <i>'+(+best.dataset.ade).toFixed(1)+' '+sg+'</i></div>'+
-        '<div class="kv">Insuficiente <i>'+(+best.dataset.ins).toFixed(1)+' '+sg+'</i></div>'+
+        '<div class="kv">Adecuado <i>'+fmtPct(best.dataset.ade)+'</i></div>'+
+        '<div class="kv">Insuficiente <i>'+fmtPct(best.dataset.ins)+'</i></div>'+
         '<div class="kv">'+fmt(best.dataset.n)+' estudiantes evaluados en '+fmt(best.dataset.e)+' establecimientos, '+best.dataset.ydato+'</div>'+
         (real?'':'<div class="kv" style="color:var(--ac)">Sin dato en '+best.dataset.yr+
            ': la burbuja se queda en su última medición, la de '+best.dataset.ydato+'</div>')+
@@ -823,7 +930,29 @@ function hover(){
 
 /* ---------- ciclo ---------- */
 function render(){paint();pintaPista();chrome();tarjeta();}
-function rebuild(){numerar();SC={};stop();S.seg=0;S.t=0;tarjeta();anchoTarjeta();build();render();}
+/* Opciones sin datos para la cohorte en pantalla: desactivadas y rotuladas, para que
+   los menús no ofrezcan combinaciones vacías (pedido del titular, sesión 33). Si la
+   opción elegida queda sin datos (al cambiar de cohorte o de cobertura), se vuelve a
+   «Todos los grupos». El aviso del plano queda para lo que el menú no puede evitar. */
+var SIN_DATOS=' (sin datos)';
+function tieneDatos(np,g){var SR=S_(np+'|'+g+'|'+S.panel);
+  return ids().some(function(id){return SR[id]&&Object.keys(SR[id]).length>0;});}
+function marcaOpciones(sel,ok){
+  [].forEach.call(sel.options,function(o){
+    if(!o.dataset.txt)o.dataset.txt=o.textContent;
+    var hay=ok(o.value);o.disabled=!hay;o.textContent=o.dataset.txt+(hay?'':SIN_DATOS);});}
+function opciones(){
+  var sg=document.getElementById('c-gse'),sn=document.getElementById('c-np');
+  marcaOpciones(sg,function(g){return g===GSE_TOTAL_VISTA||tieneDatos(S.np,g);});
+  if(sg.options[sg.selectedIndex].disabled){S.gse=GSE_TOTAL_VISTA;sg.value=GSE_TOTAL_VISTA;}
+  marcaOpciones(sn,function(np){return tieneDatos(np,S.gse);});
+  if(sn.options[sn.selectedIndex].disabled){   /* p. ej., cohorte 2021 con serie completa */
+    var libre=[].filter.call(sn.options,function(o){return !o.disabled;})[0];
+    if(libre){S.np=libre.value;sn.value=libre.value;}
+  }
+}
+var GSE_TOTAL_VISTA='T';
+function rebuild(){numerar();SC={};opciones();stop();S.seg=0;S.t=0;tarjeta();anchoTarjeta();build();render();}
 var raf=null,last=0,hold=0;
 function tick(ts){
   if(!S.play)return;
@@ -860,7 +989,8 @@ function sw(id,wrap,k,conv){
 sw('c-panel','sw-panel','panel',true);
 sw('c-nube','sw-nube','nube',false);
 var velo=document.getElementById('velo');
-function notas(v){velo.hidden=!v;}
+function notas(v){velo.hidden=!v;
+  if(v)document.querySelector('.modal .body').scrollTop=0;}   /* abre siempre arriba (defecto i) */
 document.getElementById('b-notas').addEventListener('click',function(){notas(true);});
 document.getElementById('b-cerrar').addEventListener('click',function(){notas(false);});
 velo.addEventListener('click',function(e){if(e.target===velo)notas(false);});
@@ -879,7 +1009,14 @@ function altoMenu(){var m=document.querySelector('.view-tabs');
 var rt=null;window.addEventListener('resize',function(){clearTimeout(rt);
   rt=setTimeout(function(){altoMenu();pista();build();render();},140);});
 
-altoMenu();numerar();tarjeta();anchoTarjeta();pista();build();render();
+/* Si la caja del gráfico cambia de tamaño (la leyenda o el contexto pasan a otra
+   línea, se abre el desglose), se redibuja para que el dibujo siga en píxeles reales. */
+if(window.ResizeObserver){var rg=null;new ResizeObserver(function(){
+  var c=document.getElementById('g').getBoundingClientRect();
+  if(Math.abs(c.width-W)>2||Math.abs(c.height-H)>2){clearTimeout(rg);rg=setTimeout(function(){build();paint();},60);}
+}).observe(document.getElementById('g'));}
+
+altoMenu();numerar();opciones();tarjeta();anchoTarjeta();pista();build();render();
 if(document.fonts&&document.fonts.ready){   /* una fuente tardía cambia el ancho de los nombres */
   document.fonts.ready.then(function(){anchoTarjeta();setTimeout(function(){pista();build();render();},30);});
 }

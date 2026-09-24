@@ -13,3 +13,15 @@ Registro en el momento en que ocurren (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: restriccion-no-propagada: un bloque de comandos con `git fetch` a punto de correrse por `device_bash` en una sesión cuyo traspaso prohíbe git que escriba desde el puente.
 - `intentos_previos`: 0.
 - `costo`: dos candados huérfanos (`.git/index.lock` dos veces, `.git/objects/maintenance.lock`) movidos a `_archivo/20260924/git_locks/`; sin mover, `/apertura` habría fallado por `index.lock`. Ningún cambio en el historial ni en el árbol versionado. Desde entonces todo git del puente corre con `GIT_OPTIONAL_LOCKS=0` y solo en lectura.
+
+**ERR-33-02**
+- `momento`: respuesta a la pregunta del titular sobre la cifra del referente («¿no disminuye según avanzan los años?») y propuesta del nombre de la leyenda (defecto j).
+- `disparador`: asistente lo señaló espontáneamente, al leer `dim_slep_comunas.csv` de `slep_central_datos` por el pedido de futuros traspasos.
+- `que_paso`: afirmé que el referente son municipales «nunca traspasados» y propuse rotularlo así; medido después, 1.293 de sus 1.299 establecimientos están en comunas que se traspasan entre 2027 y 2029 (478, 407 y 408), y las 346 comunas del país tienen año de traspaso.
+- `regla_violada`: SETTINGS §1.2.6, marcador de fuente en línea (premisa de hecho sin fuente leída en la sesión) y POLITICA 0.6.
+- `causa_raiz`: deduje «nunca» de la definición del conjunto (fuera del catálogo de 36 Servicios Locales) sin medir qué pasa con esas comunas después de 2026; el catálogo del proyecto termina en la ola 2026 y lo traté como el universo completo.
+- `salvaguarda_presente`: SETTINGS §1.2.6 y POLITICA 0.6.
+- `patron`: PAT-01, afirmación de dominio emitida sin fuente primaria.
+- `gatillo_observable`: afirmar-sin-leer: un rótulo público («nunca traspasados») que afirma un hecho futuro no medido en ningún insumo leído.
+- `intentos_previos`: 0.
+- `costo`: un rótulo falso aprobado por el titular sobre una explicación incorrecta; se corrige antes del commit del bloque, sin nada publicado.
