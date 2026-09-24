@@ -11,8 +11,10 @@
 # Adapta 50_documentacion/andamios/verificar_trayectorias.R (sesión 30, que
 # queda congelado): D1 a D8 se conservan con su cálculo independiente sobre el
 # parquet; se agregan D9 a D13, que comprueban el DATA que produce el
-# generador y el HTML escrito. Cada prueba mide la afirmación, no un síntoma
-# cercano, y las de ausencia llevan control positivo.
+# generador y el HTML escrito, y D14, que comprueba la regla de filas del motor
+# adoptada en la sesión 33 (sin marca de la Agencia y al menos 10 evaluados).
+# Cada prueba mide la afirmación, no un síntoma cercano, y las de ausencia
+# llevan control positivo.
 #
 # Insumos:  40_salidas/intermedios/{simce_rbd,sleps_chile}.parquet
 #           40_salidas/trayectorias_traspasos.html (correr antes el paso 36)
@@ -70,7 +72,8 @@ stopifnot(nrow(simce) > 0, nrow(sleps) > 0)
 
 base <- simce |>
   filter(!is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins),
-         !is.na(nalu), !is.na(cod_grupo)) |>
+         !is.na(nalu), !is.na(cod_grupo),
+         is.na(marca), nalu >= 10) |>
   mutate(suma_niveles = palu_eda_ade + palu_eda_ele + palu_eda_ins) |>
   filter(suma_niveles >= 99, suma_niveles <= 101) |>
   mutate(np      = paste0(nivel, "_", prueba),
@@ -249,7 +252,9 @@ comprobar(
 )
 
 # ---- D10. Fidelidad al mockup auditado de la sesión 30 ----------------------
-# Las mismas filas y claves que el mockup; toda cifra distinta debe ser un
+# Coteja la maquinaria de agregación con la regla de filas del mockup, que
+# incluía las filas marcadas (excluir_marcadas = FALSE): la regla vigente la
+# comprueba D14. Las mismas filas y claves que el mockup; toda cifra distinta debe ser un
 # empate exacto de redondeo (el mockup los resolvía en coma flotante; el
 # generador, hacia arriba en aritmética entera) y distar un décimo. El número de
 # empates que difieren depende de la plataforma que construyó el mockup: no es
@@ -280,13 +285,16 @@ cotejar <- function(gen, mock, claves) {
                 sum(dif_ins & !(es_empate(x$ins_num, x$den) & abs(x$ins - x$ins_m) < 1.5 * PASO_PCT))
   )
 }
-c_datos <- cotejar(DATA$datos, mock_datos, c("id", "anio", "np", "g", "panel"))
-c_nube  <- cotejar(DATA$nube, mock_nube, c("com", "anio", "np", "g"))
+DATA_M  <- construir_datos_trayectorias(insumos, conservar_brutos = TRUE,
+                                        excluir_marcadas = FALSE)
+c_datos <- cotejar(DATA_M$datos, mock_datos, c("id", "anio", "np", "g", "panel"))
+c_nube  <- cotejar(DATA_M$nube, mock_nube, c("com", "anio", "np", "g"))
 
 ctx <- V8::v8()
 ctx$assign("a", extraer_data(RUTA_MOCKUP))
-ctx$assign("b", datos_a_json(construir_datos_trayectorias(insumos)))
-ctx$eval("var A=JSON.parse(a), B=JSON.parse(b);")
+ctx$assign("b", datos_a_json(construir_datos_trayectorias(insumos, excluir_marcadas = FALSE)))
+ctx$assign("r", datos_a_json(construir_datos_trayectorias(insumos)))
+ctx$eval("var A=JSON.parse(a), B=JSON.parse(b), R=JSON.parse(r);")
 iguales_js <- vapply(c("anios", "meta", "nac", "comunas"), function(k) {
   isTRUE(ctx$eval(sprintf("JSON.stringify(A.%s)===JSON.stringify(B.%s)", k, k)) == "true")
 }, logical(1))
@@ -304,16 +312,16 @@ comprobar(
 
 # Control positivo de D10: una cifra movida un décimo fuera de un empate.
 mock_plantado <- mock_datos
-no_empate_idx <- which(!es_empate(DATA$datos$ade_num, DATA$datos$den))[1]
-fila_p <- DATA$datos[no_empate_idx, c("id", "anio", "np", "g", "panel")]
+no_empate_idx <- which(!es_empate(DATA_M$datos$ade_num, DATA_M$datos$den))[1]
+fila_p <- DATA_M$datos[no_empate_idx, c("id", "anio", "np", "g", "panel")]
 k <- which(mock_plantado$id == fila_p$id & mock_plantado$anio == fila_p$anio &
            mock_plantado$np == fila_p$np & mock_plantado$g == fila_p$g &
            mock_plantado$panel == fila_p$panel)
 mock_plantado$ade[k] <- mock_plantado$ade[k] + PASO_PCT
 comprobar(
   "D10c", "Control positivo: una cifra movida un décimo sin empate dispara exactamente un hallazgo",
-  cotejar(DATA$datos, mock_plantado, c("id", "anio", "np", "g", "panel"))$no_empate == 1,
-  sprintf("detectados %d", cotejar(DATA$datos, mock_plantado, c("id", "anio", "np", "g", "panel"))$no_empate)
+  cotejar(DATA_M$datos, mock_plantado, c("id", "anio", "np", "g", "panel"))$no_empate == 1,
+  sprintf("detectados %d", cotejar(DATA_M$datos, mock_plantado, c("id", "anio", "np", "g", "panel"))$no_empate)
 )
 
 # ---- D11. Las cifras escritas en las notas coinciden con los datos ----------
@@ -321,18 +329,37 @@ comprobar(
 html <- paste(readLines(RUTA_HTML, encoding = "UTF-8", warn = FALSE), collapse = "\n")
 n_ref_txt <- format(DATA$meta[[ID_REFERENTE]]$cat, big.mark = ".", decimal.mark = ",")
 n_com_txt <- sprintf("(%d en total)", length(DATA$comunas))
+# Recuento independiente de las filas marcadas que excluye la regla del motor.
+marcadas_ind <- simce |>
+  filter(rbd %in% as.character(sleps$rbd),
+         !is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins),
+         !is.na(nalu),
+         palu_eda_ade + palu_eda_ele + palu_eda_ins >= 99,
+         palu_eda_ade + palu_eda_ele + palu_eda_ins <= 101,
+         !is.na(marca) | nalu < 10) |>
+  nrow()
+marcadas_txt <- sprintf("y %s filas con marca de la Agencia",
+                        format(marcadas_ind, big.mark = ".", decimal.mark = ","))
+# El ejemplo de la nube es literal en la plantilla: debe seguir en los datos.
+cod_palena <- names(DATA$comunas)[unlist(DATA$comunas) == "Palena"]
+palena_ok <- grepl("Palena aparece con 72,7% en Adecuado sobre 11 estudiantes", html, fixed = TRUE) &&
+  nrow(filter(DATA$nube, com %in% cod_palena, g == GSE_TOTAL, np != NP_TODO,
+              ade == 72.7, n == 11L)) == 1
+sin_marcador <- !grepl("__NOTA_", html, fixed = TRUE)
 comprobar(
-  "D11", "Las notas declaran el mismo referente y la misma nube que los datos",
+  "D11", "Las notas declaran el referente, la nube, las filas excluidas y el ejemplo que traen los datos",
   grepl(sprintf("los %s establecimientos", n_ref_txt), html, fixed = TRUE) &&
-    grepl(n_com_txt, html, fixed = TRUE),
-  sprintf("referente %s, nube %s", n_ref_txt, n_com_txt)
+    grepl(n_com_txt, html, fixed = TRUE) && grepl(marcadas_txt, html, fixed = TRUE) &&
+    palena_ok && sin_marcador,
+  sprintf("referente %s, nube %s, filas marcadas %d, ejemplo de la nube: %s, sin marcadores: %s",
+          n_ref_txt, n_com_txt, marcadas_ind, palena_ok, sin_marcador)
 )
 
 # ---- D12. El HTML escrito no depende de la red y trae el DATA del generador --
 
 cargas_red <- lengths(regmatches(html, gregexpr('(src|href)="https?:', html)))
 ctx$assign("h", extraer_data(RUTA_HTML))
-data_igual <- ctx$eval("JSON.stringify(JSON.parse(h))===JSON.stringify(B)") == "true"
+data_igual <- ctx$eval("JSON.stringify(JSON.parse(h))===JSON.stringify(R)") == "true"
 comprobar(
   "D12", "El HTML no carga nada por red y su DATA es el que construye el generador",
   cargas_red == 0 && data_igual && !grepl("__DATA_TRAYECTORIAS__", html, fixed = TRUE),
@@ -365,6 +392,33 @@ DATA_plantado$datos$ade[1] <- DATA_plantado$datos$ade[1] + PASO_PCT
 comprobar(
   "D13c", "Control positivo: un DATA con una cifra movida un décimo no pasa el cotejo",
   !identical(datos_a_json(DATA_plantado), json_base)
+)
+
+# ---- D14. La regla de filas es la del motor --------------------------------
+# Ninguna fila de la base tiene marca de la Agencia ni menos de 10 evaluados, y
+# la regla excluye exactamente las filas que cumplen alguna de las dos
+# condiciones (recuento independiente sobre el parquet).
+
+base_sin_regla <- base_valida(insumos$simce, excluir_marcadas = FALSE)
+excluidas_ind  <- sum(!is.na(base_sin_regla$marca) | base_sin_regla$nalu < 10)
+comprobar(
+  "D14", "La base no trae filas con marca ni con menos de 10 evaluados, y excluye exactamente esas",
+  sum(!is.na(base_g$marca)) == 0 && sum(base_g$nalu < 10) == 0 &&
+    nrow(base_sin_regla) - nrow(base_g) == excluidas_ind && excluidas_ind > 0,
+  sprintf("excluidas %d de %d filas coherentes", nrow(base_sin_regla) - nrow(base_g),
+          nrow(base_sin_regla))
+)
+
+# Control positivo de D14: marcar una fila válida la saca de la base.
+simce_plantado <- insumos$simce
+idx_valida <- which(is.na(simce_plantado$marca) & !is.na(simce_plantado$palu_eda_ade) &
+                      simce_plantado$nalu >= 10)
+idx_valida <- idx_valida[as.character(simce_plantado$rbd[idx_valida]) %in% base_g$rbd][1]
+simce_plantado$marca[idx_valida] <- "plantada"
+comprobar(
+  "D14c", "Control positivo: marcar una fila válida la saca de la base, exactamente una",
+  nrow(base_g) - nrow(base_valida(simce_plantado)) == 1,
+  sprintf("filas que salen %d", nrow(base_g) - nrow(base_valida(simce_plantado)))
 )
 
 # ---- Salida ----------------------------------------------------------------
