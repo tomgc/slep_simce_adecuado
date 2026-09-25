@@ -2512,9 +2512,16 @@ code {
     // punto de un solo establecimiento: `alto` es lo que crece el SVG y
     // `linea`, la línea base de la nota medida desde H. Sin ese punto, el SVG
     // conserva su alto H.
+    // `rescate` ubica las cifras rescatadas bajo el eje: `linea` es la línea
+    // base del primer renglón, medida desde el eje, y `paso`, la distancia
+    // entre renglones. Con gobCL-sitio (Bold 700, D35-9) la caja de una cifra
+    // rescatada con la marca «†» mide 13 unidades (12 con la Heavy): a 12 de
+    // paso, dos renglones se tocaban (auditoría s35c, R-22). Con 14 queda una
+    // unidad de aire y el segundo renglón sigue dentro del margen inferior.
     const RECENT_DIMS = {
       W: 320, H: 189, M: { top: 28, right: 10, bottom: 48, left: 28 },
       nota: { alto: 14, linea: 10 },
+      rescate: { linea: 28, paso: 14 },
     };
     // Señal de un solo establecimiento (pendiente 2 de v34, sesión 35; D35-6):
     // la cifra lleva esta marca en las barras recientes y en la sparkline, y
@@ -2692,7 +2699,7 @@ code {
           // franja; un decimal (fmtPct) para no escribir "0%" sobre un 0,4.
           rescatadas.forEach((seg, k) => {
             g.append("text")
-              .attr("x", xPos + bw / 2).attr("y", ih + 28 + k * 12)
+              .attr("x", xPos + bw / 2).attr("y", ih + RECENT_DIMS.rescate.linea + k * RECENT_DIMS.rescate.paso)
               .attr("text-anchor", "middle")
               .attr("font-family", FONT_SVG)
               .attr("font-size", FS_SVG.barras.valorFuera)
