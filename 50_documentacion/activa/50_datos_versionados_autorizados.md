@@ -28,8 +28,9 @@ renv/settings.json              # configuracion del gestor de dependencias; sin 
 40_salidas/publico/contexto_simce.parquet   # contrato de contexto v1 (paso 35), solo en la rama feat/contrato-contexto (31befa2); 61.853 filas de senales por RBD, anio y eje; nivel establecimiento, sin persona natural
 ```
 
-Al 2026-08-27 estas seis entradas cubren 27 rutas versionadas con extensión de
-datos: 24 `.xlsx`, 2 `.csv` y 1 `.json`.
+Al 2026-09-25 (sesión 35) estas ocho entradas cubren 28 rutas versionadas con
+extensión de datos tabulares (25 `.xlsx` y 3 `.csv`) y, aparte,
+`renv/settings.json` (1 `.json`): 29 rutas con el comando de abajo.
 
 Verificación de la cobertura, reproducible:
 
@@ -41,7 +42,7 @@ git ls-files | grep -Ei '\.(xlsx|xls|xlsm|xlsb|csv|tsv|parquet|rds|rdata|sav|dta
 
 ## Qué se revisó antes de autorizar
 
-Cada una de las 27 rutas se inspeccionó, no se autorizó por su carpeta:
+Cada una de las 28 rutas, más `renv/settings.json`, se inspeccionó, no se autorizó por su carpeta:
 
 | Grupo | Qué se miró | Resultado |
 |---|---|---|
@@ -53,7 +54,7 @@ Cada una de las 27 rutas se inspeccionó, no se autorizó por su carpeta:
 | `renv/settings.json` | Contenido completo | Ajustes de `renv`: `bioconductor.version`, `external.libraries`, `snapshot.type`, reglas `vcs.ignore` |
 | `andamios/20260911_filas_anomalas_simce_rbd.xlsx` (2026-09-23, sesión 31) | Las 3 hojas | `Resumen`: texto y conteos por situación. `Sin nalu` y `Nalu cero`: `Año`, `Nivel`, `Prueba`, `RBD`, `Nombre del establecimiento`, `Código comuna`, `Comuna`, `Dependencia`, `GSE`, `Evaluados`, tres porcentajes de nivel y `Puntaje promedio`. Ni RUT, ni MRUN, ni nombre de persona |
 | `40_salidas/publico/contexto_simce.parquet` (2026-09-23, sesión 32) | Las 15 columnas, leídas del blob de `31befa2` | `rbd`, `anio`, `eje`, `eje_etiqueta`, `segmento`, `escala`, `valor`, `desvio_gse`, `mejora_sobre_gse`, `mejora_ano_ano`, `cod_grupo`, `proyecto_origen`, `periodo`, `fecha_calculo`, `version_contrato`. Ni RUT, ni MRUN, ni nombre de persona. Solo existe en la rama `feat/contrato-contexto`; la entrada va en `main` porque el verificador lee la lista del árbol de trabajo desde el que se publica |
-| `auxiliares/dim_slep_comunas.csv` (2026-09-25, sesión 35; cae bajo `20_insumos/auxiliares/*.csv`) | Las 15 columnas y los textos libres de `decreto` y `precisiones` | `cod_comuna`, `comuna`, `cod_slep`, `slep`, `slep_formato`, `region`, `num_region`, `deprov`, `cod_deprov`, `anio_inicio_funciones`, `anio_traspaso`, `decreto`, `comuna_cabecera`, `referencial`, `precisiones`. Territorio e institución; `precisiones` anota decretos, postergaciones y fechas de inicio, sin nombres de persona. Ni RUT, ni MRUN |
+| `auxiliares/dim_slep_comunas.csv` (2026-09-25, sesión 35; copia de `slep_central_datos`, commit de origen `d7a8ec6`; cae bajo `20_insumos/auxiliares/*.csv`) | Las 15 columnas y los textos libres de `decreto` y `precisiones` | `cod_comuna`, `comuna`, `cod_slep`, `slep`, `slep_formato`, `region`, `num_region`, `deprov`, `cod_deprov`, `anio_inicio_funciones`, `anio_traspaso`, `decreto`, `comuna_cabecera`, `referencial`, `precisiones`. Catálogo público de territorio e institución, sin persona natural; `precisiones` anota decretos, postergaciones y fechas de inicio, sin nombres de persona. Ni RUT, ni MRUN |
 
 ---
 
