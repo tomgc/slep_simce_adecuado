@@ -18,10 +18,18 @@
 #   - simce_rbd.parquet      resultados por establecimiento, nivel y prueba
 #   - sleps_chile.parquet    catálogo de Servicios Locales (SLEP × RBD)
 #   - comunas_chile.parquet  nombres de comuna
+#   - establecimientos_chile.parquet  directorio (RBD, comuna, dependencia)
+# y (20_insumos/auxiliares/):
+#   - dim_slep_comunas.csv   catálogo de olas: comuna × Servicio Local × año de
+#                            traspaso, copia de slep_central_datos
+#                            (manifiesto_insumos.md, sesión 35)
 #
 # Expone:
-#   - leer_insumos_trayectorias(): los tres parquet, con la lectura validada.
+#   - leer_insumos_trayectorias(): los cuatro parquet y el catálogo de olas,
+#     con la lectura validada.
 #   - base_valida(simce): filas con los tres niveles publicados y coherentes.
+#   - unidades_futuras(insumos, tras_vigentes): las unidades de las olas
+#     OLAS_FUTURAS (D35-2), validadas contra el catálogo de olas.
 #   - construir_datos_trayectorias(insumos): la lista DATA que consume la
 #     plantilla (anios, meta, nac, datos, nube, comunas).
 #   - datos_a_json(DATA): el JSON compacto que se inserta en la plantilla.
@@ -44,6 +52,14 @@
 #     municipales»). Ningún grupo socioeconómico se excluye: el único
 #     establecimiento municipal fuera de los Servicios Locales con grupo alto
 #     no tiene resultado en 2014 (sesión 32; corrige el diagnóstico B31-4).
+#   - Unidades futuras (sesión 35, D35-2 en
+#     decisiones/20260924_decision_referente_traspasos.md): cada par (Servicio
+#     Local, año de traspaso) de las olas OLAS_FUTURAS del catálogo de olas, con
+#     los establecimientos que el directorio registra como municipales en sus
+#     comunas. Sus series siguen las reglas de los Servicios Locales (filas de
+#     cualquier dependencia). No cambian las filas de los Servicios Locales ni
+#     del referente: `incluir_futuras = FALSE` reproduce el DATA anterior y la
+#     prueba C3 lo coteja.
 # ----------------------------------------------------------------------------
 
 
@@ -98,6 +114,29 @@ ORDEN_SLEP <- c(
   "1301", "1311", "1302", "1309", "1307", "1305", "1303", "1304"
 )
 
+# Olas de traspaso que entran a la vista como cohortes por traspasar (D35-2).
+# Se declaran aquí para que una ola nueva del catálogo no entre sin decisión:
+# si el catálogo trae un año que no es cohorte vigente ni está en esta lista,
+# unidades_futuras() se detiene.
+OLAS_FUTURAS <- c(2027L, 2028L, 2029L)
+
+# Regiones de norte a sur, con la Metropolitana al final: ordenan las unidades
+# futuras dentro de cada ola, con el mismo criterio de ORDEN_SLEP.
+ORDEN_REGIONES <- c(15, 1, 2, 3, 4, 5, 6, 7, 16, 8, 9, 14, 10, 11, 12, 13)
+
+# Identificador de una unidad futura: <cod_slep><SEP_ID_FUTURO><año>. Nunca
+# coincide con el código de una unidad vigente, aunque el Servicio Local ya
+# tenga una cohorte (Petorca y Valle Diguillín reciben comunas en 2027).
+SEP_ID_FUTURO <- "_"
+
+# Nombre de una unidad futura cuyo código ya existe en ORDEN_SLEP.
+SUFIJO_FUTURA <- " (comunas que se traspasan en %d)"
+
+# Catálogo de olas en 20_insumos/auxiliares/ y columnas que usa el paso.
+ARCHIVO_OLAS  <- "dim_slep_comunas.csv"
+COLUMNAS_OLAS <- c("cod_comuna", "cod_slep", "slep_formato", "num_region",
+                   "anio_traspaso")
+
 
 # ---- Lectura ---------------------------------------------------------------
 
@@ -107,6 +146,35 @@ leer_intermedio <- function(archivo, columnas) {
   ruta <- here::here("40_salidas", "intermedios", archivo)
   if (!file.exists(ruta)) stop("No existe ", ruta, ". Correr 00_build.R antes.")
   df <- arrow::read_parquet(ruta)
+  faltan <- setdiff(columnas, names(df))
+  if (length(faltan) > 0) {
+    stop(archivo, " no trae las columnas: ", paste(faltan, collapse = ", "))
+  }
+  df
+}
+
+# Hermana de leer_intermedio() para un CSV de 20_insumos/auxiliares/ separado
+# por `;`: lee todas las columnas como texto (sin convertir vacíos en NA) y
+# comprueba que no hubo problemas de lectura, que trae una fila por línea del
+# archivo (menos el encabezado) y las columnas que el paso usa.
+leer_auxiliar_csv <- function(archivo, columnas) {
+  ruta <- here::here("20_insumos", "auxiliares", archivo)
+  if (!file.exists(ruta)) stop("No existe ", ruta, ". Ver manifiesto_insumos.md.")
+  df <- readr::read_delim(
+    ruta, delim = ";",
+    col_types = readr::cols(.default = readr::col_character()),
+    na = character(), trim_ws = FALSE,
+    locale = readr::locale(encoding = "UTF-8"),
+    show_col_types = FALSE, progress = FALSE
+  )
+  if (nrow(readr::problems(df)) > 0) {
+    stop(archivo, ": ", nrow(readr::problems(df)), " problemas de lectura")
+  }
+  lineas <- length(readLines(ruta, encoding = "UTF-8", warn = FALSE))
+  if (nrow(df) != lineas - 1L) {
+    stop(archivo, ": se leyeron ", nrow(df), " filas para ", lineas - 1L,
+         " líneas de datos")
+  }
   faltan <- setdiff(columnas, names(df))
   if (length(faltan) > 0) {
     stop(archivo, " no trae las columnas: ", paste(faltan, collapse = ", "))
@@ -129,7 +197,12 @@ leer_insumos_trayectorias <- function() {
     comunas = leer_intermedio(
       "comunas_chile.parquet",
       c("cod_com_rbd", "nom_com_rbd")
-    )
+    ),
+    establecimientos = leer_intermedio(
+      "establecimientos_chile.parquet",
+      c("rbd", "nom_rbd", "cod_com_rbd", "nom_com_rbd", "cod_depe2")
+    ),
+    olas = leer_auxiliar_csv(ARCHIVO_OLAS, COLUMNAS_OLAS)
   )
 }
 
@@ -236,14 +309,118 @@ filas_datos <- function(df, n_anios) {
 orden_gse <- function(g) ifelse(g == GSE_TOTAL, "0", g)
 
 
+# ---- Unidades futuras (D35-2) ----------------------------------------------
+
+# Unidades de las olas OLAS_FUTURAS: una por par (Servicio Local, año de
+# traspaso) del catálogo de olas, con los establecimientos que el directorio
+# registra como municipales (cod_depe2 == DEPE_MUNICIPAL) en sus comunas.
+# `tras_vigentes` son los años de traspaso del catálogo de Servicios Locales.
+# Devuelve `fichas` (id, nom, tras, cat), en el orden de la vista (ola, región
+# de norte a sur y código), y `rbd` (id, rbd). Se detiene si el catálogo de
+# olas no cuadra con ORDEN_SLEP, con OLAS_FUTURAS o con el directorio.
+unidades_futuras <- function(insumos, tras_vigentes) {
+  olas <- insumos$olas |>
+    dplyr::mutate(anio = as.integer(anio_traspaso), region = as.integer(num_region))
+  if (anyNA(olas$anio) || anyNA(olas$region)) {
+    stop(ARCHIVO_OLAS, ": anio_traspaso o num_region no numéricos")
+  }
+  if (anyDuplicated(olas$cod_comuna) > 0) {
+    stop(ARCHIVO_OLAS, ": comunas repetidas: ",
+         paste(unique(olas$cod_comuna[duplicated(olas$cod_comuna)]), collapse = ", "))
+  }
+
+  # -- El catálogo de olas contra las cohortes vigentes y OLAS_FUTURAS --
+  ya_vigentes <- intersect(OLAS_FUTURAS, tras_vigentes)
+  if (length(ya_vigentes) > 0) {
+    stop("OLAS_FUTURAS incluye años que ya son cohortes vigentes: ",
+         paste(ya_vigentes, collapse = ", "))
+  }
+  sin_decision <- setdiff(olas$anio, c(tras_vigentes, OLAS_FUTURAS))
+  if (length(sin_decision) > 0) {
+    stop(ARCHIVO_OLAS, " trae años de traspaso que no son cohortes vigentes ni ",
+         "OLAS_FUTURAS: ", paste(sort(sin_decision), collapse = ", "))
+  }
+  sin_olas <- setdiff(OLAS_FUTURAS, olas$anio)
+  if (length(sin_olas) > 0) {
+    stop(ARCHIVO_OLAS, " no trae comunas para las olas: ", paste(sin_olas, collapse = ", "))
+  }
+  cod_vigentes <- unique(olas$cod_slep[!olas$anio %in% OLAS_FUTURAS])
+  if (!setequal(cod_vigentes, ORDEN_SLEP)) {
+    stop(ARCHIVO_OLAS, " no coincide con ORDEN_SLEP en las cohortes vigentes: ",
+         paste(sort(setdiff(union(cod_vigentes, ORDEN_SLEP),
+                            intersect(cod_vigentes, ORDEN_SLEP))),
+               collapse = ", "))
+  }
+
+  futuras <- dplyr::filter(olas, anio %in% OLAS_FUTURAS)
+  fuera_de_orden <- setdiff(futuras$region, ORDEN_REGIONES)
+  if (length(fuera_de_orden) > 0) {
+    stop("Regiones de las olas futuras fuera de ORDEN_REGIONES: ",
+         paste(fuera_de_orden, collapse = ", "))
+  }
+  fichas <- futuras |>
+    dplyr::summarise(.by = c(cod_slep, anio),
+                     nom    = dplyr::first(slep_formato),
+                     region = dplyr::first(region),
+                     k_nom  = dplyr::n_distinct(slep_formato),
+                     k_reg  = dplyr::n_distinct(region))
+  ambiguas <- fichas |> dplyr::filter(k_nom != 1L | k_reg != 1L)
+  if (nrow(ambiguas) > 0) {
+    stop("Unidades futuras con más de un nombre o región: ",
+         paste(ambiguas$cod_slep, ambiguas$anio, sep = SEP_ID_FUTURO, collapse = ", "))
+  }
+
+  # -- Establecimientos: municipales del directorio en las comunas de cada ola --
+  directorio <- insumos$establecimientos |>
+    dplyr::mutate(rbd = as.character(rbd), cod_com_rbd = as.character(cod_com_rbd))
+  sin_directorio <- setdiff(futuras$cod_comuna, directorio$cod_com_rbd)
+  if (length(sin_directorio) > 0) {
+    stop("Comunas de las olas futuras sin establecimientos en el directorio: ",
+         paste(sin_directorio, collapse = ", "))
+  }
+  rbd_fut <- directorio |>
+    dplyr::filter(cod_depe2 == DEPE_MUNICIPAL) |>
+    dplyr::inner_join(dplyr::select(futuras, cod_comuna, cod_slep, anio),
+                      by = c(cod_com_rbd = "cod_comuna")) |>
+    dplyr::mutate(id = paste0(cod_slep, SEP_ID_FUTURO, anio)) |>
+    dplyr::distinct(id, rbd)
+  if (anyDuplicated(rbd_fut$rbd) > 0) {
+    stop("Establecimientos en más de una unidad futura: ",
+         paste(unique(rbd_fut$rbd[duplicated(rbd_fut$rbd)]), collapse = ", "))
+  }
+
+  fichas <- fichas |>
+    dplyr::mutate(
+      id  = paste0(cod_slep, SEP_ID_FUTURO, anio),
+      nom = ifelse(cod_slep %in% ORDEN_SLEP, paste0(nom, sprintf(SUFIJO_FUTURA, anio)), nom)
+    ) |>
+    dplyr::left_join(dplyr::count(rbd_fut, id, name = "cat"), by = "id") |>
+    dplyr::arrange(anio, match(region, ORDEN_REGIONES), as.integer(cod_slep))
+  if (anyNA(fichas$cat)) {
+    stop("Unidades futuras sin establecimientos municipales en el directorio: ",
+         paste(fichas$id[is.na(fichas$cat)], collapse = ", "))
+  }
+  if (any(fichas$id %in% ORDEN_SLEP) || anyDuplicated(fichas$id) > 0) {
+    stop("Identificadores de unidades futuras repetidos o iguales a uno vigente")
+  }
+
+  list(fichas = dplyr::transmute(fichas, id, nom, tras = anio, cat = as.integer(cat)),
+       rbd = rbd_fut)
+}
+
+
 # ---- Construcción de DATA --------------------------------------------------
 
 # `conservar_brutos = TRUE` agrega a `datos` y `nube` los numeradores y el
 # denominador enteros (ade_num, ins_num, den); solo lo usa la verificación,
 # para distinguir un empate de redondeo de una diferencia real.
 # `excluir_marcadas` pasa a base_valida(); FALSE solo para la prueba D10.
+# `incluir_futuras = TRUE` agrega las unidades de las olas OLAS_FUTURAS (D35-2)
+# después de las vigentes; FALSE reproduce el DATA anterior a la sesión 35 y
+# solo lo usan las pruebas C3 y D10.
 construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
-                                         excluir_marcadas = TRUE) {
+                                         excluir_marcadas = TRUE,
+                                         incluir_futuras = TRUE) {
   catalogo <- insumos$sleps |>
     dplyr::mutate(rbd = as.character(rbd), cod_slep = as.character(cod_slep))
 
@@ -285,6 +462,20 @@ construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
     list(nom = f$nom, tras = f$tras, post = sum(anios >= f$tras), cat = f$cat)
   })
   names(meta) <- ORDEN_SLEP
+
+  # Unidades futuras: después de las vigentes, en el orden de unidades_futuras().
+  # `post` se calcula como en las vigentes (0 mientras no haya datos del año de
+  # la ola).
+  futuras <- NULL
+  if (incluir_futuras) {
+    futuras  <- unidades_futuras(insumos, unique(fichas$tras))
+    meta_fut <- lapply(seq_len(nrow(futuras$fichas)), function(i) {
+      f <- futuras$fichas[i, ]
+      list(nom = f$nom, tras = f$tras, post = sum(anios >= f$tras), cat = f$cat)
+    })
+    names(meta_fut) <- futuras$fichas$id
+    meta <- c(meta, meta_fut)
+  }
   meta[[ID_REFERENTE]] <- list(nom = NOM_REFERENTE, tras = 0L, post = -1L,
                                cat = dplyr::n_distinct(municipal$rbd))
 
@@ -300,10 +491,15 @@ construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
                   v
                 })
 
-  # -- datos: Servicios Locales y referente --
+  # -- datos: Servicios Locales, referente y unidades futuras --
+  # Las futuras se agregan aparte, con su propio panel fijo: sus filas no tocan
+  # las de los Servicios Locales ni las del referente (prueba C3).
   datos_df <- dplyr::bind_rows(
     filas_datos(slep, n_anios),
-    filas_datos(dplyr::mutate(municipal, id = ID_REFERENTE), n_anios)
+    filas_datos(dplyr::mutate(municipal, id = ID_REFERENTE), n_anios),
+    if (incluir_futuras) {
+      filas_datos(dplyr::inner_join(base, futuras$rbd, by = "rbd"), n_anios)
+    }
   ) |>
     dplyr::arrange(panel, orden_gse(g), id, anio, np) |>
     dplyr::select(id, anio, np, g, panel, ade, ins, n, e,
@@ -384,12 +580,28 @@ cambios_anuales <- function(df, claves) {
     dplyr::filter(!is.na(d_ade))
 }
 
+# Universo de cada cifra (sesión 35, D35-2). Las que hablan de Servicios
+# Locales (filas, pares por grupo, movimiento, correlación y composición) se
+# calculan sobre los vigentes, los del catálogo sleps_chile, igual que antes de
+# las cohortes por traspasar: las notas lo declaran. N_UNIDADES, la del marco
+# de los ejes, cuenta todas las unidades de la vista. N_FUTURAS, N_EST_FUTURAS
+# y OLA_* describen solo las cohortes por traspasar.
+#
 # Devuelve una lista con nombre: cada elemento es el texto que reemplaza al
 # marcador __NOTA_<nombre>__.
 cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
   catalogo <- insumos$sleps |>
     dplyr::mutate(rbd = as.character(rbd), cod_slep = as.character(cod_slep))
   np_pruebas <- setdiff(unique(DATA$datos$np), NP_TODO)
+
+  # -- Unidades: vigentes (catálogo de Servicios Locales) y por traspasar --
+  cod_vigentes <- unique(catalogo$cod_slep)
+  ids_futuras  <- setdiff(names(DATA$meta), c(cod_vigentes, ID_REFERENTE))
+  if (length(ids_futuras) == 0) {
+    stop("cifras_notas() espera el DATA con las unidades futuras (incluir_futuras = TRUE)")
+  }
+  tras_de <- function(ids) vapply(DATA$meta[ids], function(m) as.integer(m$tras), integer(1))
+  cat_futuras <- vapply(DATA$meta[ids_futuras], function(m) as.integer(m$cat), integer(1))
 
   # -- Filas de los Servicios Locales: qué entra y qué se cae --
   filas_slep <- insumos$simce |>
@@ -413,6 +625,7 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
     dplyr::filter(!is.na(cod_grupo)) |>
     dplyr::distinct(cod_slep, cod_grupo) |>
     nrow()
+  n_grupos <- dplyr::n_distinct(base$cod_grupo, na.rm = TRUE)
   grupos_escuela <- base |>
     dplyr::filter(!is.na(cod_grupo)) |>
     dplyr::summarise(.by = c(rbd, anio), grupos = dplyr::n_distinct(cod_grupo))
@@ -420,7 +633,7 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
   # -- Movimiento anual: Servicios Locales, referente y país --
   series <- DATA$datos |>
     dplyr::filter(g == GSE_TOTAL, panel == 0L, np %in% np_pruebas)
-  mov_slep <- cambios_anuales(dplyr::filter(series, id != ID_REFERENTE), c("id", "np"))
+  mov_slep <- cambios_anuales(dplyr::filter(series, id %in% cod_vigentes), c("id", "np"))
   mov_ref  <- cambios_anuales(dplyr::filter(series, id == ID_REFERENTE), c("id", "np"))
   nac_df <- do.call(rbind, lapply(names(DATA$nac), function(k) {
     partes <- strsplit(k, "|", fixed = TRUE)[[1]]
@@ -436,7 +649,7 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
 
   # -- Composición: variación de los establecimientos con resultado --
   composicion <- DATA$datos |>
-    dplyr::filter(g == GSE_TOTAL, panel == 0L, np == NP_NOTAS, id != ID_REFERENTE) |>
+    dplyr::filter(g == GSE_TOTAL, panel == 0L, np == NP_NOTAS, id %in% cod_vigentes) |>
     dplyr::summarise(.by = id, var = (max(e) - min(e)) / max(e))
 
   list(
@@ -456,6 +669,15 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
     GSE_MEZCLA       = fmt_entero(sum(grupos_escuela$grupos > 1)),
     GSE_PARES        = fmt_entero(nrow(grupos_escuela)),
     UMBRAL           = fmt_entero(UMBRAL_EVALUADOS),
-    UMBRAL_COMPOSICION = fmt_entero(100 * UMBRAL_COMPOSICION)
+    UMBRAL_COMPOSICION = fmt_entero(100 * UMBRAL_COMPOSICION),
+    N_VIGENTES       = fmt_entero(length(cod_vigentes)),
+    PARES_POSIBLES   = fmt_entero(length(cod_vigentes) * n_grupos),
+    COH_PRIMERA      = as.character(min(tras_de(intersect(names(DATA$meta), cod_vigentes)))),
+    COH_ULTIMA       = as.character(max(tras_de(intersect(names(DATA$meta), cod_vigentes)))),
+    N_UNIDADES       = fmt_entero(length(setdiff(names(DATA$meta), ID_REFERENTE))),
+    N_FUTURAS        = fmt_entero(length(ids_futuras)),
+    N_EST_FUTURAS    = fmt_entero(sum(cat_futuras)),
+    OLA_PRIMERA      = as.character(min(tras_de(ids_futuras))),
+    OLA_ULTIMA       = as.character(max(tras_de(ids_futuras)))
   )
 }
