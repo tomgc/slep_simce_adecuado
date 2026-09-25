@@ -831,15 +831,37 @@ function rotuloReferente(){
   if(!idR)return '';
   var R=META[idR],yr=anioAct(),d=(S_(clave())[idR]||{})[yr],marcas=R.marcas||[],porOla=R.olas||{};
   var hayVig=typeof R.vig==='number';
-  var olas=Object.keys(porOla).map(Number).filter(function(o){return porOla[o]>0;})
-    .sort(function(a,b){return a-b;});
-  var rango=olas.length>1?'se traspasan entre '+olas[0]+' y '+olas[olas.length-1]:
-            (olas.length?'se traspasan en '+olas[0]:'por traspasar');
   var salen=marcas.reduce(function(a,m){return a+(m.anio<=yr?(porOla[m.ola]||0):0);},0);
   return '<span class="it"><span class="d rf"></span>Referente: '+fmt(R.cat)+' municipales en '+ANIOS[0]+
-    (hayVig?' · '+fmt(R.vig)+' '+rango:'')+
+    (hayVig?' · '+fmt(R.vig)+' '+rangoOlas(porOla):'')+
     ' · con resultado en '+yr+': '+fmt(d?d.e:0)+
     (marcas.length&&hayVig?' · '+fmt(R.vig-salen)+' de '+fmt(R.vig)+' aún municipales':'')+'</span>';
+}
+/* Rango de las olas que traspasan algún establecimiento del referente
+   (META.REF.olas con conteo mayor que 0, D35-4), en palabras. Lo usan el rótulo
+   y el tooltip del referente, para que digan lo mismo. */
+function rangoOlas(porOla){
+  var olas=Object.keys(porOla||{}).map(Number).filter(function(o){return porOla[o]>0;})
+    .sort(function(a,b){return a-b;});
+  return olas.length>1?'se traspasan entre '+olas[0]+' y '+olas[olas.length-1]:
+         (olas.length?'se traspasan en '+olas[0]:'por traspasar');
+}
+/* Descripción del referente en su tooltip (Q-26, encargo pendientes s35c): el
+   tamaño del grupo (META.REF.cat), municipales en el primer año de la serie, que
+   es su año ancla; cuántos están en el directorio y se traspasan (META.REF.vig),
+   con el rango de olas del rótulo; y cuántos cerraron antes de su traspaso
+   (cat - vig: ya no están en el directorio, D35-4). Todas las cifras salen de
+   DATA; sin `vig`, solo el tamaño y el año. Antes decía «Municipales en 2014 que
+   no están en los … Servicios Locales del catálogo: los traspasan las olas
+   siguientes», con el año escrito aquí y sin los cerrados. */
+function descripcionReferente(){
+  var idR=Object.keys(META).filter(esRef)[0];
+  if(!idR)return '';
+  var R=META[idR],hayVig=typeof R.vig==='number',cerr=hayVig?R.cat-R.vig:0;
+  return fmt(R.cat)+' municipales en '+ANIOS[0]+' que no figuran en el catálogo de Servicios Locales'+
+    (hayVig?': '+fmt(R.vig)+' '+rangoOlas(R.olas)+
+      (cerr>0?' y '+fmt(cerr)+(cerr===1?' cerró':' cerraron')+' antes de su traspaso':''):'')+
+    '. Conjunto fijo; la marca no usa la escala de tamaño';
 }
 
 /* ---------- línea de tiempo ---------- */
@@ -974,7 +996,7 @@ function hover(){
         tip.innerHTML='<b>Referente municipal</b>'+
           '<div class="kv">Adecuado <i>'+fmtPct(rr.dataset.ade)+'</i> · Insuficiente <i>'+fmtPct(rr.dataset.ins)+'</i></div>'+
           '<div class="kv">'+fmt(rr.dataset.n)+' estudiantes evaluados en '+fmt(rr.dataset.e)+' establecimientos, '+rr.dataset.yr+'</div>'+
-          '<div class="kv">Municipales en 2014 que no están en los __NOTA_N_VIGENTES__ Servicios Locales del catálogo: los traspasan las olas siguientes. Conjunto fijo; la marca no usa la escala de tamaño</div>';
+          '<div class="kv">'+descripcionReferente()+'</div>';
         tip.style.left=Math.min(window.innerWidth-292,ev.clientX+15)+'px';
         tip.style.top=Math.max(8,ev.clientY-16)+'px';tip.classList.add('on');
         paint();return;
