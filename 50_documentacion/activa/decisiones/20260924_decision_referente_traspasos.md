@@ -152,3 +152,45 @@ franjas no cambian (D-color-nivel). I-8 se amplía para admitir esa constante.
 El «*» ya marca el dato preliminar en todo el motor. Hoy no hay años preliminares, pero volverá a haberlos con la
 base preliminar del Simce 2026. `ASTERISCO_UNICO` pasa a «†». La cifra de la sparkline con un solo
 establecimiento sigue la misma regla (sin atenuar, con «†»), y la leyenda de ChartHints declara el signo.
+
+## Enmiendas tras el encargo `encargo_pendientes_s35b.md` (sesión 35, 2026-09-25)
+
+Decide el titular sobre la propuesta del asistente, con el log
+`50_documentacion/andamios/logs/20260925_pendientes_s35b_log.md` (commit `5e65bd3`) y una evaluación
+independiente de solo lectura.
+
+### D35-7. gobCL se publica incrustada y versionada, con su declaración en NOTICE
+
+No existe una licencia escrita que permita redistribuir gobCL, y dos de sus caras declaran `fsType=4`. La suite
+de documentación ya la incrusta en cuatro HTML públicos desde la sesión 22, junto con Museo Sans. El titular
+decide publicarla tal cual: el sitio es de un servicio público del Estado y la tipografía es la institucional
+del Gobierno de Chile. NOTICE agrega una sección que declara que las fuentes gobCL no están cubiertas por
+Apache 2.0, su origen y el criterio de uso. La alternativa descartada era sacar los `.otf` de la historia antes
+del push y pedir autorización escrita a Gobierno Digital. Queda pendiente, para una sesión de cartera, revisar
+Museo Sans en la suite.
+
+### D35-8. Las cifras de la sparkline conservan el orden de sus valores (regla C)
+
+Reemplaza la regla de choque de M2 y R-51, que dibujaba 627 pares con el orden vertical invertido (R-48). Cada
+cifra parte en `cy - 6`. Ante un choque, solo se mueve en la dirección que conserva el orden por valor: la
+mayor sube o la menor baja. La menor baja solo si queda sobre la banda de años. El choque con «traspaso» se
+resuelve bajando la cifra, y la marca preliminar «*» cuenta como obstáculo. Una pasada final de validación
+oculta, ante cualquier inversión, superposición o salida del SVG, la cifra del año más antiguo del par; su
+valor y su «†» siguen en el tooltip. Criterio: 0 inversiones por construcción, 0 superposiciones y 0 cifras
+fuera del SVG, con las ocultas contadas y listadas. Alternativas descartadas: la regla vigente (A), el intento
+3 (B, con 155 inversiones) y quitar la «†» de la sparkline (reabría D35-6).
+
+### D35-9. Se incrustan dos caras de gobCL: Regular 400 y Bold 700, con una familia de nombre propio
+
+Heavy pesa 900 real y se había declarado 700, y Light no la usa ninguna regla. Se incrustan solo Regular (400)
+y la Bold real (700); los pesos 800 y 900 caen en Bold. La familia incrustada pasa a llamarse `gobCL-sitio`,
+para que una gobCL instalada en el equipo no pueda sustituirla ni ocultar una falla de la incrustación. El
+criterio de carga deja de ser `document.fonts.check()`, que no discrimina (ERR-35-12): pasa a ser la lista de
+caras `gobCL-sitio` con estado `loaded` y la diferencia de ancho medida contra el respaldo del sistema.
+
+### D35-10. El criterio de A3 se redefine tras R-50
+
+Tras corregir la carrera de carga de la fuente (R-50), la vista ya no coincide píxel a píxel con las
+referencias posteriores a G. El criterio pasa a ser «0 píxeles distintos entre cargas y `scrollWidth` igual al
+viewport». Las capturas de referencia a 768, 1024, 1280 y 1920 px se regeneran desde el estado final de cada
+encargo.

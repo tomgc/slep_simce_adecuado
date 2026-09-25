@@ -133,3 +133,51 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: afirmar-sin-leer: un símbolo nuevo en la interfaz sin `grep` previo del mismo símbolo.
 - `intentos_previos`: 0.
 - `costo`: un signo a reemplazar en el encargo siguiente (Q-08).
+
+## ERR-35-12
+- `momento`: redacción de `encargo_pendientes_s35b.md`, criterio de G.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log de s35b (Q-32).
+- `que_paso`: puse como criterio `document.fonts.check('16px gobCL')` sin calibrarlo; da `true` aunque la familia no esté cargada, y en la estación gobCL está instalada, así que el criterio no distingue la incrustación de la fuente local.
+- `regla_violada`: encargo_autonomo v1.6 §2.6: todo criterio declara su calibración (caso malo y caso bueno).
+- `causa_raiz`: calibré solo el md5 de las fuentes y di por evidente la semántica de una API del navegador.
+- `salvaguarda_presente`: encargo_autonomo v1.6.
+- `patron`: PAT-13, criterio que mide un proxy (la API responde) y no el riesgo (la cara incrustada se usa).
+- `gatillo_observable`: iteracion-sin-criterio: criterio de aceptación sin caso malo declarado junto a él.
+- `intentos_previos`: 0.
+- `costo`: la incrustación de gobCL queda sin verificación válida; una tarea más en el encargo siguiente.
+
+## ERR-35-13
+- `momento`: redacción del encargo s35b, criterio de M2.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log de s35b (R-48).
+- `que_paso`: pedí «0 textos superpuestos» en la sparkline sin exigir que las cifras conserven el orden vertical de sus valores; la regla de choque cumplió el criterio y dejó 627 pares con el orden invertido.
+- `regla_violada`: encargo_autonomo v1.6 §2.6 (el criterio mide el riesgo real) y SETTINGS §1.2.6.
+- `causa_raiz`: traduje «legible» a «sin superposición» y no pensé en qué hace cualquier regla que mueve cifras para evitar choques.
+- `salvaguarda_presente`: encargo_autonomo v1.6.
+- `patron`: PAT-13, criterio que mide un proxy (sin superposición) y no la lectura correcta del dato.
+- `gatillo_observable`: iteracion-sin-criterio: un criterio sobre posición de rótulos de datos sin condición de orden.
+- `intentos_previos`: 0.
+- `costo`: tres intentos de reparación sin éxito, veredicto OBSERVADO y push retenido.
+
+## ERR-35-14
+- `momento`: redacción del encargo s35b, lista de autorizaciones.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log de s35b (FASE R, R-48).
+- `que_paso`: la lista cerrada no daba una vía para descartar un intento de reparación sin commitear; el ejecutor usó `git checkout -- 30_procesamiento/33_motor_template.html`, que no estaba autorizado.
+- `regla_violada`: encargo_autonomo v1.6 §2.1: todo comando de reversión figura en la lista atado a su condición.
+- `causa_raiz`: copié la regla «toda reversión es `git revert` de un commit propio» sin prever intentos que no llegan a commit.
+- `salvaguarda_presente`: encargo_autonomo v1.6.
+- `patron`: PAT-07, restricción del instrumento no propagada al diseño del ciclo de reparación.
+- `gatillo_observable`: encargos-premisas: un ciclo de hasta tres intentos sin comando autorizado para volver al estado commiteado entre intentos.
+- `intentos_previos`: 0.
+- `costo`: una operación destructiva fuera de la lista (sin daño medido: el archivo volvió al estado commiteado).
+
+## ERR-35-15
+- `momento`: redacción del encargo s35b, tarea G (vendorizar los `.otf` de gobCL en `10_utils/fuentes/`).
+- `disparador`: asistente lo señaló espontáneamente, al evaluar Q-35 del log de s35b.
+- `que_paso`: ordené versionar tres fuentes de terceros en un repositorio público (Apache 2.0) sin verificar su licencia de redistribución; no hay licencia escrita que lo permita y dos caras declaran fsType=4.
+- `regla_violada`: POLITICA §6 (gobernanza prevalece sobre la autonomía) y `20260611_decision_licencia_apache.md` (el código publicado queda bajo Apache 2.0; lo de terceros requiere su propia licencia).
+- `causa_raiz`: tomé la decisión D33-4 (migrar a gobCL) como autorización para redistribuir los archivos, y el precedente de la suite (que ya los incrusta) como prueba de que era lícito.
+- `salvaguarda_presente`: POLITICA y la decisión de licencia del proyecto.
+- `patron`: PAT-01, premisa de gobernanza sin fuente primaria.
+- `gatillo_observable`: afirmar-sin-leer: un archivo de terceros agregado al árbol versionado sin una fuente leída sobre su licencia.
+- `intentos_previos`: 0.
+- `costo`: el commit `271c04f` (sin publicar) redistribuiría las fuentes; una decisión del titular y posiblemente reescribir historia local antes del push.
