@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Referente de trayectorias</title>
+<style>
+:root{--ink:#1C1212;--ink2:#4A3F45;--paper:#FFFFFF;--cream:#FFFBEF;--line:#E7DFC9;--ref:#8A8478;--b:#0062A0;--ac:#A8421C;--grid:#ECE3CF;--th:#FBF6E8;--code:#F4E9CC}
+body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:28px;margin:0 0 4px;line-height:1.2}
+h2{font-size:20px;margin:36px 0 8px}
+.sub{color:var(--ink2);margin:0 0 20px;font-size:14px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:12px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.k{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px}
+.k b{display:block;font-size:26px;font-variant-numeric:tabular-nums}
+.k span{font-size:13px;color:var(--ink2)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;background:var(--th);vertical-align:bottom}
+.tw{overflow-x:auto}
+.ch{width:100%;height:auto;display:block}
+.gr{stroke:var(--grid)}
+.ax{font-size:11px;fill:var(--ink2)}
+.la{fill:none;stroke:var(--ref);stroke-width:2;stroke-dasharray:5 3}
+.lap{fill:var(--ref)}
+.lb{fill:none;stroke:var(--b);stroke-width:2}
+.lbp{fill:var(--b)}
+.lg{font-size:13px;color:var(--ink2);display:flex;gap:18px;flex-wrap:wrap;margin:6px 0}
+.sw{display:inline-block;width:18px;height:0;border-top:2px dashed var(--ref);vertical-align:middle;margin-right:6px}
+.sw.b{border-top:2px solid var(--b)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+.mq{border:1px dashed var(--line-strong,#C8BDA0);border-radius:8px;padding:12px 14px;background:var(--paper)}
+.mq h3{margin:0 0 8px;font-size:16px}
+.leg{font-size:13px;padding:8px 10px;background:var(--th);border-radius:6px}
+.rf{display:inline-block;width:9px;height:9px;transform:rotate(45deg);border:1.5px dashed var(--ref);margin-right:8px}
+.rf.b{border-color:var(--b)}
+.nota{font-size:13px;color:var(--ink2)}
+.alerta{border-left:4px solid var(--ac)}
+.rec{border-left:4px solid var(--b)}
+code{font-size:13px;background:var(--code);padding:1px 4px;border-radius:3px}
+</style>
+</head>
+<body>
+<main>
+<h1>Referente de la vista de trayectorias</h1>
+<p class="sub">Contexto para decidir el pendiente 1 de v34 (futuros traspasos, referente y rótulo). Sesión 35, 2026-09-24. Cifras medidas sobre <code>simce_rbd.parquet</code>, <code>sleps_chile.parquet</code> y <code>dim_slep_comunas.csv</code> de la estación, con la regla de filas del motor (D33-1) y el redondeo entero (D32-3). Nada de lo publicado cambia.</p>
+
+<h2>1. Qué se decide</h2>
+<div class="card"><p style="margin:0">El referente de la vista es hoy el grupo A: establecimientos municipales fuera del catálogo de Servicios Locales y con resultado en 2014 (D32-2). La alternativa B es un referente dinámico: los municipales fuera del catálogo que hay en cada año, sin ancla. Se decide cuál usar, qué rótulo lleva la leyenda y qué pasa cuando lleguen los Simce de 2027 en adelante, con las tres olas de traspaso que faltan.</p></div>
+
+<h2>2. Las cifras</h2>
+<div class="kpis">
+<div class="k"><b>1.299</b><span>establecimientos en A, anclados en 2014</span></div>
+<div class="k"><b>1.612</b><span>establecimientos que pasan por B en algún año</span></div>
+<div class="k"><b>313</b><span>de B no tienen resultado en 2014 y entran después</span></div>
+<div class="k"><b>0</b><span>de A traspasados dentro de la serie 2014 a 2025</span></div>
+</div>
+<div class="card tw"><table>
+<thead><tr><th>Año</th><th>A con resultado</th><th>A en 4° básico Lectura (el número de la leyenda)</th><th>B con resultado</th><th>De B fuera de A</th><th>% Adecuado A</th><th>% Adecuado B</th><th>A − B (puntos)</th><th>% Adecuado A, 4° Lectura</th><th>% Adecuado B, 4° Lectura</th></tr></thead>
+<tbody><tr><td>2014</td><td>1.299</td><td>1.124</td><td>1.299</td><td>0</td><td>20,5</td><td>20,5</td><td>0,0</td><td>29,4</td><td>29,4</td></tr><tr><td>2015</td><td>1.183</td><td>1.011</td><td>1.311</td><td>128</td><td>19,4</td><td>17,8</td><td>1,6</td><td>29,7</td><td>29,6</td></tr><tr><td>2016</td><td>1.182</td><td>1.007</td><td>1.338</td><td>156</td><td>20,7</td><td>18,9</td><td>1,8</td><td>31,2</td><td>31,2</td></tr><tr><td>2017</td><td>1.210</td><td>1.035</td><td>1.383</td><td>173</td><td>21,9</td><td>20,1</td><td>1,8</td><td>34,2</td><td>34,0</td></tr><tr><td>2018</td><td>1.214</td><td>1.048</td><td>1.390</td><td>176</td><td>22,8</td><td>21,1</td><td>1,7</td><td>38,2</td><td>38,1</td></tr><tr><td>2022</td><td>1.172</td><td>1.000</td><td>1.362</td><td>190</td><td>18,6</td><td>17,4</td><td>1,2</td><td>33,7</td><td>33,6</td></tr><tr><td>2023</td><td>1.175</td><td>994</td><td>1.357</td><td>182</td><td>21,6</td><td>20,0</td><td>1,6</td><td>37,0</td><td>36,9</td></tr><tr><td>2024</td><td>1.198</td><td>1.020</td><td>1.398</td><td>200</td><td>25,2</td><td>23,4</td><td>1,8</td><td>43,0</td><td>42,9</td></tr><tr><td>2025</td><td>1.191</td><td>1.015</td><td>1.396</td><td>205</td><td>25,4</td><td>23,7</td><td>1,7</td><td>43,9</td><td>43,8</td></tr></tbody></table>
+<p class="nota" style="margin-bottom:0">«% Adecuado» sin nivel combina 4° básico y II medio con Lectura y Matemática (serie «todo»). Corresponde al panel de todos los establecimientos con resultado y al total de grupos socioeconómicos. Entre 2018 y 2022 no hubo medición.</p></div>
+
+<div class="grid2">
+<div class="card"><strong>% Adecuado, todos los niveles</strong><div class="lg"><span><i class="sw"></i>A, anclado en 2014</span><span><i class="sw b"></i>B, municipales de cada año</span></div><svg viewBox="0 0 560 230" role="img" aria-label="Porcentaje en Adecuado, todos los niveles" class="ch"><line x1="44" x2="544" y1="196.0" y2="196.0" class="gr"/><text x="38" y="200.0" class="ax" text-anchor="end">15</text><line x1="44" x2="544" y1="138.0" y2="138.0" class="gr"/><text x="38" y="142.0" class="ax" text-anchor="end">20</text><line x1="44" x2="544" y1="80.0" y2="80.0" class="gr"/><text x="38" y="84.0" class="ax" text-anchor="end">25</text><line x1="44" x2="544" y1="22.0" y2="22.0" class="gr"/><text x="38" y="26.0" class="ax" text-anchor="end">30</text><text x="54.0" y="218" class="ax" text-anchor="middle">2014</text><text x="107.3" y="218" class="ax" text-anchor="middle">2015</text><text x="160.7" y="218" class="ax" text-anchor="middle">2016</text><text x="214.0" y="218" class="ax" text-anchor="middle">2017</text><text x="267.3" y="218" class="ax" text-anchor="middle">2018</text><text x="374.0" y="218" class="ax" text-anchor="middle">2022</text><text x="427.3" y="218" class="ax" text-anchor="middle">2023</text><text x="480.7" y="218" class="ax" text-anchor="middle">2024</text><text x="534.0" y="218" class="ax" text-anchor="middle">2025</text><text x="320.7" y="16" class="ax" text-anchor="middle">sin medición</text><polyline points="54.0,132.2 107.3,145.0 160.7,129.9 214.0,116.0 267.3,105.5" class="la"/><polyline points="374.0,154.2 427.3,119.4 480.7,77.7 534.0,75.4" class="la"/><circle cx="54.0" cy="132.2" r="3.5" class="lap"><title>2014: 20,5%</title></circle><circle cx="107.3" cy="145.0" r="3.5" class="lap"><title>2015: 19,4%</title></circle><circle cx="160.7" cy="129.9" r="3.5" class="lap"><title>2016: 20,7%</title></circle><circle cx="214.0" cy="116.0" r="3.5" class="lap"><title>2017: 21,9%</title></circle><circle cx="267.3" cy="105.5" r="3.5" class="lap"><title>2018: 22,8%</title></circle><circle cx="374.0" cy="154.2" r="3.5" class="lap"><title>2022: 18,6%</title></circle><circle cx="427.3" cy="119.4" r="3.5" class="lap"><title>2023: 21,6%</title></circle><circle cx="480.7" cy="77.7" r="3.5" class="lap"><title>2024: 25,2%</title></circle><circle cx="534.0" cy="75.4" r="3.5" class="lap"><title>2025: 25,4%</title></circle><polyline points="54.0,132.2 107.3,163.5 160.7,150.8 214.0,136.8 267.3,125.2" class="lb"/><polyline points="374.0,168.2 427.3,138.0 480.7,98.6 534.0,95.1" class="lb"/><circle cx="54.0" cy="132.2" r="3.5" class="lbp"><title>2014: 20,5%</title></circle><circle cx="107.3" cy="163.5" r="3.5" class="lbp"><title>2015: 17,8%</title></circle><circle cx="160.7" cy="150.8" r="3.5" class="lbp"><title>2016: 18,9%</title></circle><circle cx="214.0" cy="136.8" r="3.5" class="lbp"><title>2017: 20,1%</title></circle><circle cx="267.3" cy="125.2" r="3.5" class="lbp"><title>2018: 21,1%</title></circle><circle cx="374.0" cy="168.2" r="3.5" class="lbp"><title>2022: 17,4%</title></circle><circle cx="427.3" cy="138.0" r="3.5" class="lbp"><title>2023: 20,0%</title></circle><circle cx="480.7" cy="98.6" r="3.5" class="lbp"><title>2024: 23,4%</title></circle><circle cx="534.0" cy="95.1" r="3.5" class="lbp"><title>2025: 23,7%</title></circle></svg></div>
+<div class="card"><strong>% Adecuado, 4° básico Lectura</strong><div class="lg"><span><i class="sw"></i>A</span><span><i class="sw b"></i>B</span></div><svg viewBox="0 0 560 230" role="img" aria-label="Porcentaje en Adecuado, 4° básico Lectura" class="ch"><line x1="44" x2="544" y1="196.0" y2="196.0" class="gr"/><text x="38" y="200.0" class="ax" text-anchor="end">25</text><line x1="44" x2="544" y1="161.2" y2="161.2" class="gr"/><text x="38" y="165.2" class="ax" text-anchor="end">30</text><line x1="44" x2="544" y1="126.4" y2="126.4" class="gr"/><text x="38" y="130.4" class="ax" text-anchor="end">35</text><line x1="44" x2="544" y1="91.6" y2="91.6" class="gr"/><text x="38" y="95.6" class="ax" text-anchor="end">40</text><line x1="44" x2="544" y1="56.8" y2="56.8" class="gr"/><text x="38" y="60.8" class="ax" text-anchor="end">45</text><line x1="44" x2="544" y1="22.0" y2="22.0" class="gr"/><text x="38" y="26.0" class="ax" text-anchor="end">50</text><text x="54.0" y="218" class="ax" text-anchor="middle">2014</text><text x="107.3" y="218" class="ax" text-anchor="middle">2015</text><text x="160.7" y="218" class="ax" text-anchor="middle">2016</text><text x="214.0" y="218" class="ax" text-anchor="middle">2017</text><text x="267.3" y="218" class="ax" text-anchor="middle">2018</text><text x="374.0" y="218" class="ax" text-anchor="middle">2022</text><text x="427.3" y="218" class="ax" text-anchor="middle">2023</text><text x="480.7" y="218" class="ax" text-anchor="middle">2024</text><text x="534.0" y="218" class="ax" text-anchor="middle">2025</text><text x="320.7" y="16" class="ax" text-anchor="middle">sin medición</text><polyline points="54.0,165.4 107.3,163.3 160.7,152.8 214.0,132.0 267.3,104.1" class="la"/><polyline points="374.0,135.4 427.3,112.5 480.7,70.7 534.0,64.5" class="la"/><circle cx="54.0" cy="165.4" r="3.5" class="lap"><title>2014: 29,4%</title></circle><circle cx="107.3" cy="163.3" r="3.5" class="lap"><title>2015: 29,7%</title></circle><circle cx="160.7" cy="152.8" r="3.5" class="lap"><title>2016: 31,2%</title></circle><circle cx="214.0" cy="132.0" r="3.5" class="lap"><title>2017: 34,2%</title></circle><circle cx="267.3" cy="104.1" r="3.5" class="lap"><title>2018: 38,2%</title></circle><circle cx="374.0" cy="135.4" r="3.5" class="lap"><title>2022: 33,7%</title></circle><circle cx="427.3" cy="112.5" r="3.5" class="lap"><title>2023: 37,0%</title></circle><circle cx="480.7" cy="70.7" r="3.5" class="lap"><title>2024: 43,0%</title></circle><circle cx="534.0" cy="64.5" r="3.5" class="lap"><title>2025: 43,9%</title></circle><polyline points="54.0,165.4 107.3,164.0 160.7,152.8 214.0,133.4 267.3,104.8" class="lb"/><polyline points="374.0,136.1 427.3,113.2 480.7,71.4 534.0,65.2" class="lb"/><circle cx="54.0" cy="165.4" r="3.5" class="lbp"><title>2014: 29,4%</title></circle><circle cx="107.3" cy="164.0" r="3.5" class="lbp"><title>2015: 29,6%</title></circle><circle cx="160.7" cy="152.8" r="3.5" class="lbp"><title>2016: 31,2%</title></circle><circle cx="214.0" cy="133.4" r="3.5" class="lbp"><title>2017: 34,0%</title></circle><circle cx="267.3" cy="104.8" r="3.5" class="lbp"><title>2018: 38,1%</title></circle><circle cx="374.0" cy="136.1" r="3.5" class="lbp"><title>2022: 33,6%</title></circle><circle cx="427.3" cy="113.2" r="3.5" class="lbp"><title>2023: 36,9%</title></circle><circle cx="480.7" cy="71.4" r="3.5" class="lbp"><title>2024: 42,9%</title></circle><circle cx="534.0" cy="65.2" r="3.5" class="lbp"><title>2025: 43,8%</title></circle></svg></div>
+</div>
+<p class="nota">Desde 2015, B queda bajo A todos los años: entre 1,2 y 1,8 puntos en la serie combinada, sin que cambie el aprendizaje de ningún establecimiento de A. En 4° básico Lectura la diferencia va de 0,0 a 0,2 puntos. La brecha la producen los establecimientos que entran después de 2014, y se concentra en los niveles y pruebas fuera de 4° básico Lectura.</p>
+
+<h2>3. Por qué cambia el número de A</h2>
+<div class="card"><p style="margin-top:0">Ningún traspaso le ha quitado establecimientos a A. Sus 1.299 establecimientos están en comunas de las olas 2027 (479), 2028 (407) y 2029 (408), salvo 5 ubicados en comunas de olas que ya ocurrieron (ver §6). En 4° básico Lectura, el número de la leyenda va de 994 a 1.124. Cuenta los establecimientos con resultado publicable en ese año y nivel (A34-5), así que varía aunque el grupo sea el mismo.</p>
+<p style="margin-bottom:0">La vista ya tiene un panel de composición fija («con los nueve años»): en él entran 993 establecimientos de A en la serie combinada y 794 en 4° básico Lectura.</p></div>
+
+<h2>4. Qué pasará con los Simce de 2027 a 2029</h2>
+<div class="card"><p style="margin-top:0">El código actual solo suma al referente las filas municipales (<code>cod_depe2 == "1"</code>). Cuando un establecimiento pasa a un Servicio Local cambia su dependencia y sale del referente, sin tocar el código. Por eso, con A o con B, el referente se achica en cada ola:</p>
+<div class="tw"><table><thead><tr><th>Datos desde</th><th>Olas ocurridas</th><th>Quedan en A</th><th>Servicios Locales nuevos</th></tr></thead><tbody>
+<tr><td>2025 (hoy)</td><td>hasta 2026</td><td>1.299</td><td>0</td></tr>
+<tr><td>2027</td><td>2027</td><td>820</td><td>13</td></tr>
+<tr><td>2028</td><td>2027 y 2028</td><td>413</td><td>11</td></tr>
+<tr><td>2029</td><td>las tres</td><td>5</td><td>13</td></tr></tbody></table></div>
+<p>Con la ola de 2029 el referente <strong>se acaba</strong>: quedan 5 establecimientos, muy pocos para comparar. Cada ola que sale también cambia la composición del grupo. Esto es lo que puede saltar la serie solo por ese cambio:</p>
+<div class="tw"><table><thead><tr><th>Año</th><th>A completo</th><th>A sin la ola 2027</th><th>Solo la ola 2029</th><th>4° Lectura: A completo</th><th>4° Lectura: sin la ola 2027</th><th>4° Lectura: solo la ola 2029</th></tr></thead><tbody><tr><td>2014</td><td>20,5</td><td>20,6</td><td>23,6</td><td>29,4</td><td>30,4</td><td>33,2</td></tr><tr><td>2015</td><td>19,4</td><td>19,4</td><td>22,2</td><td>29,7</td><td>30,4</td><td>33,7</td></tr><tr><td>2016</td><td>20,7</td><td>20,6</td><td>23,1</td><td>31,2</td><td>31,9</td><td>34,7</td></tr><tr><td>2017</td><td>21,9</td><td>22,0</td><td>24,5</td><td>34,2</td><td>35,1</td><td>38,7</td></tr><tr><td>2018</td><td>22,8</td><td>23,1</td><td>25,6</td><td>38,2</td><td>39,0</td><td>42,4</td></tr><tr><td>2022</td><td>18,6</td><td>18,5</td><td>20,3</td><td>33,7</td><td>33,9</td><td>36,9</td></tr><tr><td>2023</td><td>21,6</td><td>21,8</td><td>24,4</td><td>37,0</td><td>37,5</td><td>40,5</td></tr><tr><td>2024</td><td>25,2</td><td>25,0</td><td>27,3</td><td>43,0</td><td>44,1</td><td>47,4</td></tr><tr><td>2025</td><td>25,4</td><td>25,5</td><td>27,7</td><td>43,9</td><td>44,8</td><td>47,1</td></tr></tbody></table></div>
+<p class="nota" style="margin-bottom:0">Cuando solo queda la ola 2029, el referente sube entre 1,7 y 3,1 puntos en la serie combinada, y entre 3,2 y 4,5 en 4° básico Lectura. Es el mismo año con otras escuelas. Si la vista no lo marca, se lee como una mejora del aprendizaje.</p></div>
+
+<h2>5. Maquetas de la leyenda</h2>
+<div class="grid2">
+<div class="mq"><h3>Opción A: grupo fijo con rótulo explícito</h3>
+<div class="leg"><i class="rf"></i>Referente: 1.299 municipales que se traspasan entre 2027 y 2029 · con resultado en 2025: 1.015</div>
+<p class="nota">Nota metodológica: «El grupo es el mismo todos los años. El número después del punto indica cuántos tienen resultado publicado en el año y la prueba elegidos». Con datos de 2027: «820 de 1.299 aún municipales». En la serie, cada ola que sale lleva una marca vertical rotulada («sale la ola 2027»).</p></div>
+<div class="mq"><h3>Opción B: municipales de cada año</h3>
+<div class="leg"><i class="rf b"></i>Referente: municipales fuera de los Servicios Locales en 2025 · 1.143</div>
+<p class="nota">Nota metodológica: «Su composición cambia cada año: suma los establecimientos que abren o empiezan a rendir y resta los que cierran o se traspasan». Hay que retirar de las notas la frase «son las mismas escuelas en los nueve años». La diferencia de 1,2 a 1,8 puntos frente a A pasa a ser parte de la serie.</p></div>
+</div>
+
+<h2>6. Dato a verificar</h2>
+<div class="card alerta"><p style="margin:0">5 establecimientos de A están en comunas que el catálogo de <code>slep_central_datos</code> asigna a olas ya ocurridas: uno en El Bosque (del Pino, 2025), uno en Villa Alemana (Marga Marga, 2026) y tres en Chillán (Valle Diguillín, 2026). Sin embargo, no figuran en <code>sleps_chile.parquet</code> y en 2025 siguen siendo municipales. Puede que falten en el catálogo del motor o que sean casos que siguen como municipales. No cambian la decisión.</p></div>
+
+<h2>7. Recomendación</h2>
+<div class="card rec"><p style="margin:0"><strong>Opción A con rótulo explícito, y una marca en la serie para cada ola que sale.</strong> B mueve el nivel del referente entre 1,2 y 1,8 puntos sin que cambie el aprendizaje, que es justo la distorsión que D34-4 pide evitar. A ya se achica con cada ola en cuanto llegan los datos, que es el comportamiento esperado. Quedan dos decisiones aparte: cuándo entran a la vista los 37 Servicios Locales nuevos (cohortes 2027 a 2029) y qué muestra la vista cuando el referente se acabe en 2029.</p></div>
+</main>
+</body>
+</html>
