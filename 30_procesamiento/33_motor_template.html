@@ -757,7 +757,11 @@ body {
   border-radius: var(--radius-3);
   padding: 28px; box-shadow: var(--shadow-1);
 }
-.notes-grid { columns: 3 280px; column-gap: 36px; }
+/* Cada nota es inline-block: la grilla queda como un solo bloque con una línea
+   por nota, y orphans/widows (2 por omisión) impiden una columna con una sola
+   nota. Con cinco notas, la tercera columna quedaba vacía (pendiente 5 de v34);
+   con 1, el balanceo reparte las notas en las tres columnas. */
+.notes-grid { columns: 3 280px; column-gap: 36px; orphans: 1; widows: 1; }
 .notes-grid .note { break-inside: avoid; margin-bottom: 24px; display: inline-block; width: 100%; }
 .note-stack { display: contents; }
 @media (max-width: 900px) { .notes-grid { columns: 1; } }
