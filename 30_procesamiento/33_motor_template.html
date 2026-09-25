@@ -383,6 +383,8 @@ body {
 .hint-signo {
   display: inline-flex; justify-content: center; width: 14px;
   font-weight: 700;
+  /* gobCL dibuja «†» igual que «+» (R-47): el signo usa la familia del sistema. */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 .hint-asterisk {
   display: inline-flex; align-items: center;
@@ -2252,16 +2254,19 @@ code {
             .attr("fill", COLOR_ADEC)
             .attr("opacity", opacity * 0.9)
             .style("pointer-events", "none")
-            .text(Math.round(s.pct) + "%" + (isLowN ? ASTERISCO_UNICO : ""));
+            .text(Math.round(s.pct) + "%")
+            .call(conMarcaUnico, isLowN);
+          // El rótulo "traspaso" se revisa para toda cifra, no solo para la que
+          // ya chocó con la anterior, y la revisión se repite porque subir sobre
+          // uno puede volver a tocar el otro (auditoría s35b, R-51: con la marca
+          // en la familia del sistema, 4 cifras quedaban sobre él en el barrido).
           let caja = cifra.node().getBBox();
-          if (cajaCifraPrevia && chocan(caja, cajaCifraPrevia)) {
-            [cajaCifraPrevia, cajaTraspaso].forEach(o => {
-              if (o && chocan(caja, o)) {
-                labelY -= caja.y + caja.height - o.y + 0.5;
-                cifra.attr("y", labelY);
-                caja = cifra.node().getBBox();
-              }
-            });
+          for (let vuelta = 0; vuelta < 4; vuelta++) {
+            const o = [cajaCifraPrevia, cajaTraspaso].find(b => b && chocan(caja, b));
+            if (!o) break;
+            labelY -= caja.y + caja.height - o.y + 0.5;
+            cifra.attr("y", labelY);
+            caja = cifra.node().getBBox();
           }
           cajaCifraPrevia = caja;
           g.append("text")
@@ -2309,6 +2314,15 @@ code {
     // nombre de la constante se conserva.
     const ASTERISCO_UNICO = "†";
     const NOTA_UNICO = ASTERISCO_UNICO + " Un solo establecimiento";
+    // gobCL dibuja «†» igual que «+» (auditoría del encargo s35b, R-47): «42%†»
+    // se leía «42%+». La marca va en su propio <tspan> con la familia del
+    // sistema, cuya daga no se confunde con el signo más; el resto de la cifra
+    // sigue en FONT_SVG. La leyenda usa la misma familia (.hint-signo).
+    const FONT_SIGNO = "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif";
+    const conMarcaUnico = (sel, conMarca) => {
+      if (conMarca) sel.append("tspan").attr("font-family", FONT_SIGNO).text(ASTERISCO_UNICO);
+      return sel;
+    };
     // Regla única de rotulado (la de slep_idps s29 y la del panorama s29): una
     // franja lleva su cifra adentro solo si la cifra cabe entera; si no, la cifra
     // baja completa bajo el año, con la inicial del nivel en su color. Nunca una
@@ -2381,9 +2395,8 @@ code {
           if (xPos == null) return;
           const bw = x.bandwidth();
           // Un solo establecimiento: barras en opacidad plena y la marca
-          // pegada a cada cifra del punto (ver ASTERISCO_UNICO).
+          // pegada a cada cifra del punto (ver ASTERISCO_UNICO y conMarcaUnico).
           const isLowN = s.n_estab === 1;
-          const marcaUnico = isLowN ? ASTERISCO_UNICO : "";
 
           const stacked = showElemInsuf && s.pct < 100;
           const rescatadas = [];
@@ -2423,7 +2436,8 @@ code {
                     .attr("font-weight", 700)
                     .attr("fill", seg.fill === COLOR_ELEM ? TINTA_SOBRE_ELEM : "#FFFFFF")
                     .style("pointer-events", "none")
-                    .text(fmtPctShort(seg.val) + marcaUnico);
+                    .text(fmtPctShort(seg.val))
+                    .call(conMarcaUnico, isLowN);
                 } else {
                   rescatadas.push(seg);
                 }
@@ -2456,7 +2470,8 @@ code {
               .attr("font-weight", 700)
               .attr("fill", stacked ? "#FFFFFF" : COLOR_ADEC)
               .style("pointer-events", "none")
-              .text(fmtPctShort(s.pct) + marcaUnico);
+              .text(fmtPctShort(s.pct))
+              .call(conMarcaUnico, isLowN);
           } else {
             rescatadas.unshift({ val: s.pct, fill: COLOR_ADEC, sigla: "A" });
           }
@@ -2473,7 +2488,8 @@ code {
               .attr("font-weight", 700)
               .attr("fill", tintaNivel(seg.fill))
               .style("pointer-events", "none")
-              .text(seg.sigla + " " + fmtPct(seg.val) + marcaUnico);
+              .text(seg.sigla + " " + fmtPct(seg.val))
+              .call(conMarcaUnico, isLowN);
           });
 
           g.append("text")
@@ -2509,7 +2525,8 @@ code {
             .attr("font-size", FS_SVG.barras.notaUnico)
             .attr("font-weight", 500)
             .attr("fill", "#0A3A5C")
-            .text(NOTA_UNICO);
+            .call(conMarcaUnico, true)
+            .append("tspan").text(NOTA_UNICO.slice(ASTERISCO_UNICO.length));
         }
       }, [entity.id, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
       return <svg ref={ref} className="bars-svg" />;
