@@ -5,6 +5,8 @@
 
 ## D32-2. El referente y la nube conservan el ancla de 2014
 
+> **Ampliada por D35-1** (`20260924_decision_referente_traspasos.md`, sesión 35): el universo se mantiene; el rótulo de la leyenda y la marca de ola se fijan allí.
+
 **Contexto.** El traspaso v31 diagnosticó (B31-4) que el mockup de la sesión 30 excluía el grupo
 socioeconómico alto del total `T` de la nube y del referente, y fijó como criterio que Las Condes,
 4° básico Lectura 2023, diera 344 evaluados. Al reconstruir la capa de datos en R, la sesión 32 midió que
