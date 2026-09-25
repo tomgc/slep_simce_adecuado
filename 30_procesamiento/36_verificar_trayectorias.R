@@ -18,7 +18,9 @@
 # marca de ola del referente de la decisión D35-1 (misma decisión), y R5 y R6
 # (encargo pendientes s35b), el conteo del referente por ola con el directorio
 # de la enmienda D35-4; el mismo encargo extiende a las unidades futuras el
-# recuento independiente de D9, con su control positivo D9f.
+# recuento independiente de D9, con su control positivo D9f. R7 (encargo
+# pendientes s35c, Q-26) comprueba que el tooltip del referente dice sus
+# cifras desde DATA.
 # Cada prueba mide la afirmación, no un síntoma cercano, y las de ausencia
 # llevan control positivo.
 #
@@ -26,7 +28,7 @@
 #           20_insumos/auxiliares/dim_slep_comunas.csv
 #           40_salidas/trayectorias_traspasos.html (correr antes el paso 36)
 #           50_documentacion/andamios/mockup_trayectoria_traspasos.html
-# Requiere: chromote y Chrome (R2, R4 y R6 leen la vista en el navegador).
+# Requiere: chromote y Chrome (R2, R4, R6 y R7 leen la vista en el navegador).
 # Salida:   el informe en consola, una línea por prueba. No escribe archivos en
 #           el árbol: el log del encargo o de la sesión lo recoge literal (un
 #           CSV en el árbol sería un archivo de datos sin autorizar, I8). R4 y
@@ -968,7 +970,83 @@ r6 <- evaluar({
 comprobar("R6", "Con la copia de R3, la leyenda trae el rótulo de D35-4 y «807 de 1.282 aún municipales»",
           r6$ok, r6$detalle)
 
-# Cierra el navegador que abrió chromote para R2, R4 y R6.
+# ---- R7. El tooltip del referente dice sus cifras desde DATA (Q-26) ----------
+# La vista escrita, en su estado inicial, con el cursor sobre la marca visible
+# del referente (un mousemove sobre el elemento que el navegador encuentra en el
+# centro de la marca, como el paso del cursor): el tooltip se titula «Referente
+# municipal» y su descripción trae el año ancla (el primero de la serie), el
+# tamaño del grupo (meta$REF$cat), cuántos están en el directorio y se traspasan
+# (meta$REF$vig), con el rango de las olas que traspasan alguno (el mismo del
+# rótulo), y cuántos cerraron antes de su traspaso (cat - vig, enmienda D35-4);
+# conserva «Conjunto fijo; la marca no usa la escala de tamaño». Todas las
+# cifras de la descripción salen de DATA: no hay otras. Hasta el encargo
+# pendientes s35c decía «Municipales en 2014 que no están en los 36 Servicios
+# Locales del catálogo: los traspasan las olas siguientes», con el año escrito
+# en la plantilla y sin los cerrados (Q-26). R7 se escribió antes del código.
+# Control positivo: la misma descripción no pasa con un cerrado de más.
+
+TEXTO_CONJUNTO_FIJO <- "Conjunto fijo; la marca no usa la escala de tamaño"
+# Marca el tooltip del referente: centra en pantalla su marca visible y mueve el
+# cursor sobre el elemento que el navegador encuentra en su centro.
+JS_HOVER_REF <- paste0(
+  "(function(){window.__hoverRef=false;",
+  "var p=[].filter.call(document.querySelectorAll('#g [data-ref]'),function(c){",
+  "return +c.getAttribute('opacity')>.3;})[0];if(!p)return false;",
+  "p.scrollIntoView({block:'center',inline:'center'});",
+  "var b=p.getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2,t=document.elementFromPoint(x,y);",
+  "if(!t||t.closest('svg')!==document.getElementById('g'))return false;",
+  "t.dispatchEvent(new MouseEvent('mousemove',{bubbles:true,clientX:x,clientY:y}));",
+  "window.__hoverRef=true;return true;})()"
+)
+JS_TOOLTIP <- paste0(
+  "{hover: window.__hoverRef === true, on: document.getElementById('tip').classList.contains('on'), ",
+  "titulo: (document.querySelector('#tip b') || {textContent: ''}).textContent, ",
+  "kv: Array.from(document.querySelectorAll('#tip .kv')).map(k => k.textContent)}"
+)
+# Cifras de un texto con el formato de la vista (miles con punto), en orden.
+cifras_texto <- function(x) {
+  m <- regmatches(x, gregexpr("[0-9]+(\\.[0-9]{3})*", x))[[1]]
+  sort(as.integer(gsub(".", "", m, fixed = TRUE)))
+}
+# La descripción del referente trae cada cifra de DATA en su frase y ninguna otra.
+tooltip_ref_ok <- function(texto, ref, anio_ancla, cerrados) {
+  olas <- olas_de(ref)
+  olas <- sort(as.integer(names(olas)[olas > 0]))
+  rango <- if (length(olas) > 1) sprintf("se traspasan entre %d y %d", min(olas), max(olas)) else
+    if (length(olas) == 1) sprintf("se traspasan en %d", olas) else "por traspasar"
+  partes <- c(sprintf("%s municipales en %s", fmt_entero(ref$cat), anio_ancla),
+              sprintf("%s %s", fmt_entero(ref$vig), rango),
+              if (cerrados > 0) sprintf("%s %s antes de su traspaso", fmt_entero(cerrados),
+                                        if (cerrados == 1) "cerró" else "cerraron"),
+              TEXTO_CONJUNTO_FIJO)
+  cifras_esp <- sort(as.integer(c(ref$cat, anio_ancla, ref$vig,
+                                  if (length(olas) > 1) range(olas) else olas,
+                                  if (cerrados > 0) cerrados)))
+  all(vapply(partes, grepl, logical(1), x = texto, fixed = TRUE)) &&
+    identical(cifras_texto(texto), cifras_esp)
+}
+r7 <- evaluar({
+  ref  <- exigir(DATA_T)$meta[[ID_REFERENTE]]
+  if (is.null(ref$vig)) stop("meta$REF no trae vig")
+  anio_ancla <- min(exigir(DATA_T)$anios)
+  cerrados   <- as.integer(ref$cat) - as.integer(ref$vig)
+  tt <- leer_vista(RUTA_HTML, JS_TOOLTIP, antes = JS_HOVER_REF)
+  descripcion <- if (length(tt$kv)) tt$kv[length(tt$kv)] else ""
+  control <- !tooltip_ref_ok(descripcion, ref, anio_ancla, cerrados + 1L)
+  list(ok = isTRUE(tt$hover) && isTRUE(tt$on) && identical(tt$titulo, NOM_REFERENTE) &&
+         tooltip_ref_ok(descripcion, ref, anio_ancla, cerrados) && control,
+       detalle = sprintf(paste0("cursor sobre la marca: %s; tooltip visible: %s; título «%s»; ",
+                                "esperado de DATA: ancla %s, cat %s, vig %s, cerrados %s, olas %s; ",
+                                "cifras del texto %s; descripción «%s»; control plantado detectado: %s"),
+                         isTRUE(tt$hover), isTRUE(tt$on), tt$titulo, anio_ancla,
+                         fmt_entero(ref$cat), fmt_entero(ref$vig), fmt_entero(cerrados),
+                         a_texto(olas_de(ref)),
+                         paste(cifras_texto(descripcion), collapse = "/"), descripcion, control))
+})
+comprobar("R7", "El tooltip del referente dice el año ancla, el tamaño, los que se traspasan y los cerrados desde DATA",
+          r7$ok, r7$detalle)
+
+# Cierra el navegador que abrió chromote para R2, R4, R6 y R7.
 if (requireNamespace("chromote", quietly = TRUE) && chromote::has_default_chromote_object()) {
   try(chromote::default_chromote_object()$close(), silent = TRUE)
 }
