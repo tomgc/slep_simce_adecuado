@@ -1101,6 +1101,13 @@ code {
   gap: 16px;
   align-items: start;
 }
+/* Pantallas angostas: bajo 540 px el mínimo de 460 px de la columna superaba
+   el ancho de la sección y la página desbordaba (pendiente 6 de v34). En una
+   sola columna la tarjeta toma el ancho disponible; entre 540 y 640 px el
+   resultado es el mismo que con la regla de arriba (una columna de 1fr). */
+@media (max-width: 640px) {
+  .panorama-grid { grid-template-columns: minmax(0, 1fr); }
+}
 .panorama-cell {
   background: var(--paper);
   border: 1px solid var(--border-1);
