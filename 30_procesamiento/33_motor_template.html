@@ -1954,6 +1954,26 @@ code {
     // estado no se oculta con mouseleave y muestra el botón de establecimientos.
     const _tt = { pinned: false };
 
+    // Tooltip dentro de la ventana (sesión 35; el traspaso v08 lo describía como
+    // hecho, pero el código versionado nunca lo tuvo). Se ubica después de llenarlo,
+    // porque su tamaño depende del contenido: a la derecha del punto y un poco más
+    // arriba; si se sale por la derecha, se voltea a la izquierda del punto; si se
+    // sale por abajo, sube; nunca queda a menos de TOOLTIP_DIMS.margen del borde.
+    const TOOLTIP_DIMS = { desplaz: 14, margen: 8 };
+    function ubicarTooltip(tip, ptX, ptY) {
+      const { desplaz, margen } = TOOLTIP_DIMS;
+      const ancho = tip.offsetWidth, alto = tip.offsetHeight;
+      const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+      let left = ptX + desplaz;
+      if (left + ancho > vw - margen) left = ptX - ancho - desplaz;
+      left = Math.max(margen, Math.min(left, vw - ancho - margen));
+      let top = ptY - desplaz;
+      if (top + alto > vh - margen) top = vh - alto - margen;
+      top = Math.max(margen, top);
+      tip.style.left = (left + window.scrollX) + "px";
+      tip.style.top  = (top + window.scrollY) + "px";
+    }
+
     function makeTooltip(entity, gse, nivel, prueba) {
       function populate(tip, s, yr, pinned) {
         tip.innerHTML = `
@@ -2078,10 +2098,9 @@ code {
         const ptX = svgRect.left + (e.offsetX !== undefined ? e.offsetX : e.layerX);
         const ptY = svgRect.top  + (e.offsetY !== undefined ? e.offsetY : e.layerY);
         tip.style.display = "block";
-        tip.style.left = (ptX + window.scrollX + 14) + "px";
-        tip.style.top  = (ptY + window.scrollY - 14) + "px";
 
         populate(tip, s, yr, false);
+        ubicarTooltip(tip, ptX, ptY);
       }
 
       function pin(e, s, yr, svgEl) {
@@ -2094,8 +2113,6 @@ code {
         const ptX = svgRect.left + (e.offsetX !== undefined ? e.offsetX : e.layerX);
         const ptY = svgRect.top  + (e.offsetY !== undefined ? e.offsetY : e.layerY);
         tip.style.display = "block";
-        tip.style.left = (ptX + window.scrollX + 14) + "px";
-        tip.style.top  = (ptY + window.scrollY - 14) + "px";
 
         // Overlay: clic fuera cierra el tooltip
         overlay.style.display = "block";
@@ -2108,6 +2125,7 @@ code {
         };
 
         populate(tip, s, yr, true);
+        ubicarTooltip(tip, ptX, ptY);
       }
 
       function hide() {
