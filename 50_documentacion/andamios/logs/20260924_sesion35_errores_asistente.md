@@ -181,3 +181,27 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: afirmar-sin-leer: un archivo de terceros agregado al árbol versionado sin una fuente leída sobre su licencia.
 - `intentos_previos`: 0.
 - `costo`: el commit `271c04f` (sin publicar) redistribuiría las fuentes; una decisión del titular y posiblemente reescribir historia local antes del push.
+
+## ERR-35-16
+- `momento`: redacción de `encargo_riesgos_s35d.md`, premisa y calibración de Q46.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log de s35d (R-30).
+- `que_paso`: escribí que «con las cohortes 2027-2029 la tabla se desplaza» y pedí calibrar con la 2029; solo la 2027 desborda y la calibración pedida no podía disparar.
+- `regla_violada`: SETTINGS §1.2.6, marcador de fuente tipo 4 (premisa de encargo) y encargo_autonomo v1.6 §2.6 (calibración que dispare).
+- `causa_raiz`: tomé el resumen del revisor («cohortes 2027-2029») como medición por cohorte sin leer la cifra por cohorte en el log de s35c.
+- `salvaguarda_presente`: SETTINGS y encargo_autonomo v1.6.
+- `patron`: PAT-01, premisa de encargo desde un resumen secundario.
+- `gatillo_observable`: encargos-premisas: una premisa sobre tres casos respaldada por una sola frase agregada.
+- `intentos_previos`: 0.
+- `costo`: una desviación declarada (D-Q46-a) y una duda (Q-50).
+
+## ERR-35-17
+- `momento`: redacción del encargo s35d, autorización 2 (Q40).
+- `disparador`: asistente lo señaló espontáneamente, al leer el log de s35d (D-Q40-a, R-35).
+- `que_paso`: autoricé solo `git update-index --chmod=-x`, que cambia el índice y no el archivo; el disco siguió ejecutable, el árbol habría quedado sucio y el ejecutor usó la autorización 3, que era para descartar intentos de reparación.
+- `regla_violada`: traspaso v34 §12, «⚠️ NO escribir en un encargo un comando que no se corrió antes».
+- `causa_raiz`: tomé la forma de la recomendación del revisor sin probar su efecto sobre el árbol de trabajo.
+- `salvaguarda_presente`: traspaso v34 §12.
+- `patron`: PAT-01, comando de encargo no ejecutado antes.
+- `gatillo_observable`: encargos-premisas: una autorización cuyo efecto sobre `git status` no se midió.
+- `intentos_previos`: 0.
+- `costo`: una autorización usada fuera de su propósito (sin efecto sobre el producto).

@@ -19,10 +19,11 @@ que abre la pestaña Panorama territorial (D33-2). La vista no se incrusta en el
 motor. Ninguna de las dos carga nada por red.
 
 - **URL pública:** https://tomgc.github.io/slep_simce_adecuado/
-- **Repo:** privado (`tomgc/slep_simce_adecuado`).
+- **Repo:** público (`tomgc/slep_simce_adecuado`; decisión `decisiones/20260611_decision_repo_publico.md`).
 - **Vista de trayectorias:** https://tomgc.github.io/slep_simce_adecuado/trayectorias.html
 - **Contenido expuesto:** solo `/docs/index.html` y `/docs/trayectorias.html`.
-  El código R, los xlsx de insumos y los traspasos permanecen privados.
+  El resto del repositorio también es público: código R, insumos públicos de la Agencia y documentación.
+  Lo que no se versiona es lo que excluye `.gitignore` (por ejemplo, el directorio oficial crudo).
 
 ## Gobernanza
 
@@ -60,8 +61,8 @@ cp 40_salidas/motor_comparacion.html docs/index.html
 cp 40_salidas/trayectorias_traspasos.html docs/trayectorias.html
 
 # 4. Verificación: sin cargas por red (ambos deben dar 0)
-grep -c 'src="http' docs/index.html
-grep -c 'src="http' docs/trayectorias.html
+grep -cE "src=[\"']?(https?:)?//" docs/index.html docs/trayectorias.html
+grep -c 'url(http' docs/index.html docs/trayectorias.html
 
 # 5. Verificación de gobernanza: solo deben aparecer los dos archivos de docs/
 git add docs/index.html docs/trayectorias.html
@@ -85,10 +86,12 @@ Abrir https://tomgc.github.io/slep_simce_adecuado/ y verificar:
 5. «Trayectorias de los Servicios Locales» abre la vista; desde ella,
    «Panorama territorial» abre el motor en esa pestaña y «Comparación entre
    territorios» en la comparación.
+6. Lo que sirve Pages es lo publicado: `curl -s https://tomgc.github.io/slep_simce_adecuado/ | md5` igual a
+   `md5 -q docs/index.html`, y lo mismo con `trayectorias.html` (Pages tarda 1 a 2 minutos en reconstruir).
 
 ## Optimización pendiente (opcional, no urgente)
 
-El HTML pesa ~15 MB por el JSON embebido. Si la carga inicial molesta en la
+El motor pesa 2.921.439 B y la vista 2.206.558 B (sesión 35), casi todo por el JSON embebido. Si la carga inicial molesta en la
 práctica, separar el JSON del HTML (fetch externo) reduciría el HTML a ~200 KB
 y la segunda visita sería instantánea por caché. Requiere modificar
 `33_generar_html.R` para emitir HTML + JSON por separado. Cambio acotado, no
