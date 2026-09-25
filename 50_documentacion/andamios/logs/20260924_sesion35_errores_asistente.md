@@ -205,3 +205,15 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: encargos-premisas: una autorización cuyo efecto sobre `git status` no se midió.
 - `intentos_previos`: 0.
 - `costo`: una autorización usada fuera de su propósito (sin efecto sobre el producto).
+
+## ERR-35-18
+- `momento`: validación posterior a la publicación en Pages (lista de 4 pasos para el titular).
+- `disparador`: usuario lo señaló sin nombrarlo error (capturas del tooltip cortado en el borde derecho).
+- `que_paso`: le pedí verificar que «el tooltip se abre hacia adentro» copiando el paso 3 de `publicacion_github_pages.md` sin leer el código; el motor versionado nunca tuvo ese ajuste (el traspaso v08 lo describía, pero no llegó a ningún commit), y la revisión en Safari que diseñé tampoco lo incluía.
+- `regla_violada`: SETTINGS §1.2.6, marcador de fuente (afirmar el contenido de un archivo no leído).
+- `causa_raiz`: traté el documento de publicación como fuente del comportamiento del código.
+- `salvaguarda_presente`: SETTINGS.
+- `patron`: PAT-01, conducta del producto afirmada desde su documentación y no desde el código.
+- `gatillo_observable`: afirmar-sin-leer: un paso de validación que describe una función sin un `grep` del código que la implementa.
+- `intentos_previos`: 0.
+- `costo`: un defecto publicado y detectado por el titular; una corrección y una publicación más.
