@@ -829,7 +829,13 @@ function tarjeta(){
     S.detalle=!S.detalle;tarjeta();setTimeout(function(){build();paint();},60);
   });
 }
-/* El nombre más largo define el ancho de la columna izquierda. */
+/* El nombre más largo define el ancho de la columna izquierda, entre
+   ANCHO_TARJETA_MIN y ANCHO_TARJETA_MAX. El tope era 430 px: con la cohorte 2027
+   («… (comunas que se traspasan en 2027)») la tarjeta pedía 522 px, la tabla se
+   desplazaba dentro de sí y ocultaba «Establecimientos» (Q-46, encargo s35d).
+   El tope nuevo es ese ancho medido más aire; las cohortes vigentes piden
+   menos de 340 px, así que no cambian. */
+var ANCHO_TARJETA_MIN=268,ANCHO_TARJETA_MAX=540;
 function anchoTarjeta(){
   var w=0;
   document.querySelectorAll('#tb tr:not(.gse) td.nm .rw span:last-child').forEach(function(s){
@@ -837,7 +843,7 @@ function anchoTarjeta(){
   var th=document.querySelector('#th th:last-child');
   var cab=th?th.getBoundingClientRect().width:120;
   var total=Math.round(24+33+w+16+cab+24);   /* sangría + casilla y número + nombre + aire + columna + borde */
-  document.documentElement.style.setProperty('--cardw',Math.max(268,Math.min(430,total))+'px');
+  document.documentElement.style.setProperty('--cardw',Math.max(ANCHO_TARJETA_MIN,Math.min(ANCHO_TARJETA_MAX,total))+'px');
 }
 
 /* ---------- textos de contexto ---------- */
