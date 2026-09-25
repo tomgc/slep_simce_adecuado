@@ -373,9 +373,11 @@ body {
   display: inline-block; width: 14px; height: 12px;
   border: 1px solid rgba(0,0,0,0.12); border-radius: 1px;
 }
-.hint-low-n {
-  display: inline-block; width: 14px; height: 12px;
-  background: #0A3A5C; opacity: 0.45; border-radius: 1px;
+/* Signo de un solo establecimiento (ASTERISCO_UNICO) en la leyenda: ocupa el
+   ancho de las muestras de color y toma la tinta del ítem. */
+.hint-signo {
+  display: inline-flex; justify-content: center; width: 14px;
+  font-weight: 700;
 }
 .hint-asterisk {
   display: inline-flex; align-items: center;
@@ -1744,7 +1746,7 @@ code {
         valorFuera:       10,    // % rescatado bajo el año (franja sin espacio)
         anioEje:          10.5,  // año bajo el eje X
         marcaPreliminar:  13,    // asterisco de dato preliminar
-        notaUnico:        9.5,   // nota "* Un solo establecimiento" bajo el eje
+        notaUnico:        9.5,   // nota "† Un solo establecimiento" bajo el eje
       },
       // Barras apiladas del panorama territorial (dibujarPanoramaEnGrupo).
       // Escala propia: el panorama dispone de mucho más ancho por año que las
@@ -2126,7 +2128,9 @@ code {
         const esPrevio = year => anioCorte != null && year < anioCorte;
         const OP_PREVIO = 0.4;
 
-        // Marcador vertical en el año de traspaso.
+        // Marcador vertical en el año de traspaso. La caja de su rótulo se
+        // guarda para que una cifra desplazada no caiga encima (ver abajo).
+        let cajaTraspaso = null;
         if (anioCorte != null) {
           const xc = x(anioCorte);
           g.append("line")
@@ -2136,7 +2140,7 @@ code {
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", "2,2")
             .attr("opacity", 0.55);
-          g.append("text")
+          cajaTraspaso = g.append("text")
             .attr("x", xc).attr("y", -2)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
@@ -2144,7 +2148,8 @@ code {
             .attr("font-weight", 700)
             .attr("fill", "#0A3A5C")
             .attr("opacity", 0.7)
-            .text("traspaso");
+            .text("traspaso")
+            .node().getBBox();
         }
 
         // Tramos del gap 2019-2021. Cuando hay corte de traspaso, se subdivide
@@ -2194,13 +2199,25 @@ code {
         }
         [pre, post].forEach(dibujarSegmento);
 
+        // Cifras sin superponerse (D35-6): la marca de un solo establecimiento
+        // ensancha la cifra, y en años contiguos de valor parecido dos cifras
+        // se tocaban. Una cifra que choca con la del punto anterior sube lo
+        // justo para despejarla (y, si cae sobre el rótulo "traspaso", también
+        // sobre él). Sin choque, la cifra queda 6 unidades sobre su punto.
+        const chocan = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width &&
+                                 a.y < b.y + b.height && b.y < a.y + a.height;
+        let cajaCifraPrevia = null;
+
         const tt = makeTooltip(entity, gse, nivel, prueba);
         valid.forEach(s => {
           const cx = x(s.year);
           const cy = y(s.pct);
+          // Un solo establecimiento: punto y cifra sin atenuar y la marca
+          // ASTERISCO_UNICO pegada a la cifra, la misma regla de las barras
+          // (D35-6). Solo el tramo previo al traspaso se atenúa (OP_PREVIO).
           const isLowN = s.n_estab === 1;
           const opPrevio = esPrevio(s.year) ? OP_PREVIO : 1;
-          const opacity = (isLowN ? 0.45 : 1) * opPrevio;
+          const opacity = opPrevio;
           g.append("circle")
             .attr("cx", cx).attr("cy", cy)
             .attr("r", 2.6)
@@ -2210,8 +2227,8 @@ code {
             .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
             .on("mouseleave", tt.hide)
             .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
-          const labelY = Math.max(8, cy - 6);
-          g.append("text")
+          let labelY = Math.max(8, cy - 6);
+          const cifra = g.append("text")
             .attr("x", cx).attr("y", labelY)
             .attr("text-anchor", "middle")
             .attr("font-family", "system-ui, sans-serif")
@@ -2220,7 +2237,18 @@ code {
             .attr("fill", COLOR_ADEC)
             .attr("opacity", opacity * 0.9)
             .style("pointer-events", "none")
-            .text(Math.round(s.pct) + "%");
+            .text(Math.round(s.pct) + "%" + (isLowN ? ASTERISCO_UNICO : ""));
+          let caja = cifra.node().getBBox();
+          if (cajaCifraPrevia && chocan(caja, cajaCifraPrevia)) {
+            [cajaCifraPrevia, cajaTraspaso].forEach(o => {
+              if (o && chocan(caja, o)) {
+                labelY -= caja.y + caja.height - o.y + 0.5;
+                cifra.attr("y", labelY);
+                caja = cifra.node().getBBox();
+              }
+            });
+          }
+          cajaCifraPrevia = caja;
           g.append("text")
             .attr("x", cx).attr("y", ih + 13)
             .attr("text-anchor", "middle")
@@ -2257,14 +2285,14 @@ code {
       W: 320, H: 189, M: { top: 28, right: 10, bottom: 48, left: 28 },
       nota: { alto: 14, linea: 10 },
     };
-    // Señal de un solo establecimiento en las barras recientes (pendiente 2
-    // de v34, sesión 35): la cifra lleva este asterisco y la tarjeta, la nota
-    // bajo el eje. Reemplaza la atenuación (barras a 0,45 y cifras a 0,7), que
-    // dejaba las cifras blancas bajo 4,5:1. Los puntos de la sparkline y su
-    // cifra siguen atenuados (0,45 y 0,405): el encargo de la sesión 35 (T4.2)
-    // los dejó fuera del asterisco, y su contraste queda como pendiente
-    // (hallazgo R-49 de la auditoría).
-    const ASTERISCO_UNICO = "*";
+    // Señal de un solo establecimiento (pendiente 2 de v34, sesión 35; D35-6):
+    // la cifra lleva esta marca en las barras recientes y en la sparkline, y
+    // la tarjeta, la nota bajo el eje de las barras. Reemplaza la atenuación
+    // (barras a 0,45 y cifras a 0,7; puntos de la sparkline a 0,45 y su cifra
+    // a 0,405, 2,14:1), que dejaba las cifras bajo 4,5:1. Es «†» y no «*»
+    // porque el asterisco ya marca el dato preliminar en todo el motor. El
+    // nombre de la constante se conserva.
+    const ASTERISCO_UNICO = "†";
     const NOTA_UNICO = ASTERISCO_UNICO + " Un solo establecimiento";
     // Regla única de rotulado (la de slep_idps s29 y la del panorama s29): una
     // franja lleva su cifra adentro solo si la cifra cabe entera; si no, la cifra
@@ -2337,8 +2365,8 @@ code {
           const xPos = x(s.year);
           if (xPos == null) return;
           const bw = x.bandwidth();
-          // Un solo establecimiento: barras en opacidad plena y asterisco
-          // pegado a cada cifra del punto (ver ASTERISCO_UNICO).
+          // Un solo establecimiento: barras en opacidad plena y la marca
+          // pegada a cada cifra del punto (ver ASTERISCO_UNICO).
           const isLowN = s.n_estab === 1;
           const marcaUnico = isLowN ? ASTERISCO_UNICO : "";
 
@@ -2655,9 +2683,9 @@ code {
     function ChartHints({ showElemInsuf }) {
       return (
         <div className="chart-hints">
-          <span className="hint-item hint-muted">
-            <span className="hint-low-n" />
-            <span>Baja representatividad (un solo establecimiento)</span>
+          <span className="hint-item">
+            <span className="hint-signo">{ASTERISCO_UNICO}</span>
+            <span>Un solo establecimiento</span>
           </span>
           <span className="hint-item">
             <span className="hint-box" style={{ background: COLOR_ADEC }} />
