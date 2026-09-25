@@ -64,6 +64,26 @@ Agencia. Es la fuente de verdad para nomenclatura y semántica de columnas.
 Su lectura y reglas de negocio derivadas están documentadas en
 `50_documentacion/activa/referencia_glosas_simce.md`.
 
+## Catálogo de olas de traspaso
+
+`20_insumos/auxiliares/dim_slep_comunas.csv` es el catálogo público de comunas
+por Servicio Local y año de traspaso: una fila por comuna (346 más el
+encabezado), separado por `;`, en UTF-8. La vista de trayectorias lo usa para
+armar las cohortes de las olas 2027 a 2029 (decisión D35-2,
+`decisiones/20260924_decision_referente_traspasos.md`).
+
+- **Origen:** repositorio `slep_central_datos`, archivo
+  `30_procesamiento/catalogo/dim_slep_comunas.csv`, en el commit `d7a8ec6`
+  (último que lo modifica).
+- **md5:** `fdb3015da12264d370a9d670c6886c0b` (igual en el origen y en la copia).
+- **Fecha de copia:** 2026-09-25 (sesión 35).
+- **Regla de actualización:** se recopia cuando cambie el catálogo de origen, y
+  se actualizan aquí el commit, el md5 y la fecha. El build no lee el otro
+  repositorio: solo esta copia (POLITICA §5.2).
+- **Versionado:** se versiona. Es un catálogo público de territorio e
+  institución, sin persona natural, cubierto por la entrada
+  `20_insumos/auxiliares/*.csv` de `50_datos_versionados_autorizados.md`.
+
 ## Política de versionado
 
 - Los xlsx SIMCE crudos **no** se versionan (`.gitignore`). Se mantienen
