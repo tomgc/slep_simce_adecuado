@@ -260,6 +260,26 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
      del ancho pasaba 1,5 px del borde derecho). */
   .modal{width:calc(100vw - 48px)}
 }
+
+/* ---- Pantallas medianas, de 680 a 822 px (Q-33, encargo pendientes s35c): la
+   vista repartía el alto de la pantalla entre la barra de controles, en varias
+   líneas, el plano y la línea de tiempo, y el plano quedaba en dos columnas junto
+   a la tabla. Con una ventana de 900 px de alto le quedaban de 117 a 184 px de
+   alto con la cohorte inicial y de 0 a 166 px con la cohorte 2027, que además lo
+   dejaba de 128 a 270 px de ancho. En este tramo la vista crece con su contenido,
+   como bajo 680 px (esa regla sigue igual): la tabla va arriba y el plano abajo,
+   a todo el ancho y con alto propio. La tarjeta de la tabla conserva el ancho que
+   le mide anchoTarjeta() (--cardw): a todo el ancho, su última columna se
+   ensanchaba y --cardw pasaba a 430 px, que el modo presentación y un cambio de
+   ancho hacia más de 822 px heredaban. El modo presentación no cambia (esconde
+   los controles y el plano ya tiene alto). Todo va dentro de esta regla, al
+   final de la hoja: fuera del tramo nada cambia. ---- */
+@media (min-width:680px) and (max-width:822px){
+  .app:not(.pres){height:auto}
+  .app:not(.pres) .main{grid-template-columns:minmax(0,1fr)}
+  .app:not(.pres) .card{width:var(--cardw,300px);max-width:100%}
+  .app:not(.pres) svg.chart{flex:none;height:360px}
+}
 </style>
 </head>
 <body>
