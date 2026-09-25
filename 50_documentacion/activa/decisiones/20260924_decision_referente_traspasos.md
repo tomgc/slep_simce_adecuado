@@ -16,13 +16,13 @@ redondeo D32-3.
 sesión 35 encontró tres cosas:
 
 1. Ninguno de los 1.299 establecimientos del referente se traspasó entre 2014 y 2025. De ellos, 1.282 están
-   en el directorio oficial como municipales en comunas de las olas 2027 (479), 2028 (407) y 2029 (408). Los
+   en el directorio oficial como municipales en comunas de las olas 2027 (475), 2028 (406) y 2029 (401) (corregido tras el encargo: ver D35-4). Los
    otros 17 no figuran en el directorio: cerraron antes de su traspaso, y su último resultado es de 2014 a
    2018. El número de la leyenda (994 a 1.124 en 4° básico Lectura) cambia porque la Agencia publica
    resultados distintos cada año, no porque cambie el grupo (A34-5).
 2. La regla vigente ya hace que el referente baje con cada ola. Solo suma filas con `cod_depe2 == "1"`, y un
-   establecimiento traspasado cambia de dependencia. Con datos de 2027 quedarían 820 establecimientos, con
-   los de 2028 quedarían 413 y con los de 2029, 5. El referente se acaba con la ola 2029.
+   establecimiento traspasado cambia de dependencia. Con datos de 2027 quedarían 807 establecimientos, con
+   los de 2028 quedarían 401 y con los de 2029, 0 (corregido tras el encargo: ver D35-4). El referente se acaba con la ola 2029.
 3. Un referente dinámico (opción B: los municipales fuera del catálogo en cada año, sin ancla) suma 313
    establecimientos sin resultado en 2014. Queda entre 1,2 y 1,8 puntos bajo A en la serie combinada (0,0 a
    0,2 en 4° básico Lectura), sin que cambie el aprendizaje de ningún establecimiento.
@@ -34,7 +34,7 @@ sesión 35 encontró tres cosas:
   con resultado en 2025: 1.015». El 1.299 sale de `meta$REF$cat` y el segundo número sale de `e` en el año y
   la prueba elegidos; ninguno de los dos se escribe como literal. Las notas metodológicas agregan que 17 de
   los 1.299 cerraron antes de traspasarse. Cuando haya datos posteriores a una ola, el rótulo dice cuántos
-  siguen municipales (maqueta: «820 de 1.299 aún municipales»).
+  siguen municipales (maqueta: «807 de 1.282 aún municipales», corregida por D35-4).
 - **Marca de ola.** Si la serie tiene un año igual o posterior a una ola, se dibuja en ese año una marca
   vertical rotulada («sale la ola 2027»). La razón es que la composición del grupo cambia. Con los mismos
   años, el grupo que queda tras la ola 2027 difiere del completo en hasta 1,1 puntos, y el que queda solo
@@ -106,8 +106,49 @@ sus datos actuales.
 ## Pendientes derivados
 
 1. **Fin del referente.** Qué muestra la vista cuando, con datos de 2029, queden 5 municipales del grupo. Se
-   decide cuando la Agencia publique el Simce 2028, que es el último con 413 o más.
+   decide cuando la Agencia publique el Simce 2028, que es el último con 401 o más (D35-4).
 2. **Actualización anual del directorio.** Las unidades futuras dependen de su vigencia (ver D35-2).
 
 El dato a verificar de la página de contexto (5 establecimientos en comunas ya traspasadas y fuera del
 catálogo) queda resuelto: son 5 de los 17 que cerraron antes de su traspaso y no están en el directorio.
+
+## Enmiendas tras el encargo `encargo_pendientes_s35.md` (sesión 35, 2026-09-25)
+
+Deciden el titular sobre la propuesta del asistente, con el log
+`50_documentacion/andamios/logs/20260924_pendientes_s35_log.md` (commit `bd5fc58`) y una verificación
+independiente de solo lectura sobre la estación.
+
+### D35-3. I-7 se evalúa como no-regresión sobre el rango del encargo
+
+El único acierto de I-7 es `30_procesamiento/32_agregar_comunal.R:206` (`.by = c(nom_com_rbd, cod_grupo,
+anio)`). Viene del commit `f3318d4` (2026-06-08), no cambia en `f4bd59e..bd5fc58` y solo imprime un
+diagnóstico en consola después de escribir el parquet. El comando de I-7 del encargo se escribió sin correrlo
+(ERR-35-05). Para ese encargo, I-7 se mide sobre las líneas agregadas en el rango: 0 aciertos. El veredicto
+de FASE R pasa de BLOQUEADO a APROBADO CON ADVERTENCIAS y se autoriza el push. La línea 206 se corrige en el
+encargo siguiente (agregar `cod_com_rbd` al `.by`), y desde ahí I-7 se mide en forma absoluta:
+`grep -nE '(\.by|\bgroup_by|group_vars)[^#]*nom_com_rbd' 30_procesamiento/*.R | grep -v cod_com_rbd`, con
+resultado esperado vacío. El log del encargo queda congelado tal como se commiteó; esta enmienda es la que
+registra el cambio de veredicto.
+
+### D35-4. El referente se cuenta por ola con el directorio, y el rótulo lo dice
+
+Reemplaza la regla que dejó el encargo en `olas_referente()`, que usa la comuna de la última fila Simce
+(479/407/408, con 12 cerrados dentro y 5 cerrados fuera de las olas futuras). Desde ahora `meta$REF$olas` cuenta
+los RBD del referente **presentes** en el directorio (no «municipales en el directorio», para que la
+actualización anual del directorio no los saque por la razón equivocada): 475, 406 y 401, que suman 1.282.
+«Aún municipales» descuenta desde el inicio a los 17 cerrados: 807, 401 y 0 tras cada ola. El rótulo pasa a
+«Referente: 1.299 municipales en 2014 · 1.282 se traspasan entre 2027 y 2029 · con resultado en <año>: <e>», con
+todas las cifras desde `DATA`. El rango de años del rótulo usa solo olas con conteo mayor que 0. Ninguna cifra de
+aprendizaje cambia: la serie del referente se calcula con filas municipales de cada año. Corrige ERR-35-08.
+
+### D35-5. La cifra dentro de la franja Elemental usa tinta oscura
+
+El rótulo blanco dentro de la franja Elemental da 2,78:1 en las barras y en el panorama, desde antes del encargo.
+Solo ese rótulo pasa a `TINTA_SOBRE_ELEM = "#2E2230"` (5,44:1), un color que ya existe en la plantilla. Las
+franjas no cambian (D-color-nivel). I-8 se amplía para admitir esa constante.
+
+### D35-6. «Un solo establecimiento» se marca con «†»
+
+El «*» ya marca el dato preliminar en todo el motor. Hoy no hay años preliminares, pero volverá a haberlos con la
+base preliminar del Simce 2026. `ASTERISCO_UNICO` pasa a «†». La cifra de la sparkline con un solo
+establecimiento sigue la misma regla (sin atenuar, con «†»), y la leyenda de ChartHints declara el signo.

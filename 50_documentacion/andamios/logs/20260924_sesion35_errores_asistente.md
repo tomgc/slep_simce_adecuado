@@ -49,3 +49,87 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: restriccion-no-propagada: `device_commit_files` con un `stagedPath` ya enviado antes en la sesión.
 - `intentos_previos`: 0.
 - `costo`: un reenvío con nombre nuevo (`_v2` en `outputs/`); md5 final medido en la carpeta.
+
+## ERR-35-05
+- `momento`: redacción de `encargo_pendientes_s35.md`, invariante I-7 (§4).
+- `disparador`: asistente lo señaló espontáneamente, al leer el log del encargo (FASE R, R-39).
+- `que_paso`: escribí el comando de I-7 con esperado «vacío» sin correrlo antes; en el punto de retorno ya daba un acierto (`32_agregar_comunal.R:206`), y eso dejó FASE R en BLOQUEADO y sin push.
+- `regla_violada`: traspaso v34 §12, «⚠️ NO escribir en un encargo un comando que no se corrió antes»; SETTINGS §1.2.6, marcador de fuente tipo 4.
+- `causa_raiz`: traté los invariantes 🔒 heredados del traspaso como verdaderos por construcción y redacté su comando sin medir el estado de partida.
+- `salvaguarda_presente`: traspaso v34 §12 y SETTINGS.
+- `patron`: PAT-01, esperado de un comando del encargo sin medición previa.
+- `gatillo_observable`: encargos-premisas: un comando de invariante con `esperado:` escrito y sin salida del redactor en la sesión.
+- `intentos_previos`: 0.
+- `costo`: push retenido; una auditoría cerrada en BLOQUEADO; una decisión pendiente del titular (Q-06).
+
+## ERR-35-06
+- `momento`: redacción del encargo, FASE 0, H3.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log (desviación D0-c).
+- `que_paso`: el comando `git rev-parse --short HEAD origin/main` falla por sintaxis; el ejecutor tuvo que medir con uno equivalente.
+- `regla_violada`: traspaso v34 §12, «⚠️ NO escribir en un encargo un comando que no se corrió antes».
+- `causa_raiz`: compuse el comando de memoria sin correrlo en el puente, donde git de lectura estaba disponible.
+- `salvaguarda_presente`: traspaso v34 §12.
+- `patron`: PAT-01, comando de encargo no ejecutado antes.
+- `gatillo_observable`: encargos-premisas: comando de FASE 0 sin salida del redactor en la sesión.
+- `intentos_previos`: 0.
+- `costo`: una desviación declarada del ejecutor; ninguno sobre el producto.
+
+## ERR-35-07
+- `momento`: redacción del encargo, T4 punto 2.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log (R-49, Q-24).
+- `que_paso`: afirmé que los puntos de las sparklines «no llevan texto»; sí llevan una cifra, que quedó atenuada con 2,14:1.
+- `regla_violada`: SETTINGS §1.2.6, «NUNCA modificar código sin haberlo leído» y marcador de fuente tipo 4.
+- `causa_raiz`: leí solo el bloque de barras recientes (L2318-2425) y extendí la conclusión a la sparkline (L2205) sin abrirla.
+- `salvaguarda_presente`: SETTINGS.
+- `patron`: PAT-01, premisa de encargo sobre código no leído.
+- `gatillo_observable`: afirmar-sin-leer: una premisa sobre un bloque de código cuyo rango no aparece en las lecturas de la sesión.
+- `intentos_previos`: 0.
+- `costo`: una cifra con contraste bajo sin corregir y una duda (Q-24).
+
+## ERR-35-08
+- `momento`: redacción de D35-1 en `20260924_decision_referente_traspasos.md`.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log (Q-22).
+- `que_paso`: atribuí el reparto 479/407/408 (que suma 1.294 y se calculó sobre los 1.299 por comuna de la última fila) a los 1.282 del directorio, cuyo reparto medido es 475/406/401.
+- `regla_violada`: SETTINGS §1.2.6, marcador de fuente tipo 3: una cifra solo admite un recuento programático del mismo turno sobre el mismo conjunto.
+- `causa_raiz`: combiné en una frase dos recuentos de universos distintos (por comuna de 1.299 y por directorio de 1.282) sin recontar el segundo por ola.
+- `salvaguarda_presente`: SETTINGS.
+- `patron`: PAT-01, cifra de un universo aplicada a otro.
+- `gatillo_observable`: cifras-datos: una frase que junta un total y un reparto que no suma ese total.
+- `intentos_previos`: 0.
+- `costo`: una frase falsa en una decisión commiteada (`f4bd59e`), a corregir con una entrada nueva.
+
+## ERR-35-09
+- `momento`: redacción del encargo, criterios de T1 y T3.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log (T3 congelada, Q-18).
+- `que_paso`: pedí en T3 «0 píxeles distintos a 768 px» frente al estado previo, sabiendo que T1 agregaba tres botones de cohorte a `#c-coh`; el cambio de T1 hizo desbordar la vista y su reparación (R-47) volvió incumplible el criterio de T3.
+- `regla_violada`: encargo_autonomo v1.6 §2.6 (criterio calibrado antes de confiarse) y §2.5 (dependencias del grafo).
+- `causa_raiz`: fijé el criterio de T3 contra el estado de antes de T1 y no contra el estado que T1 dejaría.
+- `salvaguarda_presente`: encargo_autonomo v1.6.
+- `patron`: PAT-07, efecto de una tarea previa no propagado al criterio de la siguiente.
+- `gatillo_observable`: restriccion-no-propagada: criterio de identidad de píxeles sobre una zona que una tarea anterior del mismo grafo modifica.
+- `intentos_previos`: 0.
+- `costo`: T3 y T8 congeladas; un encargo más.
+
+## ERR-35-10
+- `momento`: redacción del encargo, calibración de C5 en T1.
+- `disparador`: asistente lo señaló espontáneamente, al leer el log (D1-a).
+- `que_paso`: pedí calibrar C5 contando `cod_depe2 %in% c("1","5")` como caso malo, y en esas comunas no hay ningún establecimiento con dependencia 5, así que el caso malo no podía disparar.
+- `regla_violada`: encargo_autonomo v1.6 §2.6: la calibración debe demostrar que puede dar el resultado contrario.
+- `causa_raiz`: elegí el caso malo por plausibilidad sin medir si existía en los datos.
+- `salvaguarda_presente`: encargo_autonomo v1.6.
+- `patron`: PAT-13, calibración que no mide el riesgo.
+- `gatillo_observable`: iteracion-sin-criterio: un caso de calibración sin recuento previo de que cambia el resultado.
+- `intentos_previos`: 0.
+- `costo`: una desviación (D1-a) y una duda (Q-03).
+
+## ERR-35-11
+- `momento`: opciones de la pregunta sobre la opacidad y redacción de T4 del encargo.
+- `disparador`: asistente lo señaló espontáneamente, al verificar Q-08 del log.
+- `que_paso`: propuse y especifiqué «*» como marca de un solo establecimiento sin buscar sus usos: el motor ya lo usaba para el dato preliminar en gráficos, tablas y notas, y T4 creó un doble significado.
+- `regla_violada`: SETTINGS §1.2.6, «NUNCA modificar código sin haberlo leído primero», y marcador de fuente tipo 4.
+- `causa_raiz`: diseñé el signo desde la convención gráfica general y no desde un `grep` del símbolo en la plantilla.
+- `salvaguarda_presente`: SETTINGS.
+- `patron`: PAT-01, diseño de un signo sin leer sus usos vigentes.
+- `gatillo_observable`: afirmar-sin-leer: un símbolo nuevo en la interfaz sin `grep` previo del mismo símbolo.
+- `intentos_previos`: 0.
+- `costo`: un signo a reemplazar en el encargo siguiente (Q-08).
