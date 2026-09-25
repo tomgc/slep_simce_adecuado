@@ -357,6 +357,10 @@ var DATA=__DATA_TRAYECTORIAS__;
 (function(){
 "use strict";
 var ANIOS=DATA.anios, META=DATA.meta, NAC=DATA.nac;
+/* Separador del identificador de las unidades por traspasar, <cod_slep>_<año>
+   (D35-2; SEP_ID_FUTURO en 36_funciones_trayectorias.R). Esas unidades todavía
+   no administran sus establecimientos: se les traspasan (hallazgo R-63). */
+var SEP_ID_FUTURO='_';
 var IDX={};
 DATA.datos.forEach(function(r){          /* [id,anio,np,gse,panel,ade,ins,n,e] */
   var k=r[2]+'|'+r[3]+'|'+r[4], b=IDX[k]||(IDX[k]={});
@@ -726,9 +730,10 @@ function tarjeta(){
     }
   });
   var cat=L.reduce(function(a,id){return a+META[id].cat;},0);
+  var porTraspasar=L.length>0&&L[0].indexOf(SEP_ID_FUTURO)>=0;
   document.getElementById('cnt').innerHTML=
     vis+' de '+L.length+' en pantalla · <b>'+fmt(tot)+'</b> establecimientos'+(S.gse==='T'?'':' del '+GSE_N[S.gse])+' con resultado en '+yr+
-    ', de <b>'+fmt(cat)+'</b> que la cohorte administra.';
+    ', de <b>'+fmt(cat)+'</b> '+(porTraspasar?'que se traspasan a la cohorte.':'que la cohorte administra.');
   document.getElementById('pie').innerHTML=
     '<button class="btn" id="b-det" style="height:32px;font-size:var(--f3);padding:0 11px">'+
     (S.detalle?'Ocultar el desglose por grupo socioeconómico':'Ver el desglose por grupo socioeconómico')+'</button>'+
