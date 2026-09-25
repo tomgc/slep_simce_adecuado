@@ -1085,9 +1085,20 @@ if(window.ResizeObserver){var rg=null;new ResizeObserver(function(){
 }).observe(document.getElementById('g'));}
 
 altoMenu();numerar();opciones();tarjeta();anchoTarjeta();pista();build();render();
-if(document.fonts&&document.fonts.ready){   /* una fuente tardía cambia el ancho de los nombres */
-  document.fonts.ready.then(function(){anchoTarjeta();setTimeout(function(){pista();build();render();},30);});
-}
+/* Una fuente tardía cambia el alto del menú y el ancho de los nombres. gobCL va
+   incrustada y se aplica después de las primeras medidas, y document.fonts.ready
+   puede resolverse antes de que empiece a cargar. Por eso se piden las dos caras
+   que se usan y, cuando terminan de cargar, se vuelve a medir el menú y la
+   tarjeta una sola vez (auditoría del encargo s35b, R-50: antes, a veces
+   --tabs-h y --cardw quedaban medidos con la fuente de respaldo). anchoTarjeta()
+   depende del ancho vigente de la tarjeta, así que --cardw vuelve antes a su
+   valor por omisión: la medida no depende de lo que se midió al arrancar. */
+function trasFuentes(){altoMenu();document.documentElement.style.removeProperty('--cardw');anchoTarjeta();
+  setTimeout(function(){pista();build();render();},30);}
+if(document.fonts&&document.fonts.load){
+  Promise.all([document.fonts.load('400 1em gobCL'),document.fonts.load('700 1em gobCL')])
+    .then(function(){return document.fonts.ready;}).then(trasFuentes,trasFuentes);
+}else if(document.fonts&&document.fonts.ready){document.fonts.ready.then(trasFuentes);}
 })();
 
 </script>
