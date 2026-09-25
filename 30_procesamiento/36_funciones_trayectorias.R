@@ -30,6 +30,9 @@
 #   - base_valida(simce): filas con los tres niveles publicados y coherentes.
 #   - unidades_futuras(insumos, tras_vigentes): las unidades de las olas
 #     OLAS_FUTURAS (D35-2), validadas contra el catálogo de olas.
+#   - filas_referente(base, catalogo): las filas del referente municipal.
+#   - olas_referente(municipal, olas) y marcas_ola(anios, olas_ref): los
+#     establecimientos del referente por ola y los años de marca de ola (D35-1).
 #   - construir_datos_trayectorias(insumos): la lista DATA que consume la
 #     plantilla (anios, meta, nac, datos, nube, comunas).
 #   - datos_a_json(DATA): el JSON compacto que se inserta en la plantilla.
@@ -60,6 +63,11 @@
 #     cualquier dependencia). No cambian las filas de los Servicios Locales ni
 #     del referente: `incluir_futuras = FALSE` reproduce el DATA anterior y la
 #     prueba C3 lo coteja.
+#   - Olas del referente (sesión 35, D35-1, misma decisión): el referente sigue
+#     anclado en el primer año de la serie. Su ficha en `meta` agrega cuántos de
+#     sus establecimientos traspasa cada ola de OLAS_FUTURAS (por la comuna de su
+#     fila más reciente) y los años de marca de ola, que la vista dibuja en la
+#     pista. No cambia ninguna fila de `datos`.
 # ----------------------------------------------------------------------------
 
 
@@ -409,6 +417,55 @@ unidades_futuras <- function(insumos, tras_vigentes) {
 }
 
 
+# ---- Referente: filas, olas y marcas de ola (D35-1) ------------------------
+
+# Filas del referente municipal: las de los establecimientos con resultado en el
+# primer año de la serie, municipales en cada fila y fuera del catálogo de
+# Servicios Locales (`catalogo`, con rbd como texto). Un establecimiento que se
+# traspasa deja de ser municipal y sus filas siguientes salen solas: el grupo
+# queda anclado y pierde cada ola en el año en que se traspasa.
+filas_referente <- function(base, catalogo) {
+  rbd_ancla <- unique(base$rbd[base$anio == min(base$anio)])
+  dplyr::filter(base,
+                cod_depe2 == DEPE_MUNICIPAL,
+                !rbd %in% catalogo$rbd,
+                rbd %in% rbd_ancla)
+}
+
+# Establecimientos del referente que traspasa cada ola de OLAS_FUTURAS: cada uno
+# va a la ola que el catálogo de olas (`olas`) da a la comuna de su fila más
+# reciente, que es la comuna donde está hoy (uno cambió de comuna entre 2014 y
+# 2015). Los que están en comunas ya traspasadas no cuentan en ninguna ola
+# (cerraron antes de su traspaso, decisión D35-1). Devuelve un entero por ola,
+# con el año como nombre, en el orden de OLAS_FUTURAS.
+olas_referente <- function(municipal, olas) {
+  comuna <- municipal |>
+    dplyr::filter(.by = rbd, anio == max(anio)) |>
+    dplyr::distinct(rbd, cod_com_rbd = as.character(cod_com_rbd))
+  if (anyDuplicated(comuna$rbd) > 0) {
+    stop("Establecimientos del referente con más de una comuna en su último año: ",
+         paste(unique(comuna$rbd[duplicated(comuna$rbd)]), collapse = ", "))
+  }
+  ola <- comuna |>
+    dplyr::inner_join(dplyr::transmute(olas, cod_com_rbd = cod_comuna,
+                                       ola = as.integer(anio_traspaso)),
+                      by = "cod_com_rbd") |>
+    dplyr::filter(ola %in% OLAS_FUTURAS)
+  stats::setNames(vapply(OLAS_FUTURAS, function(o) sum(ola$ola == o), integer(1)),
+                  OLAS_FUTURAS)
+}
+
+# Marcas de ola: por cada ola con establecimientos del referente, el primer año
+# de la serie igual o posterior a ella, que es donde el grupo pierde esa ola.
+# Una lista de pares (anio, ola), vacía mientras la serie no llegue a ninguna
+# ola. La vista dibuja cada marca en su año de la pista.
+marcas_ola <- function(anios, olas_ref) {
+  olas <- as.integer(names(olas_ref)[olas_ref > 0])
+  alcanzadas <- olas[vapply(olas, function(o) any(anios >= o), logical(1))]
+  lapply(alcanzadas, function(o) list(anio = min(anios[anios >= o]), ola = o))
+}
+
+
 # ---- Construcción de DATA --------------------------------------------------
 
 # `conservar_brutos = TRUE` agrega a `datos` y `nube` los numeradores y el
@@ -416,8 +473,9 @@ unidades_futuras <- function(insumos, tras_vigentes) {
 # para distinguir un empate de redondeo de una diferencia real.
 # `excluir_marcadas` pasa a base_valida(); FALSE solo para la prueba D10.
 # `incluir_futuras = TRUE` agrega las unidades de las olas OLAS_FUTURAS (D35-2)
-# después de las vigentes; FALSE reproduce el DATA anterior a la sesión 35 y
-# solo lo usan las pruebas C3 y D10.
+# después de las vigentes, y a la ficha del referente sus olas y marcas de ola
+# (D35-1); FALSE reproduce el DATA anterior a la sesión 35 y solo lo usan las
+# pruebas C3 y D10.
 construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
                                          excluir_marcadas = TRUE,
                                          incluir_futuras = TRUE) {
@@ -428,7 +486,6 @@ construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
 
   anios   <- sort(unique(base$anio))
   n_anios <- length(anios)
-  anio_ancla <- min(anios)
 
   # -- Universos --
   # Servicios Locales: los establecimientos del catálogo, con cualquier
@@ -439,11 +496,7 @@ construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
 
   # Referente y nube: establecimientos con resultado en el primer año de la
   # serie, municipales en cada fila y fuera del catálogo de Servicios Locales.
-  rbd_ancla <- unique(base$rbd[base$anio == anio_ancla])
-  municipal <- base |>
-    dplyr::filter(cod_depe2 == DEPE_MUNICIPAL,
-                  !rbd %in% catalogo$rbd,
-                  rbd %in% rbd_ancla)
+  municipal <- filas_referente(base, catalogo)
 
   # -- meta --
   fichas <- catalogo |>
@@ -476,8 +529,17 @@ construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
     names(meta_fut) <- futuras$fichas$id
     meta <- c(meta, meta_fut)
   }
-  meta[[ID_REFERENTE]] <- list(nom = NOM_REFERENTE, tras = 0L, post = -1L,
-                               cat = dplyr::n_distinct(municipal$rbd))
+  meta_ref <- list(nom = NOM_REFERENTE, tras = 0L, post = -1L,
+                   cat = dplyr::n_distinct(municipal$rbd))
+  # Olas y marcas de ola del referente (D35-1): `olas` da el rango de años del
+  # rótulo y cuántos siguen municipales después de cada marca; `marcas`, los
+  # años de la pista donde el grupo pierde una ola.
+  if (incluir_futuras) {
+    olas_ref <- olas_referente(municipal, insumos$olas)
+    meta_ref$olas   <- as.list(olas_ref)
+    meta_ref$marcas <- marcas_ola(anios, olas_ref)
+  }
+  meta[[ID_REFERENTE]] <- meta_ref
 
   # -- nac: todos los establecimientos del país --
   nac_df <- total_y_grupos(con_todo(base), c("anio", "np")) |>
@@ -585,7 +647,8 @@ cambios_anuales <- function(df, claves) {
 # calculan sobre los vigentes, los del catálogo sleps_chile, igual que antes de
 # las cohortes por traspasar: las notas lo declaran. N_UNIDADES, la del marco
 # de los ejes, cuenta todas las unidades de la vista. N_FUTURAS, N_EST_FUTURAS
-# y OLA_* describen solo las cohortes por traspasar.
+# y OLA_* describen solo las cohortes por traspasar. N_CERRADOS (D35-1) cuenta
+# los establecimientos del referente que no están en el directorio oficial.
 #
 # Devuelve una lista con nombre: cada elemento es el texto que reemplaza al
 # marcador __NOTA_<nombre>__.
@@ -630,6 +693,16 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
     dplyr::filter(!is.na(cod_grupo)) |>
     dplyr::summarise(.by = c(rbd, anio), grupos = dplyr::n_distinct(cod_grupo))
 
+  # -- Referente: los que cerraron antes de su traspaso (D35-1) --
+  # Son los establecimientos del referente que ya no están en el directorio
+  # oficial, con cualquier dependencia.
+  rbd_ref <- unique(filas_referente(base, catalogo)$rbd)
+  if (length(rbd_ref) != DATA$meta[[ID_REFERENTE]]$cat) {
+    stop("cifras_notas(): el referente de los insumos (", length(rbd_ref),
+         ") no coincide con el de DATA (", DATA$meta[[ID_REFERENTE]]$cat, ")")
+  }
+  n_cerrados <- sum(!rbd_ref %in% as.character(insumos$establecimientos$rbd))
+
   # -- Movimiento anual: Servicios Locales, referente y país --
   series <- DATA$datos |>
     dplyr::filter(g == GSE_TOTAL, panel == 0L, np %in% np_pruebas)
@@ -654,6 +727,7 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
 
   list(
     N_REFERENTE      = fmt_entero(DATA$meta[[ID_REFERENTE]]$cat),
+    N_CERRADOS       = fmt_entero(n_cerrados),
     N_COMUNAS        = fmt_entero(length(DATA$comunas)),
     MOV_MEDIANA      = fmt_decimal(stats::median(abs(mov_slep$d_ade)), 1),
     MOV_REF_MAX      = fmt_decimal(max(abs(mov_ref$d_ade)), 1),

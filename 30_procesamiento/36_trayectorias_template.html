@@ -308,7 +308,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
    <h4>Cohortes por traspasar</h4>
    <p>Las cohortes __NOTA_OLA_PRIMERA__ a __NOTA_OLA_ULTIMA__ reúnen __NOTA_N_FUTURAS__ unidades: cada Servicio Local con las comunas que se le traspasan ese año según el catálogo público de comunas por Servicio Local y año de traspaso. Suman __NOTA_N_EST_FUTURAS__ establecimientos, los que el directorio oficial registra como municipales en esas comunas, y la lista se actualiza cuando se actualiza el directorio. Sus cifras siguen las mismas reglas que las demás cohortes y, como todavía no se traspasan, todo su itinerario es previo al traspaso. Un Servicio Local que ya tiene cohorte y recibe comunas en una ola posterior aparece también en esa ola, con la mención «comunas que se traspasan en» y el año. Fuera de este apartado y del marco de los ejes, las cifras de estas notas que hablan de Servicios Locales se refieren a los __NOTA_N_VIGENTES__ de las cohortes __NOTA_COH_PRIMERA__ a __NOTA_COH_ULTIMA__.</p>
    </div>
-   <p>El círculo gris punteado marca dónde está el conjunto de referencia: los __NOTA_N_REFERENTE__ establecimientos que en 2014 eran municipales y que no figuran en el catálogo de Servicios Locales. El conjunto está congelado, así que son las mismas escuelas en los nueve años. Su tamaño en pantalla es fijo y no sigue la escala de área: reúne decenas de miles de estudiantes y, a escala, taparía el gráfico entero. Cada punto de la nube sí sigue la escala, porque una comuna es comparable con un Servicio Local.</p>
+   <p>El círculo gris punteado marca dónde está el conjunto de referencia: los __NOTA_N_REFERENTE__ establecimientos que en 2014 eran municipales y que no figuran en el catálogo de Servicios Locales. El conjunto está congelado, así que son las mismas escuelas en los nueve años. La cifra «con resultado» del rótulo cuenta solo a las que tienen resultado publicado en el año en pantalla, y __NOTA_N_CERRADOS__ de los __NOTA_N_REFERENTE__ establecimientos cerraron antes de su traspaso. Su tamaño en pantalla es fijo y no sigue la escala de área: reúne decenas de miles de estudiantes y, a escala, taparía el gráfico entero. Cada punto de la nube sí sigue la escala, porque una comuna es comparable con un Servicio Local.</p>
    <p>El interruptor «Sostenedores municipales» dibuja una nube con un punto por comuna (__NOTA_N_COMUNAS__ en total), cada una con sus escuelas municipales agregadas y sin estela. Sirve para ver dónde cae un Servicio Local dentro de la distribución completa de la educación municipal, y no solo respecto de su promedio. Con la nube encendida, los ejes del promedio municipal parten el plano en cuadrantes, y cada punto entrega su comuna y sus cifras al pasar el cursor. Ojo con los extremos: las posiciones más llamativas suelen ser comunas muy chicas (Palena aparece con 72,7% en Adecuado sobre 11 estudiantes evaluados), y por eso su punto es también el más pequeño.</p>
    <div class="bloque">
    <h4>Cómo leer el plano</h4>
@@ -759,21 +759,65 @@ function chrome(){
   if(!conDato)av.textContent='Ningún Servicio Local de la cohorte '+S.coh+' tiene establecimientos'+
     (S.gse==='T'?'':' del '+GSE_N[S.gse])+' con resultado en '+NP_N[S.np]+
     (S.panel?' con los nueve años':'')+'.';
-  var refN=null,idR=Object.keys(META).filter(esRef)[0],srR=S_(clave());
-  if(idR&&srR[idR]){var dr=srR[idR][anioAct()]||srR[idR][ANIOS[0]];refN=dr?dr.e:null;}
   document.getElementById('lg').innerHTML=
     '<span class="it"><span class="d"></span>Traspasado</span>'+
     '<span class="it"><span class="d ho"></span>Aún no traspasado</span>'+
     (S.nube?'<span class="it"><span class="d nu"></span>Sostenedores municipales ('+Object.keys(DATA.comunas).length+' comunas)</span>':'')+
-    '<span class="it"><span class="d rf"></span>Referente: municipales por traspasar ('+(refN?fmt(refN):'—')+')</span>'+
-    
-    
+    rotuloReferente()+
     '<span class="it">El área equivale a los estudiantes evaluados</span>';
+}
+/* Rótulo del referente (D35-1): el tamaño del grupo (META.REF.cat) y, aparte,
+   cuántos tienen resultado en el año, la prueba, el grupo y la cobertura en
+   pantalla (su `e`). El rango de años sale de las olas del referente. Si la serie
+   llega a una ola (META.REF.marcas no vacío), dice además cuántos siguen
+   municipales en el año en pantalla: el grupo pierde cada ola en su marca. */
+function rotuloReferente(){
+  var idR=Object.keys(META).filter(esRef)[0];
+  if(!idR)return '';
+  var R=META[idR],yr=anioAct(),d=(S_(clave())[idR]||{})[yr],marcas=R.marcas||[];
+  var olas=Object.keys(R.olas||{}).map(Number).sort(function(a,b){return a-b;});
+  var rango=olas.length>1?'que se traspasan entre '+olas[0]+' y '+olas[olas.length-1]:
+            (olas.length?'que se traspasan en '+olas[0]:'por traspasar');
+  var salen=marcas.reduce(function(a,m){return a+(m.anio<=yr?R.olas[m.ola]:0);},0);
+  return '<span class="it"><span class="d rf"></span>Referente: '+fmt(R.cat)+' municipales '+rango+
+    ' · con resultado en '+yr+': '+fmt(d?d.e:0)+
+    (marcas.length?' · '+fmt(R.cat-salen)+' de '+fmt(R.cat)+' aún municipales':'')+'</span>';
 }
 
 /* ---------- línea de tiempo ---------- */
 var TW=900;
+/* Marca de ola (D35-1): línea vertical punteada en el año de la pista donde el
+   referente pierde una ola, con el rótulo «sale la ola <año>». Usa el color del
+   referente. y0 e y1 van del borde superior hasta sobre los años; el rótulo va en
+   la franja superior, a `sep` de la línea, con halo del fondo. */
+var MARCA_OLA={clase:'marca-ola',color:'var(--ref)',grosor:1.5,guion:'3 3',y0:2,y1:46,
+  yRotulo:12,sep:5,peso:650,halo:3,colorHalo:'var(--s1)',rotulo:'sale la ola '};
 function tx(y){return 26+(y-ANIOS[0])/(ANIOS[ANIOS.length-1]-ANIOS[0])*(TW-52);}
+/* Cajas que se cruzan (rótulos de la pista). */
+function cruzan(a,b){return a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;}
+/* Dibuja las marcas de META.REF.marcas antes que los años de la pista, para que
+   sus círculos queden encima de la línea. El rótulo va a
+   la izquierda de su línea; si choca con otro rótulo o sale de la pista, a la
+   derecha; si tampoco cabe (dos olas en años contiguos), la marca queda sin
+   rótulo visible y lo lleva en aria-label. Sin marcas no dibuja nada. */
+function marcasOla(tk,ocupadas){
+  var idR=Object.keys(META).filter(esRef)[0];
+  ((idR&&META[idR].marcas)||[]).forEach(function(mk){
+    var xm=tx(mk.anio),texto=MARCA_OLA.rotulo+mk.ola;
+    var g=el('g',{'class':MARCA_OLA.clase,'data-ola':mk.ola,'aria-label':texto});
+    g.appendChild(el('line',{x1:xm,x2:xm,y1:MARCA_OLA.y0,y2:MARCA_OLA.y1,stroke:MARCA_OLA.color,
+      'stroke-width':MARCA_OLA.grosor,'stroke-dasharray':MARCA_OLA.guion}));
+    var t=el('text',{x:xm-MARCA_OLA.sep,y:MARCA_OLA.yRotulo,'text-anchor':'end','font-size':FS3,
+      'font-weight':MARCA_OLA.peso,fill:MARCA_OLA.color,'paint-order':'stroke',stroke:MARCA_OLA.colorHalo,
+      'stroke-width':MARCA_OLA.halo,'stroke-linejoin':'round'});
+    t.textContent=texto;g.appendChild(t);tk.appendChild(g);
+    function libre(){var b=t.getBBox();
+      return b.x>=0&&b.x+b.width<=TW&&!ocupadas.some(function(o){return cruzan(b,o);});}
+    if(!libre()){t.setAttribute('x',xm+MARCA_OLA.sep);t.setAttribute('text-anchor','start');}
+    if(!libre()){g.removeChild(t);return;}
+    ocupadas.push(t.getBBox());
+  });
+}
 function pista(){
   var tk=document.getElementById('tk');
   TW=Math.max(300,Math.round(tk.getBoundingClientRect().width||900));
@@ -789,6 +833,7 @@ function pista(){
   var pr=el('line',{x1:tx(ANIOS[0]),x2:tx(ANIOS[0]),y1:EJE,y2:EJE,stroke:'var(--azo)',
     'stroke-width':4,'stroke-linecap':'round'});
   pr.id='pr';tk.appendChild(pr);
+  marcasOla(tk,[gl.getBBox()]);
   ANIOS.forEach(function(y,i){
     var g=el('g',{style:'cursor:pointer'});
     g.appendChild(el('circle',{cx:tx(y),cy:EJE,r:16,fill:'transparent'}));
