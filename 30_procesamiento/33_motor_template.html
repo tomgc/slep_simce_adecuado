@@ -3396,6 +3396,13 @@ code {
       // rótulo dentro. Dos es el máximo posible: tres franjas bajo el umbral no
       // pueden sumar 100.
       M: { top: 40, right: 14, bottom: 74, left: 36 },
+      // Cifras rescatadas bajo el eje: `linea` es la línea base del primer
+      // renglón, medida desde el eje, y `paso`, la distancia entre renglones.
+      // El paso es el alto de la caja de «A 99,9%» en gobCL-sitio Bold 700 a
+      // FS_SVG.panorama.valorFuera (9,5 px: 9 unidades, medido con chromote en
+      // el encargo s35d) más 1 de aire, y nunca menos de 12: queda en 12. La
+      // regla es la de las barras recientes (RECENT_DIMS.rescate, R-22).
+      rescate: { linea: 44, paso: 12 },
     };
 
     function dibujarPanoramaEnGrupo(g, { series, iw, ih }) {
@@ -3526,7 +3533,7 @@ code {
           // la cifra que esta línea existe para rescatar.
           rescatadas.forEach((seg, k) => {
             g.append("text")
-              .attr("x", xPos + bw / 2).attr("y", ih + 44 + k * 12)
+              .attr("x", xPos + bw / 2).attr("y", ih + PANORAMA_DIMS.rescate.linea + k * PANORAMA_DIMS.rescate.paso)
               .attr("text-anchor", "middle")
               .attr("font-family", FONT_SVG)
               .attr("font-size", FS_SVG.panorama.valorFuera)
