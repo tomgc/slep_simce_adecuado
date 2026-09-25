@@ -22,6 +22,13 @@ source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (
 # Carga utilidades transversales
 source(here::here("10_utils", "10_utils.R"))
 
+# Validación de portabilidad al inicio del build (pendiente 9 de v34). Con
+# Rscript (no interactivo) una falla crítica detiene el build antes de leer
+# insumos. La raíz de datos se resuelve con ruta_insumos() de
+# 10_configuracion.R (raíz unificada en el propio repositorio).
+source(here::here("10_utils", "10_validar_portabilidad.R"))
+validar_portabilidad()
+
 t0 <- proc.time()
 message("=== 00_build.R: iniciando pipeline ===")
 message("")
