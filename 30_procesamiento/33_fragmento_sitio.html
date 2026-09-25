@@ -15,9 +15,10 @@
 <!-- SITIO_CSS_INICIO -->
 /* Tipografía del sitio: gobCL (D33-4), incrustada en base64 por
    insertar_sitio() de 10_utils/10_html.R desde 10_utils/fuentes/ (Light 300,
-   Regular 400, Heavy 700; md5 verificado en cada build). Las plantillas la
-   ponen primero en --font-display, --font-body y FONT_SVG, con el stack del
-   sistema de respaldo. */
+   Regular 400, Heavy 700; md5 verificado en cada build). Las dos plantillas
+   la ponen primero en --font-display y --font-body, con el stack del sistema
+   de respaldo; el motor la pone además en FONT_SVG (los <text> de la vista
+   heredan la de body). */
 /*__FUENTES__*/
 /* Encabezado del sitio y menú de vistas (33_fragmento_sitio.html) */
 .app-header { background: #0A3A5C; color: var(--cream); padding: 28px 40px 26px;
