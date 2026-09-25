@@ -3,6 +3,8 @@
 **Invariante:** I8 de la compuerta de repositorio, `SETTINGS_Y_PROMPTS_OPERACIONALES.md` v34 §2.1.
 **Fecha de la enumeración:** 2026-08-27, sesión 28.
 **Log de la medición:** el reporte de enumeración de esta sesión, recogido en el traspaso v28.
+**Corrección:** 2026-09-25, sesión 35 (Q-36; hallazgos R-54 y R-55 del log de s35b): alcance real de los
+globs en el verificador y líneas vigentes de `.gitignore`.
 
 `slep_simce_adecuado` es un proyecto **100% público**: sus insumos son
 publicaciones de la Agencia de Calidad de la Educación y catálogos oficiales del
@@ -64,20 +66,27 @@ Cada una de las 28 rutas, más `renv/settings.json`, se inspeccionó, no se auto
 motivo de alarma, no que su contenido quede exento de revisión. La revisión de la
 tabla anterior es lo que funda la autorización; el glob solo la expresa.
 
-**No cubre a `directorio_oficial_ee.csv`.** Ese archivo contiene `MRUN` y
-columnas de persona natural, está excluido por `.gitignore` (líneas 34-38) y su
-exclusión tiene decisión propia documentada bajo la Ley 21.719
+**No autoriza a `directorio_oficial_ee.csv`, aunque el verificador lo alcanzaría.**
+Ese archivo contiene `MRUN` y columnas de persona natural, y su exclusión tiene
+decisión propia documentada bajo la Ley 21.719
 (`50_documentacion/activa/decisiones/20260622_decision_cumplimiento_ley_21719.md`).
-Ninguna entrada de este archivo debe ampliarse de modo que lo alcance.
+La entrada `20_insumos/auxiliares/*.csv` **sí** lo alcanza en el verificador I8
+(`glob2rx()` la convierte en `^20_insumos/auxiliares/.*\.csv$`): si se versionara,
+I8 no lo marcaría. El archivo se mantiene fuera del repositorio **solo** porque lo
+ignora `.gitignore` (línea 44). Esa línea no debe quitarse ni relajarse, y
+ninguna revisión de la tabla anterior lo cubre.
 
 **No cubre los `.parquet` de `40_salidas/intermedios/`.** No están versionados
-(`.gitignore` línea 10) y por eso no le conciernen a I8. Si alguna vez se
+(`.gitignore`, línea 10) y por eso no le conciernen a I8. Si alguna vez se
 versionaran, exigen su propia revisión y su propia entrada: `simce_rbd.parquet`
 tiene 185.378 filas a nivel de establecimiento.
 
-**No cubre subcarpetas.** `glob2rx()` ancla en ambos extremos y `*` no cruza `/`:
-`20_insumos/auxiliares/*.xlsx` no alcanza a `20_insumos/auxiliares/algo/x.xlsx`.
-Cada nivel se enumera por separado, a propósito.
+**No autoriza subcarpetas, aunque el verificador las alcanzaría.** `glob2rx()` ancla
+en ambos extremos, pero convierte `*` en `.*`, que sí cruza `/`:
+`20_insumos/auxiliares/*.xlsx` alcanza a `20_insumos/auxiliares/algo/x.xlsx` en el
+verificador. Cada nivel se enumera por separado para describir lo revisado; un
+archivo nuevo en una subcarpeta pasaría I8 sin revisión, así que se inspecciona
+igual, como pide la sección siguiente.
 
 ---
 
