@@ -2255,8 +2255,10 @@ code {
     // Señal de un solo establecimiento en las barras recientes (pendiente 2
     // de v34, sesión 35): la cifra lleva este asterisco y la tarjeta, la nota
     // bajo el eje. Reemplaza la atenuación (barras a 0,45 y cifras a 0,7), que
-    // dejaba las cifras blancas bajo 4,5:1. Los puntos de la sparkline siguen
-    // atenuados porque no llevan cifra.
+    // dejaba las cifras blancas bajo 4,5:1. Los puntos de la sparkline y su
+    // cifra siguen atenuados (0,45 y 0,405): el encargo de la sesión 35 (T4.2)
+    // los dejó fuera del asterisco, y su contraste queda como pendiente
+    // (hallazgo R-49 de la auditoría).
     const ASTERISCO_UNICO = "*";
     const NOTA_UNICO = ASTERISCO_UNICO + " Un solo establecimiento";
     // Regla única de rotulado (la de slep_idps s29 y la del panorama s29): una
