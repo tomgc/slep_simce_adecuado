@@ -14,7 +14,8 @@
 # generador y el HTML escrito, y D14, que comprueba la regla de filas del motor
 # adoptada en la sesión 33 (sin marca de la Agencia y al menos 10 evaluados).
 # C1 a C5 (sesión 35) comprueban las cohortes por traspasar de la decisión
-# D35-2 (20260924_decision_referente_traspasos.md).
+# D35-2 (20260924_decision_referente_traspasos.md), y R1 a R4, el rótulo y la
+# marca de ola del referente de la decisión D35-1 (misma decisión).
 # Cada prueba mide la afirmación, no un síntoma cercano, y las de ausencia
 # llevan control positivo.
 #
@@ -22,9 +23,11 @@
 #           20_insumos/auxiliares/dim_slep_comunas.csv
 #           40_salidas/trayectorias_traspasos.html (correr antes el paso 36)
 #           50_documentacion/andamios/mockup_trayectoria_traspasos.html
-# Salida:   el informe en consola, una línea por prueba. No escribe archivos:
-#           el log del encargo o de la sesión lo recoge literal (un CSV en el
-#           árbol sería un archivo de datos sin autorizar, I8).
+# Requiere: chromote y Chrome (R2 y R4 leen la vista en el navegador).
+# Salida:   el informe en consola, una línea por prueba. No escribe archivos en
+#           el árbol: el log del encargo o de la sesión lo recoge literal (un
+#           CSV en el árbol sería un archivo de datos sin autorizar, I8). R4
+#           escribe un HTML de control en tempdir() y lo borra al leerlo.
 #
 # Uso:      Rscript 30_procesamiento/36_verificar_trayectorias.R
 #           (código de salida 1 si alguna prueba falla)
@@ -568,6 +571,269 @@ c5 <- evaluar({
                          format(ESPERADO_EST_FUTURAS, big.mark = ".", decimal.mark = ",")))
 })
 comprobar("C5", "La suma de establecimientos de las unidades futuras es 2.564", c5$ok, c5$detalle)
+
+# ---- Referente (D35-1): rótulo y marca de ola -------------------------------
+# El referente sigue anclado en el primer año de la serie (decisión D35-1 en
+# 50_documentacion/activa/decisiones/20260924_decision_referente_traspasos.md).
+# Su rótulo dice el tamaño del grupo y, aparte, cuántos tienen resultado en el
+# año y la prueba en pantalla; cuando la serie llegue a una ola de traspaso, una
+# marca en la pista anuncia que el grupo cambia de composición. R2 y R4 leen la
+# vista en Chrome sin interfaz (chromote). Las pruebas se escribieron antes del
+# código (sesión 35).
+
+# Valores esperados con los insumos vigentes: el referente y sus establecimientos
+# por ola, según la comuna de su fila más reciente en simce_rbd y el catálogo de
+# olas (decisión D35-1; 12 de los 17 cerrados están en comunas de esas olas y 5
+# en comunas ya traspasadas).
+ESPERADO_REF_CAT  <- 1299L
+ESPERADO_REF_OLAS <- c("2027" = 479L, "2028" = 407L, "2029" = 408L)
+# R3 agrega un año sintético que copia el último año publicado del referente;
+# los establecimientos de OLA_SINTETICA pasan a la dependencia de un Servicio
+# Local (cod_depe2 "5"), como si se hubieran traspasado.
+ANIO_SINTETICO <- 2027L
+OLA_SINTETICA  <- 2027L
+DEPE_SLEP      <- "5"
+# Vista en el navegador: ancho de escritorio, selector de las marcas de ola y la
+# espera a que la vista termine de dibujar (redibuja cuando cargan las fuentes).
+ANCHO_NAVEGADOR  <- 1280L
+ALTO_NAVEGADOR   <- 900L
+SELECTOR_MARCA   <- ".marca-ola"
+TEXTO_AUN_MUNICIPALES <- "aún municipales"
+ESPERA_DIBUJO_JS <- paste0(
+  "(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => new Promise(r => ",
+  "setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => r(true))), 100)))"
+)
+
+# Abre un HTML local en Chrome sin interfaz, espera a que la vista dibuje, corre
+# `antes` si se pide (un clic, por ejemplo) y devuelve el objeto que `expr`
+# (JavaScript) serializa con JSON.stringify.
+leer_vista <- function(ruta, expr, antes = NULL) {
+  if (!requireNamespace("chromote", quietly = TRUE)) stop("falta el paquete chromote")
+  s <- chromote::ChromoteSession$new(width = ANCHO_NAVEGADOR, height = ALTO_NAVEGADOR)
+  on.exit(s$close(), add = TRUE)
+  s$Emulation$setDeviceMetricsOverride(width = ANCHO_NAVEGADOR, height = ALTO_NAVEGADOR,
+                                       deviceScaleFactor = 1, mobile = FALSE)
+  cargada <- s$Page$loadEventFired(wait_ = FALSE)
+  s$Page$navigate(paste0("file://", normalizePath(ruta, mustWork = TRUE)), wait_ = FALSE)
+  s$wait_for(cargada)
+  en_pagina <- function(js) {
+    r <- s$Runtime$evaluate(js, returnByValue = TRUE, awaitPromise = TRUE)
+    if (!is.null(r$exceptionDetails)) stop("JavaScript: ", r$exceptionDetails$text)
+    r$result$value
+  }
+  en_pagina(ESPERA_DIBUJO_JS)
+  if (!is.null(antes)) {
+    en_pagina(antes)
+    en_pagina(ESPERA_DIBUJO_JS)
+  }
+  jsonlite::fromJSON(en_pagina(sprintf("JSON.stringify(%s)", expr)))
+}
+JS_ESTADO <- paste0(
+  "{lg: document.getElementById('lg').textContent, yr: document.getElementById('yr').textContent, ",
+  "np: document.getElementById('c-np').value, gse: document.getElementById('c-gse').value, ",
+  "panel: document.getElementById('c-panel').checked ? 1 : 0, ",
+  "marcas: Array.from(document.querySelectorAll('", SELECTOR_MARCA, "')).map(m => m.textContent)}"
+)
+# Clic en el último año de la pista: la vista pasa a ese año.
+JS_ULTIMO_ANIO <- paste0(
+  "(function(){var c=document.querySelectorAll('#tk [data-tk]');",
+  "c[c.length-1].parentNode.dispatchEvent(new MouseEvent('click',{bubbles:true}));return true;})()"
+)
+
+# Establecimientos del referente (recuento independiente de D9) y la ola de cada
+# uno: el año que el catálogo de olas da a la comuna de su fila más reciente en
+# el parquet (la comuna donde está hoy; uno cambió de comuna en 2015).
+ref_ind <- unique(municipal_ind$rbd)
+ola_ref_ind <- intentar({
+  com <- simce |>
+    filter(rbd %in% ref_ind) |>
+    filter(.by = rbd, anio == max(anio)) |>
+    distinct(rbd, cod_com_rbd)
+  if (anyDuplicated(com$rbd) > 0) stop("establecimientos del referente con dos comunas en su último año")
+  com |>
+    inner_join(distinct(exigir(olas_ind), cod_comuna, anio_traspaso),
+               by = c(cod_com_rbd = "cod_comuna")) |>
+    transmute(rbd, ola = as.integer(anio_traspaso))
+})
+por_ola <- function(ola) {
+  t <- table(ola)
+  stats::setNames(as.integer(t), names(t))
+}
+olas_de <- function(meta_ref) {
+  o <- meta_ref$olas
+  stats::setNames(as.integer(unlist(o)), names(o))
+}
+
+# ---- R1. El referente tiene 1.299 establecimientos --------------------------
+# Control positivo: un tamaño plantado con uno de más se detecta.
+
+r1_ok <- function(cat_ref) identical(as.integer(cat_ref), ESPERADO_REF_CAT)
+r1 <- evaluar({
+  cat_ref <- exigir(DATA_T)$meta[[ID_REFERENTE]]$cat
+  list(ok = r1_ok(cat_ref) && length(ref_ind) == ESPERADO_REF_CAT && !r1_ok(cat_ref + 1L),
+       detalle = sprintf("meta$REF$cat %s; recuento independiente %s; esperado %s; control plantado detectado: %s",
+                         fmt_entero(cat_ref), fmt_entero(length(ref_ind)),
+                         fmt_entero(ESPERADO_REF_CAT), !r1_ok(cat_ref + 1L)))
+})
+comprobar("R1", "El referente tiene 1.299 establecimientos con los insumos vigentes", r1$ok, r1$detalle)
+
+# ---- R2. El rótulo dice el tamaño del grupo y cuántos tienen resultado -------
+# En la vista escrita, en su estado inicial, la leyenda del referente trae
+# meta$REF$cat formateado y el `e` del referente en el año, la prueba, el grupo
+# y la cobertura que la página tiene en pantalla; el `e` esperado se lee de DATA.
+# Control positivo: el mismo texto no pasa con un `e` plantado con uno de más.
+
+rotulo_ok <- function(lg, cat_ref, anio, e) {
+  grepl(sprintf("Referente: %s municipales", fmt_entero(cat_ref)), lg, fixed = TRUE) &&
+    grepl(sprintf("con resultado en %s: %s", anio, fmt_entero(e)), lg, fixed = TRUE)
+}
+r2 <- evaluar({
+  D   <- exigir(DATA_T)
+  est <- leer_vista(RUTA_HTML, JS_ESTADO)
+  e_esp <- D$datos |>
+    filter(id == ID_REFERENTE, anio == as.integer(est$yr), np == est$np, g == est$gse,
+           panel == as.integer(est$panel)) |>
+    pull(e)
+  if (length(e_esp) != 1L) stop("el referente no tiene una fila para el estado inicial")
+  cat_ref <- D$meta[[ID_REFERENTE]]$cat
+  list(ok = rotulo_ok(est$lg, cat_ref, est$yr, e_esp) && !rotulo_ok(est$lg, cat_ref, est$yr, e_esp + 1L),
+       detalle = sprintf("estado %s, %s, grupo %s, panel %s; esperado %s y %s; leyenda «%s»",
+                         est$yr, est$np, est$gse, est$panel, fmt_entero(cat_ref),
+                         fmt_entero(e_esp), est$lg))
+})
+comprobar("R2", "La leyenda del referente dice el tamaño del grupo y cuántos tienen resultado en pantalla",
+          r2$ok, r2$detalle)
+
+# ---- R3. Con datos de una ola, el referente pierde exactamente esos RBD -------
+# Copia en memoria de simce_rbd con un año sintético que repite el último año
+# publicado del referente, con los establecimientos de OLA_SINTETICA en
+# cod_depe2 "5": el referente de ese año pierde exactamente esos
+# establecimientos (y sus evaluados) en cada nivel y prueba y en la serie
+# combinada. Además, meta$REF$olas cuenta los establecimientos de cada ola igual
+# que el recuento independiente. Control positivo: la misma comparación con un
+# establecimiento de menos en la lista de los que salen no pasa.
+
+ultimo_anio <- max(base_g$anio)
+copia_r3 <- intentar({
+  rbd_ola <- exigir(ola_ref_ind) |> filter(ola == OLA_SINTETICA) |> pull(rbd)
+  sinteticas <- insumos$simce |>
+    filter(anio == ultimo_anio, rbd %in% ref_ind) |>
+    mutate(anio = ANIO_SINTETICO,
+           cod_depe2 = if_else(rbd %in% rbd_ola, DEPE_SLEP, cod_depe2))
+  insumos_r3 <- insumos
+  insumos_r3$simce <- bind_rows(insumos$simce, sinteticas)
+  list(DATA = construir_datos_trayectorias(insumos_r3), rbd_ola = rbd_ola)
+})
+# Diferencia de establecimientos y evaluados del referente entre el último año
+# publicado y el sintético, contra la que dejan los `rbd_quitados`.
+perdida_exacta <- function(D, rbd_quitados) {
+  ref <- D$datos |> filter(id == ID_REFERENTE, g == GSE_TOTAL, panel == 0L)
+  obs <- full_join(
+    ref |> filter(anio == ultimo_anio) |> select(np, e, n),
+    ref |> filter(anio == ANIO_SINTETICO) |> select(np, e_s = e, n_s = n),
+    by = "np"
+  ) |>
+    mutate(e_s = coalesce(e_s, 0L), n_s = coalesce(n_s, 0L), de = e - e_s, dn = n - n_s)
+  quitadas <- municipal_ind |> filter(anio == ultimo_anio, rbd %in% rbd_quitados)
+  esp <- bind_rows(quitadas, mutate(quitadas, np = NP_TODO)) |>
+    summarise(.by = np, de_esp = n_distinct(rbd), dn_esp = as.integer(round(sum(nalu))))
+  x <- inner_join(obs, esp, by = "np")
+  nrow(x) == nrow(obs) && nrow(x) == nrow(esp) && nrow(x) > 0 &&
+    all(x$de == x$de_esp) && all(x$dn == x$dn_esp)
+}
+r3 <- evaluar({
+  cr3 <- exigir(copia_r3)
+  olas_datos <- olas_de(exigir(DATA_T)$meta[[ID_REFERENTE]])
+  olas_ind_r <- por_ola(exigir(ola_ref_ind)$ola)
+  olas_ok <- identical(olas_datos, ESPERADO_REF_OLAS) && identical(olas_ind_r, ESPERADO_REF_OLAS)
+  exacta  <- perdida_exacta(cr3$DATA, cr3$rbd_ola)
+  con_resultado <- intersect(cr3$rbd_ola, municipal_ind$rbd[municipal_ind$anio == ultimo_anio])
+  control <- !perdida_exacta(cr3$DATA, setdiff(cr3$rbd_ola, con_resultado[1]))
+  todo <- cr3$DATA$datos |>
+    filter(id == ID_REFERENTE, g == GSE_TOTAL, panel == 0L, np == NP_TODO,
+           anio %in% c(ultimo_anio, ANIO_SINTETICO)) |>
+    arrange(anio)
+  list(ok = olas_ok && exacta && control,
+       detalle = sprintf(paste0("olas en DATA %s; recuento independiente %s; ola %d: %d establecimientos, ",
+                                "%d con resultado en %d; serie combinada %s; pérdida exacta: %s; ",
+                                "control plantado detectado: %s"),
+                         if (length(olas_datos)) a_texto(olas_datos) else "(sin olas)",
+                         a_texto(olas_ind_r), OLA_SINTETICA, length(cr3$rbd_ola),
+                         length(con_resultado), ultimo_anio,
+                         paste(todo$anio, todo$e, sep = ": ", collapse = " -> "), exacta, control))
+})
+comprobar("R3", "Con un año sintético de la ola 2027 traspasada, el referente pierde exactamente esos establecimientos",
+          r3$ok, r3$detalle)
+
+# ---- R4. Las marcas de ola salen de los datos --------------------------------
+# meta$REF$marcas trae, por cada ola con establecimientos del referente, el
+# primer año de la serie igual o posterior a ella: vacío con los datos actuales
+# y no vacío con la copia de R3 (recuento independiente). En la vista escrita no
+# hay ninguna marca ni el aviso de cuántos siguen municipales. Control positivo:
+# la misma vista con el DATA de la copia de R3 dibuja una marca por año de
+# marca, rotulada con su ola, y, en el último año, dice cuántos siguen
+# municipales. El HTML de ese control se escribe en tempdir(), fuera del árbol,
+# y se borra al terminar.
+
+marcas_df <- function(m) {
+  if (is.null(m)) return(NULL)
+  data.frame(anio = vapply(m, function(x) as.integer(x$anio), integer(1)),
+             ola  = vapply(m, function(x) as.integer(x$ola), integer(1)))
+}
+marcas_esperadas <- function(anios, olas) {
+  olas <- as.integer(names(olas)[olas > 0])
+  olas <- olas[vapply(olas, function(o) any(anios >= o), logical(1))]
+  data.frame(anio = vapply(olas, function(o) as.integer(min(anios[anios >= o])), integer(1)),
+             ola  = olas)
+}
+r4 <- evaluar({
+  D   <- exigir(DATA_T)
+  cr3 <- exigir(copia_r3)
+  m_actual <- marcas_df(D$meta[[ID_REFERENTE]]$marcas)
+  m_copia  <- marcas_df(cr3$DATA$meta[[ID_REFERENTE]]$marcas)
+  datos_ok <- !is.null(m_actual) && nrow(m_actual) == 0L &&
+    identical(m_actual, marcas_esperadas(D$anios, ESPERADO_REF_OLAS)) &&
+    !is.null(m_copia) && nrow(m_copia) > 0L &&
+    identical(m_copia, marcas_esperadas(cr3$DATA$anios, ESPERADO_REF_OLAS))
+
+  vista <- leer_vista(RUTA_HTML, JS_ESTADO)
+  vista_ok <- length(vista$marcas) == 0L && !grepl(TEXTO_AUN_MUNICIPALES, vista$lg, fixed = TRUE)
+
+  # Control positivo: la vista escrita con el DATA de la copia de R3, en su
+  # último año (el sintético).
+  html_control <- tempfile(fileext = ".html")
+  json_actual <- extraer_data(RUTA_HTML)
+  pos <- regexpr(json_actual, html, fixed = TRUE)
+  if (pos < 0) stop("no se encontró el DATA en la vista escrita")
+  writeBin(charToRaw(enc2utf8(paste0(
+    substr(html, 1L, pos - 1L), datos_a_json(cr3$DATA),
+    substr(html, pos + nchar(json_actual), nchar(html))
+  ))), html_control)
+  ctrl <- tryCatch(leer_vista(html_control, JS_ESTADO, antes = JS_ULTIMO_ANIO),
+                   finally = unlink(html_control))
+  cat_ref <- cr3$DATA$meta[[ID_REFERENTE]]$cat
+  olas_c  <- olas_de(cr3$DATA$meta[[ID_REFERENTE]])
+  siguen  <- cat_ref - sum(olas_c[as.integer(names(olas_c)) <= as.integer(ctrl$yr)])
+  aviso   <- sprintf("%s de %s %s", fmt_entero(siguen), fmt_entero(cat_ref), TEXTO_AUN_MUNICIPALES)
+  control_ok <- !is.null(m_copia) && length(ctrl$marcas) == nrow(m_copia) &&
+    all(grepl(paste0("^sale la ola (", paste(m_copia$ola, collapse = "|"), ")$"), ctrl$marcas)) &&
+    grepl(aviso, ctrl$lg, fixed = TRUE)
+
+  list(ok = datos_ok && vista_ok && control_ok,
+       detalle = sprintf(paste0("marcas en DATA %d (esperado 0); con la copia de R3 %s; marcas en la vista %d; ",
+                                "control con el DATA de la copia en %s: %d marcas «%s» y aviso «%s»: %s"),
+                         if (is.null(m_actual)) NA_integer_ else nrow(m_actual),
+                         if (is.null(m_copia)) "(sin campo)" else paste(m_copia$anio, m_copia$ola, sep = "/", collapse = ", "),
+                         length(vista$marcas), ctrl$yr, length(ctrl$marcas),
+                         paste(ctrl$marcas, collapse = " | "), aviso, control_ok))
+})
+comprobar("R4", "Las marcas de ola salen de los datos: ninguna con los datos actuales, una por ola alcanzada en la copia de R3",
+          r4$ok, r4$detalle)
+
+# Cierra el navegador que abrió chromote para R2 y R4.
+if (requireNamespace("chromote", quietly = TRUE) && chromote::has_default_chromote_object()) {
+  try(chromote::default_chromote_object()$close(), silent = TRUE)
+}
 
 # ---- Salida ----------------------------------------------------------------
 
