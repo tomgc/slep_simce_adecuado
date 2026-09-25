@@ -15,6 +15,11 @@ La licencia Apache 2.0 cubre EXCLUSIVAMENTE el código fuente de este
 repositorio (scripts R, pipeline, plantillas HTML/JS/CSS, documentación
 técnica).
 
+Los activos tipográficos (los archivos de fuente y su copia codificada dentro
+de las plantillas y de las páginas generadas) no forman parte de las
+«plantillas HTML/JS/CSS» ni de ningún otro componente cubierto por esta
+licencia: ver la sección de tipografía más abajo.
+
 NO cubre los datos. Los datos de resultados SIMCE e indicadores incluidos o
 procesados por este proyecto provienen de la Agencia de Calidad de la
 Educación (Chile) y están sujetos a sus Condiciones de Uso de Bases de Datos,
@@ -38,3 +43,23 @@ licencias, entre ellas:
 
 Las licencias respectivas aplican a cada componente. Consultar los sitios
 oficiales de cada biblioteca para el texto completo.
+
+-------------------------------------------------------------------------------
+TIPOGRAFÍA
+-------------------------------------------------------------------------------
+
+El sitio incrusta, y este repositorio versiona, la tipografía gobCL en sus
+caras Regular y Bold (10_utils/fuentes/gobCL_Regular.otf y
+10_utils/fuentes/gobCL_Bold.otf), tipografía institucional del Gobierno de
+Chile. La tabla «name» de cada archivo declara:
+
+- gobCL Regular: ©Rodrigo Ramirez, frescotype.com
+- gobCL Bold:    (c) 2010 by Rodrigo Ramirez / www.frescotype.com
+
+y registra como marca «Gobierno de Chile, 2010».
+
+La licencia Apache 2.0 de este proyecto NO cubre la tipografía gobCL. Se usa
+por decisión del titular del proyecto, como tipografía institucional de un
+servicio público del Estado de Chile (decisión D35-7, sesión 35). Quien
+reutilice este código debe obtener la tipografía de su fuente oficial, bajo
+sus propias condiciones, o reemplazarla por otra.
