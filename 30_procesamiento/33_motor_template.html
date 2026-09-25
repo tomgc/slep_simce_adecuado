@@ -1962,6 +1962,11 @@ code {
     const TOOLTIP_DIMS = { desplaz: 14, margen: 8 };
     function ubicarTooltip(tip, ptX, ptY) {
       const { desplaz, margen } = TOOLTIP_DIMS;
+      // Se mide en el origen: en la posición del tooltip anterior, cerca del borde
+      // derecho, el ancho disponible lo angostaba; al moverlo volvía a ensancharse
+      // y tapaba el punto (medición TT, encargo s35f).
+      tip.style.left = "0px";
+      tip.style.top = "0px";
       const ancho = tip.offsetWidth, alto = tip.offsetHeight;
       const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
       let left = ptX + desplaz;
