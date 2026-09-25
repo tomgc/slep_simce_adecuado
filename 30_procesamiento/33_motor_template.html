@@ -1987,6 +1987,17 @@ code {
         tip.querySelector(".tt-ent").textContent = entity.name;
         tip.querySelector(".tt-gse").textContent = "GSE " + gse + " · " + yr + (s.preliminar ? " *" : "");
         tip.querySelector(".tt-adec").textContent = fmtPct(s.pct);
+        // Un solo establecimiento: el valor lleva la marca, como la cifra del
+        // gráfico (D35-6), y la conserva cuando la regla C oculta esa cifra en
+        // la sparkline (D35-8). La marca va con la familia del sistema, porque
+        // gobCL dibuja «†» igual que «+» (R-47; ver FONT_SIGNO).
+        const marcaUnico = () => {
+          const m = document.createElement("span");
+          m.style.fontFamily = FONT_SIGNO;
+          m.textContent = ASTERISCO_UNICO;
+          return m;
+        };
+        if (s.n_estab === 1 && s.pct != null) tip.querySelector(".tt-adec").appendChild(marcaUnico());
         tip.querySelector(".tt-ele").textContent = (s.pct == null) ? "—"
           : (s.pct_ele != null ? fmtPct(s.pct_ele) : "—");
         tip.querySelector(".tt-ins").textContent = (s.pct == null) ? "—"
@@ -2019,7 +2030,9 @@ code {
               warnText = `Baja representatividad — un solo establecimiento (RBD ${candidatos[0].rbd})`;
             }
           }
-          warn.textContent = warnText;
+          // La advertencia empieza con la marca, como la leyenda y la nota
+          // «† Un solo establecimiento».
+          warn.append(marcaUnico(), " " + warnText);
           tip.appendChild(warn);
         }
         if (s.preliminar) {
@@ -2107,13 +2120,216 @@ code {
     // ============================================================
     // Sparkline — trayectoria histórica
     // ============================================================
+    // Dimensiones y distancias de la sparkline, en unidades del viewBox (a
+    // 320 px de ancho, una unidad es un píxel). construirSvgGraficos clona
+    // este SVG y lee W y H. Las alturas se miden en el grupo trasladado por
+    // M: y = 0 es el borde superior del área de trazado e ih, el eje.
+    const SPARK_DIMS = {
+      W: 320, H: 90,
+      M: { top: 28, right: 12, bottom: 22, left: 12 },  // márgenes del área de trazado
+      cifra: {
+        sobrePunto: 6,    // separación inicial: línea base de la cifra sobre su punto
+        holgura: 0.5,     // aire mínimo entre dos cajas que no deben tocarse
+        orden: 0.05,      // ventaja mínima de la cifra mayor, en línea base y en centro
+        borde: 0.5,       // aire de la caja de una cifra con el borde del SVG
+      },
+      anios: { linea: 13 },          // banda de años: línea base, bajo el eje
+      traspaso: { linea: -2 },       // rótulo "traspaso": línea base, sobre el área
+      asterisco: { dx: 0.5, dy: -1 },// dato preliminar: a la derecha de la caja de la cifra
+    };
+
+    // Regla C de las cifras de la sparkline (D35-8). Reemplaza la regla de
+    // choque de M2 y R-51, que siempre subía la segunda cifra de un par y
+    // dibujaba cifras menores sobre mayores (auditoría s35b, R-48).
+    //  1. Cada cifra parte SPARK_DIMS.cifra.sobrePunto unidades sobre su
+    //     punto. Si su caja sale por un lado del SVG (las del primer y el
+    //     último año, anchas por la marca «†»), se corre en horizontal lo
+    //     justo para quedar dentro.
+    //  2. Techo y piso de cada cifra: su caja no sale por arriba del SVG; si
+    //     toca el rótulo "traspaso", la cifra baja bajo él; y una cifra que
+    //     baja no toca la banda de años.
+    //  3. De dos cifras, la de mayor valor queda más arriba: si sus cajas se
+    //     tocan en horizontal, entera sobre la otra, con la holgura; si no
+    //     (cifras consecutivas), con su línea base y su centro más arriba.
+    //     Ante un choque solo se mueve en la dirección que conserva ese orden:
+    //     primero la mayor sube; lo que el techo no le deja subir, lo baja la
+    //     menor, sin tocar la banda de años. A igual cifra redondeada no hay
+    //     orden que conservar, y solo se separan si se tocan.
+    //  4. Una pasada de validación mide las cajas dibujadas y, ante cualquier
+    //     inversión, superposición o salida del SVG, oculta la cifra del año
+    //     más antiguo del par (o la cifra sola que sale o toca un rótulo) y
+    //     vuelve a ordenar las demás. Revisa los mismos pares que el orden
+    //     (consecutivas a través del gap 2019-2021 y del corte de traspaso),
+    //     así que el orden vale por construcción. La cifra oculta queda en el
+    //     DOM con display="none" y data-oculta, emparejada con su punto; su
+    //     valor y su «†» siguen en el tooltip del punto (makeTooltip).
+    // `cifras` va en orden de año: { anio, pct, valor, cx, y0, sel, asterisco }.
+    function colocarCifrasSparkline(cifras, { cajaTraspaso, cajasAnio, iw }) {
+      const { M, H, cifra: C, asterisco: A } = SPARK_DIMS;
+      if (!cifras.length || cifras[0].sel.node().getBBox().width === 0) return; // SVG sin dibujar
+      const tocan = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width &&
+                              a.y < b.y + b.height && b.y < a.y + a.height;
+      const union = (a, b) => {
+        const x = Math.min(a.x, b.x), y = Math.min(a.y, b.y);
+        return { x, y, width: Math.max(a.x + a.width, b.x + b.width) - x,
+                 height: Math.max(a.y + a.height, b.y + b.height) - y };
+      };
+      const centro = b => b.y + b.height / 2;
+      // La cifra mayor: por valor redondeado y, a igual cifra, por valor
+      // exacto y año (a igual cifra es solo el sentido de partida; ordenar
+      // prueba los dos).
+      const mayor = (a, b) => a.valor !== b.valor ? a.valor > b.valor
+        : (a.pct !== b.pct ? a.pct > b.pct : a.anio > b.anio);
+      // Bordes del SVG y de la banda de años, en coordenadas del grupo
+      const IZQ = -M.left + C.borde, DER = iw + M.right - C.borde, TECHO = -M.top + C.borde;
+      const bandaAnios = Math.min(...cajasAnio.map(b => b.y));
+
+      const ubicarAsterisco = c => {
+        if (!c.asterisco) return;
+        const b = c.sel.node().getBBox();
+        c.asterisco.attr("x", b.x + b.width + A.dx).attr("y", c.y + A.dy);
+      };
+      const mover = c => { c.sel.attr("y", c.y); ubicarAsterisco(c); };
+      const partes = c => c.asterisco
+        ? [c.sel.node().getBBox(), c.asterisco.node().getBBox()] : [c.sel.node().getBBox()];
+
+      // 1 y 2. Posición inicial, corrimiento lateral, techo y piso. Los
+      // desplazamientos de la caja respecto de la línea base no cambian al
+      // mover la cifra en vertical.
+      cifras.forEach(c => {
+        c.y = c.y0;
+        c.sel.attr("x", c.cx);
+        mover(c);
+        let caja = partes(c).reduce(union);
+        const dx = Math.max(0, IZQ - caja.x) - Math.max(0, caja.x + caja.width - DER);
+        if (dx !== 0) { c.sel.attr("x", c.cx + dx); ubicarAsterisco(c); caja = partes(c).reduce(union); }
+        c.arriba = caja.y - c.y;
+        c.abajo = caja.y + caja.height - c.y;
+        c.centro = centro(c.sel.node().getBBox()) - c.y;
+        c.xIzq = caja.x;
+        c.xDer = caja.x + caja.width;
+        c.yMin = TECHO - c.arriba;
+        if (cajaTraspaso && c.xIzq < cajaTraspaso.x + cajaTraspaso.width + C.holgura &&
+            cajaTraspaso.x < c.xDer + C.holgura) {
+          c.yMin = Math.max(c.yMin, cajaTraspaso.y + cajaTraspaso.height + C.holgura - c.arriba);
+        }
+        c.yMax = bandaAnios - C.holgura - c.abajo;
+      });
+
+      // Separación de dos cifras que se tocan en horizontal: hi entera sobre lo.
+      const sepChoque = (hi, lo) => hi.abajo - lo.arriba + C.holgura;
+      // Alturas con un juego de restricciones { hi, lo, sep }; null si forman
+      // un ciclo. Recorre las cifras en orden topológico: cada una después de
+      // todas las que deben quedar bajo ella.
+      const resolver = (vis, restr) => {
+        const pend = new Map(vis.map(c => [c, restr.filter(r => r.hi === c).length]));
+        const asc = [], cola = vis.filter(c => pend.get(c) === 0);
+        while (cola.length) {
+          const c = cola.shift();
+          asc.push(c);
+          restr.forEach(r => {
+            if (r.lo !== c) return;
+            pend.set(r.hi, pend.get(r.hi) - 1);
+            if (pend.get(r.hi) === 0) cola.push(r.hi);
+          });
+        }
+        if (asc.length !== vis.length) return null;
+        // Parte en su posición inicial, bajo el rótulo "traspaso" si lo toca.
+        const y = new Map(vis.map(c => [c, Math.max(c.y0, c.yMin)]));
+        // a) La mayor sube sobre las menores que la tocan (de menor a mayor).
+        asc.forEach(c => restr.forEach(r => { if (r.hi === c) y.set(c, Math.min(y.get(c), y.get(r.lo) - r.sep)); }));
+        // b) Ninguna pasa su techo.
+        vis.forEach(c => y.set(c, Math.max(y.get(c), c.yMin)));
+        // c) Lo que la mayor no pudo subir, lo baja la menor (de mayor a menor).
+        asc.slice().reverse().forEach(c => restr.forEach(r => { if (r.lo === c) y.set(c, Math.max(y.get(c), y.get(r.hi) + r.sep)); }));
+        // d) Una mayor que subió de más, porque su menor terminó bajando,
+        //    vuelve hacia su posición inicial sin dejar de despejarla.
+        asc.forEach(c => {
+          const meta = Math.min(Math.max(c.y0, c.yMin), c.yMax);
+          if (y.get(c) >= meta) return;
+          const tope = restr.filter(r => r.hi === c).reduce((m, r) => Math.min(m, y.get(r.lo) - r.sep), meta);
+          y.set(c, Math.max(y.get(c), tope));
+        });
+        return y;
+      };
+
+      // 3. Orden por valor entre las cifras visibles. Cada restricción pide
+      // lo.y - hi.y >= sep (hi, la mayor, arriba de lo). Dos cifras de igual
+      // valor redondeado que se tocan no tienen orden que conservar: se
+      // prueban los dos sentidos de cada par (a lo más 2^8 combinaciones) y
+      // queda la disposición que menos mueve las cifras sin tocar la banda de
+      // años. Sin eso, una racha de cifras iguales («10%†» cuatro años
+      // seguidos) se apilaba en escalera.
+      const ordenar = vis => {
+        const fijas = [], libres = [];
+        for (let i = 0; i < vis.length; i++) {
+          for (let j = i + 1; j < vis.length; j++) {
+            const a = vis[i], b = vis[j];
+            const [hi, lo] = mayor(a, b) ? [a, b] : [b, a];
+            if (a.xIzq < b.xDer + C.holgura && b.xIzq < a.xDer + C.holgura) {
+              if (a.valor === b.valor) libres.push([hi, lo]);
+              else fijas.push({ hi, lo, sep: sepChoque(hi, lo) });
+            } else if (j === i + 1 && a.valor !== b.valor) {
+              fijas.push({ hi, lo, sep: Math.max(0, hi.centro - lo.centro) + C.orden });
+            }
+          }
+        }
+        const MAX_LIBRES = 8;        // pares con sentido a elegir (2^8 combinaciones)
+        const CASTIGO_PISO = 1e6;    // costo de una cifra que tocaría la banda de años
+        const k = Math.min(libres.length, MAX_LIBRES);
+        const costo = y => vis.reduce((s, c) =>
+          s + Math.abs(y.get(c) - c.y0) + (y.get(c) > c.yMax ? CASTIGO_PISO : 0), 0);
+        let mejor = null, mejorCosto = Infinity;
+        for (let m = 0; m < (1 << k); m++) {
+          const restr = fijas.concat(libres.map(([hi, lo], t) =>
+            (t < k && (m >> t) & 1) ? { hi: lo, lo: hi, sep: sepChoque(lo, hi) } : { hi, lo, sep: sepChoque(hi, lo) }));
+          const y = resolver(vis, restr);
+          if (!y) continue;
+          const cst = costo(y);
+          if (cst < mejorCosto) { mejor = y; mejorCosto = cst; }
+        }
+        vis.forEach(c => { c.y = mejor.get(c); mover(c); });
+      };
+
+      // 4. Validación con las cajas dibujadas. Devuelve la cifra que se oculta.
+      const fallaDe = vis => {
+        const cajas = vis.map(partes);
+        const fuera = b => b.x < -M.left || b.x + b.width > iw + M.right ||
+                           b.y < -M.top || b.y + b.height > H - M.top;
+        for (let i = 0; i < vis.length; i++) {
+          if (cajas[i].some(b => fuera(b) || (cajaTraspaso && tocan(b, cajaTraspaso)) ||
+                                 cajasAnio.some(y => tocan(b, y)))) return vis[i];
+        }
+        for (let i = 0; i < vis.length; i++) {
+          for (let j = i + 1; j < vis.length; j++) {
+            if (cajas[i].some(p => cajas[j].some(q => tocan(p, q)))) return vis[i];
+          }
+        }
+        for (let i = 0; i + 1 < vis.length; i++) {
+          const a = vis[i], b = vis[i + 1];
+          if (a.valor === b.valor) continue;
+          const [hi, lo] = a.valor > b.valor ? [i, i + 1] : [i + 1, i];
+          if (vis[lo].y < vis[hi].y || centro(cajas[lo][0]) < centro(cajas[hi][0])) return a;
+        }
+        return null;
+      };
+      for (let vuelta = 0; vuelta <= cifras.length; vuelta++) {
+        const vis = cifras.filter(c => !c.oculta);
+        ordenar(vis);
+        const falla = fallaDe(vis);
+        if (!falla) break;
+        falla.oculta = true;
+        falla.sel.attr("display", "none").attr("data-oculta", 1);
+        if (falla.asterisco) falla.asterisco.attr("display", "none");
+      }
+    }
+
     function SparklineSubchart({ entity, gse, nivel, prueba }) {
       const ref = React.useRef(null);
       React.useEffect(() => {
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove();
-        const W = 320, H = 90;
-        const M = { top: 28, right: 12, bottom: 22, left: 12 };
+        const { W, H, M } = SPARK_DIMS;
         const iw = W - M.left - M.right;
         const ih = H - M.top - M.bottom;
         const g = svg
@@ -2150,7 +2366,7 @@ code {
         const OP_PREVIO = 0.4;
 
         // Marcador vertical en el año de traspaso. La caja de su rótulo se
-        // guarda para que una cifra desplazada no caiga encima (ver abajo).
+        // guarda porque una cifra que lo toca baja bajo él (regla C).
         let cajaTraspaso = null;
         if (anioCorte != null) {
           const xc = x(anioCorte);
@@ -2162,7 +2378,7 @@ code {
             .attr("stroke-dasharray", "2,2")
             .attr("opacity", 0.55);
           cajaTraspaso = g.append("text")
-            .attr("x", xc).attr("y", -2)
+            .attr("x", xc).attr("y", SPARK_DIMS.traspaso.linea)
             .attr("text-anchor", "middle")
             .attr("font-family", FONT_SVG)
             .attr("font-size", FS_SVG.sparkline.marcaTraspaso)
@@ -2220,14 +2436,12 @@ code {
         }
         [pre, post].forEach(dibujarSegmento);
 
-        // Cifras sin superponerse (D35-6): la marca de un solo establecimiento
-        // ensancha la cifra, y en años contiguos de valor parecido dos cifras
-        // se tocaban. Una cifra que choca con la del punto anterior sube lo
-        // justo para despejarla (y, si cae sobre el rótulo "traspaso", también
-        // sobre él). Sin choque, la cifra queda 6 unidades sobre su punto.
-        const chocan = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width &&
-                                 a.y < b.y + b.height && b.y < a.y + a.height;
-        let cajaCifraPrevia = null;
+        // Cifras de los puntos: se dibujan en su posición inicial y, al final,
+        // colocarCifrasSparkline las ordena por valor (regla C, D35-8). La
+        // marca de un solo establecimiento ensancha la cifra, y en años
+        // contiguos de valor parecido dos cifras se tocaban (D35-6).
+        const cifras = [];
+        const cajasAnio = [];
 
         const tt = makeTooltip(entity, gse, nivel, prueba);
         valid.forEach(s => {
@@ -2248,7 +2462,7 @@ code {
             .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
             .on("mouseleave", tt.hide)
             .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
-          let labelY = Math.max(8, cy - 6);
+          const labelY = cy - SPARK_DIMS.cifra.sobrePunto;
           const cifra = g.append("text")
             .attr("x", cx).attr("y", labelY)
             .attr("text-anchor", "middle")
@@ -2260,36 +2474,29 @@ code {
             .style("pointer-events", "none")
             .text(Math.round(s.pct) + "%")
             .call(conMarcaUnico, isLowN);
-          // El rótulo "traspaso" se revisa para toda cifra, no solo para la que
-          // ya chocó con la anterior, y la revisión se repite porque subir sobre
-          // uno puede volver a tocar el otro (auditoría s35b, R-51: con la marca
-          // en la familia del sistema, 4 cifras quedaban sobre él en el barrido).
-          let caja = cifra.node().getBBox();
-          for (let vuelta = 0; vuelta < 4; vuelta++) {
-            const o = [cajaCifraPrevia, cajaTraspaso].find(b => b && chocan(caja, b));
-            if (!o) break;
-            labelY -= caja.y + caja.height - o.y + 0.5;
-            cifra.attr("y", labelY);
-            caja = cifra.node().getBBox();
-          }
-          cajaCifraPrevia = caja;
-          g.append("text")
-            .attr("x", cx).attr("y", ih + 13)
+          cajasAnio.push(g.append("text")
+            .attr("x", cx).attr("y", ih + SPARK_DIMS.anios.linea)
             .attr("text-anchor", "middle")
             .attr("font-family", FONT_SVG)
             .attr("font-size", FS_SVG.sparkline.anioEje)
             .attr("fill", "#747474")
-            .text(s.year);
+            .text(s.year)
+            .node().getBBox());
+          // Dato preliminar: el asterisco acompaña a su cifra (a la derecha de
+          // su caja, SPARK_DIMS.asterisco) y cuenta en su caja como obstáculo.
+          let asterisco = null;
           if (s.preliminar) {
-            g.append("text")
-              .attr("x", cx + 7).attr("y", labelY - 1)
+            asterisco = g.append("text")
+              .attr("x", cx).attr("y", labelY + SPARK_DIMS.asterisco.dy)
               .attr("font-family", FONT_SVG)
               .attr("font-size", FS_SVG.sparkline.marcaPreliminar)
               .attr("font-weight", 900)
               .attr("fill", "#0062A0")
               .text("*");
           }
+          cifras.push({ anio: s.year, pct: s.pct, valor: Math.round(s.pct), cx, y0: labelY, sel: cifra, asterisco });
         });
+        colocarCifrasSparkline(cifras, { cajaTraspaso, cajasAnio, iw });
       }, [entity.id, entity.name, entity.anio_traspaso, entity.kind, (entity.comunas || []).join(","), gse, nivel, prueba]);
       return <svg ref={ref} className="sparkline-svg" />;
     }
@@ -2794,7 +3001,7 @@ code {
       const GSE_LEVELS = SimceData.GSE_LEVELS;
 
       // Dimensiones de cada SVG fuente (deben coincidir con viewBox de cada subchart)
-      const SPARK_W = 320, SPARK_H = 90;
+      const SPARK_W = SPARK_DIMS.W, SPARK_H = SPARK_DIMS.H;
       const BARS_W  = RECENT_DIMS.W, BARS_H  = RECENT_DIMS.H;
       // Alto de cada SVG de barras según su viewBox: H, o H más la banda de la
       // nota de un solo establecimiento (RECENT_DIMS.nota). Las filas del SVG
