@@ -17,7 +17,8 @@
 # D35-2 (20260924_decision_referente_traspasos.md), R1 a R4, el rótulo y la
 # marca de ola del referente de la decisión D35-1 (misma decisión), y R5 y R6
 # (encargo pendientes s35b), el conteo del referente por ola con el directorio
-# de la enmienda D35-4.
+# de la enmienda D35-4; el mismo encargo extiende a las unidades futuras el
+# recuento independiente de D9, con su control positivo D9f.
 # Cada prueba mide la afirmación, no un síntoma cercano, y las de ausencia
 # llevan control positivo.
 #
@@ -197,12 +198,37 @@ insumos <- leer_insumos_trayectorias()
 DATA    <- construir_datos_trayectorias(insumos, conservar_brutos = TRUE)
 base_g  <- base_valida(insumos$simce)
 
+# ---- Catálogo de olas, leído por cuenta propia (D35-2) ---------------------
+# Las olas de traspaso posteriores a la última cohorte del catálogo de
+# Servicios Locales, leídas sin pasar por 36_funciones_trayectorias.R. Las usan
+# el recuento de D9 y las pruebas de las cohortes futuras y del referente. Un
+# error de lectura queda guardado: C1 a R6 lo informan como FALLA y D9 se
+# detiene, igual que la lectura de insumos de arriba.
+
+intentar <- function(expr) tryCatch(expr, error = function(e) e)
+exigir   <- function(x) if (inherits(x, "error")) stop(conditionMessage(x), call. = FALSE) else x
+
+ultima_vigente <- max(as.integer(sleps$anio_traspaso))
+olas_ind <- intentar(
+  readr::read_delim(
+    here::here("20_insumos", "auxiliares", "dim_slep_comunas.csv"), delim = ";",
+    col_types = readr::cols(.default = readr::col_character()),
+    locale = readr::locale(encoding = "UTF-8"), show_col_types = FALSE, progress = FALSE
+  ) |>
+    filter(as.integer(anio_traspaso) > ultima_vigente)
+)
+
 # ---- D9. El total T es la suma de todos los grupos del parquet --------------
 # Recuento independiente: evaluados por universo, año y nivel-prueba, sumando
 # las filas válidas del parquet de todos los grupos socioeconómicos, contra el
-# `n` del total que publica la vista. Cubre Servicios Locales, referente y nube,
-# en el panel 0. B31-4 atribuía al mockup la exclusión del grupo 5 del total;
-# esta prueba es la que lo habría detectado.
+# `n` del total que publica la vista. Cubre Servicios Locales, referente,
+# unidades futuras y nube, en el panel 0, y toda fila del total de la vista en
+# ese panel tiene su recuento. B31-4 atribuía al mockup la exclusión del grupo
+# 5 del total; esta prueba es la que lo habría detectado. Las unidades futuras
+# (D35-2) se recuentan con el catálogo de olas y el directorio leídos por cuenta
+# propia: los establecimientos que el directorio registra como municipales en
+# las comunas de cada par (Servicio Local, ola), con sus filas de cualquier
+# dependencia (encargo pendientes s35b, Q-23).
 
 anio_ancla <- min(base_g$anio)
 rbd_ancla  <- unique(base_g$rbd[base_g$anio == anio_ancla])
@@ -211,15 +237,27 @@ municipal_ind <- base_g |>
          !rbd %in% as.character(sleps$rbd),
          rbd %in% rbd_ancla)
 
+rbd_fut_ind <- read_parquet(file.path(RUTA, "establecimientos_chile.parquet")) |>
+  filter(cod_depe2 == DEPE_MUNICIPAL) |>
+  transmute(rbd = as.character(rbd), cod_comuna = as.character(cod_com_rbd)) |>
+  inner_join(distinct(exigir(olas_ind), cod_comuna, cod_slep, anio_traspaso),
+             by = "cod_comuna") |>
+  transmute(id = paste0(cod_slep, SEP_ID_FUTURO, anio_traspaso), rbd) |>
+  distinct()
+recuento_fut <- base_g |> inner_join(rbd_fut_ind, by = "rbd") |>
+  summarise(.by = c(id, anio, np), n_ind = sum(nalu))
+
 recuento <- bind_rows(
   base_g |> inner_join(mutate(catalogo, rbd = as.character(rbd)), by = "rbd") |>
     summarise(.by = c(cod_slep, anio, np), n_ind = sum(nalu)) |>
     rename(id = cod_slep),
   municipal_ind |> summarise(.by = c(anio, np), n_ind = sum(nalu)) |>
-    mutate(id = ID_REFERENTE)
+    mutate(id = ID_REFERENTE),
+  recuento_fut
 )
-totales <- DATA$datos |> filter(g == GSE_TOTAL, panel == 0L, np != NP_TODO) |>
-  inner_join(recuento, by = c("id", "anio", "np"))
+filas_t <- DATA$datos |> filter(g == GSE_TOTAL, panel == 0L, np != NP_TODO)
+totales <- filas_t |> inner_join(recuento, by = c("id", "anio", "np"))
+es_futura <- totales$id %in% recuento_fut$id
 
 recuento_nube <- municipal_ind |>
   summarise(.by = c(cod_com_rbd, anio, np), n_ind = sum(nalu)) |>
@@ -242,22 +280,39 @@ desajustes_d9 <- function(tot, tot_nube, sg) {
   sum(tot$n != round(tot$n_ind)) + sum(tot_nube$n != round(tot_nube$n_ind)) +
     sum(sg$n != sg$n_g)
 }
+sin_pareja_d9 <- (nrow(filas_t) - nrow(totales)) + (nrow(recuento) - nrow(totales)) +
+  (nrow(recuento_nube) - nrow(totales_nube))
 comprobar(
-  "D9", "El n del total T iguala la suma de todos los grupos del parquet (entidades, referente y nube)",
-  desajustes_d9(totales, totales_nube, suma_grupos) == 0 &&
-    nrow(totales) == nrow(recuento) && nrow(totales_nube) == nrow(recuento_nube),
-  sprintf("%d desajustes en %d + %d + %d combinaciones",
+  "D9", "El n del total T iguala la suma de todos los grupos del parquet (Servicios Locales, referente, unidades futuras y nube)",
+  desajustes_d9(totales, totales_nube, suma_grupos) == 0 && sin_pareja_d9 == 0,
+  sprintf(paste0("%d desajustes en %d + %d + %d combinaciones (total: %d de las vigentes y el referente ",
+                 "y %d de %d unidades futuras; nube; suma de grupos); sin pareja %d"),
           desajustes_d9(totales, totales_nube, suma_grupos),
-          nrow(totales), nrow(totales_nube), nrow(suma_grupos))
+          nrow(totales), nrow(totales_nube), nrow(suma_grupos),
+          sum(!es_futura), sum(es_futura), n_distinct(totales$id[es_futura]), sin_pareja_d9)
 )
 
-# Control positivo de D9: restar un evaluado a un total dispara un hallazgo.
+# Control positivo de D9: restar un evaluado al total de una unidad vigente o
+# del referente dispara un hallazgo.
 plantado <- totales
-plantado$n[1] <- plantado$n[1] - 1L
+k_vig <- which(!es_futura)[1]
+plantado$n[k_vig] <- plantado$n[k_vig] - 1L
 comprobar(
   "D9c", "Control positivo: un total con un evaluado de menos dispara exactamente un hallazgo",
   desajustes_d9(plantado, totales_nube, suma_grupos) == 1,
-  sprintf("detectados %d", desajustes_d9(plantado, totales_nube, suma_grupos))
+  sprintf("detectados %d en %s", desajustes_d9(plantado, totales_nube, suma_grupos), plantado$id[k_vig])
+)
+
+# Control positivo de la extensión a las unidades futuras: restar un evaluado
+# al total de una unidad futura dispara un hallazgo.
+plantado_fut <- totales
+k_fut <- which(es_futura)[1]
+plantado_fut$n[k_fut] <- plantado_fut$n[k_fut] - 1L
+comprobar(
+  "D9f", "Control positivo: el total de una unidad futura con un evaluado de menos dispara exactamente un hallazgo",
+  desajustes_d9(plantado_fut, totales_nube, suma_grupos) == 1,
+  sprintf("detectados %d en %s", desajustes_d9(plantado_fut, totales_nube, suma_grupos),
+          plantado_fut$id[k_fut])
 )
 
 # ---- D10. Fidelidad al mockup auditado de la sesión 30 ----------------------
@@ -441,10 +496,10 @@ comprobar(
 # (50_documentacion/activa/decisiones/20260924_decision_referente_traspasos.md).
 # Una unidad futura se reconoce por su año de traspaso, no por su
 # identificador: así C2 puede detectar un identificador reutilizado. Los
-# recuentos independientes leen el catálogo de olas y el directorio sin pasar
-# por 36_funciones_trayectorias.R. Las pruebas se escribieron antes del código
-# (sesión 35): un error de construcción se informa como FALLA de la prueba y no
-# detiene la batería.
+# recuentos independientes leen el catálogo de olas (olas_ind, leído antes de
+# D9) y el directorio sin pasar por 36_funciones_trayectorias.R. Las pruebas se
+# escribieron antes del código (sesión 35): un error de construcción se informa
+# como FALLA de la prueba y no detiene la batería.
 
 # Valores esperados con los insumos vigentes (catálogo de slep_central_datos en
 # d7a8ec6 y directorio de establecimientos_chile.parquet). Cambian solo cuando
@@ -452,21 +507,10 @@ comprobar(
 ESPERADO_POR_OLA     <- c("2027" = 13L, "2028" = 11L, "2029" = 13L)
 ESPERADO_EST_FUTURAS <- 2564L
 
-intentar <- function(expr) tryCatch(expr, error = function(e) e)
-exigir   <- function(x) if (inherits(x, "error")) stop(conditionMessage(x), call. = FALSE) else x
-evaluar  <- function(expr) {
+evaluar <- function(expr) {
   tryCatch(expr, error = function(e) list(ok = FALSE, detalle = paste("error:", conditionMessage(e))))
 }
 
-ultima_vigente <- max(as.integer(sleps$anio_traspaso))
-olas_ind <- intentar(
-  readr::read_delim(
-    here::here("20_insumos", "auxiliares", "dim_slep_comunas.csv"), delim = ";",
-    col_types = readr::cols(.default = readr::col_character()),
-    locale = readr::locale(encoding = "UTF-8"), show_col_types = FALSE, progress = FALSE
-  ) |>
-    filter(as.integer(anio_traspaso) > ultima_vigente)
-)
 est_fut_ind <- intentar(
   read_parquet(file.path(RUTA, "establecimientos_chile.parquet")) |>
     filter(cod_depe2 == "1", cod_com_rbd %in% exigir(olas_ind)$cod_comuna) |>
