@@ -32,6 +32,9 @@ html,body{margin:0;padding:0}
 
   /* Tokens de la vista, derivados de la paleta */
   --u:8px; --h:40px;
+  /* Alto propio del plano cuando la vista crece con su contenido (bajo 680 px,
+     de 680 a 822 px y con ventanas bajas: A3, Q-33 y Q-44). */
+  --alto-plano-fijo:360px;
   --f1:22px; --f2:15px; --f3:13px; --fd:42px;
   --s0:var(--cream); --s1:var(--paper); --s2:var(--cream-200); --s3:#EBDDB6;
   --line:var(--line-motor); --grid:#ECE3CF; --vacio:#F3EDDF;
@@ -246,7 +249,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
   .sw{white-space:normal;height:auto;min-height:var(--h);padding-top:6px;padding-bottom:6px}
   /* Tabla arriba y plano abajo, con un alto propio para el plano. */
   .main{grid-template-columns:minmax(0,1fr)}
-  svg.chart{flex:none;height:360px}
+  svg.chart{flex:none;height:var(--alto-plano-fijo)}
   /* Los nombres largos de la tabla («Valle Diguillín (comunas que se traspasan
      en 2027)») se parten en líneas en vez de desplazar la tabla hacia el lado. */
   td.nm{white-space:normal}
@@ -278,7 +281,31 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
   .app:not(.pres){height:auto}
   .app:not(.pres) .main{grid-template-columns:minmax(0,1fr)}
   .app:not(.pres) .card{width:var(--cardw,300px);max-width:100%}
-  .app:not(.pres) svg.chart{flex:none;height:360px}
+  .app:not(.pres) svg.chart{flex:none;height:var(--alto-plano-fijo)}
+}
+
+/* ---- Ventanas bajas, desde 823 px de ancho (Q-44, encargo s35d): la vista
+   reparte el alto de la ventana entre la barra de controles, el plano y la
+   línea de tiempo, y con ventanas bajas al plano le queda poco o nada (0 px a
+   1024 × 650, 116,8 a 1024 × 768 y 166,3 a 823 × 900 con la cohorte 2027). Con
+   la ventana bajo el alto que le da al plano 320 px o más, la vista crece con su
+   contenido y el plano toma el alto propio de las pantallas angostas; tabla y
+   plano siguen lado a lado. El alto del plano crece 1:1 con el de la ventana, y
+   el umbral se midió en el ancho más angosto de cada tramo con las cohortes
+   inicial, 2027, 2028 y 2029 (la 2027 es la peor): 1.054 px a 823 de ancho,
+   972 px a 1.024 y 831 px a 1.280. Cada bloque llega hasta un píxel bajo su
+   umbral; con ventanas más altas nada cambia. El modo presentación tampoco. ---- */
+@media (min-width:823px) and (max-width:1023px) and (max-height:1053px){
+  .app:not(.pres){height:auto}
+  .app:not(.pres) svg.chart{flex:none;height:var(--alto-plano-fijo)}
+}
+@media (min-width:1024px) and (max-width:1279px) and (max-height:971px){
+  .app:not(.pres){height:auto}
+  .app:not(.pres) svg.chart{flex:none;height:var(--alto-plano-fijo)}
+}
+@media (min-width:1280px) and (max-height:830px){
+  .app:not(.pres){height:auto}
+  .app:not(.pres) svg.chart{flex:none;height:var(--alto-plano-fijo)}
 }
 </style>
 </head>
