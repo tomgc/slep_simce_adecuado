@@ -200,10 +200,13 @@ cc <- df_comunal |>
     prueba == "lect",
     cod_com_rbd %in% costa_central
   ) |>
+  # Se agrupa por código de comuna: el nombre no es una clave (D35-3; I-7 en
+  # forma absoluta desde el encargo pendientes s35b). La salida no cambia,
+  # porque cada una de las cuatro comunas tiene un solo nombre.
   dplyr::summarise(
     pct = sum(pct_adecuado * n_evaluados, na.rm = TRUE) /
           sum(n_evaluados, na.rm = TRUE),
-    .by = c(nom_com_rbd, cod_grupo, anio)
+    .by = c(cod_com_rbd, nom_com_rbd, cod_grupo, anio)
   ) |>
   dplyr::mutate(pct = round(pct, 1)) |>
   tidyr::pivot_wider(names_from = anio, values_from = pct) |>
