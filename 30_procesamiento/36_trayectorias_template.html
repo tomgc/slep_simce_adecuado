@@ -222,6 +222,42 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 .pout{flex:none;align-self:center}
 .app:not(.pres) .pout{display:none!important}
 [hidden]{display:none!important}
+
+/* ---- Pantallas angostas, bajo 680 px (pendiente 4 de v34, encargo pendientes
+   s35b): la vista cabe en el ancho de la pantalla. Antes, la columna de la
+   rejilla de .app tomaba el ancho mínimo de su pieza más ancha (el grupo
+   «Cobertura», con sus dos interruptores en una sola línea) y arrastraba la
+   barra de controles, el plano y la línea de tiempo: la página medía 585 px a
+   375 y 540 px, y el plano quedaba de 0 a 40 px de alto. Todo va dentro de esta
+   regla, al final de la hoja para ganar a las reglas generales del mismo peso:
+   de 680 px hacia arriba nada cambia. ---- */
+@media (max-width:679px){
+  /* La vista crece con su contenido y la página se desplaza en vertical, en vez
+     de repartir el alto de la pantalla entre controles, plano y línea de tiempo. */
+  .app{height:auto}
+  /* Cada grupo de controles ocupa su propia línea; los menús no pasan de ella. */
+  .ctls .f{flex:1 1 100%;min-width:0}
+  .ctls select{max-width:100%}
+  .hdacc{max-width:100%}
+  /* «Cobertura»: los interruptores se reparten en líneas y su texto también. */
+  .cob{flex-wrap:wrap}
+  .sw{white-space:normal;height:auto;min-height:var(--h);padding-top:6px;padding-bottom:6px}
+  /* Tabla arriba y plano abajo, con un alto propio para el plano. */
+  .main{grid-template-columns:minmax(0,1fr)}
+  svg.chart{flex:none;height:360px}
+  /* Los nombres largos de la tabla («Valle Diguillín (comunas que se traspasan
+     en 2027)») se parten en líneas en vez de desplazar la tabla hacia el lado. */
+  td.nm{white-space:normal}
+  /* El aviso de los años sin medición se parte en líneas en vez de salirse del
+     plano por la izquierda. */
+  .gapb{white-space:normal;max-width:calc(100% - 48px)}
+  /* Línea de tiempo: reproducir y año en una línea, la pista debajo, a todo el ancho. */
+  .pl{flex-wrap:wrap}
+  .tk{flex:1 1 100%;min-width:0}
+  /* Las notas metodológicas caben entre los márgenes del velo (a 375 px el 94 %
+     del ancho pasaba 1,5 px del borde derecho). */
+  .modal{width:calc(100vw - 48px)}
+}
 </style>
 </head>
 <body>
@@ -251,7 +287,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
     </select></div>
 
   <div class="f"><span>Cobertura</span>
-    <div style="display:flex;gap:8px">
+    <div class="cob" style="display:flex;gap:8px">
     <label class="sw" id="sw-panel" data-on="0"><input type="checkbox" id="c-panel"> Solo establecimientos con serie completa</label>
     <label class="sw" id="sw-nube" data-on="0"><input type="checkbox" id="c-nube"> Sostenedores municipales</label>
     </div></div>
