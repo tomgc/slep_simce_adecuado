@@ -2324,8 +2324,72 @@ code {
       }
     }
 
+    // Fuentes del sitio listas (Q-48; auditoría del encargo s35c, R-46).
+    // gobCL-sitio va incrustada con font-display: swap, así que un navegador
+    // puede dibujar primero con la fuente de respaldo. colocarCifrasSparkline
+    // mide las cajas con getBBox al dibujar: si la fuente llega después, las
+    // cifras quedan colocadas con las medidas del respaldo (en una copia con la
+    // fuente tardía, 23 inversiones y 164 cifras superpuestas en una muestra de
+    // 300 sparklines). Una sola promesa para todas las tarjetas, como la de la
+    // vista de trayectorias (R-50): se piden las dos caras incrustadas y, cuando
+    // cargan, se espera document.fonts.ready. Si load() falla, la rama de
+    // respaldo espera solo document.fonts.ready; sin document.fonts, las fuentes
+    // se dan por listas desde el inicio. Si las caras todavía no estaban
+    // declaradas al pedirlas (load() no encuentra ninguna), se espera la primera
+    // carga de una cara de la familia.
+    const FAMILIA_SITIO = "gobCL-sitio";
+    const FUENTES_SITIO = (() => {
+      const fs = typeof document !== "undefined" ? document.fonts : null;
+      if (!fs) return { listas: true, promesa: Promise.resolve() };
+      const estado = { listas: false, promesa: null };
+      const esDelSitio = f => f.family.replace(/["']/g, "") === FAMILIA_SITIO;
+      const esperarCaras = caras => {
+        if ([].concat(...caras).length > 0) return fs.ready;
+        return new Promise(resolver => {
+          const alTerminar = e => {
+            if (!Array.from(e.fontfaces || []).some(esDelSitio)) return;
+            fs.removeEventListener("loadingdone", alTerminar);
+            resolver(fs.ready);
+          };
+          fs.addEventListener("loadingdone", alTerminar);
+        });
+      };
+      const carga = fs.load
+        ? Promise.all([fs.load('400 1em "' + FAMILIA_SITIO + '"'), fs.load('700 1em "' + FAMILIA_SITIO + '"')])
+            .then(esperarCaras, () => fs.ready)
+        : fs.ready;
+      const marcar = () => { estado.listas = true; };
+      estado.promesa = carga.then(marcar, marcar);
+      return estado;
+    })();
+
+    // Hook de las tarjetas que miden texto: parte en false y pasa a true cuando
+    // la promesa de las fuentes se resuelve o falla (una sola vez). Si ya se
+    // resolvió cuando la tarjeta se monta, parte en true y no hay otro dibujo.
+    // El cambio va con flushSync: cada tarjeta se vuelve a dibujar en la misma
+    // tarea en que la fuente queda lista, antes del siguiente cuadro, así que no
+    // se pinta ningún cuadro con cifras colocadas con la fuente de respaldo y
+    // la fuente ya aplicada (sin flushSync, React repartía los nuevos dibujos
+    // en tareas posteriores).
+    function useFuentesListas() {
+      const [listas, setListas] = React.useState(FUENTES_SITIO.listas);
+      React.useEffect(() => {
+        if (listas) return undefined;
+        let vigente = true;
+        FUENTES_SITIO.promesa.then(() => {
+          if (vigente) ReactDOM.flushSync(() => setListas(true));
+        });
+        return () => { vigente = false; };
+      }, []);
+      return listas;
+    }
+
     function SparklineSubchart({ entity, gse, nivel, prueba }) {
       const ref = React.useRef(null);
+      // Con la fuente del sitio ya cargada, la sparkline se vuelve a dibujar y
+      // colocarCifrasSparkline mide las cajas con gobCL-sitio (Q-48). El efecto
+      // limpia el SVG antes de dibujar, así que el nuevo dibujo es idempotente.
+      const fuentesListas = useFuentesListas();
       React.useEffect(() => {
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove();
@@ -2497,7 +2561,7 @@ code {
           cifras.push({ anio: s.year, pct: s.pct, valor: Math.round(s.pct), cx, y0: labelY, sel: cifra, asterisco });
         });
         colocarCifrasSparkline(cifras, { cajaTraspaso, cajasAnio, iw });
-      }, [entity.id, entity.name, entity.anio_traspaso, entity.kind, (entity.comunas || []).join(","), gse, nivel, prueba]);
+      }, [entity.id, entity.name, entity.anio_traspaso, entity.kind, (entity.comunas || []).join(","), gse, nivel, prueba, fuentesListas]);
       return <svg ref={ref} className="sparkline-svg" />;
     }
 
