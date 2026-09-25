@@ -81,6 +81,13 @@ body.pres .app{height:100dvh;max-width:none;padding:var(--u) calc(var(--u)*2)}
 .seg button em{font-style:normal;opacity:.55;font-size:var(--f3);font-variant-numeric:tabular-nums}
 .seg .sep{width:9px;flex:none;position:relative}
 .seg .sep::after{content:"";position:absolute;left:4px;top:4px;bottom:4px;width:1px;background:var(--t3);opacity:.45}
+/* Con las cohortes por traspasar (sesión 35) la fila de cohortes mide unos
+   750 px y no se partía: la vista desbordaba entre 666 y 822 px, donde antes no
+   lo hacía (hallazgo R-47 de la auditoría del encargo). Si no cabe, la fila se
+   reparte en líneas con botones del alto de siempre; si cabe, nada cambia. */
+#c-coh{flex-wrap:wrap;height:auto;min-height:var(--h)}
+#c-coh button{min-height:calc(var(--h) - 6px)}
+.f.f-coh{max-width:100%}
 .btn{appearance:none;height:var(--h);border:1px solid var(--line-strong);border-radius:4px;background:transparent;
   color:var(--t1);font:inherit;font-weight:500;padding:0 14px;cursor:pointer;display:inline-flex;
   align-items:center;gap:7px;white-space:nowrap;font-size:var(--f2);
@@ -220,7 +227,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 <!--__SITIO_HTML__-->
 <div class="app" id="app">
 <div class="ctls">
-  <div class="f"><span>Cohorte de traspaso</span><div class="seg" id="c-coh">
+  <div class="f f-coh"><span>Cohorte de traspaso</span><div class="seg" id="c-coh">
     <!--__COHORTES__--></div></div>
 
   <div class="f"><span>Nivel y asignatura</span>
