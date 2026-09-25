@@ -10,9 +10,11 @@
    mismos tokens, encabezado y menú de vistas que
    33_motor_template.html, para que la vista sea una sección
    más del sitio. Solo tema claro. Tipografía: gobCL, como el
-   motor (D33-4); sus @font-face llegan con el CSS del sitio y el
-   stack del sistema queda de respaldo. Los textos SVG la heredan
-   de body. Lo que codifica el dato no cambia.
+   motor (D33-4), con la familia propia "gobCL-sitio" (D35-9); sus
+   @font-face (Regular 400 y Bold 700; 800 y 900 caen en Bold)
+   llegan con el CSS del sitio y el stack del sistema queda de
+   respaldo. Los textos SVG la heredan de body. Lo que codifica el
+   dato no cambia.
    ============================================================ */
 
 *,*::before,*::after{box-sizing:border-box}
@@ -23,8 +25,8 @@ html,body{margin:0;padding:0}
   --slate:#747474; --coral:#E88663; --ink:#1C1212; --ink-2:#2E2230;
   --paper:#FFFFFF; --cream-50:#FFFBEF; --cream-200:#F4E9CC;
   --line-motor:#E7DFC9; --line-strong:#C8BDA0; --ocean-80:#00558A; --ocean-20:#D4E4F1;
-  --font-display:"gobCL",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --font-body:"gobCL",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-display:"gobCL-sitio",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-body:"gobCL-sitio",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --fs-h1:30px; --fs-h3:22px; --fs-body:16px; --fs-body-lg:18px; --fs-caption:14px; --fs-overline:12px;
   --tracking-overline:0.12em;
 
@@ -1088,15 +1090,17 @@ altoMenu();numerar();opciones();tarjeta();anchoTarjeta();pista();build();render(
 /* Una fuente tardía cambia el alto del menú y el ancho de los nombres. gobCL va
    incrustada y se aplica después de las primeras medidas, y document.fonts.ready
    puede resolverse antes de que empiece a cargar. Por eso se piden las dos caras
-   que se usan y, cuando terminan de cargar, se vuelve a medir el menú y la
-   tarjeta una sola vez (auditoría del encargo s35b, R-50: antes, a veces
+   incrustadas (familia gobCL-sitio, D35-9: Regular 400 y Bold 700; si se pidiera
+   otra familia, load() no esperaría nada) y, cuando terminan de cargar, se
+   vuelve a medir el menú y la tarjeta una sola vez (auditoría del encargo
+   s35b, R-50: antes, a veces
    --tabs-h y --cardw quedaban medidos con la fuente de respaldo). anchoTarjeta()
    depende del ancho vigente de la tarjeta, así que --cardw vuelve antes a su
    valor por omisión: la medida no depende de lo que se midió al arrancar. */
 function trasFuentes(){altoMenu();document.documentElement.style.removeProperty('--cardw');anchoTarjeta();
   setTimeout(function(){pista();build();render();},30);}
 if(document.fonts&&document.fonts.load){
-  Promise.all([document.fonts.load('400 1em gobCL'),document.fonts.load('700 1em gobCL')])
+  Promise.all([document.fonts.load('400 1em gobCL-sitio'),document.fonts.load('700 1em gobCL-sitio')])
     .then(function(){return document.fonts.ready;}).then(trasFuentes,trasFuentes);
 }else if(document.fonts&&document.fonts.ready){document.fonts.ready.then(trasFuentes);}
 })();

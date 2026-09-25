@@ -8,16 +8,19 @@
      marcadores /*__SITIO_CSS__*/ y <!--__SITIO_HTML__--> de cada plantilla.
      En el bloque HTML, __HREF_COMPARACION__ y __HREF_PANORAMA__ cambian según
      la página, y la entrada de la página en curso recibe la clase is-active.
-     En el bloque CSS, el marcador de fuentes recibe las tres @font-face de
-     gobCL (D33-4) que arma insertar_sitio() desde 10_utils/fuentes/.
+     En el bloque CSS, el marcador de fuentes recibe las dos @font-face de
+     gobCL, familia "gobCL-sitio" (D33-4, D35-9), que arma insertar_sitio()
+     desde 10_utils/fuentes/.
      Usa solo tokens que las dos plantillas definen con el mismo valor.
      ====================================================================== -->
 <!-- SITIO_CSS_INICIO -->
 /* Tipografía del sitio: gobCL (D33-4), incrustada en base64 por
-   insertar_sitio() de 10_utils/10_html.R desde 10_utils/fuentes/ (Light 300,
-   Regular 400, Heavy 700; md5 verificado en cada build). Las dos plantillas
-   la ponen primero en --font-display y --font-body, con el stack del sistema
-   de respaldo; el motor la pone además en FONT_SVG (los <text> de la vista
+   insertar_sitio() de 10_utils/10_html.R desde 10_utils/fuentes/ (Regular
+   400 y Bold 700; los pesos 800 y 900 caen en Bold; md5 verificado en cada
+   build), con la familia propia "gobCL-sitio" (D35-9), que una gobCL
+   instalada en el equipo no puede sustituir. Las dos plantillas la ponen
+   primero en --font-display y --font-body, con el stack del sistema de
+   respaldo; el motor la pone además en FONT_SVG (los <text> de la vista
    heredan la de body). */
 /*__FUENTES__*/
 /* Encabezado del sitio y menú de vistas (33_fragmento_sitio.html) */

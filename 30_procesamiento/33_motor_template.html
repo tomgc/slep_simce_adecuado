@@ -8,9 +8,10 @@
 <style>
 /* ============================================================
    SLEP Costa Central — colores y tipografía. La tipografía es
-   gobCL (D33-4): sus @font-face llegan con el CSS del sitio
-   (33_fragmento_sitio.html), con los .otf de 10_utils/fuentes/
-   incrustados; el stack del sistema queda de respaldo.
+   gobCL (D33-4), con la familia propia "gobCL-sitio" (D35-9): sus
+   @font-face llegan con el CSS del sitio (33_fragmento_sitio.html),
+   con los .otf de 10_utils/fuentes/ incrustados; el stack del
+   sistema queda de respaldo.
    ============================================================ */
 
 :root {
@@ -77,14 +78,16 @@
   --shadow-2: 0 2px 8px rgba(74, 39, 70, 0.08);
   --shadow-3: 0 8px 24px rgba(74, 39, 70, 0.12);
 
-  /* Type families — gobCL primero (D33-4). Sus @font-face (Light 300,
-     Regular 400, Heavy 700) los inserta insertar_sitio() de
-     10_utils/10_html.R desde 10_utils/fuentes/, en el CSS del sitio. El
-     stack del sistema es el respaldo mientras la fuente carga
-     (font-display: swap) o si el navegador la rechaza. Los textos SVG usan
-     la constante FONT_SVG, con la misma familia primero. */
-  --font-display: "gobCL", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-body:    "gobCL", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Type families — gobCL primero (D33-4), con la familia propia
+     "gobCL-sitio" (D35-9), que una gobCL instalada en el equipo no puede
+     sustituir. Sus @font-face (Regular 400 y Bold 700; los pesos 800 y 900
+     caen en Bold) los inserta insertar_sitio() de 10_utils/10_html.R desde
+     10_utils/fuentes/, en el CSS del sitio. El stack del sistema es el
+     respaldo mientras la fuente carga (font-display: swap) o si el
+     navegador la rechaza. Los textos SVG usan la constante FONT_SVG, con la
+     misma familia primero. */
+  --font-display: "gobCL-sitio", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body:    "gobCL-sitio", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono:    ui-monospace, "SF Mono", "Menlo", monospace;
 
   /* Type scale */
@@ -1727,10 +1730,11 @@ code {
     // ============================================================
     // Los <text> de D3 y del SVG de exportación reciben la familia como
     // atributo font-family, que no lee var(--font-body). Por eso vive en esta
-    // constante: gobCL primero (D33-4, @font-face del CSS del sitio) y el
-    // stack del sistema de respaldo. Sin comillas: el nombre no las necesita y
-    // así el atributo se serializa igual en el SVG exportado.
-    const FONT_SVG = "gobCL, system-ui, sans-serif";
+    // constante: gobCL primero, con la familia propia gobCL-sitio (D33-4,
+    // D35-9; @font-face del CSS del sitio), y el stack del sistema de respaldo.
+    // Sin comillas: el nombre es un identificador CSS válido y no las necesita,
+    // y así el atributo se serializa igual en el SVG exportado.
+    const FONT_SVG = "gobCL-sitio, system-ui, sans-serif";
 
     // ============================================================
     // Escala tipográfica del SVG
