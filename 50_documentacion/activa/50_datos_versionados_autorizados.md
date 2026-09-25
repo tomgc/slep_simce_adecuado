@@ -19,7 +19,7 @@ Este archivo declara esa práctica. No la introduce.
 
 ```
 20_insumos/auxiliares/*.xlsx    # catalogos y glosas publicas: anexo de indicadores, caracterizacion de establecimientos, diccionario de territorios, consolidado de glosas SIMCE y listado de SLEP 2026; granularidad de establecimiento, sin persona natural
-20_insumos/auxiliares/*.csv     # metadatos del propio SIMCE: resumen de cambios y tabla comparativa de variables 2014-2025; describen columnas, no personas
+20_insumos/auxiliares/*.csv     # metadatos del propio SIMCE: resumen de cambios y tabla comparativa de variables 2014-2025; describen columnas, no personas; y el catalogo publico de comunas por Servicio Local y anio de traspaso (dim_slep_comunas.csv, copia de slep_central_datos); territorio e institucion, sin persona natural
 20_insumos/simce/2m/*.xlsx      # resultados SIMCE de II medio por RBD publicados por la Agencia, 2014-2018 y 2022-2025; nivel establecimiento
 20_insumos/simce/4b/*.xlsx      # resultados SIMCE de 4o basico por RBD publicados por la Agencia, 2014-2018 y 2022-2025; nivel establecimiento
 40_salidas/*.xlsx               # historico ponderado de % Adecuado de Costa Central; agregados por anio, sin desagregacion siquiera a comuna
@@ -53,6 +53,7 @@ Cada una de las 27 rutas se inspeccionó, no se autorizó por su carpeta:
 | `renv/settings.json` | Contenido completo | Ajustes de `renv`: `bioconductor.version`, `external.libraries`, `snapshot.type`, reglas `vcs.ignore` |
 | `andamios/20260911_filas_anomalas_simce_rbd.xlsx` (2026-09-23, sesión 31) | Las 3 hojas | `Resumen`: texto y conteos por situación. `Sin nalu` y `Nalu cero`: `Año`, `Nivel`, `Prueba`, `RBD`, `Nombre del establecimiento`, `Código comuna`, `Comuna`, `Dependencia`, `GSE`, `Evaluados`, tres porcentajes de nivel y `Puntaje promedio`. Ni RUT, ni MRUN, ni nombre de persona |
 | `40_salidas/publico/contexto_simce.parquet` (2026-09-23, sesión 32) | Las 15 columnas, leídas del blob de `31befa2` | `rbd`, `anio`, `eje`, `eje_etiqueta`, `segmento`, `escala`, `valor`, `desvio_gse`, `mejora_sobre_gse`, `mejora_ano_ano`, `cod_grupo`, `proyecto_origen`, `periodo`, `fecha_calculo`, `version_contrato`. Ni RUT, ni MRUN, ni nombre de persona. Solo existe en la rama `feat/contrato-contexto`; la entrada va en `main` porque el verificador lee la lista del árbol de trabajo desde el que se publica |
+| `auxiliares/dim_slep_comunas.csv` (2026-09-25, sesión 35; cae bajo `20_insumos/auxiliares/*.csv`) | Las 15 columnas y los textos libres de `decreto` y `precisiones` | `cod_comuna`, `comuna`, `cod_slep`, `slep`, `slep_formato`, `region`, `num_region`, `deprov`, `cod_deprov`, `anio_inicio_funciones`, `anio_traspaso`, `decreto`, `comuna_cabecera`, `referencial`, `precisiones`. Territorio e institución; `precisiones` anota decretos, postergaciones y fechas de inicio, sin nombres de persona. Ni RUT, ni MRUN |
 
 ---
 

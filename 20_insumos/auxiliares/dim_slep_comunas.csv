@@ -1,0 +1,347 @@
+cod_comuna;comuna;cod_slep;slep;slep_formato;region;num_region;deprov;cod_deprov;anio_inicio_funciones;anio_traspaso;decreto;comuna_cabecera;referencial;precisiones
+1101;Iquique;101;IQUIQUE;Iquique;Tarapacá;1;Iquique;11;2022;2024;Decreto 68 de 2021;Iquique;FALSE;
+1107;Alto Hospicio;101;IQUIQUE;Iquique;Tarapacá;1;Iquique;11;2022;2024;Decreto 68 de 2021;Iquique;FALSE;
+1401;Pozo Almonte;102;TAMARUGAL;Tamarugal;Tarapacá;1;Iquique;11;2023;2026;Decreto 162 de 2022;Pozo Almonte;TRUE;
+1402;Camiña;102;TAMARUGAL;Tamarugal;Tarapacá;1;Iquique;11;2023;2026;Decreto 162 de 2022;Pozo Almonte;TRUE;
+1403;Colchane;102;TAMARUGAL;Tamarugal;Tarapacá;1;Iquique;11;2023;2026;Decreto 162 de 2022;Pozo Almonte;TRUE;
+1404;Huara;102;TAMARUGAL;Tamarugal;Tarapacá;1;Iquique;11;2023;2026;Decreto 162 de 2022;Pozo Almonte;TRUE;
+1405;Pica;102;TAMARUGAL;Tamarugal;Tarapacá;1;Iquique;11;2023;2026;Decreto 162 de 2022;Pozo Almonte;TRUE;
+2101;Antofagasta;201;ANTOFAGASTA;Antofagasta;Antofagasta;2;Antofagasta;21;2024;2027;Decreto 162 de 2022;Antofagasta;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+2102;Mejillones;201;ANTOFAGASTA;Antofagasta;Antofagasta;2;Antofagasta;21;2024;2027;Decreto 162 de 2022;Antofagasta;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+2103;Sierra Gorda;201;ANTOFAGASTA;Antofagasta;Antofagasta;2;Antofagasta;21;2024;2027;Decreto 162 de 2022;Antofagasta;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+2104;Taltal;201;ANTOFAGASTA;Antofagasta;Antofagasta;2;Antofagasta;21;2024;2027;Decreto 162 de 2022;Antofagasta;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+2201;Calama;202;LICANCABUR;Licancabur;Antofagasta;2;El Loa;22;2022;2025;Decreto 68 de 2021;Calama;FALSE;
+2202;Ollagüe;202;LICANCABUR;Licancabur;Antofagasta;2;El Loa;22;2022;2025;Decreto 68 de 2021;Calama;FALSE;
+2203;San Pedro de Atacama;202;LICANCABUR;Licancabur;Antofagasta;2;El Loa;22;2022;2025;Decreto 68 de 2021;Calama;FALSE;
+2301;Tocopilla;202;LICANCABUR;Licancabur;Antofagasta;2;Antofagasta;21;2022;2025;Decreto 68 de 2021;Calama;FALSE;
+2302;María Elena;202;LICANCABUR;Licancabur;Antofagasta;2;Antofagasta;21;2022;2025;Decreto 68 de 2021;Calama;FALSE;
+3101;Copiapó;301;ATACAMA;Atacama;Atacama;3;Copiapó;31;2020;2021;Decreto 74 de 2018;Copiapó;FALSE;
+3102;Caldera;301;ATACAMA;Atacama;Atacama;3;Copiapó;31;2020;2021;Decreto 74 de 2018;Copiapó;FALSE;
+3103;Tierra Amarilla;301;ATACAMA;Atacama;Atacama;3;Copiapó;31;2020;2021;Decreto 74 de 2018;Copiapó;FALSE;
+3201;Chañaral;301;ATACAMA;Atacama;Atacama;3;Copiapó;31;2020;2021;Decreto 74 de 2018;Copiapó;FALSE;
+3202;Diego de Almagro;301;ATACAMA;Atacama;Atacama;3;Copiapó;31;2020;2021;Decreto 74 de 2018;Copiapó;FALSE;
+3301;Vallenar;302;HUASCO;Huasco;Atacama;3;Huasco;32;2018;2018;Decreto 379 de 2017;Vallenar;FALSE;
+3302;Alto del Carmen;302;HUASCO;Huasco;Atacama;3;Huasco;32;2018;2018;Decreto 379 de 2017;Vallenar;FALSE;
+3303;Freirina;302;HUASCO;Huasco;Atacama;3;Huasco;32;2018;2018;Decreto 379 de 2017;Vallenar;FALSE;
+3304;Huasco;302;HUASCO;Huasco;Atacama;3;Huasco;32;2018;2018;Decreto 379 de 2017;Vallenar;FALSE;
+4101;La Serena;401;ELQUI;Elqui;Coquimbo;4;Elqui;41;2023;2025;Decreto 162 de 2022;La Serena;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+4102;Coquimbo;402;PUERTO CORDILLERA;Puerto Cordillera;Coquimbo;4;Elqui;41;2018;2018;Decreto 373 de 2017;Coquimbo;FALSE;
+4103;Andacollo;402;PUERTO CORDILLERA;Puerto Cordillera;Coquimbo;4;Elqui;41;2018;2018;Decreto 373 de 2017;Coquimbo;FALSE;
+4104;La Higuera;401;ELQUI;Elqui;Coquimbo;4;Elqui;41;2023;2025;Decreto 162 de 2022;La Serena;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+4105;Paihuano;401;ELQUI;Elqui;Coquimbo;4;Elqui;41;2023;2025;Decreto 162 de 2022;La Serena;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+4106;Vicuña;401;ELQUI;Elqui;Coquimbo;4;Elqui;41;2023;2025;Decreto 162 de 2022;La Serena;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+4201;Illapel;403;CHOAPA;Choapa;Coquimbo;4;Choapa;43;2026;2028;Decreto 162 de 2022;Illapel;TRUE;
+4202;Canela;403;CHOAPA;Choapa;Coquimbo;4;Choapa;43;2026;2028;Decreto 162 de 2022;Illapel;TRUE;
+4203;Los Vilos;403;CHOAPA;Choapa;Coquimbo;4;Choapa;43;2026;2028;Decreto 162 de 2022;Illapel;TRUE;
+4204;Salamanca;403;CHOAPA;Choapa;Coquimbo;4;Choapa;43;2026;2028;Decreto 162 de 2022;Illapel;TRUE;
+4301;Ovalle;404;LIMARÍ;Limarí;Coquimbo;4;Limarí;42;2026;2028;Decreto 162 de 2022;Ovalle;TRUE;
+4302;Combarbalá;404;LIMARÍ;Limarí;Coquimbo;4;Limarí;42;2026;2028;Decreto 162 de 2022;Ovalle;TRUE;
+4303;Monte Patria;404;LIMARÍ;Limarí;Coquimbo;4;Limarí;42;2026;2028;Decreto 162 de 2022;Ovalle;TRUE;
+4304;Punitaqui;404;LIMARÍ;Limarí;Coquimbo;4;Limarí;42;2026;2028;Decreto 162 de 2022;Ovalle;TRUE;
+4305;Río Hurtado;404;LIMARÍ;Limarí;Coquimbo;4;Limarí;42;2026;2028;Decreto 162 de 2022;Ovalle;TRUE;
+5101;Valparaíso;501;VALPARAÍSO;Valparaíso;Valparaíso;5;Valparaíso;53;2020;2021;Decreto 74 de 2018;Valparaíso;FALSE;
+5102;Casablanca;502;DEL LITORAL;del Litoral;Valparaíso;5;Valparaíso;53;2025;2027;Decreto 162 de 2022;San Antonio;TRUE;La comuna Santo Domingo no traspasará el 2027 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5103;Concón;503;COSTA CENTRAL;Costa Central;Valparaíso;5;Valparaíso;53;2023;2025;Decreto 162 de 2022;Viña del Mar;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+5104;Juan Fernández;501;VALPARAÍSO;Valparaíso;Valparaíso;5;Valparaíso;53;2020;2021;Decreto 74 de 2018;Valparaíso;FALSE;
+5105;Puchuncaví;503;COSTA CENTRAL;Costa Central;Valparaíso;5;Valparaíso;53;2023;2025;Decreto 162 de 2022;Viña del Mar;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+5107;Quintero;503;COSTA CENTRAL;Costa Central;Valparaíso;5;Valparaíso;53;2023;2025;Decreto 162 de 2022;Viña del Mar;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+5109;Viña del Mar;503;COSTA CENTRAL;Costa Central;Valparaíso;5;Valparaíso;53;2023;2025;Decreto 162 de 2022;Viña del Mar;FALSE;El día viernes 30/05 Mineduc anunció que su traspaso educativo se realiza el 1 de julio 2025.
+5201;Isla de Pascua;504;HANGA ROA;Hanga Roa;Valparaíso;5;Valparaíso;53;2025;2027;Decreto 162 de 2022;Isla de Pascua;TRUE;
+5301;Los Andes;505;LOS ANDES;Los Andes;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;Los Andes;TRUE;
+5302;Calle Larga;505;LOS ANDES;Los Andes;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;Los Andes;TRUE;
+5303;Rinconada;505;LOS ANDES;Los Andes;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;Los Andes;TRUE;
+5304;San Esteban;505;LOS ANDES;Los Andes;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;Los Andes;TRUE;
+5401;La Ligua;506;PETORCA;Petorca;Valparaíso;5;Quillota;51;2024;2026;Decreto 162 de 2022;La Ligua;TRUE;La comuna Zapallar no traspasará el 2026 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5402;Cabildo;506;PETORCA;Petorca;Valparaíso;5;Quillota;51;2024;2026;Decreto 162 de 2022;La Ligua;TRUE;La comuna Zapallar no traspasará el 2026 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5403;Papudo;506;PETORCA;Petorca;Valparaíso;5;Quillota;51;2024;2026;Decreto 162 de 2022;La Ligua;TRUE;La comuna Zapallar no traspasará el 2026 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5404;Petorca;506;PETORCA;Petorca;Valparaíso;5;Quillota;51;2024;2026;Decreto 162 de 2022;La Ligua;TRUE;La comuna Zapallar no traspasará el 2026 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5405;Zapallar;506;PETORCA;Petorca;Valparaíso;5;Quillota;51;2024;2027;Decreto 162 de 2022;La Ligua;TRUE;La comuna Zapallar no traspasará el 2026 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5501;Quillota;507;QUILLOTA;Quillota;Valparaíso;5;Quillota;51;2027;2029;Decreto 162 de 2022;Quillota;TRUE;
+5502;Calera;507;QUILLOTA;Quillota;Valparaíso;5;Quillota;51;2027;2029;Decreto 162 de 2022;Quillota;TRUE;
+5503;Hijuelas;507;QUILLOTA;Quillota;Valparaíso;5;Quillota;51;2027;2029;Decreto 162 de 2022;Quillota;TRUE;
+5504;La Cruz;507;QUILLOTA;Quillota;Valparaíso;5;Quillota;51;2027;2029;Decreto 162 de 2022;Quillota;TRUE;
+5506;Nogales;507;QUILLOTA;Quillota;Valparaíso;5;Quillota;51;2027;2029;Decreto 162 de 2022;Quillota;TRUE;
+5601;San Antonio;502;DEL LITORAL;del Litoral;Valparaíso;5;San Antonio;54;2025;2027;Decreto 162 de 2022;San Antonio;TRUE;La comuna Santo Domingo no traspasará el 2027 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5602;Algarrobo;502;DEL LITORAL;del Litoral;Valparaíso;5;San Antonio;54;2025;2027;Decreto 162 de 2022;San Antonio;TRUE;La comuna Santo Domingo no traspasará el 2027 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5603;Cartagena;502;DEL LITORAL;del Litoral;Valparaíso;5;San Antonio;54;2025;2027;Decreto 162 de 2022;San Antonio;TRUE;La comuna Santo Domingo no traspasará el 2027 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5604;El Quisco;502;DEL LITORAL;del Litoral;Valparaíso;5;San Antonio;54;2025;2027;Decreto 162 de 2022;San Antonio;TRUE;La comuna Santo Domingo no traspasará el 2027 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5605;El Tabo;502;DEL LITORAL;del Litoral;Valparaíso;5;San Antonio;54;2025;2027;Decreto 162 de 2022;San Antonio;TRUE;La comuna Santo Domingo no traspasará el 2027 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5606;Santo Domingo;502;DEL LITORAL;del Litoral;Valparaíso;5;San Antonio;54;2025;2028;Decreto 162 de 2022;San Antonio;TRUE;La comuna Santo Domingo no traspasará el 2027 como las otras comunas de SLEP, ya que solicitaron postergación del traspaso, cumpliendo con los requisitos. La postergación puede ser evaluada año a año.
+5701;San Felipe;508;ACONCAGUA;Aconcagua;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;San Felipe;TRUE;
+5702;Catemu;508;ACONCAGUA;Aconcagua;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;San Felipe;TRUE;
+5703;Llaillay;508;ACONCAGUA;Aconcagua;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;San Felipe;TRUE;
+5704;Panquehue;508;ACONCAGUA;Aconcagua;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;San Felipe;TRUE;
+5705;Putaendo;508;ACONCAGUA;Aconcagua;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;San Felipe;TRUE;
+5706;Santa María;508;ACONCAGUA;Aconcagua;Valparaíso;5;San Felipe;52;2024;2026;Decreto 162 de 2022;San Felipe;TRUE;
+5801;Quilpué;509;MARGA MARGA;Marga Marga;Valparaíso;5;Valparaíso;53;2023;2026;Decreto 162 de 2022;Quilpué;TRUE;
+5802;Limache;509;MARGA MARGA;Marga Marga;Valparaíso;5;Quillota;51;2023;2026;Decreto 162 de 2022;Quilpué;TRUE;
+5803;Olmué;509;MARGA MARGA;Marga Marga;Valparaíso;5;Quillota;51;2023;2026;Decreto 162 de 2022;Quilpué;TRUE;
+5804;Villa Alemana;509;MARGA MARGA;Marga Marga;Valparaíso;5;Valparaíso;53;2023;2026;Decreto 162 de 2022;Quilpué;TRUE;
+6101;Rancagua;601;CACHAPOAL NORTE;Cachapoal Norte;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;Rancagua;TRUE;
+6102;Codegua;601;CACHAPOAL NORTE;Cachapoal Norte;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;Rancagua;TRUE;
+6103;Coinco;602;VALLE CACHAPOAL;Valle Cachapoal;Libertador Bernardo O'Higgins;6;Cachapoal;61;2024;2027;Decreto 162 de 2022;Rengo;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+6104;Coltauco;602;VALLE CACHAPOAL;Valle Cachapoal;Libertador Bernardo O'Higgins;6;Cachapoal;61;2024;2027;Decreto 162 de 2022;Rengo;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+6105;Doñihue;602;VALLE CACHAPOAL;Valle Cachapoal;Libertador Bernardo O'Higgins;6;Cachapoal;61;2024;2027;Decreto 162 de 2022;Rengo;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+6106;Graneros;601;CACHAPOAL NORTE;Cachapoal Norte;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;Rancagua;TRUE;
+6107;Las Cabras;603;CACHAPOAL COSTA;Cachapoal Costa;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;San Vicente de Tagua Tagua;TRUE;
+6108;Machalí;601;CACHAPOAL NORTE;Cachapoal Norte;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;Rancagua;TRUE;
+6109;Malloa;602;VALLE CACHAPOAL;Valle Cachapoal;Libertador Bernardo O'Higgins;6;Cachapoal;61;2024;2027;Decreto 162 de 2022;Rengo;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+6110;Mostazal;601;CACHAPOAL NORTE;Cachapoal Norte;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;Rancagua;TRUE;
+6111;Olivar;601;CACHAPOAL NORTE;Cachapoal Norte;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;Rancagua;TRUE;
+6112;Peumo;603;CACHAPOAL COSTA;Cachapoal Costa;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;San Vicente de Tagua Tagua;TRUE;
+6113;Pichidegua;603;CACHAPOAL COSTA;Cachapoal Costa;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;San Vicente de Tagua Tagua;TRUE;
+6114;Quinta de Tilcoco;602;VALLE CACHAPOAL;Valle Cachapoal;Libertador Bernardo O'Higgins;6;Cachapoal;61;2024;2027;Decreto 162 de 2022;Rengo;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+6115;Rengo;602;VALLE CACHAPOAL;Valle Cachapoal;Libertador Bernardo O'Higgins;6;Cachapoal;61;2024;2027;Decreto 162 de 2022;Rengo;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+6116;Requínoa;602;VALLE CACHAPOAL;Valle Cachapoal;Libertador Bernardo O'Higgins;6;Cachapoal;61;2024;2027;Decreto 162 de 2022;Rengo;TRUE;Ministerio de Educación postergó el traspaso educativo del SLEP planificado para el 2026, quedando para el 2027.
+6117;San Vicente de Tagua Tagua;603;CACHAPOAL COSTA;Cachapoal Costa;Libertador Bernardo O'Higgins;6;Cachapoal;61;2026;2028;Decreto 162 de 2022;San Vicente de Tagua Tagua;TRUE;
+6201;Pichilemu;604;CARDENAL CARO;Cardenal Caro;Libertador Bernardo O'Higgins;6;Cardenal Caro;63;2027;2029;Decreto 162 de 2022;Pichilemu;TRUE;
+6202;La Estrella;604;CARDENAL CARO;Cardenal Caro;Libertador Bernardo O'Higgins;6;Cardenal Caro;63;2027;2029;Decreto 162 de 2022;Pichilemu;TRUE;
+6203;Litueche;604;CARDENAL CARO;Cardenal Caro;Libertador Bernardo O'Higgins;6;Cardenal Caro;63;2027;2029;Decreto 162 de 2022;Pichilemu;TRUE;
+6204;Marchigüe;604;CARDENAL CARO;Cardenal Caro;Libertador Bernardo O'Higgins;6;Cardenal Caro;63;2027;2029;Decreto 162 de 2022;Pichilemu;TRUE;
+6205;Navidad;604;CARDENAL CARO;Cardenal Caro;Libertador Bernardo O'Higgins;6;Cardenal Caro;63;2027;2029;Decreto 162 de 2022;Pichilemu;TRUE;
+6206;Paredones;604;CARDENAL CARO;Cardenal Caro;Libertador Bernardo O'Higgins;6;Cardenal Caro;63;2027;2029;Decreto 162 de 2022;Pichilemu;TRUE;
+6301;San Fernando;605;COLCHAGUA;Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2020;2021;Decreto 74 de 2018;San Fernando;FALSE;
+6302;Chépica;606;COSTA COLCHAGUA;Costa Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2026;2028;Decreto 15 de 2025;Santa Cruz;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+6303;Chimbarongo;605;COLCHAGUA;Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2020;2021;Decreto 74 de 2018;San Fernando;FALSE;
+6304;Lolol;606;COSTA COLCHAGUA;Costa Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2026;2028;Decreto 15 de 2025;Santa Cruz;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+6305;Nancagua;605;COLCHAGUA;Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2020;2021;Decreto 74 de 2018;San Fernando;FALSE;
+6306;Palmilla;606;COSTA COLCHAGUA;Costa Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2026;2028;Decreto 15 de 2025;Santa Cruz;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+6307;Peralillo;606;COSTA COLCHAGUA;Costa Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2026;2028;Decreto 15 de 2025;Santa Cruz;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+6308;Placilla;605;COLCHAGUA;Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2020;2021;Decreto 74 de 2018;San Fernando;FALSE;
+6309;Pumanque;606;COSTA COLCHAGUA;Costa Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2026;2028;Decreto 15 de 2025;Santa Cruz;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+6310;Santa Cruz;606;COSTA COLCHAGUA;Costa Colchagua;Libertador Bernardo O'Higgins;6;Colchagua;62;2026;2028;Decreto 15 de 2025;Santa Cruz;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7101;Talca;701;MAULE VALLE;Maule Valle;Maule;7;Talca;72;2026;2028;Decreto 15 de 2025;Talca;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7102;Constitución;702;MAULE COSTA;Maule Costa;Maule;7;Talca;72;2022;2025;Decreto 68 de 2021;Cauquenes;FALSE;
+7103;Curepto;703;LOS CEREZOS;Los Cerezos;Maule;7;Talca;72;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7104;Empedrado;702;MAULE COSTA;Maule Costa;Maule;7;Talca;72;2022;2025;Decreto 68 de 2021;Cauquenes;FALSE;
+7105;Maule;701;MAULE VALLE;Maule Valle;Maule;7;Talca;72;2026;2028;Decreto 15 de 2025;Talca;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7106;Pelarco;701;MAULE VALLE;Maule Valle;Maule;7;Talca;72;2026;2028;Decreto 15 de 2025;Talca;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7107;Pencahue;701;MAULE VALLE;Maule Valle;Maule;7;Talca;72;2026;2028;Decreto 15 de 2025;Talca;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7108;Río Claro;703;LOS CEREZOS;Los Cerezos;Maule;7;Talca;72;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7109;San Clemente;701;MAULE VALLE;Maule Valle;Maule;7;Talca;72;2026;2028;Decreto 15 de 2025;Talca;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7110;San Rafael;701;MAULE VALLE;Maule Valle;Maule;7;Talca;72;2026;2028;Decreto 15 de 2025;Talca;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7201;Cauquenes;702;MAULE COSTA;Maule Costa;Maule;7;Cauquenes;74;2022;2025;Decreto 68 de 2021;Cauquenes;FALSE;
+7202;Chanco;702;MAULE COSTA;Maule Costa;Maule;7;Cauquenes;74;2022;2025;Decreto 68 de 2021;Cauquenes;FALSE;
+7203;Pelluhue;702;MAULE COSTA;Maule Costa;Maule;7;Cauquenes;74;2022;2025;Decreto 68 de 2021;Cauquenes;FALSE;
+7301;Curicó;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7302;Hualañé;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7303;Licantén;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7304;Molina;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7305;Rauco;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7306;Romeral;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7307;Sagrada Familia;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7308;Teno;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7309;Vichuquén;703;LOS CEREZOS;Los Cerezos;Maule;7;Curicó;71;2025;2027;Decreto 162 de 2022;Curicó;TRUE;
+7401;Linares;704;LOS ÁLAMOS;Los Álamos;Maule;7;Linares;73;2024;2026;Decreto 162 de 2022;Linares;TRUE;
+7402;Colbún;704;LOS ÁLAMOS;Los Álamos;Maule;7;Linares;73;2024;2026;Decreto 162 de 2022;Linares;TRUE;
+7403;Longaví;704;LOS ÁLAMOS;Los Álamos;Maule;7;Linares;73;2024;2026;Decreto 162 de 2022;Linares;TRUE;
+7404;Parral;704;LOS ÁLAMOS;Los Álamos;Maule;7;Linares;73;2024;2026;Decreto 162 de 2022;Linares;TRUE;
+7405;Retiro;704;LOS ÁLAMOS;Los Álamos;Maule;7;Linares;73;2024;2026;Decreto 162 de 2022;Linares;TRUE;
+7406;San Javier;701;MAULE VALLE;Maule Valle;Maule;7;Linares;73;2026;2028;Decreto 15 de 2025;Talca;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2026, con posible traspaso en 2028.
+7407;Villa Alegre;704;LOS ÁLAMOS;Los Álamos;Maule;7;Linares;73;2024;2026;Decreto 162 de 2022;Linares;TRUE;
+7408;Yerbas Buenas;704;LOS ÁLAMOS;Los Álamos;Maule;7;Linares;73;2024;2026;Decreto 162 de 2022;Linares;TRUE;
+8101;Concepción;801;ANDALIÉN SUR;Andalién Sur;Biobío;8;Concepción;83;2019;2020;Decreto 72 de 2018;Concepción;FALSE;
+8102;Coronel;802;ANDALIÉN COSTA;Andalién Costa;Biobío;8;Concepción;83;2023;2025;Decreto 162 de 2022;Coronel;FALSE;
+8103;Chiguayante;801;ANDALIÉN SUR;Andalién Sur;Biobío;8;Concepción;83;2019;2020;Decreto 72 de 2018;Concepción;FALSE;
+8104;Florida;801;ANDALIÉN SUR;Andalién Sur;Biobío;8;Concepción;83;2019;2020;Decreto 72 de 2018;Concepción;FALSE;
+8105;Hualqui;801;ANDALIÉN SUR;Andalién Sur;Biobío;8;Concepción;83;2019;2020;Decreto 72 de 2018;Concepción;FALSE;
+8106;Lota;802;ANDALIÉN COSTA;Andalién Costa;Biobío;8;Concepción;83;2023;2025;Decreto 162 de 2022;Coronel;FALSE;
+8107;Penco;803;LAS CALETAS;Las Caletas;Biobío;8;Concepción;83;2026;2028;Decreto 162 de 2022;Talcahuano;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026.
+8108;San Pedro de la Paz;802;ANDALIÉN COSTA;Andalién Costa;Biobío;8;Concepción;83;2023;2025;Decreto 162 de 2022;Coronel;FALSE;
+8109;Santa Juana;802;ANDALIÉN COSTA;Andalién Costa;Biobío;8;Concepción;83;2023;2025;Decreto 162 de 2022;Coronel;FALSE;
+8110;Talcahuano;803;LAS CALETAS;Las Caletas;Biobío;8;Concepción;83;2026;2028;Decreto 162 de 2022;Talcahuano;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026.
+8111;Tomé;803;LAS CALETAS;Las Caletas;Biobío;8;Concepción;83;2026;2028;Decreto 162 de 2022;Talcahuano;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026.
+8112;Hualpén;803;LAS CALETAS;Las Caletas;Biobío;8;Concepción;83;2026;2028;Decreto 162 de 2022;Talcahuano;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026.
+8201;Lebu;804;ARAUCO NORTE;Arauco Norte;Biobío;8;Arauco;84;2026;2028;Decreto 162 de 2022;Lebu;TRUE;
+8202;Arauco;804;ARAUCO NORTE;Arauco Norte;Biobío;8;Arauco;84;2026;2028;Decreto 162 de 2022;Lebu;TRUE;
+8203;Cañete;805;ARAUCO SUR;Arauco Sur;Biobío;8;Arauco;84;2027;2029;Decreto 162 de 2022;Cañete;TRUE;
+8204;Contulmo;805;ARAUCO SUR;Arauco Sur;Biobío;8;Arauco;84;2027;2029;Decreto 162 de 2022;Cañete;TRUE;
+8205;Curanilahue;804;ARAUCO NORTE;Arauco Norte;Biobío;8;Arauco;84;2026;2028;Decreto 162 de 2022;Lebu;TRUE;
+8206;Los Álamos;805;ARAUCO SUR;Arauco Sur;Biobío;8;Arauco;84;2027;2029;Decreto 162 de 2022;Cañete;TRUE;
+8207;Tirúa;805;ARAUCO SUR;Arauco Sur;Biobío;8;Arauco;84;2027;2029;Decreto 162 de 2022;Cañete;TRUE;
+8301;Los Ángeles;806;LOS COPIHUES;Los Copihues;Biobío;8;Biobío;82;2025;2027;Decreto 162 de 2022;Los Ángeles;TRUE;
+8302;Antuco;807;PUELCHE;Puelche;Biobío;8;Biobío;82;2024;2026;Decreto 162 de 2022;Mulchén;TRUE;
+8303;Cabrero;806;LOS COPIHUES;Los Copihues;Biobío;8;Biobío;82;2025;2027;Decreto 162 de 2022;Los Ángeles;TRUE;
+8304;Laja;808;VALLE BIOBÍO;Valle Biobío;Biobío;8;Biobío;82;2027;2029;Decreto 162 de 2022;Nacimiento;TRUE;
+8305;Mulchén;807;PUELCHE;Puelche;Biobío;8;Biobío;82;2024;2026;Decreto 162 de 2022;Mulchén;TRUE;
+8306;Nacimiento;808;VALLE BIOBÍO;Valle Biobío;Biobío;8;Biobío;82;2027;2029;Decreto 162 de 2022;Nacimiento;TRUE;
+8307;Negrete;808;VALLE BIOBÍO;Valle Biobío;Biobío;8;Biobío;82;2027;2029;Decreto 162 de 2022;Nacimiento;TRUE;
+8308;Quilaco;807;PUELCHE;Puelche;Biobío;8;Biobío;82;2024;2026;Decreto 162 de 2022;Mulchén;TRUE;
+8309;Quilleco;807;PUELCHE;Puelche;Biobío;8;Biobío;82;2024;2026;Decreto 162 de 2022;Mulchén;TRUE;
+8310;San Rosendo;808;VALLE BIOBÍO;Valle Biobío;Biobío;8;Biobío;82;2027;2029;Decreto 162 de 2022;Nacimiento;TRUE;
+8311;Santa Bárbara;807;PUELCHE;Puelche;Biobío;8;Biobío;82;2024;2026;Decreto 162 de 2022;Mulchén;TRUE;
+8312;Tucapel;807;PUELCHE;Puelche;Biobío;8;Biobío;82;2024;2026;Decreto 162 de 2022;Mulchén;TRUE;
+8313;Yumbel;806;LOS COPIHUES;Los Copihues;Biobío;8;Biobío;82;2025;2027;Decreto 162 de 2022;Los Ángeles;TRUE;
+8314;Alto Biobío;807;PUELCHE;Puelche;Biobío;8;Biobío;82;2024;2026;Decreto 162 de 2022;Mulchén;TRUE;
+9101;Temuco;901;CAUTÍN NORTE;Cautín Norte;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Temuco;TRUE;
+9102;Carahue;902;COSTA ARAUCANÍA;Costa Araucanía;La Araucanía;9;Cautín Norte;92;2018;2018;Decreto 379 de 2017;Carahue;FALSE;
+9103;Cunco;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9104;Curarrehue;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9105;Freire;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9106;Galvarino;901;CAUTÍN NORTE;Cautín Norte;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Temuco;TRUE;
+9107;Gorbea;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9108;Lautaro;901;CAUTÍN NORTE;Cautín Norte;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Temuco;TRUE;
+9109;Loncoche;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9110;Melipeuco;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9111;Nueva Imperial;902;COSTA ARAUCANÍA;Costa Araucanía;La Araucanía;9;Cautín Norte;92;2018;2018;Decreto 379 de 2017;Carahue;FALSE;
+9112;Padre Las Casas;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9113;Perquenco;901;CAUTÍN NORTE;Cautín Norte;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Temuco;TRUE;
+9114;Pitrufquén;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9115;Pucón;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9116;Saavedra;902;COSTA ARAUCANÍA;Costa Araucanía;La Araucanía;9;Cautín Norte;92;2018;2018;Decreto 379 de 2017;Carahue;FALSE;
+9117;Teodoro Schmidt;902;COSTA ARAUCANÍA;Costa Araucanía;La Araucanía;9;Cautín Sur;93;2018;2018;Decreto 379 de 2017;Carahue;FALSE;
+9118;Toltén;902;COSTA ARAUCANÍA;Costa Araucanía;La Araucanía;9;Cautín Sur;93;2018;2018;Decreto 379 de 2017;Carahue;FALSE;
+9119;Vilcún;901;CAUTÍN NORTE;Cautín Norte;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Temuco;TRUE;
+9120;Villarrica;903;CAUTÍN SUR;Cautín Sur;La Araucanía;9;Cautín Sur;93;2027;2029;Decreto 162 de 2022;Villarrica;TRUE;
+9121;Cholchol;901;CAUTÍN NORTE;Cautín Norte;La Araucanía;9;Cautín Norte;92;2027;2029;Decreto 162 de 2022;Temuco;TRUE;
+9201;Angol;904;MALLECO COSTA;Malleco Costa;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Angol;TRUE;
+9202;Collipulli;905;MALLECO CORDILLERA;Malleco Cordillera;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Victoria;TRUE;
+9203;Curacautín;905;MALLECO CORDILLERA;Malleco Cordillera;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Victoria;TRUE;
+9204;Ercilla;905;MALLECO CORDILLERA;Malleco Cordillera;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Victoria;TRUE;
+9205;Lonquimay;905;MALLECO CORDILLERA;Malleco Cordillera;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Victoria;TRUE;
+9206;Los Sauces;904;MALLECO COSTA;Malleco Costa;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Angol;TRUE;
+9207;Lumaco;904;MALLECO COSTA;Malleco Costa;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Angol;TRUE;
+9208;Purén;904;MALLECO COSTA;Malleco Costa;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Angol;TRUE;
+9209;Renaico;904;MALLECO COSTA;Malleco Costa;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Angol;TRUE;
+9210;Traiguén;904;MALLECO COSTA;Malleco Costa;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Angol;TRUE;
+9211;Victoria;905;MALLECO CORDILLERA;Malleco Cordillera;La Araucanía;9;Malleco;91;2027;2029;Decreto 162 de 2022;Victoria;TRUE;
+10101;Puerto Montt;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Llanquihue;101;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+10102;Calbuco;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Llanquihue;101;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+10103;Cochamó;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Llanquihue;101;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+10104;Fresia;1002;LLANQUIHUE;Llanquihue;Los Lagos;10;Llanquihue;101;2020;2021;Decreto 74 de 2018;Frutillar;FALSE;
+10105;Frutillar;1002;LLANQUIHUE;Llanquihue;Los Lagos;10;Llanquihue;101;2020;2021;Decreto 74 de 2018;Frutillar;FALSE;
+10106;Los Muermos;1002;LLANQUIHUE;Llanquihue;Los Lagos;10;Llanquihue;101;2020;2021;Decreto 74 de 2018;Frutillar;FALSE;
+10107;Llanquihue;1002;LLANQUIHUE;Llanquihue;Los Lagos;10;Llanquihue;101;2020;2021;Decreto 74 de 2018;Frutillar;FALSE;
+10108;Maullín;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Llanquihue;101;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+10109;Puerto Varas;1002;LLANQUIHUE;Llanquihue;Los Lagos;10;Llanquihue;101;2020;2021;Decreto 74 de 2018;Frutillar;FALSE;
+10201;Castro;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10202;Ancud;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10203;Chonchi;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10204;Curaco de Vélez;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10205;Dalcahue;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10206;Puqueldón;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10207;Queilén;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10208;Quellón;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10209;Quemchi;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10210;Quinchao;1003;CHILOÉ;Chiloé;Los Lagos;10;Chiloé;102;2024;2025;Decreto 78 de 2023;Castro;FALSE;
+10301;Osorno;1004;OSORNO;Osorno;Los Lagos;10;Osorno;103;2027;2029;Decreto 162 de 2022;Osorno;TRUE;
+10302;Puerto Octay;1004;OSORNO;Osorno;Los Lagos;10;Osorno;103;2027;2029;Decreto 162 de 2022;Osorno;TRUE;
+10303;Purranque;1004;OSORNO;Osorno;Los Lagos;10;Osorno;103;2027;2029;Decreto 162 de 2022;Osorno;TRUE;
+10304;Puyehue;1004;OSORNO;Osorno;Los Lagos;10;Osorno;103;2027;2029;Decreto 162 de 2022;Osorno;TRUE;
+10305;Río Negro;1004;OSORNO;Osorno;Los Lagos;10;Osorno;103;2027;2029;Decreto 162 de 2022;Osorno;TRUE;
+10306;San Juan de la Costa;1004;OSORNO;Osorno;Los Lagos;10;Osorno;103;2027;2029;Decreto 162 de 2022;Osorno;TRUE;
+10307;San Pablo;1004;OSORNO;Osorno;Los Lagos;10;Osorno;103;2027;2029;Decreto 162 de 2022;Osorno;TRUE;
+10401;Chaitén;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Palena;104;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+10402;Futaleufú;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Palena;104;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+10403;Hualaihué;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Llanquihue;101;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+10404;Palena;1001;DEL RELONCAVÍ;del Reloncaví;Los Lagos;10;Palena;104;2025;2027;Decreto 162 de 2022;Puerto Montt;TRUE;
+11101;Coyhaique;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11102;Lago Verde;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11201;Aysén;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11202;Cisnes;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11203;Guaitecas;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11301;Cochrane;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11302;O'Higgins;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11303;Tortel;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11401;Chile Chico;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+11402;Río Ibáñez;1101;AYSÉN;Aysén;Aysén del Gral. Carlos Ibáñez del Campo;11;Coyhaique;111;2022;2024;Decreto 68 de 2021;Coyhaique;FALSE;
+12101;Punta Arenas;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12102;Laguna Blanca;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12103;Río Verde;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12104;San Gregorio;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12201;Cabo de Hornos;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12202;Antártica;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12301;Porvenir;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12302;Primavera;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12303;Timaukel;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12401;Natales;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+12402;Torres del Paine;1201;MAGALLANES;Magallanes;Magallanes y Antártica Chilena;12;Magallanes;121;2022;2024;Decreto 68 de 2021;Punta Arenas;FALSE;
+13101;Santiago;1301;SANTIAGO CENTRO;Santiago Centro;Metropolitana de Santiago;13;Santiago Centro;131;2024;2026;Decreto 162 de 2022;Santiago;TRUE;
+13102;Cerrillos;1302;SANTA CORINA;Santa Corina;Metropolitana de Santiago;13;Santiago Poniente;134;2023;2025;Decreto 162 de 2022;Maipú;FALSE;
+13103;Cerro Navia;1303;BARRANCAS;Barrancas;Metropolitana de Santiago;13;Santiago Poniente;134;2018;2018;Decreto 373 de 2017;Pudahuel;FALSE;
+13104;Conchalí;1304;LOS LIBERTADORES;Los Libertadores;Metropolitana de Santiago;13;Santiago Norte;137;2023;2025;Decreto 162 de 2022;Conchalí;FALSE;
+13105;El Bosque;1305;DEL PINO;del Pino;Metropolitana de Santiago;13;Santiago Sur;132;2023;2025;Decreto 162 de 2022;San Bernardo;FALSE;
+13106;Estación Central;1302;SANTA CORINA;Santa Corina;Metropolitana de Santiago;13;Santiago Poniente;134;2023;2025;Decreto 162 de 2022;Maipú;FALSE;
+13107;Huechuraba;1306;MAPOCHO;Mapocho;Metropolitana de Santiago;13;Santiago Norte;137;2026;2028;Decreto 162 de 2022;Recoleta;TRUE;
+13108;Independencia;1306;MAPOCHO;Mapocho;Metropolitana de Santiago;13;Santiago Norte;137;2026;2028;Decreto 162 de 2022;Recoleta;TRUE;
+13109;La Cisterna;1307;SANTA ROSA;Santa Rosa;Metropolitana de Santiago;13;Santiago Sur;132;2023;2025;Decreto 162 de 2022;San Miguel;FALSE;
+13110;La Florida;1308;LA QUEBRADA;La Quebrada;Metropolitana de Santiago;13;Cordillera;136;2025;2027;Decreto 162 de 2022;La Florida;TRUE;
+13111;La Granja;1309;GABRIELA MISTRAL;Gabriela Mistral;Metropolitana de Santiago;13;Santiago Sur;132;2019;2020;Decreto 72 de 2018;La Granja;FALSE;
+13112;La Pintana;1305;DEL PINO;del Pino;Metropolitana de Santiago;13;Cordillera;136;2023;2025;Decreto 162 de 2022;San Bernardo;FALSE;
+13113;La Reina;1310;MANQUEHUE;Manquehue;Metropolitana de Santiago;13;Santiago Oriente;133;2027;2029;Decreto 15 de 2025;Providencia;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2027, con posible traspaso en 2029.
+13114;Las Condes;1310;MANQUEHUE;Manquehue;Metropolitana de Santiago;13;Santiago Oriente;133;2027;2029;Decreto 15 de 2025;Providencia;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2027, con posible traspaso en 2029.
+13115;Lo Barnechea;1310;MANQUEHUE;Manquehue;Metropolitana de Santiago;13;Santiago Oriente;133;2027;2029;Decreto 15 de 2025;Providencia;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2027, con posible traspaso en 2029.
+13116;Lo Espejo;1307;SANTA ROSA;Santa Rosa;Metropolitana de Santiago;13;Santiago Sur;132;2023;2025;Decreto 162 de 2022;San Miguel;FALSE;
+13117;Lo Prado;1303;BARRANCAS;Barrancas;Metropolitana de Santiago;13;Santiago Poniente;134;2018;2018;Decreto 373 de 2017;Pudahuel;FALSE;
+13118;Macul;1309;GABRIELA MISTRAL;Gabriela Mistral;Metropolitana de Santiago;13;Santiago Oriente;133;2019;2020;Decreto 72 de 2018;La Granja;FALSE;
+13119;Maipú;1302;SANTA CORINA;Santa Corina;Metropolitana de Santiago;13;Santiago Poniente;134;2023;2025;Decreto 162 de 2022;Maipú;FALSE;
+13120;Ñuñoa;1308;LA QUEBRADA;La Quebrada;Metropolitana de Santiago;13;Santiago Oriente;133;2025;2027;Decreto 162 de 2022;La Florida;TRUE;
+13121;Pedro Aguirre Cerda;1307;SANTA ROSA;Santa Rosa;Metropolitana de Santiago;13;Santiago Centro;131;2023;2025;Decreto 162 de 2022;San Miguel;FALSE;
+13122;Peñalolén;1308;LA QUEBRADA;La Quebrada;Metropolitana de Santiago;13;Santiago Oriente;133;2025;2027;Decreto 162 de 2022;La Florida;TRUE;
+13123;Providencia;1310;MANQUEHUE;Manquehue;Metropolitana de Santiago;13;Santiago Oriente;133;2027;2029;Decreto 15 de 2025;Providencia;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2027, con posible traspaso en 2029.
+13124;Pudahuel;1303;BARRANCAS;Barrancas;Metropolitana de Santiago;13;Santiago Poniente;134;2018;2018;Decreto 373 de 2017;Pudahuel;FALSE;
+13125;Quilicura;1304;LOS LIBERTADORES;Los Libertadores;Metropolitana de Santiago;13;Santiago Norte;137;2023;2025;Decreto 162 de 2022;Conchalí;FALSE;
+13126;Quinta Normal;1311;LOS PARQUES;Los Parques;Metropolitana de Santiago;13;Santiago Poniente;134;2024;2026;Decreto 162 de 2022;Quinta Normal;TRUE;
+13127;Recoleta;1306;MAPOCHO;Mapocho;Metropolitana de Santiago;13;Santiago Norte;137;2026;2028;Decreto 162 de 2022;Recoleta;TRUE;
+13128;Renca;1311;LOS PARQUES;Los Parques;Metropolitana de Santiago;13;Santiago Poniente;134;2024;2026;Decreto 162 de 2022;Quinta Normal;TRUE;
+13129;San Joaquín;1309;GABRIELA MISTRAL;Gabriela Mistral;Metropolitana de Santiago;13;Santiago Centro;131;2019;2020;Decreto 72 de 2018;La Granja;FALSE;
+13130;San Miguel;1307;SANTA ROSA;Santa Rosa;Metropolitana de Santiago;13;Santiago Centro;131;2023;2025;Decreto 162 de 2022;San Miguel;FALSE;
+13131;San Ramón;1307;SANTA ROSA;Santa Rosa;Metropolitana de Santiago;13;Santiago Sur;132;2023;2025;Decreto 162 de 2022;San Miguel;FALSE;
+13132;Vitacura;1310;MANQUEHUE;Manquehue;Metropolitana de Santiago;13;Santiago Oriente;133;2027;2029;Decreto 15 de 2025;Providencia;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 1 de marzo 2027, con posible traspaso en 2029.
+13201;Puente Alto;1312;LOS VIÑEDOS;Los Viñedos;Metropolitana de Santiago;13;Cordillera;136;2025;2027;Decreto 15 de 2025;Puente Alto;TRUE;
+13202;Pirque;1312;LOS VIÑEDOS;Los Viñedos;Metropolitana de Santiago;13;Cordillera;136;2025;2027;Decreto 15 de 2025;Puente Alto;TRUE;
+13203;San José de Maipo;1312;LOS VIÑEDOS;Los Viñedos;Metropolitana de Santiago;13;Cordillera;136;2025;2027;Decreto 15 de 2025;Puente Alto;TRUE;
+13301;Colina;1313;CHACABUCO;Chacabuco;Metropolitana de Santiago;13;Santiago Norte;137;2025;2027;Decreto 15 de 2025;Colina;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 30 de junio de 2025, con posible traspaso en 2027.
+13302;Lampa;1313;CHACABUCO;Chacabuco;Metropolitana de Santiago;13;Santiago Norte;137;2025;2027;Decreto 15 de 2025;Colina;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 30 de junio de 2025, con posible traspaso en 2027.
+13303;Tiltil;1313;CHACABUCO;Chacabuco;Metropolitana de Santiago;13;Santiago Norte;137;2025;2027;Decreto 15 de 2025;Colina;TRUE;Según el Decreto 15 del 2025, este SLEP iniciará funciones en 30 de junio de 2025, con posible traspaso en 2027.
+13401;San Bernardo;1305;DEL PINO;del Pino;Metropolitana de Santiago;13;Santiago Sur;132;2023;2025;Decreto 162 de 2022;San Bernardo;FALSE;
+13402;Buin;1314;MAIPO SUR;Maipo Sur;Metropolitana de Santiago;13;Santiago Sur;132;2026;2028;Decreto 162 de 2022;Buin;TRUE;
+13403;Calera de Tango;1305;DEL PINO;del Pino;Metropolitana de Santiago;13;Santiago Sur;132;2023;2025;Decreto 162 de 2022;San Bernardo;FALSE;
+13404;Paine;1314;MAIPO SUR;Maipo Sur;Metropolitana de Santiago;13;Santiago Sur;132;2026;2028;Decreto 162 de 2022;Buin;TRUE;
+13501;Melipilla;1315;MELIPILLA;Melipilla;Metropolitana de Santiago;13;Talagante;135;2027;2029;Decreto 162 de 2022;Melipilla;TRUE;
+13502;Alhué;1315;MELIPILLA;Melipilla;Metropolitana de Santiago;13;Talagante;135;2027;2029;Decreto 162 de 2022;Melipilla;TRUE;
+13503;Curacaví;1315;MELIPILLA;Melipilla;Metropolitana de Santiago;13;Talagante;135;2027;2029;Decreto 162 de 2022;Melipilla;TRUE;
+13504;María Pinto;1315;MELIPILLA;Melipilla;Metropolitana de Santiago;13;Talagante;135;2027;2029;Decreto 162 de 2022;Melipilla;TRUE;
+13505;San Pedro;1315;MELIPILLA;Melipilla;Metropolitana de Santiago;13;Talagante;135;2027;2029;Decreto 162 de 2022;Melipilla;TRUE;
+13601;Talagante;1316;TALAGANTE;Talagante;Metropolitana de Santiago;13;Talagante;135;2025;2027;Decreto 162 de 2022;Talagante;TRUE;
+13602;El Monte;1316;TALAGANTE;Talagante;Metropolitana de Santiago;13;Talagante;135;2025;2027;Decreto 162 de 2022;Talagante;TRUE;
+13603;Isla de Maipo;1316;TALAGANTE;Talagante;Metropolitana de Santiago;13;Talagante;135;2025;2027;Decreto 162 de 2022;Talagante;TRUE;
+13604;Padre Hurtado;1316;TALAGANTE;Talagante;Metropolitana de Santiago;13;Talagante;135;2025;2027;Decreto 162 de 2022;Talagante;TRUE;
+13605;Peñaflor;1316;TALAGANTE;Talagante;Metropolitana de Santiago;13;Talagante;135;2025;2027;Decreto 162 de 2022;Talagante;TRUE;
+14101;Valdivia;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14102;Corral;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14103;Lanco;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14104;Los Lagos;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14105;Máfil;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14106;San José de la Mariquina;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14107;Paillaco;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14108;Panguipulli;1401;VALDIVIA;Valdivia;Los Ríos;14;Valdivia;141;2023;2025;Decreto 162 de 2022;Valdivia;FALSE;
+14201;La Unión;1402;RANCO;Ranco;Los Ríos;14;Ranco;142;2027;2029;Decreto 162 de 2022;La Unión;TRUE;
+14202;Futrono;1402;RANCO;Ranco;Los Ríos;14;Ranco;142;2027;2029;Decreto 162 de 2022;La Unión;TRUE;
+14203;Lago Ranco;1402;RANCO;Ranco;Los Ríos;14;Ranco;142;2027;2029;Decreto 162 de 2022;La Unión;TRUE;
+14204;Río Bueno;1402;RANCO;Ranco;Los Ríos;14;Ranco;142;2027;2029;Decreto 162 de 2022;La Unión;TRUE;
+15101;Arica;1501;CHINCHORRO;Chinchorro;Arica y Parinacota;15;Arica;151;2019;2020;Decreto 72 de 2018;Arica;FALSE;
+15102;Camarones;1501;CHINCHORRO;Chinchorro;Arica y Parinacota;15;Arica;151;2019;2020;Decreto 72 de 2018;Arica;FALSE;
+15201;Putre;1501;CHINCHORRO;Chinchorro;Arica y Parinacota;15;Arica;151;2019;2020;Decreto 72 de 2018;Arica;FALSE;
+15202;General Lagos;1501;CHINCHORRO;Chinchorro;Arica y Parinacota;15;Arica;151;2019;2020;Decreto 72 de 2018;Arica;FALSE;
+16101;Chillán;1601;VALLE DIGUILLÍN;Valle Diguillín;Ñuble;16;Ñuble;161;2024;2026;Decreto 162 de 2022;Chillán;TRUE;
+16102;Bulnes;1601;VALLE DIGUILLÍN;Valle Diguillín;Ñuble;16;Ñuble;161;2024;2026;Decreto 162 de 2022;Chillán;TRUE;
+16103;Chillán Viejo;1601;VALLE DIGUILLÍN;Valle Diguillín;Ñuble;16;Ñuble;161;2024;2026;Decreto 162 de 2022;Chillán;TRUE;
+16104;El Carmen;1601;VALLE DIGUILLÍN;Valle Diguillín;Ñuble;16;Ñuble;161;2024;2027;Decreto 162 de 2022;Chillán;TRUE;
+16105;Pemuco;1601;VALLE DIGUILLÍN;Valle Diguillín;Ñuble;16;Ñuble;161;2024;2026;Decreto 162 de 2022;Chillán;TRUE;
+16106;Pinto;1602;PUNILLA CORDILLERA;Punilla Cordillera;Ñuble;16;Ñuble;161;2022;2024;Decreto 68 de 2021;San Carlos;FALSE;
+16107;Quillón;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16108;San Ignacio;1601;VALLE DIGUILLÍN;Valle Diguillín;Ñuble;16;Ñuble;161;2024;2026;Decreto 162 de 2022;Chillán;TRUE;
+16109;Yungay;1601;VALLE DIGUILLÍN;Valle Diguillín;Ñuble;16;Ñuble;161;2024;2026;Decreto 162 de 2022;Chillán;TRUE;
+16201;Quirihue;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16202;Cobquecura;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16203;Coelemu;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16204;Ninhue;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16205;Portezuelo;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16206;Ranquil;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16207;Treguaco;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
+16301;San Carlos;1602;PUNILLA CORDILLERA;Punilla Cordillera;Ñuble;16;Ñuble;161;2022;2024;Decreto 68 de 2021;San Carlos;FALSE;
+16302;Coihueco;1602;PUNILLA CORDILLERA;Punilla Cordillera;Ñuble;16;Ñuble;161;2022;2024;Decreto 68 de 2021;San Carlos;FALSE;
+16303;Ñiquén;1602;PUNILLA CORDILLERA;Punilla Cordillera;Ñuble;16;Ñuble;161;2022;2024;Decreto 68 de 2021;San Carlos;FALSE;
+16304;San Fabián;1602;PUNILLA CORDILLERA;Punilla Cordillera;Ñuble;16;Ñuble;161;2022;2024;Decreto 68 de 2021;San Carlos;FALSE;
+16305;San Nicolás;1603;COSTA ITATA;Costa Itata;Ñuble;16;Ñuble;161;2026;2029;Decreto 162 de 2022;Quirihue;TRUE;A partir de la Ley de reajuste del sector público 2026 (Ley 21806), se establece que se adelanta su entrada de funcionamiento desde el 1 de marzo 2027 al 1 de marzo 2026. Además, el ajuste realizado a la Ley 21040 en 2026 en el Artículo decimoquinto de las dispocisiones transitorias, establece que su traspaso educativo será el 1 de enero 2029.
