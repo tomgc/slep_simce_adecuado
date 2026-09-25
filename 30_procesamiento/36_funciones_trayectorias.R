@@ -713,6 +713,11 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
     dplyr::filter(!is.na(cod_grupo)) |>
     dplyr::summarise(.by = c(rbd, anio), grupos = dplyr::n_distinct(cod_grupo))
 
+  # -- Año ancla del referente (Q-47, encargo s35d): el primer año de la serie,
+  # el mismo con que filas_referente() fija el conjunto. La nota lo cita en vez
+  # de llevar el año escrito en la plantilla. --
+  anio_ancla <- min(base$anio)
+
   # -- Referente: los que cerraron antes de su traspaso (D35-1) --
   # Son los establecimientos del referente que ya no están en el directorio
   # oficial, con cualquier dependencia.
@@ -752,6 +757,7 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
 
   list(
     N_REFERENTE      = fmt_entero(DATA$meta[[ID_REFERENTE]]$cat),
+    ANIO_ANCLA       = as.character(anio_ancla),
     N_CERRADOS       = fmt_entero(n_cerrados),
     N_REF_DIRECTORIO = fmt_entero(n_ref_dir),
     N_COMUNAS        = fmt_entero(length(DATA$comunas)),

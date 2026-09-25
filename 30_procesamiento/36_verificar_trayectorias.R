@@ -417,13 +417,17 @@ palena_ok <- grepl("Palena aparece con 72,7% en Adecuado sobre 11 estudiantes", 
   nrow(filter(DATA$nube, com %in% cod_palena, g == GSE_TOTAL, np != NP_TODO,
               ade == 72.7, n == 11L)) == 1
 sin_marcador <- !grepl("__NOTA_", html, fixed = TRUE)
+# El año ancla del referente sale de los datos (Q-47, encargo s35d): el primer
+# año de la serie.
+ancla_txt <- sprintf("que en %d eran municipales", min(as.integer(unlist(DATA$anios))))
+ancla_ok <- grepl(ancla_txt, html, fixed = TRUE)
 comprobar(
-  "D11", "Las notas declaran el referente, la nube, las filas excluidas y el ejemplo que traen los datos",
+  "D11", "Las notas declaran el referente, su año ancla, la nube, las filas excluidas y el ejemplo que traen los datos",
   grepl(sprintf("los %s establecimientos", n_ref_txt), html, fixed = TRUE) &&
     grepl(n_com_txt, html, fixed = TRUE) && grepl(marcadas_txt, html, fixed = TRUE) &&
-    palena_ok && sin_marcador,
-  sprintf("referente %s, nube %s, filas marcadas %d, ejemplo de la nube: %s, sin marcadores: %s",
-          n_ref_txt, n_com_txt, marcadas_ind, palena_ok, sin_marcador)
+    palena_ok && sin_marcador && ancla_ok,
+  sprintf("referente %s, año ancla «%s»: %s, nube %s, filas marcadas %d, ejemplo de la nube: %s, sin marcadores: %s",
+          n_ref_txt, ancla_txt, ancla_ok, n_com_txt, marcadas_ind, palena_ok, sin_marcador)
 )
 
 # ---- D12. El HTML escrito no depende de la red y trae el DATA del generador --

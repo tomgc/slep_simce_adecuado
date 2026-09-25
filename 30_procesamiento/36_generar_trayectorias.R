@@ -117,10 +117,13 @@ plantilla_tray <- paste(readLines(RUTA_PLANTILLA_TRAY, encoding = "UTF-8", warn 
 # Encabezado y menú de vistas desde la fuente única del sitio (s34).
 html_tray <- insertar_sitio(plantilla_tray, "trayectorias")
 html_tray <- reemplazar_literal(html_tray, MARCADOR_COHORTES, botones_cohortes(DATA_TRAY))
-# Una cifra puede citarse en más de un lugar (sesión 35: el número de Servicios
-# Locales vigentes aparece en las notas y en el tooltip del referente), así que
-# se reemplazan todas las apariciones, de forma literal; cada marcador debe
-# aparecer al menos una vez.
+# Una cifra puede citarse en más de un lugar (hoy, dentro de las notas, el
+# número de Servicios Locales vigentes, el tamaño del referente, los del
+# referente que siguen en el directorio y las cohortes primera y última
+# aparecen dos veces cada uno; desde el encargo s35c el tooltip del referente
+# arma su texto con DATA y ya no usa marcadores), así que se reemplazan todas
+# las apariciones, de forma literal; cada marcador debe aparecer al menos una
+# vez.
 for (nombre in names(notas_tray)) {
   marcador_nota <- paste0(PREFIJO_NOTA, nombre, "__")
   pos_nota <- gregexpr(marcador_nota, html_tray, fixed = TRUE)
