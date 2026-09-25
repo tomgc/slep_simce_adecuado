@@ -13,10 +13,13 @@
 # parquet; se agregan D9 a D13, que comprueban el DATA que produce el
 # generador y el HTML escrito, y D14, que comprueba la regla de filas del motor
 # adoptada en la sesión 33 (sin marca de la Agencia y al menos 10 evaluados).
+# C1 a C5 (sesión 35) comprueban las cohortes por traspasar de la decisión
+# D35-2 (20260924_decision_referente_traspasos.md).
 # Cada prueba mide la afirmación, no un síntoma cercano, y las de ausencia
 # llevan control positivo.
 #
-# Insumos:  40_salidas/intermedios/{simce_rbd,sleps_chile}.parquet
+# Insumos:  40_salidas/intermedios/{simce_rbd,sleps_chile,establecimientos_chile}.parquet
+#           20_insumos/auxiliares/dim_slep_comunas.csv
 #           40_salidas/trayectorias_traspasos.html (correr antes el paso 36)
 #           50_documentacion/andamios/mockup_trayectoria_traspasos.html
 # Salida:   el informe en consola, una línea por prueba. No escribe archivos:
@@ -259,7 +262,10 @@ comprobar(
 # empate exacto de redondeo (el mockup los resolvía en coma flotante; el
 # generador, hacia arriba en aritmética entera) y distar un décimo. El número de
 # empates que difieren depende de la plataforma que construyó el mockup: no es
-# criterio (ERR-32-03).
+# criterio (ERR-32-03). El mockup trae solo los 36 Servicios Locales y el
+# referente: el cotejo se hace sin las unidades futuras (incluir_futuras =
+# FALSE, sesión 35), sobre el mismo universo de siempre; C3 comprueba que
+# agregarlas no cambia esas filas.
 
 M <- jsonlite::fromJSON(extraer_data(RUTA_MOCKUP), simplifyVector = TRUE)
 a_df <- function(m, columnas) {
@@ -287,13 +293,15 @@ cotejar <- function(gen, mock, claves) {
   )
 }
 DATA_M  <- construir_datos_trayectorias(insumos, conservar_brutos = TRUE,
-                                        excluir_marcadas = FALSE)
+                                        excluir_marcadas = FALSE,
+                                        incluir_futuras = FALSE)
 c_datos <- cotejar(DATA_M$datos, mock_datos, c("id", "anio", "np", "g", "panel"))
 c_nube  <- cotejar(DATA_M$nube, mock_nube, c("com", "anio", "np", "g"))
 
 ctx <- V8::v8()
 ctx$assign("a", extraer_data(RUTA_MOCKUP))
-ctx$assign("b", datos_a_json(construir_datos_trayectorias(insumos, excluir_marcadas = FALSE)))
+ctx$assign("b", datos_a_json(construir_datos_trayectorias(insumos, excluir_marcadas = FALSE,
+                                                          incluir_futuras = FALSE)))
 ctx$assign("r", datos_a_json(construir_datos_trayectorias(insumos)))
 ctx$eval("var A=JSON.parse(a), B=JSON.parse(b), R=JSON.parse(r);")
 iguales_js <- vapply(c("anios", "meta", "nac", "comunas"), function(k) {
@@ -421,6 +429,145 @@ comprobar(
   nrow(base_g) - nrow(base_valida(simce_plantado)) == 1,
   sprintf("filas que salen %d", nrow(base_g) - nrow(base_valida(simce_plantado)))
 )
+
+# ---- Cohortes futuras (D35-2): insumos y recuentos independientes -----------
+# Las olas de traspaso posteriores a la última cohorte del catálogo de
+# Servicios Locales entran a la vista como unidades propias
+# (50_documentacion/activa/decisiones/20260924_decision_referente_traspasos.md).
+# Una unidad futura se reconoce por su año de traspaso, no por su
+# identificador: así C2 puede detectar un identificador reutilizado. Los
+# recuentos independientes leen el catálogo de olas y el directorio sin pasar
+# por 36_funciones_trayectorias.R. Las pruebas se escribieron antes del código
+# (sesión 35): un error de construcción se informa como FALLA de la prueba y no
+# detiene la batería.
+
+# Valores esperados con los insumos vigentes (catálogo de slep_central_datos en
+# d7a8ec6 y directorio de establecimientos_chile.parquet). Cambian solo cuando
+# se recopia el catálogo o se actualiza el directorio (decisión D35-2).
+ESPERADO_POR_OLA     <- c("2027" = 13L, "2028" = 11L, "2029" = 13L)
+ESPERADO_EST_FUTURAS <- 2564L
+
+intentar <- function(expr) tryCatch(expr, error = function(e) e)
+exigir   <- function(x) if (inherits(x, "error")) stop(conditionMessage(x), call. = FALSE) else x
+evaluar  <- function(expr) {
+  tryCatch(expr, error = function(e) list(ok = FALSE, detalle = paste("error:", conditionMessage(e))))
+}
+
+ultima_vigente <- max(as.integer(sleps$anio_traspaso))
+olas_ind <- intentar(
+  readr::read_delim(
+    here::here("20_insumos", "auxiliares", "dim_slep_comunas.csv"), delim = ";",
+    col_types = readr::cols(.default = readr::col_character()),
+    locale = readr::locale(encoding = "UTF-8"), show_col_types = FALSE, progress = FALSE
+  ) |>
+    filter(as.integer(anio_traspaso) > ultima_vigente)
+)
+est_fut_ind <- intentar(
+  read_parquet(file.path(RUTA, "establecimientos_chile.parquet")) |>
+    filter(cod_depe2 == "1", cod_com_rbd %in% exigir(olas_ind)$cod_comuna) |>
+    pull(rbd) |>
+    n_distinct()
+)
+
+DATA_T <- intentar(construir_datos_trayectorias(insumos, incluir_futuras = TRUE))
+DATA_F <- intentar(construir_datos_trayectorias(insumos, incluir_futuras = FALSE))
+
+# Identificadores de las unidades futuras de un `meta`: las de traspaso
+# posterior a la última cohorte del catálogo de Servicios Locales.
+ids_futuras <- function(meta) {
+  tras <- vapply(meta, function(m) as.integer(m$tras), integer(1))
+  names(meta)[tras > ultima_vigente]
+}
+campo_futuras <- function(meta, campo) {
+  vapply(meta[ids_futuras(meta)], function(m) as.integer(m[[campo]]), integer(1))
+}
+a_texto <- function(x) paste(names(x), x, sep = "=", collapse = ", ")
+
+# ---- C1. Hay 37 unidades futuras, con 13, 11 y 13 por ola -------------------
+# Además, las unidades son exactamente los pares (Servicio Local, ola) del
+# catálogo.
+
+c1 <- evaluar({
+  meta  <- exigir(DATA_T)$meta
+  pares <- distinct(exigir(olas_ind), cod_slep, anio_traspaso)
+  por_ola     <- table(campo_futuras(meta, "tras"))
+  por_ola     <- stats::setNames(as.integer(por_ola), names(por_ola))
+  por_ola_ind <- table(pares$anio_traspaso)
+  por_ola_ind <- stats::setNames(as.integer(por_ola_ind), names(por_ola_ind))
+  mismos_pares <- setequal(ids_futuras(meta),
+                           paste0(pares$cod_slep, SEP_ID_FUTURO, pares$anio_traspaso))
+  list(ok = identical(por_ola, ESPERADO_POR_OLA) && identical(por_ola_ind, ESPERADO_POR_OLA) &&
+         mismos_pares,
+       detalle = sprintf("%d unidades futuras; por ola en DATA %s; en el catálogo %s; mismos pares: %s",
+                         length(ids_futuras(meta)), a_texto(por_ola), a_texto(por_ola_ind),
+                         mismos_pares))
+})
+comprobar("C1", "Hay 37 unidades futuras, con 13, 11 y 13 por ola", c1$ok, c1$detalle)
+
+# ---- C2. Ningún identificador futuro coincide con uno vigente ---------------
+# Tampoco se repiten entre sí, y las unidades vigentes siguen siendo las de
+# ORDEN_SLEP. Control positivo: un identificador futuro plantado igual a uno
+# vigente se detecta.
+
+choques <- function(fut, vig) sum(fut %in% c(vig, ID_REFERENTE)) + sum(duplicated(fut))
+c2 <- evaluar({
+  meta <- exigir(DATA_T)$meta
+  fut  <- ids_futuras(meta)
+  tras <- vapply(meta, function(m) as.integer(m$tras), integer(1))
+  vig  <- names(meta)[tras > 0L & tras <= ultima_vigente]
+  n_choques <- choques(fut, vig) + anyDuplicated(names(meta))
+  control   <- choques(c(fut, vig[1]), vig)
+  list(ok = length(fut) > 0 && n_choques == 0 && setequal(vig, ORDEN_SLEP) && control == 1,
+       detalle = sprintf("%d futuros contra %d vigentes: %d coincidencias; control plantado detectado %d",
+                         length(fut), length(vig), n_choques, control))
+})
+comprobar("C2", "Ningún identificador futuro coincide con uno vigente", c2$ok, c2$detalle)
+
+# ---- C3. Las filas de las 36 vigentes y del referente no cambian ------------
+# Autocontenida: el DATA con las unidades futuras, filtrado a las vigentes y al
+# referente, es idéntico al DATA sin ellas. Control positivo: una cifra vigente
+# movida un décimo rompe la identidad.
+
+c3 <- evaluar({
+  ids_c3 <- c(ORDEN_SLEP, ID_REFERENTE)
+  con    <- filter(exigir(DATA_T)$datos, id %in% ids_c3)
+  sin    <- filter(exigir(DATA_F)$datos, id %in% ids_c3)
+  plantado <- con
+  k <- which(plantado$id %in% ORDEN_SLEP)[1]
+  plantado$ade[k] <- plantado$ade[k] + PASO_PCT
+  list(ok = nrow(sin) > 0 && all(ids_c3 %in% sin$id) && identical(con, sin) &&
+         !identical(plantado, sin),
+       detalle = sprintf("%d filas de %d unidades; idénticas: %s; control plantado detectado: %s",
+                         nrow(sin), length(ids_c3), identical(con, sin), !identical(plantado, sin)))
+})
+comprobar("C3", "Las filas de datos de las 36 unidades vigentes y del referente no cambian",
+          c3$ok, c3$detalle)
+
+# ---- C4. Toda unidad futura tiene post == 0 con los datos actuales ----------
+
+c4 <- evaluar({
+  meta <- exigir(DATA_T)$meta
+  post <- campo_futuras(meta, "post")
+  list(ok = length(post) > 0 && all(post == 0L),
+       detalle = sprintf("%d unidades futuras; con post distinto de 0: %d; último año con datos %d",
+                         length(post), sum(post != 0L), max(exigir(DATA_T)$anios)))
+})
+comprobar("C4", "Toda unidad futura tiene post == 0 con los datos actuales", c4$ok, c4$detalle)
+
+# ---- C5. Las unidades futuras suman 2.564 establecimientos ------------------
+# Recuento independiente: RBD que el directorio registra con cod_depe2 == "1"
+# en las comunas de las olas futuras del catálogo.
+
+c5 <- evaluar({
+  suma <- sum(campo_futuras(exigir(DATA_T)$meta, "cat"))
+  ind  <- exigir(est_fut_ind)
+  list(ok = suma == ESPERADO_EST_FUTURAS && ind == ESPERADO_EST_FUTURAS,
+       detalle = sprintf("suma en DATA %s; recuento independiente del directorio %s; esperado %s",
+                         format(suma, big.mark = ".", decimal.mark = ","),
+                         format(ind, big.mark = ".", decimal.mark = ","),
+                         format(ESPERADO_EST_FUTURAS, big.mark = ".", decimal.mark = ",")))
+})
+comprobar("C5", "La suma de establecimientos de las unidades futuras es 2.564", c5$ok, c5$detalle)
 
 # ---- Salida ----------------------------------------------------------------
 

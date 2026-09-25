@@ -221,13 +221,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 <div class="app" id="app">
 <div class="ctls">
   <div class="f"><span>Cohorte de traspaso</span><div class="seg" id="c-coh">
-    <button data-v="2018" aria-pressed="true">2018 <em>4</em></button>
-    <button data-v="2020" aria-pressed="false">2020 <em>3</em></button>
-    <button data-v="2021" aria-pressed="false">2021 <em>4</em></button>
-    <span class="sep"></span>
-    <button data-v="2024" aria-pressed="false">2024 <em>4</em></button>
-    <button data-v="2025" aria-pressed="false">2025 <em>11</em></button>
-    <button data-v="2026" aria-pressed="false">2026 <em>10</em></button></div></div>
+    <!--__COHORTES__--></div></div>
 
   <div class="f"><span>Nivel y asignatura</span>
     <select id="c-np">
@@ -310,13 +304,17 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
    <h4>Qué muestra y qué no</h4>
    <p>Esto describe trayectorias; no mide el efecto del traspaso. Atribuirle un efecto exigiría un contrafactual que estos datos no contienen.</p>
    </div>
+   <div class="bloque">
+   <h4>Cohortes por traspasar</h4>
+   <p>Las cohortes __NOTA_OLA_PRIMERA__ a __NOTA_OLA_ULTIMA__ reúnen __NOTA_N_FUTURAS__ unidades: cada Servicio Local con las comunas que se le traspasan ese año según el catálogo público de comunas por Servicio Local y año de traspaso. Suman __NOTA_N_EST_FUTURAS__ establecimientos, los que el directorio oficial registra como municipales en esas comunas, y la lista se actualiza cuando se actualiza el directorio. Sus cifras siguen las mismas reglas que las demás cohortes y, como todavía no se traspasan, todo su itinerario es previo al traspaso. Un Servicio Local que ya tiene cohorte y recibe comunas en una ola posterior aparece también en esa ola, con la mención «comunas que se traspasan en» y el año. Fuera de este apartado y del marco de los ejes, las cifras de estas notas que hablan de Servicios Locales se refieren a los __NOTA_N_VIGENTES__ de las cohortes __NOTA_COH_PRIMERA__ a __NOTA_COH_ULTIMA__.</p>
+   </div>
    <p>El círculo gris punteado marca dónde está el conjunto de referencia: los __NOTA_N_REFERENTE__ establecimientos que en 2014 eran municipales y que no figuran en el catálogo de Servicios Locales. El conjunto está congelado, así que son las mismas escuelas en los nueve años. Su tamaño en pantalla es fijo y no sigue la escala de área: reúne decenas de miles de estudiantes y, a escala, taparía el gráfico entero. Cada punto de la nube sí sigue la escala, porque una comuna es comparable con un Servicio Local.</p>
    <p>El interruptor «Sostenedores municipales» dibuja una nube con un punto por comuna (__NOTA_N_COMUNAS__ en total), cada una con sus escuelas municipales agregadas y sin estela. Sirve para ver dónde cae un Servicio Local dentro de la distribución completa de la educación municipal, y no solo respecto de su promedio. Con la nube encendida, los ejes del promedio municipal parten el plano en cuadrantes, y cada punto entrega su comuna y sus cifras al pasar el cursor. Ojo con los extremos: las posiciones más llamativas suelen ser comunas muy chicas (Palena aparece con 72,7% en Adecuado sobre 11 estudiantes evaluados), y por eso su punto es también el más pequeño.</p>
    <div class="bloque">
    <h4>Cómo leer el plano</h4>
    <p>Horizontal, porcentaje de estudiantes en nivel Adecuado, que aumenta hacia la derecha. Vertical, porcentaje en nivel Insuficiente, que disminuye hacia arriba. Avanzar es moverse hacia la esquina superior derecha.</p>
    </div>
-   <p>Los dos ejes arrancan en 0 y llegan al máximo de la combinación elegida, redondeado a decenas; con los sostenedores municipales en pantalla pasan a 0 a 100 en ambos, porque la distribución municipal completa ocupa casi todo el rango. El marco se calcula sobre los 36 Servicios Locales, no sobre la cohorte en pantalla, así que no se mueve al cambiar de cohorte ni durante la animación: solo cambia al cambiar de nivel evaluado o de grupo socioeconómico. El vértice inferior derecho queda siempre vacío porque Adecuado e Insuficiente pertenecen a la misma distribución de tres niveles y su suma no puede pasar de 100.</p>
+   <p>Los dos ejes arrancan en 0 y llegan al máximo de la combinación elegida, redondeado a decenas; con los sostenedores municipales en pantalla pasan a 0 a 100 en ambos, porque la distribución municipal completa ocupa casi todo el rango. El marco se calcula sobre todas las cohortes a la vez, vigentes y por traspasar (__NOTA_N_UNIDADES__ unidades), no sobre la cohorte en pantalla, así que no se mueve al cambiar de cohorte ni durante la animación: solo cambia al cambiar de nivel evaluado o de grupo socioeconómico. El vértice inferior derecho queda siempre vacío porque Adecuado e Insuficiente pertenecen a la misma distribución de tres niveles y su suma no puede pasar de 100.</p>
    <div class="bloque">
    <h4>Años sin medición</h4>
    <p>No existe Simce 2019, 2020 ni 2021. El tramo se recorre con las burbujas atenuadas y sin valores intermedios: no se interpola.</p>
@@ -328,18 +326,18 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
    <p>El cambio anual de cada Servicio Local correlaciona __NOTA_CORR_NAC__ con el cambio nacional del mismo año: buena parte de lo que se ve moverse es el país entero, no el territorio.</p>
    <div class="bloque">
    <h4>La composición cambia entre años</h4>
-   <p>El conjunto de establecimientos con resultado utilizable varía año a año, y en __NOTA_N_COMPOSICION__ de los 36 Servicios Locales esa variación supera el __NOTA_UMBRAL_COMPOSICION__% de su máximo. El interruptor «Solo establecimientos con serie completa» fija el conjunto: si la trayectoria no cambia, la composición no la explica.</p>
+   <p>El conjunto de establecimientos con resultado utilizable varía año a año, y en __NOTA_N_COMPOSICION__ de los __NOTA_N_VIGENTES__ Servicios Locales esa variación supera el __NOTA_UMBRAL_COMPOSICION__% de su máximo. El interruptor «Solo establecimientos con serie completa» fija el conjunto: si la trayectoria no cambia, la composición no la explica.</p>
    </div>
    <div class="bloque">
    <h4>Cómo se calculan las cifras</h4>
-   <p>Fuente: resultados Simce por establecimiento de la Agencia de Calidad de la Educación, 2014 a 2025, cruzados con el catálogo de Servicios Locales de Educación Pública.</p>
+   <p>Fuente: resultados Simce por establecimiento de la Agencia de Calidad de la Educación, 2014 a 2025, cruzados con el catálogo de Servicios Locales de Educación Pública y, para las cohortes por traspasar, con el catálogo de comunas por año de traspaso y el directorio oficial de establecimientos.</p>
    </div>
    <p>Se acumulan los numeradores crudos (estudiantes evaluados por el porcentaje de cada nivel) y se redondea una sola vez al final. Cada establecimiento pesa según su número de estudiantes evaluados, así que la cifra del Servicio Local es la de sus estudiantes y no el promedio de sus escuelas.</p>
    <div class="bloque">
    <h4>Qué queda fuera y qué entra</h4>
    <p>De las __NOTA_FILAS_TOTAL__ filas Simce de establecimientos de Servicios Locales sobreviven __NOTA_FILAS_VALIDAS__. Se caen __NOTA_FILAS_SIN_PCT__ que no traen los porcentajes por nivel (muy pocos evaluados, resultados no reportados o no representativos, o filas sin ningún dato), __NOTA_FILAS_SUPRIMIDAS__ celdas suprimidas por la Agencia y __NOTA_FILAS_MARCADAS__ filas con marca de la Agencia (resultados no representativos u otras observaciones), que suman un __NOTA_PCT_MARCADAS__% de los estudiantes evaluados. Es la misma regla del motor de comparación: sin marca de la Agencia y con al menos __NOTA_UMBRAL__ evaluados.</p>
    </div>
-   <p>De los 180 pares posibles de Servicio Local por grupo socioeconómico, solo __NOTA_PARES_EXISTEN__ existen alguna vez. En la tabla, un guión significa que el par no existe; un cero, que existe y ese año no tuvo resultado utilizable. En la vista «todas las pruebas y niveles» el desglose no suma el total, porque la Agencia clasifica el grupo socioeconómico por nivel y una misma escuela puede pertenecer a grupos distintos en 4° básico y en 2° medio (ocurre en __NOTA_GSE_MEZCLA__ de __NOTA_GSE_PARES__ pares de escuela y año).</p>
+   <p>De los __NOTA_PARES_POSIBLES__ pares posibles de Servicio Local por grupo socioeconómico, solo __NOTA_PARES_EXISTEN__ existen alguna vez. En la tabla, un guión significa que el par no existe; un cero, que existe y ese año no tuvo resultado utilizable. En la vista «todas las pruebas y niveles» el desglose no suma el total, porque la Agencia clasifica el grupo socioeconómico por nivel y una misma escuela puede pertenecer a grupos distintos en 4° básico y en 2° medio (ocurre en __NOTA_GSE_MEZCLA__ de __NOTA_GSE_PARES__ pares de escuela y año).</p>
   </div></div>
  </div>
 </div>
@@ -373,7 +371,10 @@ var NP_N={'4b_lect':'4° básico, Lectura','4b_mate':'4° básico, Matemática',
           '2m_lect':'2° medio, Lectura','2m_mate':'2° medio, Matemática',
           'todo':'todas las pruebas y niveles'};
 
-var S={coh:'2018',np:'4b_lect',gse:'T',panel:0,nube:false,nac:false,vel:1,seg:0,t:0,play:false,
+/* La cohorte inicial es la del botón marcado: los botones los genera
+   36_generar_trayectorias.R desde los datos (sesión 35). */
+var COH0=document.querySelector('#c-coh button[aria-pressed="true"]').dataset.v;
+var S={coh:COH0,np:'4b_lect',gse:'T',panel:0,nube:false,nac:false,vel:1,seg:0,t:0,play:false,
        hover:null,foco:null,ocultos:{},detalle:false};
 var SEGS=[];for(var i=0;i<ANIOS.length-1;i++)SEGS.push({a:ANIOS[i],b:ANIOS[i+1],gap:(ANIOS[i+1]-ANIOS[i])>1});
 var DUR=1550,DGAP=4300,HOLD=760,DRIFT=.34;
@@ -404,9 +405,10 @@ function redon(v,d,paso){return d<0?Math.floor(v/paso)*paso:Math.ceil(v/paso)*pa
    lo mismo en cualquier cohorte, nivel o grupo, y el encuadre nunca se mueve.
    Al descontar el país el dato es una diferencia, y el marco se hace simétrico. */
 /* El marco arranca en 0 y llega al máximo de la combinación elegida, redondeado a
-   decenas. Se calcula sobre los 36 Servicios Locales, no sobre la cohorte, así que
-   no se mueve al cambiar de cohorte ni durante la animación: solo cambia cuando se
-   cambia de nivel evaluado o de grupo socioeconómico. */
+   decenas. Se calcula sobre todas las unidades de DATA (las cohortes vigentes, las
+   por traspasar y el referente), no sobre la cohorte, así que no se mueve al
+   cambiar de cohorte ni durante la animación: solo cambia cuando se cambia de
+   nivel evaluado o de grupo socioeconómico. */
 function dominio(){
   /* Con la nube en pantalla el marco se fija en 0 a 100 en los dos ejes: la
      distribución municipal completa ocupa casi todo el rango y el encuadre
@@ -867,7 +869,7 @@ function hover(){
         tip.innerHTML='<b>Referente municipal</b>'+
           '<div class="kv">Adecuado <i>'+fmtPct(rr.dataset.ade)+'</i> · Insuficiente <i>'+fmtPct(rr.dataset.ins)+'</i></div>'+
           '<div class="kv">'+fmt(rr.dataset.n)+' estudiantes evaluados en '+fmt(rr.dataset.e)+' establecimientos, '+rr.dataset.yr+'</div>'+
-          '<div class="kv">Municipales en 2014 que no están en los 36 Servicios Locales del catálogo: los traspasan las olas siguientes. Conjunto fijo; la marca no usa la escala de tamaño</div>';
+          '<div class="kv">Municipales en 2014 que no están en los __NOTA_N_VIGENTES__ Servicios Locales del catálogo: los traspasan las olas siguientes. Conjunto fijo; la marca no usa la escala de tamaño</div>';
         tip.style.left=Math.min(window.innerWidth-292,ev.clientX+15)+'px';
         tip.style.top=Math.max(8,ev.clientY-16)+'px';tip.classList.add('on');
         paint();return;

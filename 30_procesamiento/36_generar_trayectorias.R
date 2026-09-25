@@ -18,9 +18,13 @@
 # sesión 33).
 #
 # Flujo:
-#   1. Lee simce_rbd, sleps_chile y comunas_chile (40_salidas/intermedios/).
-#   2. Construye DATA con 36_funciones_trayectorias.R.
-#   3. Inserta las cifras de las notas y el JSON en 36_trayectorias_template.html.
+#   1. Lee simce_rbd, sleps_chile, comunas_chile y establecimientos_chile
+#      (40_salidas/intermedios/) y el catálogo de olas dim_slep_comunas.csv
+#      (20_insumos/auxiliares/).
+#   2. Construye DATA con 36_funciones_trayectorias.R, con las cohortes por
+#      traspasar (D35-2, sesión 35).
+#   3. Inserta los botones de cohorte, las cifras de las notas y el JSON en
+#      36_trayectorias_template.html.
 #   4. Comprueba que el HTML no carga nada por red ni conserva marcadores.
 #   5. Escribe el HTML de forma atómica (archivo temporal y renombre).
 #
@@ -51,9 +55,35 @@ MARCADOR_DATA_TRAY  <- "__DATA_TRAYECTORIAS__"
 PREFIJO_NOTA <- "__NOTA_"
 PATRON_NOTA  <- "__NOTA_[A-Z_]+__"
 
+# Marcador de los botones de cohorte (#c-coh): uno por año de traspaso de las
+# unidades de DATA, con su número de unidades, y el primero marcado (sesión 35:
+# antes eran literales de la plantilla).
+MARCADOR_COHORTES <- "<!--__COHORTES__-->"
+# Los botones se separan en grupos donde entre dos cohortes consecutivas pasan
+# más de SALTO_GRUPO_COHORTES años (hoy, de 2021 a 2024) y donde empiezan las
+# cohortes por traspasar (OLAS_FUTURAS).
+SALTO_GRUPO_COHORTES <- 2L
+
 # Patrón de carga por red que el HTML no puede contener (invariante del traspaso
 # v31: la vista de trayectorias no depende de la red).
 PATRON_RED <- '(src|href)="https?:'
+
+# Marcado de los botones de cohorte, con la sangría de la plantilla.
+botones_cohortes <- function(DATA) {
+  unidades <- DATA$meta[names(DATA$meta) != ID_REFERENTE]
+  por_cohorte <- table(vapply(unidades, function(m) as.integer(m$tras), integer(1)))
+  anios <- as.integer(names(por_cohorte))
+  corte <- c(FALSE, diff(anios) > SALTO_GRUPO_COHORTES |
+               diff(anios %in% OLAS_FUTURAS) != 0)
+  botones <- sprintf('<button data-v="%d" aria-pressed="%s">%d <em>%d</em></button>',
+                     anios, ifelse(seq_along(anios) == 1L, "true", "false"),
+                     anios, as.integer(por_cohorte))
+  lineas <- unlist(lapply(seq_along(botones), function(i) {
+    c(if (corte[i]) '<span class="sep"></span>', botones[i])
+  }))
+  paste(lineas, collapse = "\n    ")
+}
+
 
 # ============================================================================
 # Bloque 1 — Datos
@@ -61,8 +91,9 @@ PATRON_RED <- '(src|href)="https?:'
 
 message("[36] Vista de trayectorias: leyendo insumos...")
 insumos_tray <- leer_insumos_trayectorias()
-message(sprintf("    simce_rbd.parquet: %d filas; sleps_chile.parquet: %d filas",
-                nrow(insumos_tray$simce), nrow(insumos_tray$sleps)))
+message(sprintf("    simce_rbd.parquet: %d filas; sleps_chile.parquet: %d filas; %s: %d filas",
+                nrow(insumos_tray$simce), nrow(insumos_tray$sleps), ARCHIVO_OLAS,
+                nrow(insumos_tray$olas)))
 
 DATA_TRAY  <- construir_datos_trayectorias(insumos_tray)
 json_tray  <- datos_a_json(DATA_TRAY)
@@ -85,9 +116,16 @@ plantilla_tray <- paste(readLines(RUTA_PLANTILLA_TRAY, encoding = "UTF-8", warn 
                         collapse = "\n")
 # Encabezado y menú de vistas desde la fuente única del sitio (s34).
 html_tray <- insertar_sitio(plantilla_tray, "trayectorias")
+html_tray <- reemplazar_literal(html_tray, MARCADOR_COHORTES, botones_cohortes(DATA_TRAY))
+# Una cifra puede citarse en más de un lugar (sesión 35: el número de Servicios
+# Locales vigentes aparece en las notas y en el tooltip del referente), así que
+# se reemplazan todas las apariciones, de forma literal; cada marcador debe
+# aparecer al menos una vez.
 for (nombre in names(notas_tray)) {
-  html_tray <- reemplazar_literal(html_tray, paste0(PREFIJO_NOTA, nombre, "__"),
-                                       notas_tray[[nombre]])
+  marcador_nota <- paste0(PREFIJO_NOTA, nombre, "__")
+  pos_nota <- gregexpr(marcador_nota, html_tray, fixed = TRUE)
+  if (pos_nota[[1]][1] < 0) stop("La plantilla no trae el marcador ", marcador_nota)
+  regmatches(html_tray, pos_nota) <- list(rep(notas_tray[[nombre]], length(pos_nota[[1]])))
 }
 if (grepl(PATRON_NOTA, html_tray)) {
   stop("La plantilla trae marcadores de notas sin cifra: ",
@@ -96,8 +134,8 @@ if (grepl(PATRON_NOTA, html_tray)) {
 }
 html_tray <- reemplazar_literal(html_tray, MARCADOR_DATA_TRAY, json_tray)
 
-if (grepl(MARCADOR_DATA_TRAY, html_tray, fixed = TRUE)) {
-  stop("El HTML conserva el marcador ", MARCADOR_DATA_TRAY)
+for (marcador in c(MARCADOR_DATA_TRAY, MARCADOR_COHORTES)) {
+  if (grepl(marcador, html_tray, fixed = TRUE)) stop("El HTML conserva el marcador ", marcador)
 }
 cargas_red <- regmatches(html_tray, gregexpr(PATRON_RED, html_tray))[[1]]
 if (length(cargas_red) > 0) {
