@@ -1749,6 +1749,7 @@ code {
         valorFuera:       10,    // % rescatado bajo el año (franja sin espacio)
         anioEje:          10.5,  // año bajo el eje X
         marcaPreliminar:  13,    // asterisco de dato preliminar
+        notaUnico:        9.5,   // nota "* Un solo establecimiento" bajo el eje
       },
       // Barras apiladas del panorama territorial (dibujarPanoramaEnGrupo).
       // Escala propia: el panorama dispone de mucho más ancho por año que las
@@ -2253,7 +2254,21 @@ code {
     // clona este SVG: si viven en dos sitios, cambiar una descuadra la otra.
     // El margen inferior reserva, además del año, dos renglones para las cifras
     // rescatadas (tres franjas bajo el umbral no pueden sumar 100).
-    const RECENT_DIMS = { W: 320, H: 189, M: { top: 28, right: 10, bottom: 48, left: 28 } };
+    // `nota` es la banda que se agrega bajo H solo cuando la tarjeta tiene un
+    // punto de un solo establecimiento: `alto` es lo que crece el SVG y
+    // `linea`, la línea base de la nota medida desde H. Sin ese punto, el SVG
+    // conserva su alto H.
+    const RECENT_DIMS = {
+      W: 320, H: 189, M: { top: 28, right: 10, bottom: 48, left: 28 },
+      nota: { alto: 14, linea: 10 },
+    };
+    // Señal de un solo establecimiento en las barras recientes (pendiente 2
+    // de v34, sesión 35): la cifra lleva este asterisco y la tarjeta, la nota
+    // bajo el eje. Reemplaza la atenuación (barras a 0,45 y cifras a 0,7), que
+    // dejaba las cifras blancas bajo 4,5:1. Los puntos de la sparkline siguen
+    // atenuados porque no llevan cifra.
+    const ASTERISCO_UNICO = "*";
+    const NOTA_UNICO = ASTERISCO_UNICO + " Un solo establecimiento";
     // Regla única de rotulado (la de slep_idps s29 y la del panorama s29): una
     // franja lleva su cifra adentro solo si la cifra cabe entera; si no, la cifra
     // baja completa bajo el año, con la inicial del nivel en su color. Nunca una
@@ -2269,14 +2284,19 @@ code {
         const { W, H, M } = RECENT_DIMS;
         const iw = W - M.left - M.right;
         const ih = H - M.top - M.bottom;
-        const g = svg
-          .attr("viewBox", `0 0 ${W} ${H}`)
-          .attr("preserveAspectRatio", "xMidYMid meet")
-          .append("g")
-          .attr("transform", `translate(${M.left},${M.top})`);
 
         const series = SimceData.getSeriesForEntity(entity, gse, nivel, prueba);
         const recent = series.filter(s => s.pct != null).slice(-recentN);
+        // La banda de la nota se suma al alto solo si algún punto es de un
+        // solo establecimiento; construirSvgGraficos lee este viewBox.
+        const hayUnico = recent.some(s => s.n_estab === 1);
+        const altoSvg = H + (hayUnico ? RECENT_DIMS.nota.alto : 0);
+
+        const g = svg
+          .attr("viewBox", `0 0 ${W} ${altoSvg}`)
+          .attr("preserveAspectRatio", "xMidYMid meet")
+          .append("g")
+          .attr("transform", `translate(${M.left},${M.top})`);
 
         let yMax = 100;
         if (yScale === "auto" && !showElemInsuf) {
@@ -2320,8 +2340,10 @@ code {
           const xPos = x(s.year);
           if (xPos == null) return;
           const bw = x.bandwidth();
+          // Un solo establecimiento: barras en opacidad plena y asterisco
+          // pegado a cada cifra del punto (ver ASTERISCO_UNICO).
           const isLowN = s.n_estab === 1;
-          const opacity = isLowN ? 0.45 : 1;
+          const marcaUnico = isLowN ? ASTERISCO_UNICO : "";
 
           const stacked = showElemInsuf && s.pct < 100;
           const rescatadas = [];
@@ -2345,7 +2367,6 @@ code {
                   .attr("x", xPos).attr("y", topY)
                   .attr("width", bw).attr("height", h)
                   .attr("fill", seg.fill)
-                  .attr("opacity", opacity)
                   .style("cursor", "pointer")
                   .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
                   .on("mouseleave", tt.hide)
@@ -2360,9 +2381,8 @@ code {
                     .attr("font-size", FS_SVG.barras.valorSegmento)
                     .attr("font-weight", 700)
                     .attr("fill", "#FFFFFF")
-                    .attr("opacity", isLowN ? 0.7 : 1)
                     .style("pointer-events", "none")
-                    .text(fmtPctShort(seg.val));
+                    .text(fmtPctShort(seg.val) + marcaUnico);
                 } else {
                   rescatadas.push(seg);
                 }
@@ -2376,7 +2396,6 @@ code {
             .attr("x", xPos).attr("y", yAdec)
             .attr("width", bw).attr("height", hAdec)
             .attr("fill", COLOR_ADEC)
-            .attr("opacity", opacity)
             .style("cursor", "pointer")
             .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
             .on("mouseleave", tt.hide)
@@ -2395,9 +2414,8 @@ code {
               .attr("font-size", FS_SVG.barras.valorBarra)
               .attr("font-weight", 700)
               .attr("fill", stacked ? "#FFFFFF" : COLOR_ADEC)
-              .attr("opacity", isLowN ? 0.7 : 1)
               .style("pointer-events", "none")
-              .text(fmtPctShort(s.pct));
+              .text(fmtPctShort(s.pct) + marcaUnico);
           } else {
             rescatadas.unshift({ val: s.pct, fill: COLOR_ADEC, sigla: "A" });
           }
@@ -2413,9 +2431,8 @@ code {
               .attr("font-size", FS_SVG.barras.valorFuera)
               .attr("font-weight", 700)
               .attr("fill", tintaNivel(seg.fill))
-              .attr("opacity", isLowN ? 0.7 : 1)
               .style("pointer-events", "none")
-              .text(seg.sigla + " " + fmtPct(seg.val));
+              .text(seg.sigla + " " + fmtPct(seg.val) + marcaUnico);
           });
 
           g.append("text")
@@ -2438,6 +2455,21 @@ code {
               .text("*");
           }
         });
+
+        // Nota bajo el eje, en la banda que suma RECENT_DIMS.nota: una por
+        // tarjeta, solo si algún punto es de un solo establecimiento. Vive
+        // dentro del SVG, así que viaja al SVG y al PNG exportados.
+        if (hayUnico) {
+          g.append("text")
+            .attr("class", "nota-unico")
+            .attr("x", 0).attr("y", ih + M.bottom + RECENT_DIMS.nota.linea)
+            .attr("text-anchor", "start")
+            .attr("font-family", "system-ui, sans-serif")
+            .attr("font-size", FS_SVG.barras.notaUnico)
+            .attr("font-weight", 500)
+            .attr("fill", "#0A3A5C")
+            .text(NOTA_UNICO);
+        }
       }, [entity.id, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
       return <svg ref={ref} className="bars-svg" />;
     }
@@ -2702,15 +2734,26 @@ code {
       // Dimensiones de cada SVG fuente (deben coincidir con viewBox de cada subchart)
       const SPARK_W = 320, SPARK_H = 90;
       const BARS_W  = RECENT_DIMS.W, BARS_H  = RECENT_DIMS.H;
+      // Alto de cada SVG de barras según su viewBox: H, o H más la banda de la
+      // nota de un solo establecimiento (RECENT_DIMS.nota). Las filas del SVG
+      // compuesto tienen un alto común, así que toman el mayor de los que se
+      // exportan; sin ninguna nota, queda en BARS_H como antes.
+      const barsSvgDe = (ent, gse) => document.querySelector(
+        `.chart-cell[data-entity-id="${ent.id}"][data-gse="${gse}"] .bars-svg`
+      );
+      const altoBarras = svg =>
+        (svg && svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.height) || BARS_H;
+      const BARS_H_MAX = Math.max(BARS_H,
+        ...GSE_LEVELS.flatMap(gse => entities.map(ent => altoBarras(barsSvgDe(ent, gse)))));
 
       // Layout del SVG compuesto
       const COL_GSE   = 110;   // ancho columna etiqueta GSE
       const CELL_W    = 340;   // ancho de cada celda de territorio
       // Alto de celda: las barras se clonan en y = SPARK_H + 36 (más abajo), así
-      // que la celda debe cubrir SPARK_H + 36 + BARS_H y un aire. Con 30 las
+      // que la celda debe cubrir SPARK_H + 36 + BARS_H_MAX y un aire. Con 30 las
       // barras sobresalían 6 px y cortaban el segundo renglón de cifras
       // rescatadas bajo el año (s31).
-      const CELL_H    = SPARK_H + 36 + BARS_H + 6;
+      const CELL_H    = SPARK_H + 36 + BARS_H_MAX + 6;
       const HEADER_H  = 72;   // fila de encabezados de territorio
       const TITLE_H   = 56;   // fila de título del SVG
       const PAD       = 20;   // padding general
@@ -2890,12 +2933,14 @@ code {
           // Clonar bars SVG
           const barsSvg = cellDiv.querySelector(".bars-svg");
           if (barsSvg) {
+            // El clon conserva el alto de su viewBox para no recortar la nota.
+            const altoClon = altoBarras(barsSvg);
             const barsClone = barsSvg.cloneNode(true);
             barsClone.setAttribute("x", 0);
             barsClone.setAttribute("y", SPARK_H + 36);
             barsClone.setAttribute("width", CELL_W);
-            barsClone.setAttribute("height", BARS_H);
-            barsClone.setAttribute("viewBox", `0 0 ${BARS_W} ${BARS_H}`);
+            barsClone.setAttribute("height", altoClon);
+            barsClone.setAttribute("viewBox", `0 0 ${BARS_W} ${altoClon}`);
             barsClone.setAttribute("preserveAspectRatio", "xMidYMid meet");
             cellG.appendChild(barsClone);
           }
