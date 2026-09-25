@@ -42,6 +42,18 @@ html,body{margin:0;padding:0}
   --az:var(--ocean); --azo:var(--navy); --ref:#8A8478; --ac:#A8421C;
   --sh:0 2px 8px rgba(74,39,70,.08);
   --tabs-h:55px;
+  /* Centrado óptico del texto de los controles (encargo s35f, TB): los mismos
+     tokens que el motor. gobCL (hhea 750/−250, mayúscula 675) deja las
+     mayúsculas 0,0875 em sobre el centro con line-height normal; el texto se
+     recorta con text-box a la altura de mayúscula y a la línea base, y lo
+     recortado vuelve como relleno, mitad arriba y mitad abajo. El <select>
+     ignora text-box: su texto baja con relleno asimétrico, (altura de
+     mayúscula − (ascendente − descendente)) / 2, con ascendente y descendente
+     (750 y 250) redondeados a píxel como para line-height normal (métrica de
+     macOS: 0,0875 em sin redondeo, 0,104 em a 15 px; en Windows, con win
+     1017/399, queda unos 0,06 em bajo el centro). */
+  --compensa-recorte:calc((1lh - 1cap) / 2);
+  --ajuste-optico-select:calc((1cap - (round(0.75em, 1px) - round(0.25em, 1px))) / 2);
   color-scheme:light;
 }
 body{background:var(--s0);color:var(--t1);font-size:var(--f2);font-family:var(--font-body);
@@ -93,6 +105,15 @@ body.pres .app{height:100dvh;max-width:none;padding:var(--u) calc(var(--u)*2)}
    reparte en líneas con botones del alto de siempre; si cabe, nada cambia. */
 #c-coh{flex-wrap:wrap;height:auto;min-height:var(--h)}
 #c-coh button{min-height:calc(var(--h) - 6px)}
+/* Texto de un control flex o de rejilla (botones, interruptores, insignias):
+   text-box no alcanza al texto suelto de un flex, así que va en su propio
+   elemento, recortado a la altura de mayúscula y a la línea base, con el alto
+   de una línea (TB, s35f). */
+.tx{text-box:trim-both cap alphabetic;padding-block:var(--compensa-recorte);min-height:1lh}
+/* Cohortes: el año (.tx, que el script separa del marcado de
+   36_generar_trayectorias.R) queda centrado en el botón y la cifra <em> se
+   alinea a su línea base, como antes. */
+#c-coh button{align-items:baseline;padding-top:calc((var(--h) - 6px - 1lh) / 2)}
 .f.f-coh{max-width:100%}
 .btn{appearance:none;height:var(--h);border:1px solid var(--line-strong);border-radius:4px;background:transparent;
   color:var(--t1);font:inherit;font-weight:500;padding:0 14px;cursor:pointer;display:inline-flex;
@@ -102,7 +123,8 @@ body.pres .app{height:100dvh;max-width:none;padding:var(--u) calc(var(--u)*2)}
 .btn.ico{width:var(--h);padding:0;justify-content:center}
 .btn.ico svg{width:17px;height:17px}
 button:focus-visible,select:focus-visible,.sw:focus-within{outline:2px solid var(--ocean);outline-offset:1px}
-select{height:var(--h);font:inherit;font-size:var(--f2);font-weight:500;padding:0 30px 0 12px;
+select{height:var(--h);font:inherit;font-size:var(--f2);font-weight:500;
+  padding:calc(2 * var(--ajuste-optico-select)) 30px 0 12px;
   border:1px solid var(--line-strong);border-radius:4px;background-color:var(--s1);color:var(--t1);
   cursor:pointer;appearance:none;width:auto;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23747474' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
@@ -337,14 +359,14 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 
   <div class="f"><span>Cobertura</span>
     <div class="cob" style="display:flex;gap:8px">
-    <label class="sw" id="sw-panel" data-on="0"><input type="checkbox" id="c-panel"> Solo establecimientos con serie completa</label>
-    <label class="sw" id="sw-nube" data-on="0"><input type="checkbox" id="c-nube"> Sostenedores municipales</label>
+    <label class="sw" id="sw-panel" data-on="0"><input type="checkbox" id="c-panel"> <span class="tx">Solo establecimientos con serie completa</span></label>
+    <label class="sw" id="sw-nube" data-on="0"><input type="checkbox" id="c-nube"> <span class="tx">Sostenedores municipales</span></label>
     </div></div>
 
   <!-- Acciones de la vista: al extremo derecho de la barra de controles, como en
        el motor, sin una fila de título propia (la pestaña ya nombra la vista). -->
   <div class="hdacc">
-    <button class="btn" id="b-notas">Notas metodológicas</button>
+    <button class="btn" id="b-notas"><span class="tx">Notas metodológicas</span></button>
     <div class="seg" id="c-vel">
     <button class="ic" data-v="1.9" aria-pressed="false" title="Lento" aria-label="Lento">
       <svg viewBox="0 0 24 16"><path d="M7 2v12l9-6z"/></svg></button>
@@ -391,7 +413,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
 
 <div class="velo" id="velo" hidden>
  <div class="modal">
-  <header><h3>Notas metodológicas</h3><button class="btn" id="b-cerrar">Cerrar</button></header>
+  <header><h3>Notas metodológicas</h3><button class="btn" id="b-cerrar"><span class="tx">Cerrar</span></button></header>
   <div class="body"><div class="cols">
    <div class="bloque">
    <h4>Qué muestra y qué no</h4>
@@ -793,7 +815,8 @@ function tarjeta(){
     var lb=document.createElement('label');lb.className='rw';
     var ck=document.createElement('input');ck.type='checkbox';ck.checked=on;
     ck.addEventListener('change',function(){S.ocultos[id]=!ck.checked;render();});
-    var nu=document.createElement('span');nu.className='num';nu.textContent=NUM[id];
+    var nu=document.createElement('span');nu.className='num';
+    var nt=document.createElement('span');nt.className='tx';nt.textContent=NUM[id];nu.appendChild(nt);
     nu.style.background=on?'var(--az)':'var(--t3)';
     var nm=document.createElement('span');nm.textContent=META[id].nom;
     lb.appendChild(ck);lb.appendChild(nu);lb.appendChild(nm);td.appendChild(lb);tr.appendChild(td);
@@ -821,8 +844,8 @@ function tarjeta(){
     vis+' de '+L.length+' en pantalla · <b>'+fmt(tot)+'</b> establecimientos'+(S.gse==='T'?'':' del '+GSE_N[S.gse])+' con resultado en '+yr+
     ', de <b>'+fmt(cat)+'</b> '+(porTraspasar?'que se traspasan a la cohorte.':'que la cohorte administra.');
   document.getElementById('pie').innerHTML=
-    '<button class="btn" id="b-det" style="height:32px;font-size:var(--f3);padding:0 11px">'+
-    (S.detalle?'Ocultar el desglose por grupo socioeconómico':'Ver el desglose por grupo socioeconómico')+'</button>'+
+    '<button class="btn" id="b-det" style="height:32px;font-size:var(--f3);padding:0 11px"><span class="tx">'+
+    (S.detalle?'Ocultar el desglose por grupo socioeconómico':'Ver el desglose por grupo socioeconómico')+'</span></button>'+
     (S.detalle?'<div style="margin-top:8px">Un guión significa que ese Servicio Local no tiene escuelas de ese grupo; un cero, que las tiene y este año no arrojaron resultado utilizable.'+
       (S.np==='todo'?' En esta vista combinada las líneas no suman el total: la Agencia clasifica el grupo socioeconómico por nivel, así que una misma escuela puede ser de un grupo en 4° básico y de otro en 2° medio.':'')+'</div>':'');
   document.getElementById('b-det').addEventListener('click',function(){
@@ -1122,6 +1145,13 @@ function seg(id,k,after,num){
     this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
     S[k]=num?parseFloat(b.dataset.v):b.dataset.v;if(after)after();render();});
 }
+/* El año de cada botón de cohorte va en su propio elemento (.tx) para que
+   text-box lo recorte (TB, s35f): no alcanza al texto suelto de un botón flex,
+   y el marcado de los botones lo arma 36_generar_trayectorias.R. */
+document.querySelectorAll('#c-coh button').forEach(function(b){
+  var t=b.firstChild;if(!t||t.nodeType!==3||!t.textContent.trim())return;
+  var e=document.createElement('span');e.className='tx';e.textContent=t.textContent.trim();b.replaceChild(e,t);
+});
 seg('c-coh','coh',function(){S.ocultos={};rebuild();});
 document.getElementById('c-np').addEventListener('change',function(){S.np=this.value;rebuild();});
 seg('c-vel','vel',null,true);
