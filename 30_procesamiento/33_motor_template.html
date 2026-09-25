@@ -1707,6 +1707,11 @@ code {
     // franjas conservan el color del nivel (D-color-nivel).
     const TINTA_ELEM  = "#3874A9";
     const tintaNivel  = fill => fill === COLOR_ELEM ? TINTA_ELEM : fill;
+    // Tinta de la cifra escrita DENTRO de la franja Elemental (rótulo interior
+    // de barras y panorama). El blanco daba 2,78:1 sobre el azul claro; esta
+    // tinta oscura, la misma de --ink-2, da 5,44:1. Las demás franjas siguen
+    // con cifra blanca y la franja no cambia de color (D35-5, D-color-nivel).
+    const TINTA_SOBRE_ELEM = "#2E2230";
 
     // ============================================================
     // Escala tipográfica del SVG
@@ -2363,8 +2368,9 @@ code {
                   .on("mouseenter", e => tt.show(e, s, s.year, ref.current))
                   .on("mouseleave", tt.hide)
                   .on("click", e => { e.stopPropagation(); tt.pin(e, s, s.year, ref.current); });
-                // Etiqueta % del segmento, en blanco, a la base de su franja,
-                // solo si cabe; si no, se rescata bajo el año.
+                // Etiqueta % del segmento, a la base de su franja, solo si
+                // cabe; si no, se rescata bajo el año. Blanca, salvo en
+                // Elemental, que usa tinta oscura (TINTA_SOBRE_ELEM).
                 if (h >= ALTO_MIN_ROTULO_BARRAS) {
                   g.append("text")
                     .attr("x", xPos + bw / 2).attr("y", botY - 5)
@@ -2372,7 +2378,7 @@ code {
                     .attr("font-family", "system-ui, sans-serif")
                     .attr("font-size", FS_SVG.barras.valorSegmento)
                     .attr("font-weight", 700)
-                    .attr("fill", "#FFFFFF")
+                    .attr("fill", seg.fill === COLOR_ELEM ? TINTA_SOBRE_ELEM : "#FFFFFF")
                     .style("pointer-events", "none")
                     .text(fmtPctShort(seg.val) + marcaUnico);
                 } else {
@@ -3166,7 +3172,7 @@ code {
                 .attr("font-family", "system-ui, sans-serif")
                 .attr("font-size", FS_SVG.panorama.valorSegmento)
                 .attr("font-weight", 700)
-                .attr("fill", "#FFFFFF")
+                .attr("fill", seg.fill === COLOR_ELEM ? TINTA_SOBRE_ELEM : "#FFFFFF")
                 .text(fmtPctShort(v));
             } else {
               rescatadas.push(seg);
