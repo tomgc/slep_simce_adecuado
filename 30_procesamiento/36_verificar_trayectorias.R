@@ -1175,11 +1175,14 @@ desajustes_fc1 <- function(est, D) {
   f <- est$filas
   x <- merge(u, data.frame(nom = f$nom, e_tabla = entero_vista(f$e), sd = f$sd), by = "nom", all = TRUE)
   tot_cnt <- entero_vista(sub("^.* · ([0-9.]+) establecimientos.*$", "\\1", est$cnt))
+  anio_cnt_ok  <- grepl(sprintf("con resultado en %s,", est$yr), est$cnt, fixed = TRUE)
+  total_cnt_ok <- identical(tot_cnt, sum(x$e_tabla, na.rm = TRUE))
+  # Cada negación va entre paréntesis: en R el ! unario tiene menor precedencia
+  # que +, y `a + !b + !c` se lee `a + !(b + !c)` (auditoría del encargo s35i,
+  # R-32: así el total del conteo no se sumaba nunca).
   sum(is.na(x$id)) + sum(is.na(x$e_tabla)) +
     sum(x$e_tabla != ifelse(is.na(x$e_dato), 0L, x$e_dato), na.rm = TRUE) +
-    sum(x$sd != is.na(x$e_dato), na.rm = TRUE) +
-    !grepl(sprintf("con resultado en %s,", est$yr), est$cnt, fixed = TRUE) +
-    !identical(tot_cnt, sum(x$e_tabla, na.rm = TRUE))
+    sum(x$sd != is.na(x$e_dato), na.rm = TRUE) + (!anio_cnt_ok) + (!total_cnt_ok)
 }
 fc1 <- evaluar({
   D <- exigir(DATA_T)
