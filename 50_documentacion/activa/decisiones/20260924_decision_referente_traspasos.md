@@ -256,3 +256,11 @@ Se registran en el lock los paquetes de CRAN que faltan (entre ellos `V8` y `ope
 - Q-71: el próximo traspaso describe `suitedoc` como «en remoto privado», no «sin remoto».
 - Q-72: `manifiesto_insumos.md` dirá que los 18 xlsx Simce se versionan (están autorizados).
 - Q-70: el proceso R huérfano de `slep-central-datos` lo detiene el titular.
+
+## Decisiones del titular tras el encargo `encargo_ejecucion_decisiones_s35k.md` (sesión 35, 2026-09-26)
+
+### D35-20. CLAUDE.md local y log de s35j sin cambios
+
+- CLAUDE.md se crea en la raíz, local y sin versionar (el `.gitignore` lo excluye). Los logs dejan de registrarlo como pendiente.
+- El log de s35j, con referencias generales a dos repositorios privados (sin datos ni claves), se deja como está.
+- Q-73, Q-74 y Q-75 y el detalle R-41 se resuelven en el encargo s35l, junto con una batería versionada del motor.

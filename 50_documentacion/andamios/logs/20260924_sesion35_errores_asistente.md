@@ -273,3 +273,25 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: una cola copiada de otro encargo que nombra una autorización por número.
 - `intentos_previos`: 0.
 - `costo`: bajo; una nota del ejecutor, sin efecto en lo publicado.
+
+## ERR-35-24
+
+- `que_paso`: en K3 del encargo s35k pedí la constante `ANIO_INICIO` y, a la vez, medir el hueco «entre el primero y el último» año; el ejecutor tuvo que elegir una lectura (D3-a: entre los presentes, así que quitar 2014 de los dos niveles pasa). Además, el ALCANCE de K3 dejó fuera los textos que citan el rango fijo (README, `documentar.R`, lista de autorizados, tablas del manifiesto), aunque R3.4 de s35j ya los listaba.
+- `regla_violada`: instrumento de encargos v1.6 (criterio no ambiguo; ALCANCE completo según el diagnóstico previo).
+- `causa_raiz`: redacté la regla del hueco sin decidir si 2014 es un piso obligatorio, y armé el ALCANCE solo con el código del build.
+- `salvaguarda_presente`: instrumento v1.6; log de s35j R3.4.
+- `patron`: PAT-05 (criterio ambiguo) y PAT-03 (alcance que no recoge el diagnóstico).
+- `gatillo_observable`: una constante nueva en el encargo que ningún criterio usa; un diagnóstico previo con una lista de archivos que el ALCANCE no cita.
+- `intentos_previos`: 0.
+- `costo`: dos dudas (Q-74, Q-75) y un encargo más.
+
+## ERR-35-25
+
+- `que_paso`: la primera emisión del encargo s35l se detuvo en H1: esperaba que `git ls-files | grep verificar` diera una línea y dio dos (la batería congelada de la sesión 30 en `andamios/`). Además, la lectura previa del ejecutor halló premisas que §2 no traía: nueve coincidencias de rango fuera del ALCANCE de L3, un sexto literal en `documentar.R` (L305), el texto de años sin Simce en la vista (L425), el directorio oficial ausente en un clon y marcadores ajenos (`__PURE__`) que invalidaban un patrón genérico en M2.
+- `regla_violada`: SETTINGS §1.2.6 (premisa sin medir) y regla propia de no poner en un encargo un comando que no corrí; H1 llevaba un `grep` marcado como hipótesis pero con un esperado estricto.
+- `causa_raiz`: escribí la premisa de la batería desde la memoria de la sesión y no corrí el comando exacto; armé L3 y M2 sin repetir el `git grep` y la búsqueda de marcadores sobre la salida real.
+- `salvaguarda_presente`: SETTINGS; regla de detención de H1 (funcionó).
+- `patron`: PAT-01 (afirmar sin leer) y PAT-03 (alcance que no recoge lo medible).
+- `gatillo_observable`: un esperado de FASE 0 marcado «hipótesis»; un criterio con `grep` que no se corrió al redactar.
+- `intentos_previos`: 0.
+- `costo`: un encargo detenido y una segunda emisión; el log de la primera queda como commit local.
