@@ -1182,6 +1182,21 @@ code {
    resultado es el mismo que con la regla de arriba (una columna de 1fr). */
 @media (max-width: 640px) {
   .panorama-grid { grid-template-columns: minmax(0, 1fr); }
+  /* Modal «Agregar territorio» (encargo s35h, Q-55): el min-width de 540 px lo
+     sacaba de la ventana a 375 px (x = −82,5). Aquí toma el ancho del fondo,
+     dentro de su relleno; el formulario va en una columna, y las 6 pestañas
+     siguen en una fila que se desplaza en horizontal dentro de sí misma. Como
+     la fila recorta lo que sale de su caja, la línea inferior pasa de borde a
+     sombra interior del mismo grosor y la pestaña deja su margen negativo: el
+     subrayado de la activa vuelve a cubrir la línea con sus 2 px, como arriba
+     de 640 px, en vez de perder la fila de abajo. */
+  .modal { min-width: 0; width: 100%; }
+  .form-grid { grid-template-columns: minmax(0, 1fr); }
+  .modal-tabs {
+    overflow-x: auto; overflow-y: hidden;
+    border-bottom: 0; box-shadow: inset 0 -1px 0 var(--border-1);
+  }
+  .modal-tab { margin-bottom: 0; }
 }
 .panorama-cell {
   background: var(--paper);
