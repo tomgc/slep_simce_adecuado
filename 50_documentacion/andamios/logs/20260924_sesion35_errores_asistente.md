@@ -295,3 +295,14 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: un esperado de FASE 0 marcado «hipótesis»; un criterio con `grep` que no se corrió al redactar.
 - `intentos_previos`: 0.
 - `costo`: un encargo detenido y una segunda emisión; el log de la primera queda como commit local.
+
+## ERR-35-26
+
+- `que_paso`: en la segunda emisión de s35l copié del log de la primera las coincidencias y los textos fijos sin volver a buscarlos; el ejecutor halló 11 coincidencias fuera de alcance en vez de 9 (dos HTML standalone de arquitectura) y otros dos textos fijos de años sin Simce en la vista (L462 y L1032) que L4 no cubría (Q-80).
+- `regla_violada`: SETTINGS §1.2.6 (premisa sin medir en este turno).
+- `causa_raiz`: traté el §9 de un log como inventario completo en vez de repetir el `git grep` con un patrón más amplio antes de redactar.
+- `salvaguarda_presente`: el criterio de L3 permitía registrar coincidencias no previstas (funcionó).
+- `patron`: PAT-03 (alcance que no recoge lo medible).
+- `gatillo_observable`: una lista de líneas en un encargo que proviene de otro documento y no de un comando del mismo turno.
+- `intentos_previos`: 1 (ERR-35-25, mismo encargo).
+- `costo`: una duda (Q-80) y un encargo corto más.
