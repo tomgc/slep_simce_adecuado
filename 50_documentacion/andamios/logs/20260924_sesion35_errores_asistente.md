@@ -306,3 +306,14 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: una lista de líneas en un encargo que proviene de otro documento y no de un comando del mismo turno.
 - `intentos_previos`: 1 (ERR-35-25, mismo encargo).
 - `costo`: una duda (Q-80) y un encargo corto más.
+
+## ERR-35-27
+
+- `que_paso`: en N1 del encargo s35m propuse como control del rango un `ANIOS_SIN_SIMCE` de 2019 y 2021, que el paso 31 detiene antes de llegar a la forma de rango («faltan años 2020»); el ejecutor tuvo que plantar un xlsx de 2020 para que el control llegara al paso 33 (R-30).
+- `regla_violada`: instrumento de encargos v1.6 (el control positivo debe alcanzar la regla que prueba).
+- `causa_raiz`: diseñé el control mirando solo `10_html.R`, sin seguir el recorrido del build desde el paso 31.
+- `salvaguarda_presente`: el criterio pedía anotar la salida del control (funcionó).
+- `patron`: PAT-05 (criterio mal calibrado).
+- `gatillo_observable`: un control positivo que altera una constante leída por más de un paso del pipeline.
+- `intentos_previos`: 0.
+- `costo`: una desviación declarada.

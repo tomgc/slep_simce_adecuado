@@ -273,3 +273,15 @@ Se registran en el lock los paquetes de CRAN que faltan (entre ellos `V8` y `ope
 - Q-80: los textos fijos de años sin Simce de la vista (L462 y L1032) pasan a `ANIOS_SIN_SIMCE` en un encargo corto.
 - Q-81: los cuatro textos de `documentar.R` que llaman «preliminar» al 2025 se corrigen con la próxima regeneración de la suite.
 - Q-82: las baterías del motor y de la vista siguen manuales; se corren antes de cada copia a `docs/`.
+
+## Decisiones del titular tras el encargo `encargo_textos_anios_s35m.md` (sesión 35, 2026-09-26)
+
+### D35-22. Cierre de la línea de años sin Simce y CLAUDE.md en los encargos
+
+- Q-83: las páginas no declaran sus formas de años sin Simce; una reescritura a mano la detecta el `grep`.
+- Q-84: 2018 y 2022 (vecinos del hueco) quedan fijos en la banda de la vista, el corte de líneas del motor y el ejemplo de la nota GSE.
+- Q-85: todo encargo trae una autorización fija para agregar su línea a «Últimos cambios» de `CLAUDE.md` al cerrar.
+
+### D35-23. Revisión del titular de s35h y s35i
+
+El titular revisó en Safari y en un teléfono lo publicado por s35h y s35i (modal y supergrid a 375 px, centrado de Q-57 y un PNG exportado con gobCL) y lo aprobó (2026-09-26).
