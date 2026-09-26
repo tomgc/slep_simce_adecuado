@@ -22,8 +22,8 @@ Este archivo declara esa práctica. No la introduce.
 ```
 20_insumos/auxiliares/*.xlsx    # catalogos y glosas publicas: anexo de indicadores, caracterizacion de establecimientos, diccionario de territorios, consolidado de glosas SIMCE y listado de SLEP 2026; granularidad de establecimiento, sin persona natural
 20_insumos/auxiliares/*.csv     # metadatos del propio SIMCE: resumen de cambios y tabla comparativa de variables 2014-2025; describen columnas, no personas; y el catalogo publico de comunas por Servicio Local y anio de traspaso (dim_slep_comunas.csv, copia de slep_central_datos); territorio e institucion, sin persona natural
-20_insumos/simce/2m/*.xlsx      # resultados SIMCE de II medio por RBD publicados por la Agencia, 2014-2018 y 2022-2025; nivel establecimiento
-20_insumos/simce/4b/*.xlsx      # resultados SIMCE de 4o basico por RBD publicados por la Agencia, 2014-2018 y 2022-2025; nivel establecimiento
+20_insumos/simce/2m/*.xlsx      # resultados SIMCE de II medio por RBD publicados por la Agencia, desde 2014, sin 2019 a 2021, hasta el ultimo anio cargado; nivel establecimiento
+20_insumos/simce/4b/*.xlsx      # resultados SIMCE de 4o basico por RBD publicados por la Agencia, desde 2014, sin 2019 a 2021, hasta el ultimo anio cargado; nivel establecimiento
 40_salidas/*.xlsx               # historico ponderado de % Adecuado de Costa Central; agregados por anio, sin desagregacion siquiera a comuna
 renv/settings.json              # configuracion del gestor de dependencias; sin datos del proyecto
 50_documentacion/andamios/20260911_filas_anomalas_simce_rbd.xlsx   # diagnostico de filas anomalas de simce_rbd.parquet (sesion 30); hojas Resumen, Sin nalu y Nalu cero; nivel establecimiento, sin persona natural

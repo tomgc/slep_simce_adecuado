@@ -55,7 +55,7 @@ cfg <- list(
       metas   = list(
         list(c="var(--ocean)", k="Lenguaje", v="R"),
         list(c="var(--coral)", k="Salida",   v="HTML autocontenido"),
-        list(c="var(--olive)", k="Cobertura",v="2014–2025 (sin 2019–2021)"),
+        list(c="var(--olive)", k="Cobertura",v="desde 2014 (sin 2019–2021) hasta el último año cargado"),
         list(c="var(--sand)",  k="Niveles",  v="4° básico · 2° medio")
       )
     ),
@@ -95,9 +95,9 @@ cfg <- list(
   # ---- 1.3 Diagrama técnico: insumos, auxiliares, etapas ---------------------
   insumos = list(
     list(t='Simce · 4° básico', badge='9 xlsx',
-         d='Resultados por establecimiento y año · 2014–2018, 2022–2025<br><span class="code-sm">simce4bAAAA_rbd_(final|preliminar).xlsx</span><br>Lectura y Matemática · estándares Adecuado · Elemental · Insuficiente'),
+         d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce4bAAAA_rbd_(final|preliminar).xlsx</span><br>Lectura y Matemática · estándares Adecuado · Elemental · Insuficiente'),
     list(t='Simce · 2° medio', badge='9 xlsx',
-         d='Resultados por establecimiento y año · 2014–2018, 2022–2025<br><span class="code-sm">simce2mAAAA_rbd_(final|preliminar).xlsx</span><br>Mismo esquema que 4° básico · 2025 preliminar')
+         d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce2mAAAA_rbd_(final|preliminar).xlsx</span><br>Mismo esquema que 4° básico · 2025 preliminar')
   ),
   auxiliares = list(
     list(t='directorio_oficial_ee.csv', badge='csv',
@@ -272,7 +272,7 @@ cfg <- list(
     list(icon='boxes', color='var(--ocean)', paso='Paso 1 · Insumo', titulo='Llegan las materias primas',
          parrafos=c('Cada año, la Agencia de Calidad de la Educación publica los resultados <strong>Simce por estándares de aprendizaje</strong> de cada establecimiento: qué porcentaje de sus estudiantes quedó en nivel Adecuado, Elemental o Insuficiente, en Lectura y Matemática, para 4° básico y 2° medio. Son datos <strong>públicos</strong>.',
                     'El problema es que llegan en <strong>planillas separadas</strong> por año y por nivel, y el formato cambia de un año a otro: una misma columna aparece con otro nombre, un código de comuna viene mal formado, el grupo socioeconómico a veces es un número y a veces una palabra. Tal cual llegan, no se pueden comparar.'),
-         chip_in=list(ico='download', tx='Entra: planillas Simce 2014–2025'), chip_out=NULL),
+         chip_in=list(ico='download', tx='Entra: planillas Simce desde 2014'), chip_out=NULL),
     list(icon='shield-check', color='var(--olive)', paso='Paso 2 · Preparación', titulo='Control de calidad y limpieza',
          parrafos=c('Antes de calcular nada, cada planilla pasa por revisión. Se leen siempre por el nombre de la columna y nunca por su posición, se homologa el grupo socioeconómico a una escala común, se corrigen los códigos de comuna mal formados y se actualizan los códigos de las comunas de Ñuble a su forma actual.',
                     'A cada establecimiento educacional se le recupera además su <strong>comuna y su dependencia</strong>, cruzando por su identificador contra el directorio oficial.'),
@@ -302,7 +302,7 @@ cfg <- list(
     list(icon='shapes', titulo='No mezclamos niveles ni pruebas', d='4° básico y 2° medio, Lectura y Matemática, se cuentan y se muestran siempre por separado. Mezclarlos daría una cifra sin sentido.'),
     list(icon='shield-check', titulo='Respetamos las reglas de la fuente', d='Se excluyen los resultados que la Agencia suprime y los grupos con muy pocos estudiantes evaluados, igual que en las publicaciones oficiales.'),
     list(icon='git-commit', titulo='Mostramos la trayectoria completa', d='Para cada territorio y establecimiento educacional se ve la evolución año a año, no solo el último resultado. Así se distingue una mejora sostenida de un dato puntual.'),
-    list(icon='info', titulo='Solo años con datos reales', d='Se muestran únicamente los años efectivamente publicados (2014–2018 y 2022–2025). No hay Simce 2019–2021; esos años no se inventan ni se imputan. El 2025 se marca como preliminar.')
+    list(icon='info', titulo='Solo años con datos reales', d='Se muestran únicamente los años efectivamente publicados (desde 2014, sin 2019 a 2021, hasta el último año cargado). No hay Simce 2019–2021; esos años no se inventan ni se imputan. El 2025 se marca como preliminar.')
   ),
 
   # ---- 1.11 "En qué fijarte" ------------------------------------------------
@@ -321,7 +321,7 @@ cfg <- list(
     list(q='¿Qué muestra esta herramienta?', a='El porcentaje de estudiantes en nivel Adecuado según el Simce por estándares de aprendizaje, por comuna, Servicio Local, región, establecimiento o a nivel país, siempre separado por grupo socioeconómico, nivel (4° básico o 2° medio) y prueba (Lectura o Matemática).', abierta=TRUE),
     list(q='¿Por qué se pondera por número de estudiantes y no se cuentan establecimientos?', a='Porque el dato de cada establecimiento es una proporción de estudiantes, no una etiqueta. Para saber qué porcentaje de los estudiantes de un territorio alcanza el nivel Adecuado, hay que dar a cada establecimiento el peso de sus estudiantes evaluados; promediar porcentajes sin ponderar trataría igual a uno grande y a uno pequeño.', abierta=FALSE),
     list(q='¿Por qué siempre se separa por grupo socioeconómico?', a='Porque el Simce por estándares no ajusta por el contexto socioeconómico del establecimiento. Comparar resultados en bruto entre territorios con composición distinta puede ser engañoso. Fijar el grupo socioeconómico asegura que la comparación sea entre realidades parecidas.', abierta=FALSE),
-    list(q='¿Qué años cubre?', a='2014 a 2025, sin 2019, 2020 ni 2021 (años sin Simce). El año más reciente, 2025, es preliminar y se muestra marcado como tal.', abierta=FALSE),
+    list(q='¿Qué años cubre?', a='Desde 2014, sin 2019, 2020 ni 2021 (años sin Simce), hasta el último año cargado en 20_insumos/simce/. El año más reciente, 2025, es preliminar y se muestra marcado como tal.', abierta=FALSE),
     list(q='¿Por qué un SLEP muestra años anteriores a su creación?', a='Porque la herramienta agrupa los establecimientos por su dependencia actual a lo largo de toda su historia. Los años previos al traspaso corresponden a la gestión municipal de esos establecimientos, no al SLEP; la herramienta lo advierte cuando seleccionas una dependencia SLEP.', abierta=FALSE),
     list(q='¿Necesito instalar algo para usarla?', a='No. Es un archivo que se abre en cualquier navegador. También está publicada en línea para consultarla directamente.', abierta=FALSE)
   ),
