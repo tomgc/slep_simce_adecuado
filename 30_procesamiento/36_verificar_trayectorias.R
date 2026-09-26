@@ -21,19 +21,37 @@
 # recuento independiente de D9, con su control positivo D9f. R7 (encargo
 # pendientes s35c, Q-26) comprueba que el tooltip del referente dice sus
 # cifras desde DATA. C6 (encargo s35g, Q-58) comprueba que el año de cada
-# botón de cohorte llega en el HTML escrito, en su propio span.tx.
+# botón de cohorte llega en el HTML escrito, en su propio span.tx. FC1 y FC2
+# (encargo s35i, v30-5) comprueban que la tabla de la tarjeta y el plano
+# muestran lo mismo.
 # Cada prueba mide la afirmación, no un síntoma cercano, y las de ausencia
 # llevan control positivo.
+#
+# Familias de la auditoría de la sesión 30 (traspaso_cierre_v30.md §4.16; encargo
+# s35i, v30-5). Cada prueba pertenece a una, según lo que mide:
+#   A  capa de datos: el DATA del generador y sus insumos son correctos.
+#   B  invariantes del motor de la vista: lo que dibuja desde DATA cumple su regla.
+#   C  coherencia entre tabla y gráfico: la tabla y el plano dicen lo mismo.
+#   D  presentación: el HTML escrito como pieza entregada (marcado, notas, red).
+#
+#   Familia  Pruebas
+#   A        D1, D2, D3, D4, D5, D6, D7, D8, D9, D9c, D9f, D10, D10c, D13, D13c,
+#            D14, D14c, C1, C2, C3, C4, C5, R1, R3, R5
+#   B        R2, R4, R6, R7
+#   C        FC1, FC2
+#   D        D11, D12, D12c, C6
 #
 # Insumos:  40_salidas/intermedios/{simce_rbd,sleps_chile,establecimientos_chile}.parquet
 #           20_insumos/auxiliares/dim_slep_comunas.csv
 #           40_salidas/trayectorias_traspasos.html (correr antes el paso 36)
 #           50_documentacion/andamios/mockup_trayectoria_traspasos.html
-# Requiere: chromote y Chrome (R2, R4, R6 y R7 leen la vista en el navegador).
+# Requiere: chromote y Chrome (R2, R4, R6, R7, FC1 y FC2 leen la vista en el
+#           navegador).
 # Salida:   el informe en consola, una línea por prueba. No escribe archivos en
 #           el árbol: el log del encargo o de la sesión lo recoge literal (un
-#           CSV en el árbol sería un archivo de datos sin autorizar, I8). R4 y
-#           R6 escriben un HTML de control en tempdir() y lo borran al leerlo.
+#           CSV en el árbol sería un archivo de datos sin autorizar, I8). R4,
+#           R6, FC1 y FC2 escriben un HTML de control en tempdir() y lo borran al
+#           leerlo.
 #
 # Uso:      Rscript 30_procesamiento/36_verificar_trayectorias.R
 #           (código de salida 1 si alguna prueba falla)
@@ -1092,7 +1110,164 @@ r7 <- evaluar({
 comprobar("R7", "El tooltip del referente dice el año ancla, el tamaño, los que se traspasan y los cerrados desde DATA",
           r7$ok, r7$detalle)
 
-# Cierra el navegador que abrió chromote para R2, R4, R6 y R7.
+# ---- Coherencia entre la tabla y el plano (familia C) -------------------------
+# La tabla de la tarjeta lateral y el plano deben mostrar lo mismo para el mismo
+# estado (familia C de la auditoría de la sesión 30; encargo s35i, v30-5). FC1 y
+# FC2 leen la vista escrita en Chrome sin interfaz, como R2. Sus controles
+# positivos son vistas de control en tempdir() con un fragmento del script
+# cambiado para plantar la incoherencia que cada prueba debe detectar; se borran
+# al leerlas.
+
+# Escribe la vista con un fragmento de su script cambiado en tempdir(), la lee en
+# Chrome (tras `antes`) y borra el HTML al terminar. El fragmento debe aparecer
+# exactamente una vez en la vista escrita.
+leer_vista_con_cambio <- function(buscar, reemplazo, expr, antes = NULL) {
+  pos <- gregexpr(buscar, html, fixed = TRUE)[[1]]
+  if (length(pos) != 1L || pos[1] < 0) stop("el fragmento a cambiar no aparece una sola vez en la vista escrita")
+  html_control <- tempfile(fileext = ".html")
+  writeBin(charToRaw(enc2utf8(paste0(
+    substr(html, 1L, pos - 1L), reemplazo, substr(html, pos + nchar(buscar), nchar(html))
+  ))), html_control)
+  tryCatch(leer_vista(html_control, expr, antes = antes), finally = unlink(html_control))
+}
+# Filas de la tabla (sin las del desglose por grupo): nombre, número, cifra de
+# establecimientos y si están marcadas o sin dato en el año.
+JS_FILAS <- paste0(
+  "[].map.call(document.querySelectorAll('#tb tr:not(.gse)'),function(tr){return {",
+  "nom:tr.querySelector('td.nm .rw > span:last-child').textContent,num:tr.querySelector('.num .tx').textContent,",
+  "e:tr.children[1].textContent,on:!tr.classList.contains('off'),sd:tr.classList.contains('sd')};})"
+)
+JS_TABLA <- paste0(
+  "{yr: document.getElementById('yr').textContent, ",
+  "coh: document.querySelector('#c-coh button[aria-pressed=\"true\"]').dataset.v, ",
+  "np: document.getElementById('c-np').value, gse: document.getElementById('c-gse').value, ",
+  "panel: document.getElementById('c-panel').checked ? 1 : 0, ",
+  "cnt: document.getElementById('cnt').textContent, filas: ", JS_FILAS, "}"
+)
+# Clic en la última cohorte del selector: la vista pasa a esa cohorte.
+JS_ULTIMA_COHORTE <- "document.querySelector('#c-coh button:last-of-type').click()"
+# Clic en la casilla de la primera fila de la tabla con dato en el año del plano:
+# su unidad sale del plano.
+JS_DESMARCAR_PRIMERA <- "document.querySelector('#tb tr:not(.gse):not(.sd) input[type=checkbox]').click()"
+# Unidades de la cohorte `coh` en un `meta`, con su nombre.
+unidades_cohorte <- function(meta, coh) {
+  ids <- names(meta)[vapply(meta, function(m) as.character(m$tras), character(1)) == coh]
+  data.frame(id = ids, nom = vapply(meta[ids], function(m) m$nom, character(1)))
+}
+entero_vista <- function(x) as.integer(gsub(".", "", x, fixed = TRUE))
+
+# ---- FC1. Cada fila de la tabla dice lo que DATA da para el año del plano ------
+# En la vista escrita, en tres estados (el inicial; el último año de la pista; la
+# última cohorte), la tabla trae exactamente las unidades de la cohorte en
+# pantalla, y la cifra de establecimientos de cada fila es la `e` de DATA para esa
+# unidad en el año que muestra el plano (#yr), con la prueba, el grupo y la
+# cobertura en pantalla (0 y fila sin dato cuando DATA no la trae). El conteo de
+# la tarjeta nombra ese mismo año y suma esas cifras. Control positivo: la vista
+# de control cuya tabla lee el año siguiente al del plano no pasa.
+
+JS_TABLA_ANIO_SIGUIENTE <- "var yr=ANIOS[Math.min(ANIOS.length-1,ANIOS.indexOf(anioAct())+1)],L=ids()"
+desajustes_fc1 <- function(est, D) {
+  u <- unidades_cohorte(D$meta, est$coh)
+  fil <- D$datos |>
+    filter(id %in% u$id, anio == as.integer(est$yr), np == est$np, g == est$gse,
+           panel == as.integer(est$panel))
+  u$e_dato <- fil$e[match(u$id, fil$id)]
+  f <- est$filas
+  x <- merge(u, data.frame(nom = f$nom, e_tabla = entero_vista(f$e), sd = f$sd), by = "nom", all = TRUE)
+  tot_cnt <- entero_vista(sub("^.* · ([0-9.]+) establecimientos.*$", "\\1", est$cnt))
+  sum(is.na(x$id)) + sum(is.na(x$e_tabla)) +
+    sum(x$e_tabla != ifelse(is.na(x$e_dato), 0L, x$e_dato), na.rm = TRUE) +
+    sum(x$sd != is.na(x$e_dato), na.rm = TRUE) +
+    !grepl(sprintf("con resultado en %s,", est$yr), est$cnt, fixed = TRUE) +
+    !identical(tot_cnt, sum(x$e_tabla, na.rm = TRUE))
+}
+fc1 <- evaluar({
+  D <- exigir(DATA_T)
+  estados <- list(inicial = NULL, ultimo_anio = JS_ULTIMO_ANIO,
+                  ultima_cohorte = JS_ULTIMA_COHORTE)
+  res <- lapply(estados, function(antes) {
+    est <- leer_vista(RUTA_HTML, JS_TABLA, antes = antes)
+    list(est = est, d = desajustes_fc1(est, D))
+  })
+  ctrl <- leer_vista_con_cambio("var yr=anioAct(),L=ids()", JS_TABLA_ANIO_SIGUIENTE, JS_TABLA)
+  d_ctrl <- desajustes_fc1(ctrl, D)
+  list(ok = all(vapply(res, function(r) r$d == 0 && NROW(r$est$filas) > 0, logical(1))) && d_ctrl > 0,
+       detalle = sprintf("%s; control con la tabla en el año siguiente al del plano (%s): %d desajustes, detectado: %s",
+                         paste(vapply(names(res), function(k) {
+                           e <- res[[k]]$est
+                           sprintf("%s: cohorte %s, %s, %s, año %s, %d filas, %d desajustes",
+                                   k, e$coh, e$np, e$gse, e$yr, NROW(e$filas), res[[k]]$d)
+                         }, character(1)), collapse = "; "),
+                         ctrl$yr, d_ctrl, d_ctrl > 0))
+})
+comprobar("FC1", "Cada fila de la tabla trae las unidades de la cohorte y los establecimientos que DATA da para el año del plano",
+          fc1$ok, fc1$detalle)
+
+# ---- FC2. La tabla y el plano muestran las mismas unidades, con su número ------
+# En la vista escrita, en el estado inicial y tras desmarcar la primera fila de la
+# tabla con dato en el año: toda burbuja visible del plano es de una fila marcada
+# y lleva el número de esa fila; ninguna unidad tiene dos; toda fila marcada con
+# dato en el año del plano tiene su burbuja con el dato de ese año, y la de una
+# fila sin dato no dice tenerlo. Los números se leen solo de la capa de cifras, emparejados con su
+# burbuja por la posición que guardan (data-cx y data-cy): los rótulos de los ejes
+# no tienen esa marca y no cuentan (defecto B3 de la sesión 30). Controles
+# positivos: la vista de control que deja en el plano la burbuja de una fila
+# desmarcada, y la que numera las filas de la tabla con uno de más, no pasan.
+
+JS_BURBUJAS <- paste0(
+  "{yr: document.getElementById('yr').textContent, filas: ", JS_FILAS, ", ",
+  "burbujas: (function(){var g=document.getElementById('g');",
+  "var tx=[].filter.call(g.querySelectorAll('text[data-cx]'),function(t){return t.textContent;});",
+  "return [].filter.call(g.querySelectorAll('circle[data-id]'),function(c){",
+  "return +c.getAttribute('r')>0&&+c.getAttribute('opacity')>.3&&!c.closest('[display=\"none\"]');})",
+  ".map(function(c){return {id:c.dataset.id,real:c.dataset.real,yr:c.dataset.yr,",
+  "num:tx.filter(function(t){return t.dataset.cx===c.getAttribute('cx')&&t.dataset.cy===c.getAttribute('cy');})",
+  ".map(function(t){return t.textContent;}).join('|')};});})()}"
+)
+JS_VISIBLE_SIN_OCULTOS <- "function visible(id){return !esRef(id)&&deCoh(id);}"
+JS_NUMERO_MAS_UNO      <- "nt.textContent=NUM[id]+1;"
+desajustes_fc2 <- function(v, meta) {
+  f <- v$filas
+  b <- v$burbujas
+  if (!NROW(b)) b <- data.frame(id = character(), real = character(), yr = character(), num = character())
+  nom_de <- vapply(meta, function(m) m$nom, character(1))
+  b$nom <- unname(nom_de[b$id])
+  k <- match(b$nom, f$nom)
+  con_dato <- f$nom[f$on & !f$sd]
+  sin_dato <- f$nom[f$on & f$sd]
+  sum(is.na(k)) + sum(!f$on[k], na.rm = TRUE) + sum(duplicated(b$id)) +
+    sum(b$num != f$num[k], na.rm = TRUE) +
+    sum(!vapply(con_dato, function(n) any(b$nom == n & b$real == "1" & b$yr == v$yr), logical(1))) +
+    sum(b$nom %in% sin_dato & b$real == "1")
+}
+fc2 <- evaluar({
+  meta <- exigir(DATA_T)$meta
+  ini  <- leer_vista(RUTA_HTML, JS_BURBUJAS)
+  des  <- leer_vista(RUTA_HTML, JS_BURBUJAS, antes = JS_DESMARCAR_PRIMERA)
+  d_ini <- desajustes_fc2(ini, meta)
+  d_des <- desajustes_fc2(des, meta)
+  ctrl_oculta <- leer_vista_con_cambio("function visible(id){return !esRef(id)&&deCoh(id)&&!S.ocultos[id];}",
+                                       JS_VISIBLE_SIN_OCULTOS, JS_BURBUJAS, antes = JS_DESMARCAR_PRIMERA)
+  ctrl_numero <- leer_vista_con_cambio("nt.textContent=NUM[id];", JS_NUMERO_MAS_UNO, JS_BURBUJAS)
+  d_oculta <- desajustes_fc2(ctrl_oculta, meta)
+  d_numero <- desajustes_fc2(ctrl_numero, meta)
+  desmarcadas <- sum(!des$filas$on)
+  nom_de <- vapply(meta, function(m) m$nom, character(1))
+  sale <- des$filas$nom[!des$filas$on]
+  salio <- length(sale) == 1L && sale %in% nom_de[ini$burbujas$id] && !sale %in% nom_de[des$burbujas$id]
+  list(ok = d_ini == 0 && d_des == 0 && NROW(ini$burbujas) > 0 && desmarcadas == 1L && salio &&
+         NROW(des$burbujas) == NROW(ini$burbujas) - 1L && d_oculta > 0 && d_numero > 0,
+       detalle = sprintf(paste0("inicial (año %s): %d filas, %d burbujas, %d desajustes; tras desmarcar la primera fila: ",
+                                "%d desmarcada, su burbuja sale: %s, %d burbujas, %d desajustes; control con la burbuja de la fila desmarcada ",
+                                "en el plano: %d desajustes, detectado: %s; control con las filas numeradas con uno de más: ",
+                                "%d desajustes, detectado: %s"),
+                         ini$yr, NROW(ini$filas), NROW(ini$burbujas), d_ini, desmarcadas, salio, NROW(des$burbujas), d_des,
+                         d_oculta, d_oculta > 0, d_numero, d_numero > 0))
+})
+comprobar("FC2", "La tabla y el plano muestran las mismas unidades: una burbuja por fila marcada, con su número y el año del plano",
+          fc2$ok, fc2$detalle)
+
+# Cierra el navegador que abrió chromote para R2, R4, R6, R7, FC1 y FC2.
 if (requireNamespace("chromote", quietly = TRUE) && chromote::has_default_chromote_object()) {
   try(chromote::default_chromote_object()$close(), silent = TRUE)
 }
