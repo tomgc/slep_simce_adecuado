@@ -847,3 +847,23 @@ Pendientes fuera del encargo (§11): Q-39 (s35i), v30-5 (s35i), Museo Sans en la
   - `grep -c '^esperado:'` = 77 y `grep -c '^obtenido:'` = 75: dos líneas de resultado empiezan con «obtenido (px de PNG; …):», L118 (FASE 0, M4) y L334 (FASE M4), así que `grep -c '^obtenido'` da 77. No se reescribieron: se declara;
   - `grep -c '^## J'` = 1, con el bloque relleno;
   - privacidad: el `grep` del patrón de RUT no halla coincidencias. Tampoco hay nombres de establecimientos (`liceo|escuela|colegio|instituto`: 0) ni de personas; los nombres que aparecen son de comunas y de Servicios Locales.
+
+### FASE P3: lo que sirve Pages (tras el push de FASE L; autorización 8)
+
+- Commit de este log antes de P3: `000d31c` docs(log): pantallas angostas, centrado restante y PNG (s35h).
+
+Push de FASE L. Condiciones medidas después del commit del log, en el mismo turno:
+- `git status --porcelain` vacío;
+- `git fetch origin` fetch_codigo=0; `origin/main` = cefa729675fd58ea51eb547203072553341a606f;
+- `git merge-base --is-ancestor origin/main HEAD` ancestro_codigo=0, con 9 commits por publicar;
+- md5 de `docs/` = fe30d56f… y 69357a69…, los de PUB.
+
+Luego `git push origin main`
+esperado: push aceptado
+obtenido: «cefa729..000d31c  main -> main», push_codigo=0
+
+**P3.** `$TMPDIR/cal_s35h/p3.sh`: cada 60 s, hasta 10 minutos, `curl -s https://tomgc.github.io/slep_simce_adecuado/ | md5 -q` y `curl -s https://tomgc.github.io/slep_simce_adecuado/trayectorias.html | md5 -q`, contra `md5 -q docs/*.html` (salida en `$TMPDIR/cal_s35h/p3.txt`)
+esperado: fe30d56f866d082501bd8937a24f752e y 69357a69dc04db6186e75d3245c6b873
+obtenido: intento 1 (02:16:27): 7f5971a3… y 523ce765…, la versión anterior; intento 2 (02:17:28): **fe30d56f866d082501bd8937a24f752e y 69357a69dc04db6186e75d3245c6b873**, «COINCIDE en el intento 2». `curl -sI`: HTTP/2 200, `last-modified: Sat, 26 Sep 2026 05:16:44 GMT` en las dos páginas (etag «6ab7553c-2cc54d» y «6ab7553c-21c2ec»).
+
+Cierre con la autorización 8: se agrega esta sección; `git add` del log; `git commit -m "docs(log): P3 de s35h"`; y `git push origin main`, solo si `git diff --name-only HEAD~1..HEAD` muestra únicamente el log y si `fetch` y `merge-base --is-ancestor origin/main HEAD` dan código 0. El hash de ese commit va en el reporte final: un archivo no puede llevar el hash de su propio commit.
