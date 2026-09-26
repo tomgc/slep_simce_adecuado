@@ -7,8 +7,9 @@
 # 33_fragmento_sitio.html, su fuente única (deuda técnica de v33). Desde el
 # encargo pendientes s35b también incrusta la tipografía gobCL (D33-4), con la
 # familia propia "gobCL-sitio" desde el encargo pendientes s35c (D35-9). Desde el
-# encargo s35k sustituye los marcadores del rango de años (D35-19), y desde el
-# s35l, el de los años sin Simce de la vista.
+# encargo s35k sustituye los marcadores del rango de años (D35-19); desde el
+# s35l, el de los años sin Simce de la vista, y desde el s35m (Q-80), sus formas
+# con «ni» y de rango, en la vista y en el motor.
 # =============================================================================
 
 RUTA_FRAGMENTO_SITIO <- here::here("30_procesamiento", "33_fragmento_sitio.html")
@@ -23,11 +24,17 @@ PATRON_SITIO_RESTO   <- "__SITIO_[A-Z]+__|__HREF_[A-Z]+__|__FUENTES__"
 # vista). Así, una base Simce nueva cambia el rango sin editar las plantillas.
 MARCADOR_ANIO_MIN <- "__ANIO_MIN__"
 MARCADOR_ANIO_MAX <- "__ANIO_MAX__"
-# Años sin Simce (encargo s35l, R-41): la vista los escribe con este marcador,
-# que su generador sustituye con ANIOS_SIN_SIMCE de 10_configuracion.R en la
-# forma «2019, 2020 y 2021». Lleva el prefijo __ANIO_ para que el patrón de
+# Años sin Simce (encargo s35l, R-41; s35m, Q-80): las dos páginas los escriben
+# con estos marcadores, que cada generador sustituye con ANIOS_SIN_SIMCE de
+# 10_configuracion.R. Hay uno por forma: la enumeración con «y» («2019, 2020 y
+# 2021»), la enumeración con «ni» («2019, 2020 ni 2021») y los dos extremos del
+# rango, cuyo conector queda en la plantilla («2019 a 2021», «2019–2021»), como
+# en el rango de los datos. Llevan el prefijo __ANIO_ para que el patrón de
 # resto también detenga una versión mal escrita.
-MARCADOR_ANIOS_SIN_SIMCE <- "__ANIO_SIN_SIMCE__"
+MARCADOR_ANIOS_SIN_SIMCE       <- "__ANIO_SIN_SIMCE__"
+MARCADOR_ANIOS_SIN_SIMCE_NI    <- "__ANIO_SIN_SIMCE_NI__"
+MARCADOR_ANIOS_SIN_SIMCE_DESDE <- "__ANIO_SIN_SIMCE_DESDE__"
+MARCADOR_ANIOS_SIN_SIMCE_HASTA <- "__ANIO_SIN_SIMCE_HASTA__"
 # Resto: cualquier texto con el prefijo, para detener también un marcador mal
 # escrito (p. ej. "__ANIO_MIN_"). Ninguna biblioteca de 10_utils lo contiene.
 PATRON_ANIO_RESTO <- "__ANIO_[A-Za-z_]*"
@@ -81,20 +88,38 @@ reemplazar_literal <- function(texto, marcador, valor) {
          substr(texto, pos + nchar(marcador), nchar(texto)))
 }
 
-# Enumera años en castellano: «2019», «2019 y 2020», «2019, 2020 y 2021».
-enumerar_anios <- function(anios) {
+# Enumera años en castellano con `conjuncion` antes del último: «2019»,
+# «2019 y 2020», «2019, 2020 y 2021»; con "ni", «2019, 2020 ni 2021».
+enumerar_anios <- function(anios, conjuncion = "y") {
   anios <- as.character(sort(as.integer(anios)))
   n <- length(anios)
   if (n <= 1L) return(paste(anios, collapse = ""))
-  paste(paste(anios[-n], collapse = ", "), "y", anios[[n]])
+  paste(paste(anios[-n], collapse = ", "), conjuncion, anios[[n]])
+}
+
+# Devuelve el primer y el último año de `anios`, para escribirlos como rango
+# («2019 a 2021», «2019–2021»). Se detiene si no son un tramo consecutivo:
+# el rango nombraría años que no están. `nombre` identifica los años en el
+# mensaje (p. ej., "ANIOS_SIN_SIMCE").
+tramo_anios <- function(anios, nombre) {
+  anios <- sort(unique(as.integer(anios)))
+  if (!identical(anios, seq(anios[[1L]], anios[[length(anios)]]))) {
+    stop(nombre, " no es un tramo consecutivo (", paste(anios, collapse = ", "),
+         "): no puede escribirse como rango")
+  }
+  as.character(anios[c(1L, length(anios))])
 }
 
 # Reemplaza todas las apariciones de MARCADOR_ANIO_MIN y MARCADOR_ANIO_MAX en
 # `texto` por el primer y el último año de `anios` y, si se pasa
-# `anios_sin_simce`, las de MARCADOR_ANIOS_SIN_SIMCE por esos años enumerados
-# (la vista lo usa; el motor no trae ese marcador). Se detiene si `anios` no trae
-# años, si un marcador pedido no aparece o si queda algún texto con el prefijo
-# __ANIO_ sin sustituir (como un marcador de datos sin reemplazar).
+# `anios_sin_simce` (ANIOS_SIN_SIMCE), las de cada marcador de años sin Simce
+# que la página trae por su forma: MARCADOR_ANIOS_SIN_SIMCE y _NI por esos años
+# enumerados con «y» y con «ni», y _DESDE y _HASTA por los extremos del tramo
+# (tramo_anios(), que se detiene si no es consecutivo). Se detiene si `anios`
+# no trae años, si falta MARCADOR_ANIO_MIN o MARCADOR_ANIO_MAX, si con
+# `anios_sin_simce` la página no trae ningún marcador de años sin Simce o trae
+# un solo extremo del tramo, o si queda algún texto con el prefijo __ANIO_ sin
+# sustituir (como un marcador de datos sin reemplazar).
 sustituir_anios <- function(texto, anios, anios_sin_simce = NULL) {
   anios <- as.integer(unlist(anios))
   if (length(anios) == 0L || anyNA(anios)) {
@@ -105,9 +130,29 @@ sustituir_anios <- function(texto, anios, anios_sin_simce = NULL) {
   if (!is.null(anios_sin_simce)) {
     anios_sin_simce <- as.integer(unlist(anios_sin_simce))
     if (length(anios_sin_simce) == 0L || anyNA(anios_sin_simce)) {
-      stop("No hay años sin Simce para sustituir ", MARCADOR_ANIOS_SIN_SIMCE)
+      stop("No hay años sin Simce para sustituir sus marcadores")
     }
-    valores[[MARCADOR_ANIOS_SIN_SIMCE]] <- enumerar_anios(anios_sin_simce)
+    formas <- c(MARCADOR_ANIOS_SIN_SIMCE, MARCADOR_ANIOS_SIN_SIMCE_NI,
+                MARCADOR_ANIOS_SIN_SIMCE_DESDE, MARCADOR_ANIOS_SIN_SIMCE_HASTA)
+    presentes <- formas[vapply(formas, grepl, logical(1), x = texto, fixed = TRUE)]
+    if (length(presentes) == 0L) {
+      stop("La página no trae ningún marcador de años sin Simce (",
+           paste(formas, collapse = ", "), ")")
+    }
+    if (MARCADOR_ANIOS_SIN_SIMCE %in% presentes) {
+      valores[[MARCADOR_ANIOS_SIN_SIMCE]] <- enumerar_anios(anios_sin_simce)
+    }
+    if (MARCADOR_ANIOS_SIN_SIMCE_NI %in% presentes) {
+      valores[[MARCADOR_ANIOS_SIN_SIMCE_NI]] <- enumerar_anios(anios_sin_simce, "ni")
+    }
+    extremos <- c(MARCADOR_ANIOS_SIN_SIMCE_DESDE, MARCADOR_ANIOS_SIN_SIMCE_HASTA)
+    if (any(extremos %in% presentes)) {
+      if (!all(extremos %in% presentes)) {
+        stop("La página trae un solo extremo del tramo de años sin Simce: ",
+             intersect(extremos, presentes), " sin ", setdiff(extremos, presentes))
+      }
+      valores[extremos] <- as.list(tramo_anios(anios_sin_simce, "ANIOS_SIN_SIMCE"))
+    }
   }
   for (marcador in names(valores)) {
     if (!grepl(marcador, texto, fixed = TRUE)) {

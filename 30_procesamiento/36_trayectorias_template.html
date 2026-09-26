@@ -459,7 +459,7 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
    <p>Los dos ejes arrancan en 0 y llegan al máximo de la combinación elegida, redondeado a decenas; con los sostenedores municipales en pantalla pasan a 0 a 100 en ambos, porque la distribución municipal completa ocupa casi todo el rango. El marco se calcula sobre todas las cohortes a la vez, vigentes y por traspasar (__NOTA_N_UNIDADES__ unidades), no sobre la cohorte en pantalla, así que no se mueve al cambiar de cohorte ni durante la animación: solo cambia al cambiar de nivel evaluado o de grupo socioeconómico. El vértice inferior derecho queda siempre vacío porque Adecuado e Insuficiente pertenecen a la misma distribución de tres niveles y su suma no puede pasar de 100.</p>
    <div class="bloque">
    <h4>Años sin medición</h4>
-   <p>No existe Simce 2019, 2020 ni 2021. El tramo se recorre con las burbujas atenuadas y sin valores intermedios: no se interpola.</p>
+   <p>No existe Simce __ANIO_SIN_SIMCE_NI__. El tramo se recorre con las burbujas atenuadas y sin valores intermedios: no se interpola.</p>
    </div>
    <div class="bloque">
    <h4>El movimiento habitual no es cero</h4>
@@ -1029,7 +1029,7 @@ function pista(){
     stroke:'var(--azo)','stroke-width':1.2,'stroke-dasharray':'4 4',rx:4}));
   var gl=el('text',{x:(tx(2018)+tx(2022))/2,y:EJE-15,'text-anchor':'middle','font-size':FS3,
     fill:'var(--azo)','font-weight':650});
-  gl.textContent='2019 a 2021, sin medición';tk.appendChild(gl);
+  gl.textContent='__ANIO_SIN_SIMCE_DESDE__ a __ANIO_SIN_SIMCE_HASTA__, sin medición';tk.appendChild(gl);
   tk.appendChild(el('line',{x1:tx(ANIOS[0]),x2:tx(ANIOS[ANIOS.length-1]),y1:EJE,y2:EJE,
     stroke:'var(--line)','stroke-width':4,'stroke-linecap':'round'}));
   var pr=el('line',{x1:tx(ANIOS[0]),x2:tx(ANIOS[0]),y1:EJE,y2:EJE,stroke:'var(--azo)',

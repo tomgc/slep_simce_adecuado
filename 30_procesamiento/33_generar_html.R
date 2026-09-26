@@ -28,7 +28,7 @@
 # ----------------------------------------------------------------------------
 
 library(here)
-source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
+source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis), ANIOS_SIN_SIMCE
 source(here::here("10_utils", "10_html.R"))           # reemplazar_literal(), insertar_sitio(), sustituir_anios()
 
 
@@ -428,9 +428,11 @@ plantilla <- paste(readLines(plantilla_path, encoding = "UTF-8"),
                    collapse = "\n")
 # Encabezado y menú de vistas desde la fuente única del sitio (s34).
 plantilla <- insertar_sitio(plantilla, "motor")
-# Rango de años del encabezado y de la plantilla desde los datos (D35-19). Va
-# antes de transpilar: el bloque JSX también usa los marcadores.
-plantilla <- sustituir_anios(plantilla, meta$anios)
+# Rango de años del encabezado y de la plantilla desde los datos (D35-19), y
+# años sin Simce de las notas desde ANIOS_SIN_SIMCE de 10_configuracion.R
+# (encargo s35m, Q-80). Va antes de transpilar: el bloque JSX también usa los
+# marcadores, y Babel recibe el mismo texto que con los años escritos a mano.
+plantilla <- sustituir_anios(plantilla, meta$anios, ANIOS_SIN_SIMCE)
 d3_code <- paste(readLines(d3_path, encoding = "UTF-8"),
                  collapse = "\n")
 pako_code <- paste(readLines(pako_path, encoding = "UTF-8"),
