@@ -162,7 +162,8 @@ stopifnot(
 # Validar los años de los archivos (D35-19). En cada nivel: un archivo por año,
 # ningún año anterior a ANIO_INICIO ni de ANIOS_SIN_SIMCE, y ningún hueco entre
 # el primer y el último año fuera de ANIOS_SIN_SIMCE. Después, entre niveles:
-# los mismos años en los dos.
+# los mismos años en los dos. Por último, la serie de cada nivel empieza en
+# ANIO_INICIO (Q-74).
 anios_por_nivel <- lapply(
   setNames(niveles, niveles),
   function(nv) sort(manifiesto$anio[manifiesto$nivel == nv])
@@ -201,6 +202,19 @@ for (nv in niveles) {
     stop(sprintf("Nivel %s: faltan años %s, que tiene el nivel %s",
                  nv, paste(sort(unique(faltan)), collapse = ", "),
                  paste(otros, collapse = ", ")))
+  }
+}
+# Inicio de la serie (Q-74): sin esta regla, si faltaran los primeros años en los
+# dos niveles, el build pasaría con un rango más corto (sin 2014, 2015–2025). Va
+# después de la comparación entre niveles, para que un año que falta en un solo
+# nivel conserve el mensaje de esa regla.
+for (nv in niveles) {
+  anios_nv <- anios_por_nivel[[nv]]
+  faltan <- setdiff(seq(ANIO_INICIO, min(anios_nv)),
+                    c(anios_nv, ANIOS_SIN_SIMCE))
+  if (length(faltan) > 0) {
+    stop(sprintf("Nivel %s: la serie empieza en %d y no en ANIO_INICIO (%d); faltan años %s",
+                 nv, min(anios_nv), ANIO_INICIO, paste(faltan, collapse = ", ")))
   }
 }
 
