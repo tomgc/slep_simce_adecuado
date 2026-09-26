@@ -217,3 +217,15 @@ Tomadas en bloque por el titular, con la recomendación del asistente.
 - Q-31 (encargo s35h): el PNG exportado incrusta la `@font-face` de `gobCL-sitio` en el SVG que se rasteriza.
 - Q-57 (encargo s35h): el centrado óptico se extiende a las pestañas y el campo del modal, los rótulos de exportar y «Ver establecimientos» del tooltip, con la misma guarda `@supports`.
 - Q-39 (encargo s35i): el build se detiene ante una falla de portabilidad también con `source()` interactivo (`validar_portabilidad(detener_si_falla = TRUE)`).
+
+## Decisiones del titular tras el encargo `encargo_pantallas_angostas_s35h.md` (sesión 35, 2026-09-26)
+
+### D35-14. Q-63 y Q-64 se cierran sin cambios
+
+- Q-63: el tope de 5 territorios (`MAX_ENTIDADES = 5`) no cambia; los próximos encargos miden con 5 como máximo.
+- Q-64: `ANCHO_PLANO_MIN` queda en 384; a 823 px pueden pasar a una columna las cohortes que quedan bajo ese mínimo.
+
+### D35-15. Q-65 y Q-66 se suman al encargo s35i
+
+- Q-65: al cambiar de cohorte, `rebuild()` reinicia `--cardw` antes de `anchoTarjeta()`, como `resize` y `trasFuentes()`, para que la tarjeta mida lo mismo que en una carga nueva.
+- Q-66: el corte bajo el cual el supergrid usa `--supergrid-col-min` sube de 640 px al ancho medido en que ningún texto sale de su columna con 5 territorios (del orden de 690 px).

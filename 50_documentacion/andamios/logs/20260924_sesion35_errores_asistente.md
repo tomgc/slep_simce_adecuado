@@ -229,3 +229,36 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `intentos_previos`: 0.
 - `costo`: bajo; lo medí yo con `curl` en este turno (7f5971a3… y 523ce765…, iguales a `docs/`), pero el registro depende del chat.
 
+
+## ERR-35-20
+
+- `que_paso`: el encargo s35h pidió medir el supergrid con 6 territorios sin verificar el tope del producto (`MAX_ENTIDADES = 5`); el ejecutor tuvo que medir en una copia con el tope cambiado (D0-c, Q-63).
+- `regla_violada`: SETTINGS §1.2.6, marcador de fuente (premisa de encargo sin medir).
+- `causa_raiz`: elegí los casos de prueba por simetría (1, 2, 4, 6) sin leer el límite del motor.
+- `salvaguarda_presente`: SETTINGS; compuerta «todo comando o premisa se corre antes».
+- `patron`: PAT-03, caso de prueba fuera del dominio del producto.
+- `gatillo_observable`: un criterio con una cantidad (entidades, cohortes, anchos) que no se contrastó con el `grep` de su tope.
+- `intentos_previos`: 0.
+- `costo`: una desviación declarada y una duda (Q-63).
+
+## ERR-35-21
+
+- `que_paso`: H6 del encargo s35h esperaba el md5 del build igual a `docs/`, sin prever que el motor incrusta `meta$fecha_generacion` y cambia de un día a otro; la sesión empezó pasada la medianoche y el esperado literal no se cumplió (D0-a).
+- `regla_violada`: instrumento de encargos v1.6 (esperado que discrimina lo que se quiere medir).
+- `causa_raiz`: copié el esperado de s35g, que corrió el mismo día que el build publicado.
+- `salvaguarda_presente`: instrumento v1.6.
+- `patron`: PAT-04, esperado dependiente de la fecha.
+- `gatillo_observable`: un md5 esperado de un artefacto que contiene la fecha de generación.
+- `intentos_previos`: 0.
+- `costo`: una decisión autónoma de riesgo medio del ejecutor.
+
+## ERR-35-22
+
+- `que_paso`: en M3 de s35h pedí «posición igual a la base» para los 90 controles, aunque el orden fijo ponía antes M1 y M2, que mueven controles a 375 px a propósito; el ejecutor tuvo que reinterpretar el criterio (D-M3-b).
+- `regla_violada`: instrumento de encargos v1.6 (criterio no ambiguo).
+- `causa_raiz`: escribí cada criterio contra la base de H6 sin revisar qué cambiaban las tareas anteriores de la misma cadena.
+- `salvaguarda_presente`: instrumento v1.6.
+- `patron`: PAT-05, criterio contra la base en una cadena de tareas que la modifican.
+- `gatillo_observable`: una tarea que no es la primera y compara contra la base de FASE 0 en una zona que tocan tareas previas.
+- `intentos_previos`: 0.
+- `costo`: una desviación declarada.
