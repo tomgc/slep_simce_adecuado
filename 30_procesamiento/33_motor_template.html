@@ -253,6 +253,18 @@ body {
   background-image: none; padding-right: 10px;
   cursor: text; min-width: 0; width: 100%;
 }
+@supports (text-box: trim-both cap alphabetic) {
+  /* El <input> tampoco admite text-box (medido en s35h, Q-57: el mismo alto y
+     el mismo desvío con la propiedad y sin ella): su texto baja
+     --ajuste-optico-select, como el del <select>, y el alto queda en el de
+     antes: una línea, el relleno y el borde de 1 px. */
+  .input {
+    --relleno-campo: 6px;
+    padding-top: calc(var(--relleno-campo) + var(--ajuste-optico-select));
+    padding-bottom: calc(var(--relleno-campo) - var(--ajuste-optico-select));
+    min-height: calc(1lh + 2 * var(--relleno-campo) + 2px);
+  }
+}
 .controls-spacer { flex: 1; }
 .loading-pill {
   display: inline-flex; align-items: center; gap: 8px;
@@ -608,6 +620,18 @@ body {
   font-family: var(--font-body);
   transition: background 100ms ease, border-color 100ms ease;
 }
+@supports (text-box: trim-both cap alphabetic) {
+  /* Centrado óptico de «Ver establecimientos» (s35h, Q-57), como .segmented-btn.
+     La «▸» sale de la fuente del sistema y alargaba la línea a 15 px (1lh es
+     12): el recorte a la altura de mayúscula y a la línea base de gobCL la deja
+     fuera, así que el botón mide 1lh más el relleno y el borde (24 px, antes 27). */
+  .tt-estab-link {
+    --relleno-estab: 5px;
+    padding: calc(var(--relleno-estab) + var(--compensa-recorte)) 8px;
+    min-height: calc(1lh + 2 * var(--relleno-estab) + 2px);
+    text-box: trim-both cap alphabetic;
+  }
+}
 .tt-estab-link:hover { background: var(--ocean-20); border-color: var(--ocean); }
 
 /* Tabla */
@@ -883,6 +907,16 @@ body {
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   white-space: nowrap;
+}
+@supports (text-box: trim-both cap alphabetic) {
+  /* Centrado óptico de las pestañas del modal (s35h, Q-57), como .segmented-btn:
+     el alto de antes es una línea, el relleno y el borde inferior de 2 px. */
+  .modal-tab {
+    --relleno-pestana: 12px;
+    padding: calc(var(--relleno-pestana) + var(--compensa-recorte)) 0;
+    min-height: calc(1lh + 2 * var(--relleno-pestana) + 2px);
+    text-box: trim-both cap alphabetic;
+  }
 }
 .modal-tab:hover { color: var(--fg-1); }
 .modal-tab.is-active {
@@ -3167,7 +3201,7 @@ code {
         <button className="icon-export" title={label} aria-label={label}
           onClick={onExport || (() => alert("Export pendiente: " + label))}>
           <Icon name={icon} />
-          <span className="icon-export-label">{label}</span>
+          <span className="icon-export-label control-texto">{label}</span>
         </button>
       );
     }
