@@ -194,3 +194,26 @@ Tras corregir la carrera de carga de la fuente (R-50), la vista ya no coincide p
 referencias posteriores a G. El criterio pasa a ser «0 píxeles distintos entre cargas y `scrollWidth` igual al
 viewport». Las capturas de referencia a 768, 1024, 1280 y 1920 px se regeneran desde el estado final de cada
 encargo.
+
+## Decisiones del titular tras el encargo `encargo_supports_cohortes_s35g.md` (sesión 35, 2026-09-25)
+
+Tomadas en bloque por el titular, con la recomendación del asistente.
+
+### D35-11. Se cierran sin cambios Q-61, Q-62, Q-60 y Q-56
+
+- Q-61: Q-59 queda resuelta con la simulación en Chrome (un navegador sin `text-box` se salta el bloque `@supports` completo); no se mide en un navegador real.
+- Q-62: abajo o arriba del punto, el tooltip conserva la posición horizontal acotada a la izquierda; no se centra.
+- Q-60: los botones de Nivel y Prueba quedan aprobados en Safari por la revisión del titular.
+- Q-56: se acepta el desvío de hasta ±0,5 px CSS del centrado en Chrome como límite.
+
+### D35-12. Se acepta el comportamiento actual en Q-42, Q-29 y Q-21
+
+- Q-42 (A): con la regla C, las rachas monótonas con «†» se apilan en escalera.
+- Q-29 (A): la cifra de un solo establecimiento conserva la opacidad 0,9 común de la sparkline.
+- Q-21: las unidades con pocos establecimientos (504_2027, 1310_2029) siguen entrando al marco de los ejes.
+
+### D35-13. Se suman a los próximos encargos Q-31, Q-57 y Q-39
+
+- Q-31 (encargo s35h): el PNG exportado incrusta la `@font-face` de `gobCL-sitio` en el SVG que se rasteriza.
+- Q-57 (encargo s35h): el centrado óptico se extiende a las pestañas y el campo del modal, los rótulos de exportar y «Ver establecimientos» del tooltip, con la misma guarda `@supports`.
+- Q-39 (encargo s35i): el build se detiene ante una falla de portabilidad también con `source()` interactivo (`validar_portabilidad(detener_si_falla = TRUE)`).
