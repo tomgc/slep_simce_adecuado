@@ -237,3 +237,22 @@ Tomadas en bloque por el titular, con la recomendación del asistente.
 - Q-67: el corte del supergrid queda en 670 px (primer múltiplo de 10 sobre `W_FUERA` = 666, medido con 5 territorios); corrige la estimación «del orden de 690 px» de D35-15.
 - Q-68: R2, R6 y R7 quedan en la familia B (invariantes del motor de la vista).
 - Q-69: `--supergrid-col-min` queda en 112 px; se acepta que los nombres de 13 comunas y de la Región Metropolitana invadan la columna vecina en pantallas angostas.
+
+## Decisiones del titular tras el encargo `encargo_ramas_bloqueos_s35j.md` (sesión 35, 2026-09-26)
+
+### D35-17. Ramas (pendientes 10 y 12)
+
+- `respaldo_prerebase_20260824` y `respaldo_normativos_20260824` se borran (0 archivos únicos y vigentes, según R1 de s35j).
+- `gobernanza/v16` se borra después de rescatar a `main` el log `20260711_contrato_contexto_simce_log.md` (único registro del paso 35) y la suite standalone regenerada.
+- `feat/contrato-contexto` se deja publicada, sin integrar; se integrará por cherry-pick cuando el consumidor programe P-CTX-4.
+
+### D35-18. `suitedoc` queda fuera de `renv.lock` (pendiente 8)
+
+Se registran en el lock los paquetes de CRAN que faltan (entre ellos `V8` y `openssl`) y `suitedoc` queda fuera, porque su remoto (`herramientas_dev`) es privado y este repositorio es público. La vía se prueba antes en una copia del lock.
+
+### D35-19. Simce 2026 y correcciones de redacción (pendiente 13, Q-71, Q-72)
+
+- Pendiente 13: queda bloqueado hasta que la Agencia publique la base 2026. Mientras, los años y los 5 literales de rango se derivan de los archivos disponibles.
+- Q-71: el próximo traspaso describe `suitedoc` como «en remoto privado», no «sin remoto».
+- Q-72: `manifiesto_insumos.md` dirá que los 18 xlsx Simce se versionan (están autorizados).
+- Q-70: el proceso R huérfano de `slep-central-datos` lo detiene el titular.
