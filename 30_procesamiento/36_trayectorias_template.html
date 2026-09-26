@@ -342,6 +342,20 @@ svg.chart{flex:1;min-height:0;width:100%;display:block}
   .app:not(.pres){height:auto}
   .app:not(.pres) svg.chart{flex:none;height:var(--alto-plano-fijo)}
 }
+
+/* ---- Una columna cuando la tarjeta deja el plano angosto (Q-51, encargo s35h):
+   con la clase una-col, que pone unaColumna() cuando el plano en dos columnas
+   mediría menos que ANCHO_PLANO_MIN, la vista usa las declaraciones del tramo de
+   680 a 822 px: crece con su contenido, la tabla va arriba con el ancho de
+   --cardw y el plano abajo, a todo el ancho y con alto propio. Vale desde 823 px
+   (debajo, las reglas de cada tramo ya dan una columna) y fuera del modo
+   presentación. ---- */
+@media (min-width:823px){
+  .app.una-col:not(.pres){height:auto}
+  .app.una-col:not(.pres) .main{grid-template-columns:minmax(0,1fr)}
+  .app.una-col:not(.pres) .card{width:var(--cardw,300px);max-width:100%}
+  .app.una-col:not(.pres) svg.chart{flex:none;height:var(--alto-plano-fijo)}
+}
 </style>
 </head>
 <body>
@@ -881,6 +895,23 @@ function anchoTarjeta(){
   var total=Math.round(24+33+w+16+cab+24);   /* sangría + casilla y número + nombre + aire + columna + borde */
   document.documentElement.style.setProperty('--cardw',Math.max(ANCHO_TARJETA_MIN,Math.min(ANCHO_TARJETA_MAX,total))+'px');
 }
+/* Una columna cuando la tarjeta deja el plano angosto (Q-51, encargo s35h): de 823
+   a 1023 px, con la cohorte 2027 (tarjeta de 522 px), el plano medía de 179 a 379
+   px de ancho. ANCHO_PLANO_MIN es el menor ancho del plano con la cohorte inicial
+   en ese tramo, medido a 823 px. Si en dos columnas el plano mediría menos, .app
+   lleva la clase una-col y la vista pasa a una columna, como de 680 a 822 px (su
+   regla vale desde 823 px y fuera del modo presentación). El ancho que le queda al
+   plano es el de .main menos --cardw, el espacio entre columnas y el relleno y el
+   borde de su panel. Se recalcula tras cada anchoTarjeta() y al salir del modo
+   presentación. */
+var ANCHO_PLANO_MIN=384;
+function unaColumna(){
+  var cm=getComputedStyle(document.querySelector('.main')),cp=getComputedStyle(document.querySelector('.plot'));
+  var disponible=document.querySelector('.main').getBoundingClientRect().width-
+    parseFloat(document.documentElement.style.getPropertyValue('--cardw'))-parseFloat(cm.columnGap)-
+    parseFloat(cp.paddingLeft)-parseFloat(cp.paddingRight)-parseFloat(cp.borderLeftWidth)-parseFloat(cp.borderRightWidth);
+  document.getElementById('app').classList.toggle('una-col',disponible<ANCHO_PLANO_MIN);
+}
 
 /* ---------- textos de contexto ---------- */
 function chrome(){
@@ -1133,7 +1164,7 @@ function opciones(){
   }
 }
 var GSE_TOTAL_VISTA='T';
-function rebuild(){numerar();SC={};opciones();stop();S.seg=0;S.t=0;tarjeta();anchoTarjeta();build();render();}
+function rebuild(){numerar();SC={};opciones();stop();S.seg=0;S.t=0;tarjeta();anchoTarjeta();unaColumna();build();render();}
 var raf=null,last=0,hold=0;
 function tick(ts){
   if(!S.play)return;
@@ -1176,7 +1207,7 @@ document.getElementById('b-notas').addEventListener('click',function(){notas(tru
 document.getElementById('b-cerrar').addEventListener('click',function(){notas(false);});
 velo.addEventListener('click',function(e){if(e.target===velo)notas(false);});
 function pres(v){document.getElementById('app').classList.toggle('pres',v);
-  document.body.classList.toggle('pres',v);if(v)window.scrollTo(0,0);
+  document.body.classList.toggle('pres',v);if(v)window.scrollTo(0,0);else unaColumna();
   setTimeout(function(){pista();build();render();},70);}
 document.getElementById('b-pres').addEventListener('click',function(){pres(true);});
 document.getElementById('salir').addEventListener('click',function(){pres(false);});
@@ -1192,7 +1223,7 @@ function altoMenu(){var m=document.querySelector('.view-tabs');
    a 1024 px, 437 en vez de 317; Q-52, encargo s35h). */
 var rt=null;window.addEventListener('resize',function(){clearTimeout(rt);
   rt=setTimeout(function(){altoMenu();document.documentElement.style.removeProperty('--cardw');anchoTarjeta();
-    pista();build();render();},140);});
+    unaColumna();pista();build();render();},140);});
 
 /* Si la caja del gráfico cambia de tamaño (la leyenda o el contexto pasan a otra
    línea, se abre el desglose), se redibuja para que el dibujo siga en píxeles reales. */
@@ -1201,7 +1232,7 @@ if(window.ResizeObserver){var rg=null;new ResizeObserver(function(){
   if(Math.abs(c.width-W)>2||Math.abs(c.height-H)>2){clearTimeout(rg);rg=setTimeout(function(){build();paint();},60);}
 }).observe(document.getElementById('g'));}
 
-altoMenu();numerar();opciones();tarjeta();anchoTarjeta();pista();build();render();
+altoMenu();numerar();opciones();tarjeta();anchoTarjeta();unaColumna();pista();build();render();
 /* Una fuente tardía cambia el alto del menú y el ancho de los nombres. gobCL va
    incrustada y se aplica después de las primeras medidas, y document.fonts.ready
    puede resolverse antes de que empiece a cargar. Por eso se piden las dos caras
@@ -1212,7 +1243,7 @@ altoMenu();numerar();opciones();tarjeta();anchoTarjeta();pista();build();render(
    --tabs-h y --cardw quedaban medidos con la fuente de respaldo). anchoTarjeta()
    depende del ancho vigente de la tarjeta, así que --cardw vuelve antes a su
    valor por omisión: la medida no depende de lo que se midió al arrancar. */
-function trasFuentes(){altoMenu();document.documentElement.style.removeProperty('--cardw');anchoTarjeta();
+function trasFuentes(){altoMenu();document.documentElement.style.removeProperty('--cardw');anchoTarjeta();unaColumna();
   setTimeout(function(){pista();build();render();},30);}
 if(document.fonts&&document.fonts.load){
   Promise.all([document.fonts.load('400 1em gobCL-sitio'),document.fonts.load('700 1em gobCL-sitio')])
