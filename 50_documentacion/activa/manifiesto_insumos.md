@@ -7,7 +7,8 @@ Patrón: `simce<nivel><anio>_rbd_<estado>.xlsx`
 - `<nivel>`: `2m` o `4b` (siempre minúscula).
 - `<anio>`: 4 dígitos.
 - `<estado>`:
-  - `final` para datos cerrados por la Agencia (hoy, todos los años 2014–2025).
+  - `final` para datos cerrados por la Agencia (hoy, todos los años de la serie: desde 2014, sin 2019 a 2021, hasta el
+    último año cargado en `20_insumos/simce/`).
   - `preliminar` para datos sujetos a revisión. Cuando llega la base final de
     ese año, el preliminar sale de `20_insumos/` (a `_archivo/<fecha>/`,
     fuera de git) y el asterisco desaparece solo, porque el generador lo

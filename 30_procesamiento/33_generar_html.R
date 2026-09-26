@@ -203,7 +203,8 @@ meta <- list(
   anios = sort(unique(as.integer(df_comunal$anio))),
   # Importante: I() fuerza que se serialice como array ([2025] o []), no escalar.
   anios_preliminar = I(anios_preliminar),
-  anios_sin_simce = c(2019L, 2020L, 2021L),
+  # Años sin Simce desde 10_utils/10_configuracion.R (encargo s35l, Q-75).
+  anios_sin_simce = ANIOS_SIN_SIMCE,
   # Niveles y pruebas: un solo objeto {codigo: label} cada uno.
   niveles = list(
     "2m" = paste0("2", deg_char, " Medio"),

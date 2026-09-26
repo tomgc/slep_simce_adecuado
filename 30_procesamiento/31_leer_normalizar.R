@@ -124,11 +124,10 @@ niveles <- c("2m", "4b")
 
 # Los años no son un literal: salen de los nombres de archivo de cada nivel
 # (D35-19), para que una base nueva de la Agencia entre sin editar código. La
-# serie empieza en ANIO_INICIO y no tiene aplicación en ANIOS_SIN_SIMCE; la
-# validación de abajo detiene el build si los años de los archivos no forman
-# una serie coherente.
-ANIO_INICIO     <- 2014L
-ANIOS_SIN_SIMCE <- c(2019L, 2020L, 2021L)
+# serie empieza en ANIO_INICIO y no tiene aplicación en ANIOS_SIN_SIMCE, las dos
+# constantes de 10_utils/10_configuracion.R (encargo s35l, Q-75); la validación
+# de abajo detiene el build si los años de los archivos no forman una serie
+# coherente.
 
 # Patrón de nombre: simce<nivel><anio>_rbd_<estado>.xlsx
 patron_archivo <- "^simce(2m|4b)(\\d{4})_rbd_(final|preliminar)\\.xlsx$"
