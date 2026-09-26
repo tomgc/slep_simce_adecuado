@@ -229,3 +229,11 @@ Tomadas en bloque por el titular, con la recomendación del asistente.
 
 - Q-65: al cambiar de cohorte, `rebuild()` reinicia `--cardw` antes de `anchoTarjeta()`, como `resize` y `trasFuentes()`, para que la tarjeta mida lo mismo que en una carga nueva.
 - Q-66: el corte bajo el cual el supergrid usa `--supergrid-col-min` sube de 640 px al ancho medido en que ningún texto sale de su columna con 5 territorios (del orden de 690 px).
+
+## Decisiones del titular tras el encargo `encargo_bateria_familias_s35i.md` (sesión 35, 2026-09-26)
+
+### D35-16. Q-67, Q-68 y Q-69 se cierran sin cambios
+
+- Q-67: el corte del supergrid queda en 670 px (primer múltiplo de 10 sobre `W_FUERA` = 666, medido con 5 territorios); corrige la estimación «del orden de 690 px» de D35-15.
+- Q-68: R2, R6 y R7 quedan en la familia B (invariantes del motor de la vista).
+- Q-69: `--supergrid-col-min` queda en 112 px; se acepta que los nombres de 13 comunas y de la Región Metropolitana invadan la columna vecina en pantallas angostas.
