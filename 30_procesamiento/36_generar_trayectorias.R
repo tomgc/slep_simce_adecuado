@@ -68,14 +68,17 @@ SALTO_GRUPO_COHORTES <- 2L
 # v31: la vista de trayectorias no depende de la red).
 PATRON_RED <- '(src|href)="https?:'
 
-# Marcado de los botones de cohorte, con la sangría de la plantilla.
+# Marcado de los botones de cohorte, con la sangría de la plantilla. El año va
+# en su propio <span class="tx">: text-box no alcanza al texto suelto de un
+# botón flex (encargo s35f, TB), y desde el encargo s35g (Q-58) ese marcado
+# sale de aquí y no de un script de la vista que lo separaba al iniciar.
 botones_cohortes <- function(DATA) {
   unidades <- DATA$meta[names(DATA$meta) != ID_REFERENTE]
   por_cohorte <- table(vapply(unidades, function(m) as.integer(m$tras), integer(1)))
   anios <- as.integer(names(por_cohorte))
   corte <- c(FALSE, diff(anios) > SALTO_GRUPO_COHORTES |
                diff(anios %in% OLAS_FUTURAS) != 0)
-  botones <- sprintf('<button data-v="%d" aria-pressed="%s">%d <em>%d</em></button>',
+  botones <- sprintf('<button data-v="%d" aria-pressed="%s"><span class="tx">%d</span><em>%d</em></button>',
                      anios, ifelse(seq_along(anios) == 1L, "true", "false"),
                      anios, as.integer(por_cohorte))
   lineas <- unlist(lapply(seq_along(botones), function(i) {
