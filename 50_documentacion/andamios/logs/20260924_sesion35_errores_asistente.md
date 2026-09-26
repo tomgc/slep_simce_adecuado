@@ -262,3 +262,14 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: una tarea que no es la primera y compara contra la base de FASE 0 en una zona que tocan tareas previas.
 - `intentos_previos`: 0.
 - `costo`: una desviación declarada.
+
+## ERR-35-23
+
+- `que_paso`: en el encargo s35j, FASE L paso 6 condicionaba el push a la «autorización 4», pero en ese encargo el push era la autorización 6; el ejecutor lo detectó y aplicó la 6.
+- `regla_violada`: instrumento de encargos v1.6 (referencias internas coherentes).
+- `causa_raiz`: reutilicé la cola de s35e, donde el push es la autorización 4, sin reemplazar el número al renumerar la lista.
+- `salvaguarda_presente`: instrumento v1.6.
+- `patron`: PAT-06, texto reutilizado con referencias numeradas.
+- `gatillo_observable`: una cola copiada de otro encargo que nombra una autorización por número.
+- `intentos_previos`: 0.
+- `costo`: bajo; una nota del ejecutor, sin efecto en lo publicado.
