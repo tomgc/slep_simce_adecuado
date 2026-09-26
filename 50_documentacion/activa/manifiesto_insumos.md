@@ -86,8 +86,10 @@ armar las cohortes de las olas 2027 a 2029 (decisión D35-2,
 
 ## Política de versionado
 
-- Los xlsx SIMCE crudos **no** se versionan (`.gitignore`). Se mantienen
-  localmente.
+- Los 18 xlsx SIMCE crudos (`20_insumos/simce/{2m,4b}/`) **sí** se versionan:
+  están autorizados en `50_datos_versionados_autorizados.md` (L25 y L26).
+  Desde el encargo s35k (D35-19), el paso 31 deriva los años de sus nombres:
+  un año nuevo entra con sus dos xlsx (uno por nivel), sin editar código.
 - El xlsx de glosas **sí** se versiona — es metadata estable y pequeña.
 - Este manifiesto se versiona. Actualizarlo cuando se agregue un año
   nuevo o cambie la convención.
