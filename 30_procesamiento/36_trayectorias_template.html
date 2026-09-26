@@ -1187,8 +1187,12 @@ document.addEventListener('keydown',function(e){
    del menú, que cambia con la fuente del sistema y con el ancho. */
 function altoMenu(){var m=document.querySelector('.view-tabs');
   if(m)document.documentElement.style.setProperty('--tabs-h',m.offsetHeight+'px');}
+/* Al cambiar el ancho, la tarjeta se vuelve a medir como en trasFuentes(), con
+   --cardw en su valor por omisión: sin eso quedaba el ancho de la carga (de 640
+   a 1024 px, 437 en vez de 317; Q-52, encargo s35h). */
 var rt=null;window.addEventListener('resize',function(){clearTimeout(rt);
-  rt=setTimeout(function(){altoMenu();pista();build();render();},140);});
+  rt=setTimeout(function(){altoMenu();document.documentElement.style.removeProperty('--cardw');anchoTarjeta();
+    pista();build();render();},140);});
 
 /* Si la caja del gráfico cambia de tamaño (la leyenda o el contexto pasan a otra
    línea, se abre el desglose), se redibuja para que el dibujo siga en píxeles reales. */
