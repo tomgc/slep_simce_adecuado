@@ -109,6 +109,11 @@
   --tracking-normal: 0;
   --tracking-wide: 0.06em;
   --tracking-overline: 0.12em;
+
+  /* Ancho mínimo de cada columna del supergrid (encargo s35h, Q-34 y Q-43): sin
+     mínimo en pantallas anchas; bajo 640 px lo fija la regla de pantallas
+     angostas del final de la hoja. */
+  --supergrid-col-min: 0px;
 }
 @supports (text-box: trim-both cap alphabetic) {
   /* Centrado óptico del texto de los controles (encargo s35f, TB). gobCL
@@ -1197,6 +1202,14 @@ code {
     border-bottom: 0; box-shadow: inset 0 -1px 0 var(--border-1);
   }
   .modal-tab { margin-bottom: 0; }
+  /* Supergrid (encargo s35h, Q-34 y Q-43): a 375 px, con 4 territorios, las
+     columnas medían 64,75 px, los rótulos se montaban sobre la celda vecina y
+     las sparklines medían 43 px. Aquí cada columna mide al menos el texto más
+     ancho del supergrid a 375 px (PUCHUNCAVÍ, 103,66 px) más el relleno de su
+     celda (4 + 4 px), redondeado hacia arriba, y el supergrid se desplaza en
+     horizontal dentro de sí mismo, sin desbordar la página. */
+  :root { --supergrid-col-min: 112px; }
+  .supergrid { overflow-x: auto; }
 }
 .panorama-cell {
   background: var(--paper);
@@ -4880,7 +4893,7 @@ code {
                   <ChartHints showElemInsuf={showElemInsuf} />
                 </div>
               </div>
-              <div className="supergrid" style={{ gridTemplateColumns: `repeat(${entities.length}, minmax(0, 1fr))` }}>
+              <div className="supergrid" style={{ gridTemplateColumns: `repeat(${entities.length}, minmax(var(--supergrid-col-min), 1fr))` }}>
                 {entities.map(ent => (
                   <div key={ent.id} className="supergrid-entity-head"
                     style={{ borderBottomColor: ent.color }}>
