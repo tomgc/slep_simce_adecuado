@@ -405,7 +405,7 @@ comprobar(
   m5_ok_real && m5_ctl_detecta,
   if (es_error(m5)) mensaje(m5) else sprintf(
     "pestañas activas tras el clic %d/%d; elementos fuera de la ventana %s; pie visible %d/%d; modal de %.2f a %.2f px; control con min-width %s plantado: %s",
-    sum(m5$activa), nrow(m5), paste(m5$fuera, collapse = "/"), sum(m5$pie_ok), nrow(m5),
+    sum(m5$activa), nrow(m5), paste(m5$fuera, collapse = ", "), sum(m5$pie_ok), nrow(m5),
     min(m5$izq), max(m5$der), MIN_ANCHO_MODAL_CONTROL,
     if (is.null(m5_ctl)) "sin medida" else sprintf("%d elementos fuera, %s", m5_ctl$fuera,
                                                     if (m5_ctl_detecta) "FALLA, detectado" else "no detectado"))
