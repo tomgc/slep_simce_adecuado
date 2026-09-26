@@ -23,8 +23,9 @@
 #      (20_insumos/auxiliares/).
 #   2. Construye DATA con 36_funciones_trayectorias.R, con las cohortes por
 #      traspasar (D35-2, sesión 35).
-#   3. Inserta el rango de años (D35-19), los botones de cohorte, las cifras de
-#      las notas y el JSON en 36_trayectorias_template.html.
+#   3. Inserta el rango de años (D35-19), el año inicial de la pista y los años
+#      sin Simce (encargo s35l), los botones de cohorte, las cifras de las notas
+#      y el JSON en 36_trayectorias_template.html.
 #   4. Comprueba que el HTML no carga nada por red ni conserva marcadores.
 #   5. Escribe el HTML de forma atómica (archivo temporal y renombre).
 #
@@ -37,7 +38,7 @@
 # ----------------------------------------------------------------------------
 
 library(here)
-source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
+source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis), ANIOS_SIN_SIMCE
 source(here::here("10_utils", "10_html.R"))           # reemplazar_literal(), insertar_sitio(), sustituir_anios()
 
 source(here::here("30_procesamiento", "36_funciones_trayectorias.R"))
@@ -119,8 +120,10 @@ plantilla_tray <- paste(readLines(RUTA_PLANTILLA_TRAY, encoding = "UTF-8", warn 
                         collapse = "\n")
 # Encabezado y menú de vistas desde la fuente única del sitio (s34).
 html_tray <- insertar_sitio(plantilla_tray, "trayectorias")
-# Rango de años del encabezado y de las notas desde DATA (D35-19).
-html_tray <- sustituir_anios(html_tray, DATA_TRAY$anios)
+# Rango de años del encabezado y de las notas, y año inicial de la pista, desde
+# DATA (D35-19; encargo s35l, R-41); años sin Simce del aviso del plano desde
+# ANIOS_SIN_SIMCE de 10_configuracion.R.
+html_tray <- sustituir_anios(html_tray, DATA_TRAY$anios, ANIOS_SIN_SIMCE)
 html_tray <- reemplazar_literal(html_tray, MARCADOR_COHORTES, botones_cohortes(DATA_TRAY))
 # Una cifra puede citarse en más de un lugar (hoy, dentro de las notas, el
 # número de Servicios Locales vigentes, el tamaño del referente, los del

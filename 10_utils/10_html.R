@@ -7,7 +7,8 @@
 # 33_fragmento_sitio.html, su fuente única (deuda técnica de v33). Desde el
 # encargo pendientes s35b también incrusta la tipografía gobCL (D33-4), con la
 # familia propia "gobCL-sitio" desde el encargo pendientes s35c (D35-9). Desde el
-# encargo s35k sustituye los marcadores del rango de años (D35-19).
+# encargo s35k sustituye los marcadores del rango de años (D35-19), y desde el
+# s35l, el de los años sin Simce de la vista.
 # =============================================================================
 
 RUTA_FRAGMENTO_SITIO <- here::here("30_procesamiento", "33_fragmento_sitio.html")
@@ -22,6 +23,11 @@ PATRON_SITIO_RESTO   <- "__SITIO_[A-Z]+__|__HREF_[A-Z]+__|__FUENTES__"
 # vista). Así, una base Simce nueva cambia el rango sin editar las plantillas.
 MARCADOR_ANIO_MIN <- "__ANIO_MIN__"
 MARCADOR_ANIO_MAX <- "__ANIO_MAX__"
+# Años sin Simce (encargo s35l, R-41): la vista los escribe con este marcador,
+# que su generador sustituye con ANIOS_SIN_SIMCE de 10_configuracion.R en la
+# forma «2019, 2020 y 2021». Lleva el prefijo __ANIO_ para que el patrón de
+# resto también detenga una versión mal escrita.
+MARCADOR_ANIOS_SIN_SIMCE <- "__ANIO_SIN_SIMCE__"
 # Resto: cualquier texto con el prefijo, para detener también un marcador mal
 # escrito (p. ej. "__ANIO_MIN_"). Ninguna biblioteca de 10_utils lo contiene.
 PATRON_ANIO_RESTO <- "__ANIO_[A-Za-z_]*"
@@ -75,22 +81,39 @@ reemplazar_literal <- function(texto, marcador, valor) {
          substr(texto, pos + nchar(marcador), nchar(texto)))
 }
 
+# Enumera años en castellano: «2019», «2019 y 2020», «2019, 2020 y 2021».
+enumerar_anios <- function(anios) {
+  anios <- as.character(sort(as.integer(anios)))
+  n <- length(anios)
+  if (n <= 1L) return(paste(anios, collapse = ""))
+  paste(paste(anios[-n], collapse = ", "), "y", anios[[n]])
+}
+
 # Reemplaza todas las apariciones de MARCADOR_ANIO_MIN y MARCADOR_ANIO_MAX en
-# `texto` por el primer y el último año de `anios`. Se detiene si `anios` no trae
-# años, si un marcador no aparece o si queda algún texto con el prefijo __ANIO_
-# sin sustituir (como un marcador de datos sin reemplazar).
-sustituir_anios <- function(texto, anios) {
+# `texto` por el primer y el último año de `anios` y, si se pasa
+# `anios_sin_simce`, las de MARCADOR_ANIOS_SIN_SIMCE por esos años enumerados
+# (la vista lo usa; el motor no trae ese marcador). Se detiene si `anios` no trae
+# años, si un marcador pedido no aparece o si queda algún texto con el prefijo
+# __ANIO_ sin sustituir (como un marcador de datos sin reemplazar).
+sustituir_anios <- function(texto, anios, anios_sin_simce = NULL) {
   anios <- as.integer(unlist(anios))
   if (length(anios) == 0L || anyNA(anios)) {
     stop("No hay años para sustituir los marcadores de rango")
   }
-  valores <- c(min(anios), max(anios))
+  valores <- list(as.character(min(anios)), as.character(max(anios)))
   names(valores) <- c(MARCADOR_ANIO_MIN, MARCADOR_ANIO_MAX)
+  if (!is.null(anios_sin_simce)) {
+    anios_sin_simce <- as.integer(unlist(anios_sin_simce))
+    if (length(anios_sin_simce) == 0L || anyNA(anios_sin_simce)) {
+      stop("No hay años sin Simce para sustituir ", MARCADOR_ANIOS_SIN_SIMCE)
+    }
+    valores[[MARCADOR_ANIOS_SIN_SIMCE]] <- enumerar_anios(anios_sin_simce)
+  }
   for (marcador in names(valores)) {
     if (!grepl(marcador, texto, fixed = TRUE)) {
       stop("La página no trae el marcador ", marcador)
     }
-    texto <- gsub(marcador, as.character(valores[[marcador]]), texto, fixed = TRUE)
+    texto <- gsub(marcador, valores[[marcador]], texto, fixed = TRUE)
   }
   if (grepl(PATRON_ANIO_RESTO, texto)) {
     stop("Quedaron marcadores de años sin sustituir: ",
