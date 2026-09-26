@@ -217,3 +217,15 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: afirmar-sin-leer: un paso de validación que describe una función sin un `grep` del código que la implementa.
 - `intentos_previos`: 0.
 - `costo`: un defecto publicado y detectado por el titular; una corrección y una publicación más.
+
+## ERR-35-19
+
+- `que_paso`: en el encargo s35g puse P3 (lo que sirve Pages) después del commit de `docs(log)` y del push, así que su evidencia quedó solo en el reporte del chat y no en el log versionado.
+- `regla_violada`: instrumento de encargos v1.6, FASE L (el log es la evidencia completa de la sesión).
+- `causa_raiz`: ordené las fases por dependencia (Pages necesita el push) sin prever dónde queda escrito el resultado posterior al último commit.
+- `salvaguarda_presente`: instrumento v1.6.
+- `patron`: PAT-02, evidencia fuera del artefacto versionado.
+- `gatillo_observable`: una fase del encargo que corre después del último commit autorizado.
+- `intentos_previos`: 0.
+- `costo`: bajo; lo medí yo con `curl` en este turno (7f5971a3… y 523ce765…, iguales a `docs/`), pero el registro depende del chat.
+
