@@ -109,24 +109,31 @@
   --tracking-normal: 0;
   --tracking-wide: 0.06em;
   --tracking-overline: 0.12em;
-
+}
+@supports (text-box: trim-both cap alphabetic) {
   /* Centrado óptico del texto de los controles (encargo s35f, TB). gobCL
      declara hhea 750/−250 y altura de mayúscula 675: con line-height normal,
      las mayúsculas quedaban 0,0875 em sobre el centro en macOS e iOS. La regla
      de cada control recorta la caja de su texto con text-box a la altura de
      mayúscula y a la línea base, y devuelve lo recortado como relleno, mitad
-     arriba y mitad abajo, para que la caja conserve su alto. */
-  --compensa-recorte: calc((1lh - 1cap) / 2);
-  /* El <select> nativo ignora text-box: su texto baja con relleno asimétrico,
-     calculado con la métrica de macOS: (altura de mayúscula − (ascendente −
-     descendente)) / 2, con ascendente y descendente (750 y 250) redondeados a
-     píxel como los redondea el navegador para line-height normal. Sin
-     redondeo da 0,0875 em; a 15 px, 0,104 em. En Windows (win 1017/399) queda
-     unos 0,06 em bajo el centro. */
-  --ajuste-optico-select: calc((1cap - (round(0.75em, 1px) - round(0.25em, 1px))) / 2);
-  /* Holgura para la tinta de acentos y descendentes (el descendente de gobCL,
-     250/1000) en un texto recortado que además corta con overflow. */
-  --holgura-tinta: 0.25em;
+     arriba y mitad abajo, para que la caja conserve su alto. Todo el centrado
+     (estos tokens y las reglas que los usan) vive en bloques @supports como
+     este (encargo s35g, Q-59): un navegador sin text-box no recorta el texto,
+     así que tampoco suma la compensación ni ajusta los <select>, y ve las
+     reglas de fuera de los bloques, las de antes de s35f. */
+  :root {
+    --compensa-recorte: calc((1lh - 1cap) / 2);
+    /* El <select> nativo ignora text-box: su texto baja con relleno asimétrico,
+       calculado con la métrica de macOS: (altura de mayúscula − (ascendente −
+       descendente)) / 2, con ascendente y descendente (750 y 250) redondeados a
+       píxel como los redondea el navegador para line-height normal. Sin
+       redondeo da 0,0875 em; a 15 px, 0,104 em. En Windows (win 1017/399) queda
+       unos 0,06 em bajo el centro. */
+    --ajuste-optico-select: calc((1cap - (round(0.75em, 1px) - round(0.25em, 1px))) / 2);
+    /* Holgura para la tinta de acentos y descendentes (el descendente de gobCL,
+       250/1000) en un texto recortado que además corta con overflow. */
+    --holgura-tinta: 0.25em;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -180,10 +187,7 @@ body {
 }
 .segmented-btn {
   background: transparent; border: 0;
-  --relleno-segmentado: 6px;
-  padding: calc(var(--relleno-segmentado) + var(--compensa-recorte)) 14px;
-  min-height: calc(1lh + 2 * var(--relleno-segmentado));
-  text-box: trim-both cap alphabetic;
+  padding: 6px 14px;
   font-family: var(--font-body);
   font-weight: 500;
   font-size: var(--fs-body);
@@ -191,6 +195,15 @@ body {
   border-radius: var(--radius-1);
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
+}
+@supports (text-box: trim-both cap alphabetic) {
+  /* Centrado óptico (TB, s35f), solo con text-box (s35g, Q-59). */
+  .segmented-btn {
+    --relleno-segmentado: 6px;
+    padding: calc(var(--relleno-segmentado) + var(--compensa-recorte)) 14px;
+    min-height: calc(1lh + 2 * var(--relleno-segmentado));
+    text-box: trim-both cap alphabetic;
+  }
 }
 .segmented-btn:hover { color: var(--fg-1); }
 .segmented-btn.is-active {
@@ -216,13 +229,15 @@ body {
   cursor: pointer;
   min-width: 140px;
 }
-/* El texto del <select> baja --ajuste-optico-select (ignora text-box); el
-   alto se fija en el de antes: una línea, el relleno y el borde de 1 px. */
-.select {
-  --relleno-select: 6px;
-  padding-top: calc(var(--relleno-select) + var(--ajuste-optico-select));
-  padding-bottom: calc(var(--relleno-select) - var(--ajuste-optico-select));
-  min-height: calc(1lh + 2 * var(--relleno-select) + 2px);
+@supports (text-box: trim-both cap alphabetic) {
+  /* El texto del <select> baja --ajuste-optico-select (ignora text-box); el
+     alto se fija en el de antes: una línea, el relleno y el borde de 1 px. */
+  .select {
+    --relleno-select: 6px;
+    padding-top: calc(var(--relleno-select) + var(--ajuste-optico-select));
+    padding-bottom: calc(var(--relleno-select) - var(--ajuste-optico-select));
+    min-height: calc(1lh + 2 * var(--relleno-select) + 2px);
+  }
 }
 .select:focus, .input:focus {
   outline: 2px solid var(--ocean);
@@ -310,14 +325,17 @@ body {
   display: inline-flex; align-items: center; gap: 8px; margin-left: 4px;
 }
 
-/* Texto de un control flex (botones con ícono, notas, píldora): text-box no
-   alcanza al texto suelto de un flex, así que va en su propio elemento, que se
-   recorta a la altura de mayúscula y a la línea base y conserva el alto de una
-   línea (TB, s35f). */
-.control-texto {
-  text-box: trim-both cap alphabetic;
-  padding-block: var(--compensa-recorte);
-  min-height: 1lh;
+@supports (text-box: trim-both cap alphabetic) {
+  /* Texto de un control flex (botones con ícono, notas, píldora): text-box no
+     alcanza al texto suelto de un flex, así que va en su propio elemento, que se
+     recorta a la altura de mayúscula y a la línea base y conserva el alto de una
+     línea (TB, s35f). Fuera de este bloque (s35g, Q-59) el elemento no lleva
+     estilo y se comporta como el texto suelto de antes. */
+  .control-texto {
+    text-box: trim-both cap alphabetic;
+    padding-block: var(--compensa-recorte);
+    min-height: 1lh;
+  }
 }
 
 /* Buttons */
@@ -971,13 +989,18 @@ code {
   font-family: var(--font-body); font-size: var(--fs-caption); font-weight: 500;
   color: var(--fg-1); background: var(--paper);
   border: 1px solid var(--border-2); border-radius: var(--radius-1);
-  --relleno-gse: 4px;
-  padding: calc(var(--relleno-gse) + var(--ajuste-optico-select)) 22px
-           calc(var(--relleno-gse) - var(--ajuste-optico-select)) 8px;
-  min-height: calc(1lh + 2 * var(--relleno-gse) + 2px);
-  cursor: pointer; appearance: none;
+  padding: 4px 22px 4px 8px; cursor: pointer; appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23747474' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat; background-position: right 5px center; background-size: 12px;
+}
+@supports (text-box: trim-both cap alphabetic) {
+  /* Centrado óptico del <select> (TB, s35f), solo con text-box (s35g, Q-59). */
+  .gse-filter select {
+    --relleno-gse: 4px;
+    padding: calc(var(--relleno-gse) + var(--ajuste-optico-select)) 22px
+             calc(var(--relleno-gse) - var(--ajuste-optico-select)) 8px;
+    min-height: calc(1lh + 2 * var(--relleno-gse) + 2px);
+  }
 }
 
 /* Foco año en tabla */
@@ -1098,11 +1121,7 @@ code {
 .territorio-select {
   display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
   flex: 0 1 440px; min-width: 240px;
-  --relleno-territorio: 9px;
-  padding: var(--relleno-territorio) 14px;
-  /* alto fijo en el de antes (una línea, relleno y borde de 1 px): el margen
-     negativo del nombre redondea hacia cero y lo alargaba 1/32 px */
-  height: calc(1lh + 2 * var(--relleno-territorio) + 2px);
+  padding: 9px 14px;
   background: var(--paper);
   border: 1px solid var(--border-1);
   border-radius: var(--radius-2);
@@ -1113,13 +1132,25 @@ code {
   transition: border-color 120ms ease;
 }
 .territorio-select:hover { border-color: var(--fg-link); }
-.territorio-select-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  /* Recortado a la altura de mayúscula y a la línea base (TB, s35f). Como el
-     nombre corta con overflow, el relleno deja --holgura-tinta para acentos y
-     descendentes, y el margen negativo devuelve el alto de una línea. */
-  text-box: trim-both cap alphabetic;
-  padding-block: var(--holgura-tinta);
-  margin-block: calc(var(--compensa-recorte) - var(--holgura-tinta)); }
+.territorio-select-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@supports (text-box: trim-both cap alphabetic) {
+  .territorio-select {
+    /* el relleno vertical de la regla de arriba */
+    --relleno-territorio: 9px;
+    /* alto fijo en el de antes (una línea, relleno y borde de 1 px): el margen
+       negativo del nombre redondea hacia cero y lo alargaba 1/32 px */
+    height: calc(1lh + 2 * var(--relleno-territorio) + 2px);
+  }
+  .territorio-select-name {
+    /* Recortado a la altura de mayúscula y a la línea base (TB, s35f; solo con
+       text-box desde s35g, Q-59). Como el nombre corta con overflow, el relleno
+       deja --holgura-tinta para acentos y descendentes, y el margen negativo
+       devuelve el alto de una línea. */
+    text-box: trim-both cap alphabetic;
+    padding-block: var(--holgura-tinta);
+    margin-block: calc(var(--compensa-recorte) - var(--holgura-tinta));
+  }
+}
 .territorio-select-caret { display: inline-flex; flex: none; margin-left: auto; }
 .territorio-select-caret .icon { width: 16px; height: 16px; }
 

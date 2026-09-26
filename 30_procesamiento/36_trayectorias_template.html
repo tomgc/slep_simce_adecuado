@@ -42,6 +42,9 @@ html,body{margin:0;padding:0}
   --az:var(--ocean); --azo:var(--navy); --ref:#8A8478; --ac:#A8421C;
   --sh:0 2px 8px rgba(74,39,70,.08);
   --tabs-h:55px;
+  color-scheme:light;
+}
+@supports (text-box: trim-both cap alphabetic){
   /* Centrado óptico del texto de los controles (encargo s35f, TB): los mismos
      tokens que el motor. gobCL (hhea 750/−250, mayúscula 675) deja las
      mayúsculas 0,0875 em sobre el centro con line-height normal; el texto se
@@ -51,10 +54,14 @@ html,body{margin:0;padding:0}
      mayúscula − (ascendente − descendente)) / 2, con ascendente y descendente
      (750 y 250) redondeados a píxel como para line-height normal (métrica de
      macOS: 0,0875 em sin redondeo, 0,104 em a 15 px; en Windows, con win
-     1017/399, queda unos 0,06 em bajo el centro). */
-  --compensa-recorte:calc((1lh - 1cap) / 2);
-  --ajuste-optico-select:calc((1cap - (round(0.75em, 1px) - round(0.25em, 1px))) / 2);
-  color-scheme:light;
+     1017/399, queda unos 0,06 em bajo el centro). Todo el centrado (estos
+     tokens y las reglas que los usan) vive en bloques @supports como este
+     (encargo s35g, Q-59): un navegador sin text-box ve las reglas de fuera de
+     los bloques, las de antes de s35f. */
+  :root{
+    --compensa-recorte:calc((1lh - 1cap) / 2);
+    --ajuste-optico-select:calc((1cap - (round(0.75em, 1px) - round(0.25em, 1px))) / 2);
+  }
 }
 body{background:var(--s0);color:var(--t1);font-size:var(--f2);font-family:var(--font-body);
   -webkit-font-smoothing:antialiased}
@@ -105,15 +112,18 @@ body.pres .app{height:100dvh;max-width:none;padding:var(--u) calc(var(--u)*2)}
    reparte en líneas con botones del alto de siempre; si cabe, nada cambia. */
 #c-coh{flex-wrap:wrap;height:auto;min-height:var(--h)}
 #c-coh button{min-height:calc(var(--h) - 6px)}
-/* Texto de un control flex o de rejilla (botones, interruptores, insignias):
-   text-box no alcanza al texto suelto de un flex, así que va en su propio
-   elemento, recortado a la altura de mayúscula y a la línea base, con el alto
-   de una línea (TB, s35f). */
-.tx{text-box:trim-both cap alphabetic;padding-block:var(--compensa-recorte);min-height:1lh}
-/* Cohortes: el año (.tx, que el script separa del marcado de
-   36_generar_trayectorias.R) queda centrado en el botón y la cifra <em> se
-   alinea a su línea base, como antes. */
-#c-coh button{align-items:baseline;padding-top:calc((var(--h) - 6px - 1lh) / 2)}
+@supports (text-box: trim-both cap alphabetic){
+  /* Texto de un control flex o de rejilla (botones, interruptores, insignias):
+     text-box no alcanza al texto suelto de un flex, así que va en su propio
+     elemento, recortado a la altura de mayúscula y a la línea base, con el alto
+     de una línea (TB, s35f). Fuera de este bloque (s35g, Q-59) el elemento no
+     lleva estilo y se comporta como el texto suelto de antes. */
+  .tx{text-box:trim-both cap alphabetic;padding-block:var(--compensa-recorte);min-height:1lh}
+  /* Cohortes: el año (.tx, que el script separa del marcado de
+     36_generar_trayectorias.R) queda centrado en el botón y la cifra <em> se
+     alinea a su línea base, como antes. */
+  #c-coh button{align-items:baseline;padding-top:calc((var(--h) - 6px - 1lh) / 2)}
+}
 .f.f-coh{max-width:100%}
 .btn{appearance:none;height:var(--h);border:1px solid var(--line-strong);border-radius:4px;background:transparent;
   color:var(--t1);font:inherit;font-weight:500;padding:0 14px;cursor:pointer;display:inline-flex;
@@ -123,12 +133,15 @@ body.pres .app{height:100dvh;max-width:none;padding:var(--u) calc(var(--u)*2)}
 .btn.ico{width:var(--h);padding:0;justify-content:center}
 .btn.ico svg{width:17px;height:17px}
 button:focus-visible,select:focus-visible,.sw:focus-within{outline:2px solid var(--ocean);outline-offset:1px}
-select{height:var(--h);font:inherit;font-size:var(--f2);font-weight:500;
-  padding:calc(2 * var(--ajuste-optico-select)) 30px 0 12px;
+select{height:var(--h);font:inherit;font-size:var(--f2);font-weight:500;padding:0 30px 0 12px;
   border:1px solid var(--line-strong);border-radius:4px;background-color:var(--s1);color:var(--t1);
   cursor:pointer;appearance:none;width:auto;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23747474' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat:no-repeat;background-position:right 10px center;background-size:14px 14px}
+@supports (text-box: trim-both cap alphabetic){
+  /* Centrado óptico del <select> (TB, s35f), solo con text-box (s35g, Q-59). */
+  select{padding:calc(2 * var(--ajuste-optico-select)) 30px 0 12px}
+}
 select.angosto{max-width:210px}
 .sw{display:inline-flex;align-items:center;gap:9px;height:var(--h);padding:0 13px;border:1px solid var(--line-strong);
   border-radius:4px;background:var(--s1);font-size:var(--f2);font-weight:500;color:var(--t2);cursor:pointer;white-space:nowrap}
