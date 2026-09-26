@@ -44,18 +44,24 @@
   box-shadow: 0 1px 0 rgba(74, 39, 70, 0.04); position: sticky; top: 0; z-index: 40; }
 .view-tabs-inner { display: flex; gap: 0; flex-wrap: wrap; max-width: 1600px;
   margin: 0 auto; padding: 0 40px; }
-/* El texto de cada entrada se recorta a la altura de mayúscula y a la línea
-   base (text-box) y lo recortado vuelve como relleno, mitad arriba y mitad
-   abajo: queda centrado sin cambiar el alto (encargo s35f, TB). Las dos
-   plantillas definen --compensa-recorte con el mismo valor. */
-.view-tab { --relleno-tab: 14px; --borde-tab: 3px;
-  padding: calc(var(--relleno-tab) + var(--compensa-recorte)) 18px;
-  min-height: calc(1lh + 2 * var(--relleno-tab) + var(--borde-tab));
-  text-box: trim-both cap alphabetic;
-  font-family: var(--font-body); font-weight: 700;
+.view-tab { padding: 14px 18px; font-family: var(--font-body); font-weight: 700;
   font-size: var(--fs-body-lg); line-height: normal; color: var(--slate); cursor: pointer;
-  border-bottom: var(--borde-tab) solid transparent; white-space: nowrap; text-decoration: none;
+  border-bottom: 3px solid transparent; white-space: nowrap; text-decoration: none;
   transition: color 120ms ease, border-color 120ms ease; }
+@supports (text-box: trim-both cap alphabetic) {
+  /* El texto de cada entrada se recorta a la altura de mayúscula y a la línea
+     base (text-box) y lo recortado vuelve como relleno, mitad arriba y mitad
+     abajo: queda centrado sin cambiar el alto (encargo s35f, TB). Las dos
+     plantillas definen --compensa-recorte con el mismo valor. Todo el
+     centrado vive en bloques @supports como este (encargo s35g, Q-59): un
+     navegador sin text-box no recorta el texto, así que tampoco debe sumar la
+     compensación; ve la regla de arriba, la de antes de s35f. --borde-tab es
+     el borde inferior de la regla de arriba. */
+  .view-tab { --relleno-tab: 14px; --borde-tab: 3px;
+    padding: calc(var(--relleno-tab) + var(--compensa-recorte)) 18px;
+    min-height: calc(1lh + 2 * var(--relleno-tab) + var(--borde-tab));
+    text-box: trim-both cap alphabetic; }
+}
 .view-tab:hover { color: var(--ink); }
 .view-tab.is-active { color: #0A3A5C; border-bottom-color: var(--coral); }
 .view-tab:focus-visible { outline: 2px solid var(--ocean); outline-offset: -2px; }
@@ -64,8 +70,11 @@
 @media (max-width: 640px) {
   .app-header { padding: 20px 16px 18px; }
   .view-tabs-inner { padding: 0 8px; }
-  .view-tab { white-space: normal; --relleno-tab: 12px;
-    padding: calc(var(--relleno-tab) + var(--compensa-recorte)) 10px; font-size: var(--fs-body); }
+  .view-tab { white-space: normal; padding: 12px 10px; font-size: var(--fs-body); }
+  @supports (text-box: trim-both cap alphabetic) {
+    .view-tab { --relleno-tab: 12px;
+      padding: calc(var(--relleno-tab) + var(--compensa-recorte)) 10px; }
+  }
 }
 <!-- SITIO_CSS_FIN -->
 <!-- SITIO_HTML_INICIO -->
