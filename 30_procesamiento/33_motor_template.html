@@ -2043,6 +2043,8 @@ code {
     // porque su tamaño depende del contenido: a la derecha del punto y un poco más
     // arriba; si se sale por la derecha, se voltea a la izquierda del punto; si se
     // sale por abajo, sube; nunca queda a menos de TOOLTIP_DIMS.margen del borde.
+    // En pantallas angostas, si no cabe a ningún lado del punto sin taparlo, va
+    // abajo del punto y, si ahí no cabe, arriba (Q-54, encargo s35g).
     const TOOLTIP_DIMS = { desplaz: 14, margen: 8 };
     function ubicarTooltip(tip, ptX, ptY) {
       const { desplaz, margen } = TOOLTIP_DIMS;
@@ -2053,12 +2055,20 @@ code {
       tip.style.top = "0px";
       const ancho = tip.offsetWidth, alto = tip.offsetHeight;
       const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
-      let left = ptX + desplaz;
-      if (left + ancho > vw - margen) left = ptX - ancho - desplaz;
+      const cabeDer = ptX + desplaz + ancho <= vw - margen;
+      const cabeIzq = ptX - ancho - desplaz >= margen;
+      let left = cabeDer ? ptX + desplaz : ptX - ancho - desplaz;
       left = Math.max(margen, Math.min(left, vw - ancho - margen));
       let top = ptY - desplaz;
       if (top + alto > vh - margen) top = vh - alto - margen;
       top = Math.max(margen, top);
+      // Sin lado libre, a la izquierda acotado a la ventana taparía el punto: se
+      // prueba abajo y luego arriba, con el mismo desplazamiento; si ninguno cabe
+      // dentro de la ventana, queda como arriba.
+      if (!cabeDer && !cabeIzq) {
+        if (ptY + desplaz + alto <= vh - margen) top = ptY + desplaz;
+        else if (ptY - alto - desplaz >= margen) top = ptY - alto - desplaz;
+      }
       tip.style.left = (left + window.scrollX) + "px";
       tip.style.top  = (top + window.scrollY) + "px";
     }
