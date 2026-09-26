@@ -18,7 +18,8 @@
 #      app con Babel standalone dentro de V8 (s31). El HTML resultante no
 #      carga nada por red: React y ReactDOM van inline y Babel no viaja. Antes
 #      de transpilar, __ANIO_MIN__ y __ANIO_MAX__ pasan al primer y al último
-#      año de meta$anios (D35-19).
+#      año de meta$anios (D35-19), y los marcadores de años sin Simce, a
+#      ANIOS_SIN_SIMCE de 10_configuracion.R (encargo s35m, Q-80).
 #   5. Escribe 40_salidas/motor_comparacion.html (UTF-8).
 #
 # Salida: 40_salidas/motor_comparacion.html
