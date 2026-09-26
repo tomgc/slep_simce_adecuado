@@ -657,3 +657,23 @@ Pendientes fuera del encargo (§11): Museo Sans en la suite, los pendientes 8, 1
   - `grep -c '^esperado:'` = 57 y `grep -c '^obtenido:'` = 56: una línea de resultado empieza con «obtenido (literal; …):», en la calibración de B1, así que `grep -c '^obtenido'` da 57. No se reescribió: se declara;
   - `grep -c '^## J'` = 1, con el bloque relleno;
   - privacidad: el `grep` del patrón de RUT no halla coincidencias. Tampoco hay nombres de establecimientos (`liceo|escuela|colegio|instituto` solo aparece como «escuelas», en la tabla de B1) ni de personas; los nombres que aparecen son de comunas, regiones y Servicios Locales.
+
+### FASE P3: lo que sirve Pages (tras el push de FASE L; autorización 8)
+
+- Commit de este log antes de P3: `9bae824` docs(log): bateria por familias, build, tarjeta y supergrid (s35i).
+
+Push de FASE L. Condiciones medidas después del commit del log, en el mismo turno:
+- `git status --porcelain` vacío;
+- `git fetch origin` fetch_codigo=0; `origin/main` = b150d57d5d149fc243a807823e8e79aa00ca29e3;
+- `git merge-base --is-ancestor origin/main HEAD` ancestro_codigo=0, con 8 commits por publicar;
+- md5 de `docs/` = 42ab9300… y 883f76bc…, los de PUB.
+
+Luego `git push origin main`
+esperado: push aceptado
+obtenido: «b150d57..9bae824  main -> main», push_codigo=0
+
+**P3.** `$TMPDIR/cal_s35i/p3.sh` (copia del de s35h): cada 60 s, hasta 10 minutos, `curl -s https://tomgc.github.io/slep_simce_adecuado/ | md5 -q` y `curl -s https://tomgc.github.io/slep_simce_adecuado/trayectorias.html | md5 -q`, contra `md5 -q docs/*.html` (salida en `$TMPDIR/cal_s35i/p3.txt`)
+esperado: 42ab93003e722f9bb6c725fec2d348bd y 883f76bcefc89d93f2d1e753fc4d75c3
+obtenido: intento 1 (11:17:27): fe30d56f… y 69357a69…, la versión anterior; intento 2 (11:18:28): **42ab93003e722f9bb6c725fec2d348bd y 883f76bcefc89d93f2d1e753fc4d75c3**, «COINCIDE en el intento 2». `curl -sI`: HTTP/2 200, `last-modified: Sat, 26 Sep 2026 14:17:56 GMT` en las dos páginas (etag «6ab7d414-2cc6b9» y «6ab7d414-21c47d»).
+
+Cierre con la autorización 8: se agrega esta sección; `git add` del log; `git commit -m "docs(log): P3 de s35i"`; y `git push origin main`, solo si `git diff --name-only HEAD~1..HEAD` muestra únicamente el log y si `fetch` y `merge-base --is-ancestor origin/main HEAD` dan código 0. El hash de ese commit va en el reporte final: un archivo no puede llevar el hash de su propio commit.
