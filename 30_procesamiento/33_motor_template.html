@@ -2589,7 +2589,7 @@ code {
 
         const series = SimceData.getSeriesForEntity(entity, gse, nivel, prueba);
         const valid = series.filter(s => s.pct != null);
-        const x = d3.scaleLinear().domain([2014, 2025]).range([0, iw]);
+        const x = d3.scaleLinear().domain([__ANIO_MIN__, __ANIO_MAX__]).range([0, iw]);
         const y = d3.scaleLinear().domain([0, 100]).range([ih, 0]);
 
         // Banda 2019-2021
@@ -4136,7 +4136,7 @@ code {
             <div className="panorama-cell is-empty">
               <p className="panorama-empty-text">
                 {entity.name} no registra resultados Simce en {nivel} para ninguna de las
-                dos pruebas en el periodo 2014–2025. Prueba con el otro nivel o elige
+                dos pruebas en el periodo __ANIO_MIN__–__ANIO_MAX__. Prueba con el otro nivel o elige
                 otro territorio.
               </p>
             </div>
@@ -5071,7 +5071,7 @@ code {
                     )}
                   </div>
                   <div className="notes-sources">
-                    <span>Fuente: Agencia de Calidad de la Educación · Bases Simce 2014–2025. Procesamiento: SLEP Costa Central.</span>
+                    <span>Fuente: Agencia de Calidad de la Educación · Bases Simce __ANIO_MIN__–__ANIO_MAX__. Procesamiento: SLEP Costa Central.</span>
                     <span>Área de Monitoreo y Seguimiento de Procesos y Resultados Educativos · Contacto: {["tomas", "gonzalez"].join(".") + String.fromCharCode(64) + ["slepcostacentral", "gob", "cl"].join(".")}</span>
                   </div>
                 </div>

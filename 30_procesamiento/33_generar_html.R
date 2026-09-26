@@ -16,7 +16,9 @@
 #   4. Reemplaza placeholders __D3_INLINE__, __PAKO_INLINE__, __JSON_DATA__,
 #      __REACT_INLINE__ y __REACTDOM_INLINE__, y transpila el bloque JSX de la
 #      app con Babel standalone dentro de V8 (s31). El HTML resultante no
-#      carga nada por red: React y ReactDOM van inline y Babel no viaja.
+#      carga nada por red: React y ReactDOM van inline y Babel no viaja. Antes
+#      de transpilar, __ANIO_MIN__ y __ANIO_MAX__ pasan al primer y al último
+#      año de meta$anios (D35-19).
 #   5. Escribe 40_salidas/motor_comparacion.html (UTF-8).
 #
 # Salida: 40_salidas/motor_comparacion.html
@@ -27,7 +29,7 @@
 
 library(here)
 source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
-source(here::here("10_utils", "10_html.R"))           # reemplazar_literal(), insertar_sitio()
+source(here::here("10_utils", "10_html.R"))           # reemplazar_literal(), insertar_sitio(), sustituir_anios()
 
 
 # ============================================================================
@@ -425,6 +427,9 @@ plantilla <- paste(readLines(plantilla_path, encoding = "UTF-8"),
                    collapse = "\n")
 # Encabezado y menú de vistas desde la fuente única del sitio (s34).
 plantilla <- insertar_sitio(plantilla, "motor")
+# Rango de años del encabezado y de la plantilla desde los datos (D35-19). Va
+# antes de transpilar: el bloque JSX también usa los marcadores.
+plantilla <- sustituir_anios(plantilla, meta$anios)
 d3_code <- paste(readLines(d3_path, encoding = "UTF-8"),
                  collapse = "\n")
 pako_code <- paste(readLines(pako_path, encoding = "UTF-8"),

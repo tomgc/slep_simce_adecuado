@@ -6,7 +6,8 @@
 # encabezado y el menú de vistas del sitio desde 30_procesamiento/
 # 33_fragmento_sitio.html, su fuente única (deuda técnica de v33). Desde el
 # encargo pendientes s35b también incrusta la tipografía gobCL (D33-4), con la
-# familia propia "gobCL-sitio" desde el encargo pendientes s35c (D35-9).
+# familia propia "gobCL-sitio" desde el encargo pendientes s35c (D35-9). Desde el
+# encargo s35k sustituye los marcadores del rango de años (D35-19).
 # =============================================================================
 
 RUTA_FRAGMENTO_SITIO <- here::here("30_procesamiento", "33_fragmento_sitio.html")
@@ -14,6 +15,16 @@ MARCADOR_SITIO_CSS   <- "/*__SITIO_CSS__*/"
 MARCADOR_SITIO_HTML  <- "<!--__SITIO_HTML__-->"
 MARCADOR_FUENTES     <- "/*__FUENTES__*/"
 PATRON_SITIO_RESTO   <- "__SITIO_[A-Z]+__|__HREF_[A-Z]+__|__FUENTES__"
+
+# Rango de años del sitio (D35-19): el fragmento y las plantillas escriben el
+# primer y el último año de los datos con estos marcadores, que cada generador
+# sustituye con los años de su página (meta$anios del motor, DATA$anios de la
+# vista). Así, una base Simce nueva cambia el rango sin editar las plantillas.
+MARCADOR_ANIO_MIN <- "__ANIO_MIN__"
+MARCADOR_ANIO_MAX <- "__ANIO_MAX__"
+# Resto: cualquier texto con el prefijo, para detener también un marcador mal
+# escrito (p. ej. "__ANIO_MIN_"). Ninguna biblioteca de 10_utils lo contiene.
+PATRON_ANIO_RESTO <- "__ANIO_[A-Za-z_]*"
 
 # Tipografía del sitio (D33-4, pendiente 3 de v34; D35-9): dos .otf de gobCL,
 # Regular (400) y Bold (700), vendorizados de terceros en 10_utils/fuentes/ con
@@ -62,6 +73,31 @@ reemplazar_literal <- function(texto, marcador, valor) {
   }
   paste0(substr(texto, 1L, pos - 1L), valor,
          substr(texto, pos + nchar(marcador), nchar(texto)))
+}
+
+# Reemplaza todas las apariciones de MARCADOR_ANIO_MIN y MARCADOR_ANIO_MAX en
+# `texto` por el primer y el último año de `anios`. Se detiene si `anios` no trae
+# años, si un marcador no aparece o si queda algún texto con el prefijo __ANIO_
+# sin sustituir (como un marcador de datos sin reemplazar).
+sustituir_anios <- function(texto, anios) {
+  anios <- as.integer(unlist(anios))
+  if (length(anios) == 0L || anyNA(anios)) {
+    stop("No hay años para sustituir los marcadores de rango")
+  }
+  valores <- c(min(anios), max(anios))
+  names(valores) <- c(MARCADOR_ANIO_MIN, MARCADOR_ANIO_MAX)
+  for (marcador in names(valores)) {
+    if (!grepl(marcador, texto, fixed = TRUE)) {
+      stop("La página no trae el marcador ", marcador)
+    }
+    texto <- gsub(marcador, as.character(valores[[marcador]]), texto, fixed = TRUE)
+  }
+  if (grepl(PATRON_ANIO_RESTO, texto)) {
+    stop("Quedaron marcadores de años sin sustituir: ",
+         paste(unique(regmatches(texto, gregexpr(PATRON_ANIO_RESTO, texto))[[1]]),
+               collapse = ", "))
+  }
+  texto
 }
 
 # Devuelve el texto entre los comentarios SITIO_<bloque>_INICIO y _FIN del
