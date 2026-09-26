@@ -20,7 +20,8 @@
 # de la enmienda D35-4; el mismo encargo extiende a las unidades futuras el
 # recuento independiente de D9, con su control positivo D9f. R7 (encargo
 # pendientes s35c, Q-26) comprueba que el tooltip del referente dice sus
-# cifras desde DATA.
+# cifras desde DATA. C6 (encargo s35g, Q-58) comprueba que el año de cada
+# botón de cohorte llega en el HTML escrito, en su propio span.tx.
 # Cada prueba mide la afirmación, no un síntoma cercano, y las de ausencia
 # llevan control positivo.
 #
@@ -623,6 +624,47 @@ c5 <- evaluar({
                          format(ESPERADO_EST_FUTURAS, big.mark = ".", decimal.mark = ",")))
 })
 comprobar("C5", "La suma de establecimientos de las unidades futuras es 2.564", c5$ok, c5$detalle)
+
+# ---- C6. Cada botón de cohorte trae su año en un span.tx (Q-58) -------------
+# Lee el HTML escrito, no el DOM: el año debe venir del generador
+# (botones_cohortes() de 36_generar_trayectorias.R) y no de un script de la
+# vista, que hasta el encargo s35g lo separaba al iniciar. En el bloque #c-coh,
+# cada <button> tiene exactamente un <span class="tx"> cuyo texto es el año de
+# su data-v, y fuera de ese span y de la cifra <em> no hay otro texto; los años
+# son las cohortes del DATA escrito en la misma vista (meta$tras, sin el
+# referente). Control positivo: el marcado de antes (año suelto antes de <em>)
+# no pasa.
+PATRON_BOTON_COH <- "(?s)<button[^>]*>.*?</button>"
+PATRON_TX        <- '<span class="tx">([^<]*)</span>'
+revisar_botones_coh <- function(bloque) {
+  botones <- regmatches(bloque, gregexpr(PATRON_BOTON_COH, bloque, perl = TRUE))[[1]]
+  anios <- sub('(?s)^<button[^>]*data-v="([0-9]+)".*$', "\\1", botones, perl = TRUE)
+  bien <- vapply(seq_along(botones), function(k) {
+    b <- botones[k]
+    n_tx <- lengths(regmatches(b, gregexpr('class="tx"', b, fixed = TRUE)))
+    spans <- regmatches(b, gregexpr(PATRON_TX, b))[[1]]
+    resto <- gsub("<[^>]*>", "", gsub("<em>[^<]*</em>", "", gsub(PATRON_TX, "", b)))
+    n_tx == 1L && length(spans) == 1L && identical(sub(PATRON_TX, "\\1", spans), anios[k]) &&
+      !nzchar(trimws(resto))
+  }, logical(1))
+  list(n = length(botones), anios = anios, bien = sum(bien))
+}
+c6 <- evaluar({
+  ini <- regexpr('<div class="seg" id="c-coh">', html, fixed = TRUE)
+  if (ini < 0) stop("la vista no trae el bloque #c-coh")
+  resto  <- substr(html, ini, nchar(html))
+  bloque <- substr(resto, 1L, regexpr("</div>", resto, fixed = TRUE) - 1L)
+  r <- revisar_botones_coh(bloque)
+  meta_html <- jsonlite::fromJSON(extraer_data(RUTA_HTML), simplifyVector = FALSE)$meta
+  cohortes <- sort(unique(vapply(meta_html[names(meta_html) != ID_REFERENTE],
+                                 function(m) as.integer(m$tras), integer(1))))
+  plantado <- revisar_botones_coh('<button data-v="2021" aria-pressed="true">2021 <em>9</em></button>')
+  control  <- plantado$n == 1L && plantado$bien == 0L
+  list(ok = r$n > 0 && r$bien == r$n && identical(as.integer(r$anios), cohortes) && control,
+       detalle = sprintf("%d botones; con un único span.tx con su año y sin otro texto: %d; años %s; cohortes del DATA %s; control plantado detectado: %s",
+                         r$n, r$bien, toString(r$anios), toString(cohortes), control))
+})
+comprobar("C6", "Cada botón de cohorte trae su año en un único span.tx escrito por el generador", c6$ok, c6$detalle)
 
 # ---- Referente (D35-1): rótulo y marca de ola -------------------------------
 # El referente sigue anclado en el primer año de la serie (decisión D35-1 en
