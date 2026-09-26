@@ -264,3 +264,12 @@ Se registran en el lock los paquetes de CRAN que faltan (entre ellos `V8` y `ope
 - CLAUDE.md se crea en la raíz, local y sin versionar (el `.gitignore` lo excluye). Los logs dejan de registrarlo como pendiente.
 - El log de s35j, con referencias generales a dos repositorios privados (sin datos ni claves), se deja como está.
 - Q-73, Q-74 y Q-75 y el detalle R-41 se resuelven en el encargo s35l, junto con una batería versionada del motor.
+
+## Decisiones del titular tras el encargo `encargo_verificaciones_s35l.md`, segunda emisión (sesión 35, 2026-09-26)
+
+### D35-21. Lock, textos de años y baterías
+
+- Q-79: se acepta que 22 paquetes del lock se restauren desde instantáneas de Posit Package Manager; el lock no se actualiza.
+- Q-80: los textos fijos de años sin Simce de la vista (L462 y L1032) pasan a `ANIOS_SIN_SIMCE` en un encargo corto.
+- Q-81: los cuatro textos de `documentar.R` que llaman «preliminar» al 2025 se corrigen con la próxima regeneración de la suite.
+- Q-82: las baterías del motor y de la vista siguen manuales; se corren antes de cada copia a `docs/`.
