@@ -6,14 +6,14 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # ----------------------------------------------------------------------------
-# Lee los 18 xlsx en 20_insumos/simce/{4b,2m}/, normaliza nombres de
+# Lee los xlsx de 20_insumos/simce/{4b,2m}/ (hoy 18), normaliza nombres de
 # columnas, los lleva a formato largo (una fila por rbd × prueba × año
 # × nivel) y emite el parquet único:
 #
 #   40_salidas/intermedios/simce_rbd.parquet
 #
 # Esquema final (14 columnas):
-#   anio          integer    2014-2018, 2022-2025
+#   anio          integer    los de los xlsx (hoy 2014-2018, 2022-2025)
 #   nivel         character  "4b" | "2m"
 #   prueba        character  "lect" | "mate"
 #   rbd           character
@@ -121,7 +121,14 @@ message(sprintf("    Mapa pre-Ñuble cargado: %d comunas.", length(mapa_pre_nubl
 message("[1] Construyendo manifiesto de xlsx...")
 
 niveles <- c("2m", "4b")
-anios_esperados <- c(2014:2018, 2022:2025)
+
+# Los años no son un literal: salen de los nombres de archivo de cada nivel
+# (D35-19), para que una base nueva de la Agencia entre sin editar código. La
+# serie empieza en ANIO_INICIO y no tiene aplicación en ANIOS_SIN_SIMCE; la
+# validación de abajo detiene el build si los años de los archivos no forman
+# una serie coherente.
+ANIO_INICIO     <- 2014L
+ANIOS_SIN_SIMCE <- c(2019L, 2020L, 2021L)
 
 # Patrón de nombre: simce<nivel><anio>_rbd_<estado>.xlsx
 patron_archivo <- "^simce(2m|4b)(\\d{4})_rbd_(final|preliminar)\\.xlsx$"
@@ -152,23 +159,54 @@ stopifnot(
     !any(is.na(manifiesto$nivel) | is.na(manifiesto$anio))
 )
 
-# Validar 9 años × 2 niveles = 18 archivos, con los años esperados.
+# Validar los años de los archivos (D35-19). En cada nivel: un archivo por año,
+# ningún año anterior a ANIO_INICIO ni de ANIOS_SIN_SIMCE, y ningún hueco entre
+# el primer y el último año fuera de ANIOS_SIN_SIMCE. Después, entre niveles:
+# los mismos años en los dos.
+anios_por_nivel <- lapply(
+  setNames(niveles, niveles),
+  function(nv) sort(manifiesto$anio[manifiesto$nivel == nv])
+)
+if (length(unlist(anios_por_nivel)) == 0L) {
+  stop("No hay xlsx Simce en 20_insumos/simce/{2m,4b}/")
+}
 for (nv in niveles) {
-  anios_presentes <- sort(manifiesto$anio[manifiesto$nivel == nv])
-  faltan <- setdiff(anios_esperados, anios_presentes)
-  sobran <- setdiff(anios_presentes, anios_esperados)
-  if (length(faltan) > 0) {
-    stop(sprintf("Nivel %s: faltan años %s",
-                 nv, paste(faltan, collapse = ", ")))
+  anios_nv <- anios_por_nivel[[nv]]
+  repetidos <- unique(anios_nv[duplicated(anios_nv)])
+  if (length(repetidos) > 0) {
+    stop(sprintf("Nivel %s: más de un archivo para los años %s (%s)",
+                 nv, paste(repetidos, collapse = ", "),
+                 paste(manifiesto$archivo[manifiesto$nivel == nv &
+                                            manifiesto$anio %in% repetidos],
+                       collapse = ", ")))
   }
+  sobran <- anios_nv[anios_nv < ANIO_INICIO | anios_nv %in% ANIOS_SIN_SIMCE]
   if (length(sobran) > 0) {
     stop(sprintf("Nivel %s: años inesperados %s",
                  nv, paste(sobran, collapse = ", ")))
   }
+  if (length(anios_nv) > 0) {
+    faltan <- setdiff(seq(min(anios_nv), max(anios_nv)),
+                      c(anios_nv, ANIOS_SIN_SIMCE))
+    if (length(faltan) > 0) {
+      stop(sprintf("Nivel %s: faltan años %s",
+                   nv, paste(faltan, collapse = ", ")))
+    }
+  }
+}
+for (nv in niveles) {
+  otros <- setdiff(niveles, nv)
+  faltan <- setdiff(unlist(anios_por_nivel[otros]), anios_por_nivel[[nv]])
+  if (length(faltan) > 0) {
+    stop(sprintf("Nivel %s: faltan años %s, que tiene el nivel %s",
+                 nv, paste(sort(unique(faltan)), collapse = ", "),
+                 paste(otros, collapse = ", ")))
+  }
 }
 
-message(sprintf("    OK: %d archivos detectados (%d por nivel).",
-                nrow(manifiesto), nrow(manifiesto) / 2))
+message(sprintf("    OK: %d archivos detectados (%d por nivel), años %s.",
+                nrow(manifiesto), nrow(manifiesto) / length(niveles),
+                paste(anios_por_nivel[[1]], collapse = ", ")))
 
 
 # ============================================================================
@@ -339,10 +377,10 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
 
 
 # ============================================================================
-# Bloque 4 — Iterar sobre los 18 archivos
+# Bloque 4 — Iterar sobre los archivos del manifiesto
 # ============================================================================
 
-message("[2] Procesando 18 xlsx...")
+message(sprintf("[2] Procesando %d xlsx...", nrow(manifiesto)))
 
 df_simce_rbd <- purrr::pmap_dfr(
   manifiesto,
