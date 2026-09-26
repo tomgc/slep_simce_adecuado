@@ -1254,7 +1254,13 @@ function opciones(){
   }
 }
 var GSE_TOTAL_VISTA='T';
-function rebuild(){numerar();SC={};opciones();stop();S.seg=0;S.t=0;tarjeta();anchoTarjeta();unaColumna();build();render();}
+/* Al cambiar de cohorte (o de prueba, grupo o cobertura), la tarjeta se vuelve a
+   medir con --cardw en su valor por omisión, como en el manejador de resize y en
+   trasFuentes(): sin eso se medía desde el ancho de la cohorte anterior (de la
+   2027 a la 2018, 403 px en vez de los 317 de una carga nueva; Q-65, decisión
+   D35-15). */
+function rebuild(){numerar();SC={};opciones();stop();S.seg=0;S.t=0;tarjeta();
+  document.documentElement.style.removeProperty('--cardw');anchoTarjeta();unaColumna();build();render();}
 var raf=null,last=0,hold=0;
 function tick(ts){
   if(!S.play)return;

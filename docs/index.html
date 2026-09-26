@@ -111,8 +111,8 @@
   --tracking-overline: 0.12em;
 
   /* Ancho mínimo de cada columna del supergrid (encargo s35h, Q-34 y Q-43): sin
-     mínimo en pantallas anchas; bajo 640 px lo fija la regla de pantallas
-     angostas del final de la hoja. */
+     mínimo en pantallas anchas; bajo 670 px lo fija la regla del supergrid del
+     final de la hoja, en su propio @media (encargo s35i, Q-66). */
   --supergrid-col-min: 0px;
 }
 @supports (text-box: trim-both cap alphabetic) {
@@ -1301,12 +1301,18 @@ code {
     border-bottom: 0; box-shadow: inset 0 -1px 0 var(--border-1);
   }
   .modal-tab { margin-bottom: 0; }
-  /* Supergrid (encargo s35h, Q-34 y Q-43): a 375 px, con 4 territorios, las
-     columnas medían 64,75 px, los rótulos se montaban sobre la celda vecina y
-     las sparklines medían 43 px. Aquí cada columna mide al menos el texto más
-     ancho del supergrid a 375 px (PUCHUNCAVÍ, 103,66 px) más el relleno de su
-     celda (4 + 4 px), redondeado hacia arriba, y el supergrid se desplaza en
-     horizontal dentro de sí mismo, sin desbordar la página. */
+}
+/* Supergrid (encargo s35h, Q-34 y Q-43): a 375 px, con 4 territorios, las
+   columnas medían 64,75 px, los rótulos se montaban sobre la celda vecina y las
+   sparklines medían 43 px. Aquí cada columna mide al menos el texto más ancho
+   del supergrid a 375 px (PUCHUNCAVÍ, 103,66 px) más el relleno de su celda
+   (4 + 4 px), redondeado hacia arriba, y el supergrid se desplaza en horizontal
+   dentro de sí mismo, sin desbordar la página. El corte es propio (encargo
+   s35i, Q-66): con 5 territorios y el corte en 640 px, PUCHUNCAVÍ salía de su
+   celda hasta 666 px (W_FUERA, medido de 641 a 760 px), y el corte es el primer
+   múltiplo de 10 mayor que W_FUERA. Va como literal porque las variables CSS no
+   valen en la condición de un @media. */
+@media (max-width: 670px) {
   :root { --supergrid-col-min: 112px; }
   .supergrid { overflow-x: auto; }
 }
