@@ -5,9 +5,10 @@
 # Funciones expuestas:
 #   - agregar_ponderado(df, group_vars): agrega el % adecuado ponderado por
 #     número de evaluados, respetando umbral MINEDUC (>=10) y marca de
-#     supresión NA. Devuelve tibble con n_estab, n_evaluados, pct_adecuado.
-#   - json_motor(df, ...): construye la estructura JSON consumida por el
-#     motor_comparacion.html (pendiente).
+#     supresión NA. Devuelve tibble con n_estab, n_evaluados, pct_adecuado y,
+#     si df trae palu_eda_ele o palu_eda_ins, pct_elemental o pct_insuficiente.
+#   - .tests_agregar_ponderado(): pruebas inline de agregar_ponderado() (siete
+#     casos), que se corren a mano desde la consola.
 #
 # Convención: paquetes prefijados (dplyr::, tibble::). Sin library() acá.
 # ----------------------------------------------------------------------------
@@ -37,7 +38,8 @@
 #'
 #' @return Tibble (no agrupado) con una fila por combinación única de
 #'   `group_vars` y columnas adicionales `n_estab`, `n_evaluados`,
-#'   `pct_adecuado`.
+#'   `pct_adecuado` y, si `df` trae `palu_eda_ele` o `palu_eda_ins`,
+#'   `pct_elemental` o `pct_insuficiente`, respectivamente.
 agregar_ponderado <- function(df, group_vars) {
   # --- Validaciones de input ---
   cols_requeridas <- c("nalu", "palu_eda_ade", "marca")
@@ -222,11 +224,3 @@ agregar_ponderado <- function(df, group_vars) {
   message("OK: 7/7 casos de .tests_agregar_ponderado() pasaron.")
   invisible(TRUE)
 }
-
-
-# ----------------------------------------------------------------------------
-# json_motor(): pendiente — sesión siguiente.
-# ----------------------------------------------------------------------------
-
-# TODO: implementar json_motor(df, ...) que construya la estructura JSON
-#       consumida por motor_comparacion.html.
