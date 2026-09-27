@@ -313,3 +313,11 @@ El titular revisó en Safari y en un teléfono lo publicado por s35h y s35i (mod
 - **Q-95.** Ejecutar P1 de s35p: `.Renviron.example` sin la raíz de datos. Las dos líneas del validador que nombran esas variables solo las revisan como parte de la plantilla de la cartera; no cuentan como uso.
 - **Q-96.** El criterio de `json_motor` de s35p se mide como palabra completa (`git grep -nw`): queda cumplido.
 - **Q-98.** El paso 30 valida también la columna `COD_DEPE` del directorio, que usa y hoy no revisa.
+
+## Decisiones del titular tras el encargo `encargo_enlaces_renviron_s35q.md` (sesión 35, 2026-09-26)
+
+### D35-27. Q-99, Q-100 y pendientes para el traspaso
+
+- Q-99: se anota en el protocolo de portabilidad de la cartera (`herramientas_dev`) que el `.Renviron.example` con raíz de datos (opciones A y B) aplica solo a proyectos con datos sensibles (Rama B), como ya dice POLITICA §8.2 y §8.3.6. Se hace en una sesión del kit, porque `herramientas_dev` no está conectado a esta.
+- Q-100: `50_documentacion/activa/50_locale_utf8.md` queda como registro fechado del 2026-08-27; su cita a `.Renviron.example:29` no se corrige.
+- Quedan para la próxima sesión, sin encargo ahora (verificación independiente del log de s35q): la sección «Cómo correr en una máquina nueva» del README no pide copiar `LANG` a `~/.Renviron`; el README remite a un protocolo en el repositorio privado `herramientas_dev`; el mensaje de `10_validar_portabilidad.R` L280 sugiere declarar `DATA_ROOT` (plantilla de la cartera).
