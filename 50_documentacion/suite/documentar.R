@@ -106,7 +106,7 @@ cfg <- list(
     list(t='Simce · 4° básico', badge='9 xlsx',
          d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce4bAAAA_rbd_(final|preliminar).xlsx</span><br>Lectura y Matemática · estándares Adecuado · Elemental · Insuficiente'),
     list(t='Simce · 2° medio', badge='9 xlsx',
-         d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce2mAAAA_rbd_(final|preliminar).xlsx</span><br>Mismo esquema que 4° básico · todos los años, 2025 incluido, son base final')
+         d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce2mAAAA_rbd_(final|preliminar).xlsx</span><br>Mismo esquema que 4° básico · la base 2025 es final')
   ),
   auxiliares = list(
     list(t='directorio_oficial_ee.csv', badge='csv',
