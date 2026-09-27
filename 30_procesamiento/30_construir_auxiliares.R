@@ -20,10 +20,14 @@
 #   3. sleps_chile.parquet
 #        Desde listado_slep_2026.xlsx + directorio oficial.
 #
+#   4. establecimientos_chile.parquet
+#        Desde directorio_oficial_ee.csv (establecimientos operativos con
+#        matrícula, de cualquier dependencia).
+#
 # Uso:
 #   source(here::here("30_procesamiento", "30_construir_auxiliares.R"))
 #
-# Convención: paquetes prefijados (readxl::, readr::, dplyr::, arrow::).
+# Convención: paquetes prefijados (readxl::, readr::, dplyr::, arrow::, fs::).
 # Solo library(here) por uso intensivo de rutas.
 # ----------------------------------------------------------------------------
 
@@ -233,7 +237,7 @@ message(sprintf(
 # disponible. Se joineara con el directorio oficial para obtener los RBDs
 # que pertenecen a cada SLEP.
 #
-# Esquema del parquet resultante (8 columnas):
+# Esquema del parquet resultante (7 columnas):
 #   cod_slep      character   codigo numerico del SLEP (ej. "503")
 #   nombre_slep   character   nombre formateado (ej. "Costa Central")
 #   anio_traspaso integer     anio en que el SLEP tomo cargo de la educacion
@@ -243,9 +247,10 @@ message(sprintf(
 #   nom_rbd       character   nombre del establecimiento
 # (7 columnas: sin cod_depe — parquet contiene solo establecimientos SLEP)
 #
-# Solo RBDs con COD_DEPE == 6 en directorio 2025. El join con SIMCE por RBD
-# garantiza cobertura historica: los mismos establecimientos existian con
-# COD_DEPE == 1 antes del traspaso.
+# RBDs con COD_DEPE == 6 en directorio 2025, mas los municipales (COD_DEPE
+# 1/2) de las comunas con traspaso prospectivo (rama b de 4.2). El join con
+# SIMCE por RBD garantiza cobertura historica: los mismos establecimientos
+# existian con COD_DEPE == 1 antes del traspaso.
 
 message("[4] Construyendo sleps_chile.parquet...")
 
@@ -404,7 +409,8 @@ message(sprintf(
 # Fuente: directorio_oficial_ee.csv (df_dir_raw, ya cargado en Bloque 2).
 # Incluye todos los establecimientos operativos con matrícula,
 # independientemente de su dependencia. Se usa en el popup "ver
-# establecimientos" del motor de comparación HTML para cualquier entidad.
+# establecimientos" del motor de comparación HTML para cualquier entidad y en
+# la vista de trayectorias (paso 36).
 #
 # Esquema (5 columnas):
 #   rbd           character   RBD del establecimiento
