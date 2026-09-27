@@ -2,18 +2,27 @@
 # ----------------------------------------------------------------------------
 #   source(here::here("50_documentacion", "suite", "documentar.R"))   # Positron
 #
-# Produce 4 HTML en 50_documentacion/suite/ (+ copia el tema: CSS, fonts, assets):
-#   arquitectura_slep_simce_adecuado.html            (esquema técnico)
-#   documentacion_proyecto_slep_simce_adecuado.html  (manual del proyecto)
-#   arquitectura_general_slep_simce_adecuado.html    (línea de producción)
-#   documentacion_general_slep_simce_adecuado.html   (guía sin tecnicismos)
+# Produce 4 HTML standalone en 50_documentacion/suite/ (copia además el tema:
+# CSS, fonts y assets; git ignora fonts/ y assets/). Con standalone = TRUE el
+# tema y los íconos van incrustados y los HTML enlazados intermedios se borran:
+#   arquitectura_slep_simce_adecuado_standalone.html            (esquema técnico)
+#   documentacion_proyecto_slep_simce_adecuado_standalone.html  (manual del proyecto)
+#   arquitectura_general_slep_simce_adecuado_standalone.html    (línea de producción)
+#   documentacion_general_slep_simce_adecuado_standalone.html   (guía sin tecnicismos)
 #
 # La cfg se construye desde cero (no parte de cfg_ejemplo()) para garantizar
 # cero residuos. Se usa verificar = FALSE de forma permanente en este proyecto:
-# el ejemplo de fábrica de suitedoc 0.3.0 está basado en un proyecto Simce, así
-# que el verificador marca como "residuo" términos legítimos y obligados de este
-# proyecto (simce, nalu, palu_eda, adecuado, slep_simce_adecuado,
-# motor_comparacion). No son residuos: son el contenido real.
+# el ejemplo de fábrica de suitedoc (también en 0.5.1) está basado en un
+# proyecto Simce, así que el verificador marca como "residuo" términos
+# legítimos y obligados de este proyecto (simce, nalu, palu_eda, adecuado,
+# slep_simce_adecuado, motor_comparacion). No son residuos: son el contenido
+# real.
+#
+# Versión: corre con suitedoc 0.5.1, el de la biblioteca de renv del proyecto
+# (Rscript desde la raíz, o Positron con renv activo); fuera de renv se cargaría
+# el 0.3.0 del sistema. suitedoc queda fuera de renv.lock (D35-18). Para los
+# íconos, inlinar_suite() corre `npm pack lucide-static@1.21.0`: generar la
+# suite requiere npm y red, pero los HTML que produce no cargan nada por red.
 #
 # Anclaje robusto de here (permite correr vía Rscript sin depender del cwd):
 here::i_am("50_documentacion/suite/documentar.R")
@@ -51,10 +60,10 @@ cfg <- list(
       eyebrow = "Esquema de arquitectura · Versión técnica",
       h1      = "Arquitectura del proyecto",
       mono    = "slep_simce_adecuado",
-      tagline = "Motor de comparación comunal de resultados Simce por estándares de aprendizaje, con foco en el <strong>% ponderado de estudiantes en nivel Adecuado</strong> (con desglose opcional Adecuado · Elemental · Insuficiente). Agregación <strong>ponderada por número de evaluados</strong>, siempre <strong>segmentada por grupo socioeconómico (GSE)</strong>, separando 4° básico y 2° medio, y Lectura de Matemática. Pipeline R (Positron) &rarr; HTML autocontenido (React + D3) · datos públicos de la Agencia de Calidad · publicado en GitHub Pages.",
+      tagline = "Motor de comparación comunal de resultados Simce por estándares de aprendizaje, con foco en el <strong>% ponderado de estudiantes en nivel Adecuado</strong> (con desglose opcional Adecuado · Elemental · Insuficiente). Agregación <strong>ponderada por número de evaluados</strong>, siempre <strong>segmentada por grupo socioeconómico (GSE)</strong>, separando 4° básico y 2° medio, y Lectura de Matemática. Pipeline R (Positron) &rarr; dos HTML autocontenidos y sin red, el motor (React + D3) y la vista de trayectorias de los Servicios Locales · datos públicos de la Agencia de Calidad · publicados en GitHub Pages.",
       metas   = list(
         list(c="var(--ocean)", k="Lenguaje", v="R"),
-        list(c="var(--coral)", k="Salida",   v="HTML autocontenido"),
+        list(c="var(--coral)", k="Salida",   v="dos HTML autocontenidos"),
         list(c="var(--olive)", k="Cobertura",v="desde 2014 (sin 2019–2021) hasta el último año cargado"),
         list(c="var(--sand)",  k="Niveles",  v="4° básico · 2° medio")
       )
@@ -67,7 +76,7 @@ cfg <- list(
       metas   = list(
         list(c="var(--ocean)", k="Área",   v="Monitoreo y Seguimiento"),
         list(c="var(--olive)", k="Datos",  v="Agencia de Calidad (públicos)"),
-        list(c="var(--coral)", k="Salida", v="motor_comparacion.html")
+        list(c="var(--coral)", k="Salida", v="motor_comparacion.html · trayectorias_traspasos.html")
       )
     ),
     arq_gen = list(
@@ -77,7 +86,7 @@ cfg <- list(
       tagline = "De las planillas dispersas de la Agencia de Calidad a un tablero que se abre en el navegador, explicado como una línea de producción. Sin nombres de programas ni tecnicismos: solo qué entra, qué pasa en cada paso y qué sale.",
       metas   = list(
         list(c="var(--coral)", k="Para",            v="directivos, equipos y comunidad"),
-        list(c="var(--olive)", k="Versión técnica", v="arquitectura_slep_simce_adecuado.html")
+        list(c="var(--olive)", k="Versión técnica", v="arquitectura_slep_simce_adecuado_standalone.html")
       )
     ),
     doc_gen = list(
@@ -87,7 +96,7 @@ cfg <- list(
       tagline = "Una guía breve y sin tecnicismos para entender qué muestra el comparador de resultados Simce por estándares de aprendizaje, qué se puede ver en él y en qué conviene fijarse al interpretarlo.",
       metas   = list(
         list(c="var(--coral)", k="Para",            v="directivos, docentes, apoderados y comunidad"),
-        list(c="var(--olive)", k="Detalle técnico", v="documentacion_proyecto_slep_simce_adecuado.html")
+        list(c="var(--olive)", k="Detalle técnico", v="documentacion_proyecto_slep_simce_adecuado_standalone.html")
       )
     )
   ),
@@ -97,7 +106,7 @@ cfg <- list(
     list(t='Simce · 4° básico', badge='9 xlsx',
          d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce4bAAAA_rbd_(final|preliminar).xlsx</span><br>Lectura y Matemática · estándares Adecuado · Elemental · Insuficiente'),
     list(t='Simce · 2° medio', badge='9 xlsx',
-         d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce2mAAAA_rbd_(final|preliminar).xlsx</span><br>Mismo esquema que 4° básico · 2025 preliminar')
+         d='Resultados por establecimiento y año · desde 2014, sin 2019–2021, hasta el último año cargado<br><span class="code-sm">simce2mAAAA_rbd_(final|preliminar).xlsx</span><br>Mismo esquema que 4° básico · todos los años, 2025 incluido, son base final')
   ),
   auxiliares = list(
     list(t='directorio_oficial_ee.csv', badge='csv',
@@ -107,12 +116,15 @@ cfg <- list(
     list(t='caracterizacion_establecimientos.xlsx', badge='xlsx',
          d='Caracterización de los establecimientos de Costa Central<br>nombre · IVE · emplazamiento · flag rinde_simce'),
     list(t='anexo_indicadores_simce.xlsx', badge='xlsx',
-         d='Hoja <span class="code-sm">00_RBDs_no_SIMCE</span><br>RBDs que no rinden Simce (excluidos del flag)')
+         d='Hoja <span class="code-sm">00_RBDs_no_SIMCE</span><br>RBDs que no rinden Simce (excluidos del flag)'),
+    list(t='dim_slep_comunas.csv', badge='csv',
+         d='Catálogo público de comunas por Servicio Local y año de traspaso (olas)<br>Copia versionada; origen, md5 y fecha en <span class="code-sm">manifiesto_insumos.md</span><br>Arma las cohortes por traspasar de la vista de trayectorias')
   ),
   aux_uses = c(
     '↘ <code>30_construir_auxiliares.R</code> catálogos territoriales y de establecimientos',
     '↘ <code>31_leer_normalizar.R</code> recuperación de comuna y dependencia por RBD',
-    '↘ <code>establecimientos_chile.parquet</code> resolución de nombre, comuna y dependencia'
+    '↘ <code>establecimientos_chile.parquet</code> resolución de nombre, comuna y dependencia',
+    '↘ <code>36_generar_trayectorias.R</code> cohortes por traspasar desde <code>dim_slep_comunas.csv</code> y el directorio'
   ),
 
   etapas = list(
@@ -123,29 +135,34 @@ cfg <- list(
          norm=list()),
     list(n=3, titulo='Lectura y normalización', sub='30_procesamiento/',
          head='<span class="code">31_leer_normalizar.R</span> <span class="bg bg--r">R</span>',
-         d='Lee los 18 xlsx (4° básico + 2° medio, 9 años cada uno) por <strong>header</strong>, jamás por posición<br>Normaliza el GSE de literales (<span class="code-sm">Bajo…Alto</span>) a códigos <span class="code-sm">1…5</span><br>Lleva a formato largo: una fila por <span class="code-sm">rbd × prueba × año × nivel</span><br>Recupera comuna y dependencia (<span class="code-sm">cod_depe2</span>) por RBD desde el directorio<br>Escritura atómica &rarr; <strong>simce_rbd.parquet</strong>',
+         d='Lee los xlsx de <span class="code-sm">20_insumos/simce/{4b,2m}/</span> (hoy 18, 9 años por nivel) por <strong>header</strong>, jamás por posición<br>Los años salen de los nombres de archivo y se validan contra <span class="code-sm">ANIO_INICIO</span> y <span class="code-sm">ANIOS_SIN_SIMCE</span> (<span class="code-sm">10_configuracion.R</span>): un año repetido, de más o faltante, distinto entre niveles o una serie que no empieza en <span class="code-sm">ANIO_INICIO</span> detienen el build<br>Normaliza el GSE de literales (<span class="code-sm">Bajo…Alto</span>) a códigos <span class="code-sm">1…5</span><br>Lleva a formato largo: una fila por <span class="code-sm">rbd × prueba × año × nivel</span><br>Recupera comuna y dependencia (<span class="code-sm">cod_depe2</span>) por RBD desde el directorio<br>Marca como <span class="code-sm">preliminar</span> los años leídos de un <span class="code-sm">*_preliminar.xlsx</span><br>Escribe &rarr; <strong>simce_rbd.parquet</strong>',
          flags=c('4° básico y 2° medio nunca se mezclan','Lectura y Matemática nunca se mezclan','Lectura por header, nunca por posición','Dependencia vigente del directorio aplicada a toda la serie'),
          norm=list(
            list(id='A1', tx='<strong>Sufijos de columna cruzados en 2018/4° básico:</strong> <span class="code-sm">simce4b2018</span> trae los sufijos como <span class="code-sm">_2m_</span> en lugar de <span class="code-sm">_4b_</span>. Se reescriben antes de la normalización general; la lectura por nombre hace el resto.'),
            list(id='A2', tx='<strong>Marca de supresión de la fuente:</strong> la columna <span class="code-sm">marca_&lt;prueba&gt;&lt;nivel&gt;_rbd</span> señala resultados suprimidos por la Agencia. Se conserva como <span class="code-sm">marca</span> y gobierna la exclusión de filas junto con el umbral de evaluados.'),
-           list(id='A3', tx='<strong>cod_com_rbd con formato no canónico:</strong> en 2015/2° medio y 2017/4° básico la columna trae códigos de 1–2 dígitos en vez de los 4–5 canónicos. Se recupera el código correcto por RBD desde el directorio oficial (snapshot 2025).'),
+           list(id='A3', tx='<strong>cod_com_rbd con formato no canónico:</strong> en 2015/2° medio, 2015/4° básico y 2017/4° básico la columna trae códigos de 1 o 2 dígitos en vez de los 4 o 5 canónicos. Se detecta por archivo (más de la mitad de los códigos con menos de 4 dígitos) y se recupera el código correcto por RBD desde el directorio oficial (snapshot 2025).'),
            list(id='A4', tx='<strong>Códigos pre-Ñuble (Ley 21.033):</strong> antes de 2018 las comunas de la actual Región de Ñuble tenían códigos del Biobío (8401–8421). Los xlsx 2014, 2016 y 2017 los traen. Se retroaplican los códigos nuevos (16101–16207) en todos los años para preservar las series históricas sin saltos.')
          )),
     list(n=4, titulo='Agregación comunal', sub='30_procesamiento/',
          head='<span class="code">32_agregar_comunal.R</span> <span class="bg bg--r">R</span>',
-         d='Agrega <span class="code-sm">simce_rbd</span> a <span class="code-sm">comuna × GSE × prueba × nivel × año</span><br>Agregación <strong>ponderada por número de evaluados</strong> (jamás conteo simple de establecimientos)<br>Aplica el umbral MINEDUC y la marca de supresión antes de ponderar<br>Une nombre de comuna y región<br>Escritura atómica &rarr; <strong>simce_comunal.parquet</strong>',
+         d='Agrega <span class="code-sm">simce_rbd</span> a <span class="code-sm">comuna × dependencia × GSE × prueba × nivel × año</span><br>Agregación <strong>ponderada por número de evaluados</strong> (jamás conteo simple de establecimientos)<br>Aplica el umbral MINEDUC y la marca de supresión antes de ponderar<br>Une nombre de comuna y región<br>Escribe &rarr; <strong>simce_comunal.parquet</strong>',
          flags=c('Ponderación por evaluados (nunca por establecimiento ni matrícula total)','GSE como dimensión inviolable de toda agregación','Establecimientos sin GSE clasificado: excluidos de la agregación'),
          norm=list()),
     list(n=5, titulo='Generación del motor', sub='30_procesamiento/',
          head='<span class="code">33_generar_html.R</span> <span class="bg bg--r">R</span> + <span class="code">33_motor_template.html</span> <span class="bg bg--html">HTML</span>',
-         d='Serializa <span class="code-sm">simce_comunal</span> + <span class="code-sm">simce_rbd</span> + catálogos a <strong>JSON</strong> embebido (gzip + base64, descomprimido en cliente con pako)<br>Embebe <strong>D3 v7</strong> y <strong>pako</strong> <em>inline</em> (versionados en <span class="code-sm">10_utils/</span>); <strong>React 18.3.1</strong>, <strong>ReactDOM 18.3.1</strong> y <strong>Babel 7.29.0</strong> viajan por <strong>CDN unpkg con SRI</strong> y Babel compila el JSX en el cliente<br>Escribe el HTML autocontenido &rarr; <strong>motor_comparacion.html</strong>',
-         flags=c('JSON embebido y comprimido (portabilidad total)','React / ReactDOM / Babel por CDN (unpkg, con SRI); D3 y pako inline','El deploy a docs/index.html es manual: el pipeline no toca docs/'),
+         d='Serializa <span class="code-sm">simce_comunal</span> + <span class="code-sm">simce_rbd</span> + catálogos a <strong>JSON</strong> embebido (gzip + base64, descomprimido en cliente con pako)<br>Embebe <em>inline</em> <strong>D3 v7</strong>, <strong>pako</strong>, <strong>React 18.3.1</strong> y <strong>ReactDOM 18.3.1</strong>; los cuatro y <strong>Babel 7.29.0</strong> van vendorizados en <span class="code-sm">10_utils/</span>, y el build verifica el sha384 de React, ReactDOM y Babel<br>Transpila el JSX de la app <strong>en el build</strong>, con Babel dentro de <strong>V8</strong>: Babel no viaja y el HTML no carga nada por red<br>Encabezado, menú de vistas y tipografía gobCL incrustada (los .otf de <span class="code-sm">10_utils/fuentes/</span>) desde la fuente única del sitio (<span class="code-sm">33_fragmento_sitio.html</span>, compartida con la vista); los años del encabezado y de las notas salen de los datos y de <span class="code-sm">ANIOS_SIN_SIMCE</span><br>Escribe el HTML autocontenido &rarr; <strong>motor_comparacion.html</strong>',
+         flags=c('JSON embebido y comprimido (portabilidad total)','Sin carga por red: bibliotecas inline y Babel solo en el build','El deploy a docs/index.html es manual: el pipeline no toca docs/'),
+         norm=list()),
+    list(n=6, titulo='Generación de la vista de trayectorias', sub='30_procesamiento/',
+         head='<span class="code">36_generar_trayectorias.R</span> <span class="bg bg--r">R</span> + <span class="code">36_funciones_trayectorias.R</span> <span class="bg bg--r">R</span> + <span class="code">36_trayectorias_template.html</span> <span class="bg bg--html">HTML</span>',
+         d='Lee <span class="code-sm">simce_rbd</span>, <span class="code-sm">sleps_chile</span>, <span class="code-sm">comunas_chile</span> y <span class="code-sm">establecimientos_chile</span>, más el catálogo de olas <span class="code-sm">dim_slep_comunas.csv</span><br>Muestra, por <strong>cohorte de traspaso</strong>, el itinerario anual de cada Servicio Local en un plano de <strong>% Adecuado</strong> (eje horizontal) y <strong>% Insuficiente</strong> (eje vertical), antes y después de su traspaso; describe trayectorias, no mide el efecto del traspaso<br><strong>Referente municipal</strong> anclado en 2014, el primer año de la serie: los establecimientos que ese año eran municipales y no figuran en el catálogo de Servicios Locales; una marca de ola señala el año en que una ola sale del grupo (D35-1)<br><strong>Cohortes 2027 a 2029</strong>: una unidad por Servicio Local y año de traspaso del catálogo de olas, con los establecimientos que el directorio registra como municipales en sus comunas; todo su itinerario es previo al traspaso (D35-2)<br>Misma regla de filas que el motor (sin marca de la Agencia y al menos 10 evaluados); las cifras de las notas metodológicas salen de los datos<br>Escritura atómica &rarr; <strong>trayectorias_traspasos.html</strong>',
+         flags=c('Sin carga por red: el build se detiene si el HTML trae src o href a http','Mismo encabezado, menú y tipografía gobCL que el motor','Las cohortes por traspasar no tocan sleps_chile.parquet ni el motor'),
          norm=list())
   ),
 
   intermedios = list(
     list(t='simce_rbd.parquet',      d='Formato largo: una fila por<br><span class="code-sm">rbd × prueba × año × nivel</span><br>+ GSE, dependencia, evaluados y % por estándar'),
-    list(t='simce_comunal.parquet',  d='Agregación ponderada<br><span class="code-sm">comuna × GSE × prueba × nivel × año</span><br>con <span class="code-sm">pct_adecuado</span> y <span class="code-sm">n_estab</span>'),
+    list(t='simce_comunal.parquet',  d='Agregación ponderada<br><span class="code-sm">comuna × dependencia × GSE × prueba × nivel × año</span><br>con <span class="code-sm">pct_adecuado</span> y <span class="code-sm">n_estab</span>'),
     list(t='comunas / sleps / establecimientos', d='Catálogos territoriales<br><span class="code-sm">comunas_chile</span> · <span class="code-sm">sleps_chile</span> · <span class="code-sm">establecimientos_chile</span>')
   ),
 
@@ -161,10 +178,10 @@ cfg <- list(
   ),
   dic_intermedios = list(
     list(campo='simce_rbd.parquet', tipo='parquet', d='Una fila por rbd × prueba × año × nivel, con GSE normalizado, dependencia recuperada, evaluados y % por estándar. Marca de supresión preservada para el filtrado aguas abajo.'),
-    list(campo='simce_comunal.parquet', tipo='parquet', d='Agregación ponderada por evaluados a nivel comuna × GSE × prueba × nivel × año, con <code>pct_adecuado/elemental/insuficiente</code>, <code>n_evaluados</code> y <code>n_estab</code>.'),
+    list(campo='simce_comunal.parquet', tipo='parquet', d='Agregación ponderada por evaluados a nivel comuna × dependencia (<code>cod_depe2</code>) × GSE × prueba × nivel × año, con <code>pct_adecuado/elemental/insuficiente</code>, <code>n_evaluados</code> y <code>n_estab</code>.'),
     list(campo='comunas_chile.parquet', tipo='parquet', d='Catálogo de comunas con su código, nombre y región (nombres de región canónicos).'),
     list(campo='sleps_chile.parquet', tipo='parquet', d='Catálogo de SLEP con sus comunas y RBDs, año de traspaso, e inclusión prospectiva (RBDs aún municipales del SLEP cuyo traspaso es el año siguiente).'),
-    list(campo='establecimientos_chile.parquet', tipo='parquet', d='Directorio por RBD con nombre, comuna y dependencia (snapshot 2025). Fuente del popup "ver establecimientos".'),
+    list(campo='establecimientos_chile.parquet', tipo='parquet', d='Directorio por RBD con nombre, comuna y dependencia (snapshot 2025). Fuente del popup "ver establecimientos" del motor y, en la vista de trayectorias, de las cohortes por traspasar y del conteo del referente.'),
     list(campo='slep_cc_establecimientos.parquet', tipo='parquet', d='Caracterización de los establecimientos de Costa Central (nombre, IVE, emplazamiento, flag rinde_simce).')
   ),
 
@@ -217,8 +234,8 @@ cfg <- list(
          largo='<strong>Marca de supresión de la fuente.</strong> La Agencia suprime ciertos resultados mediante una columna de marca. Se conserva como <span class="inl">marca</span> y gobierna la exclusión de filas (junto con el umbral de evaluados) antes de cualquier agregación.',
          corto='La fuente marca resultados suprimidos. Esas filas se excluyen del cálculo.'),
     list(id='A3',
-         largo='<strong>cod_com_rbd con formato no canónico.</strong> En 2015/2° medio y 2017/4° básico la columna de comuna trae códigos de 1–2 dígitos en lugar de los 4–5 canónicos. Se recupera el código correcto por RBD desde el directorio oficial (snapshot 2025).',
-         corto='Dos archivos traen el código de comuna mal formado. Se recupera por RBD desde el directorio.'),
+         largo='<strong>cod_com_rbd con formato no canónico.</strong> En 2015/2° medio, 2015/4° básico y 2017/4° básico la columna de comuna trae códigos de 1 o 2 dígitos en lugar de los 4 o 5 canónicos. El pipeline lo detecta por archivo (más de la mitad de los códigos con menos de 4 dígitos) y recupera el código correcto por RBD desde el directorio oficial (snapshot 2025).',
+         corto='Tres archivos traen el código de comuna mal formado. Se recupera por RBD desde el directorio.'),
     list(id='A4',
          largo='<strong>Códigos pre-Ñuble (Ley 21.033).</strong> Antes de 2018, las comunas de la actual Región de Ñuble tenían códigos del Biobío (8401–8421). Los xlsx 2014, 2016 y 2017 los traen así. Se retroaplican los códigos nuevos (16101–16207) en todos los años para que las series territoriales no tengan saltos.',
          corto='Comunas de Ñuble traían el código antiguo del Biobío. Se homologan al código actual en toda la serie.')
@@ -237,7 +254,7 @@ cfg <- list(
     '<strong>SLEP</strong> — Servicio Local de Educación Pública; sostenedor estatal que reemplaza la gestión municipal.',
     '<strong>parquet</strong> — Formato columnar comprimido para datos intermedios.',
     '<strong>Escritura atómica</strong> — Escribir a un archivo temporal y renombrar al final, para no dejar salidas a medias.',
-    '<strong>Preliminar</strong> — Dato del año más reciente (2025) aún sujeto a revisión por la Agencia.'
+    '<strong>Preliminar</strong>: marca de un año cuya base la Agencia aún publica como preliminar (archivo <code>*_preliminar.xlsx</code>). El motor lo señala con un asterisco, y la marca desaparece sola cuando llega la base final.'
   ),
   glosario_doc = c(
     '<strong>Simce</strong> — la evaluación nacional cuyos resultados, por estándar de aprendizaje, resume esta herramienta.',
@@ -285,12 +302,14 @@ cfg <- list(
          chip_out=list(ico='percent', tx='% Adecuado ponderado por territorio y GSE')),
     list(icon='bar-chart-3', color='var(--plum-80)', paso='Paso 4 · Producto', titulo='Empaque: se arma el tablero',
          parrafos=c('Los porcentajes ya calculados se empaquetan dentro de una <strong>interfaz interactiva</strong>: las barras por grupo socioeconómico, las series año a año, el buscador y los controles para elegir qué comparar. Todo queda dentro de un solo archivo.',
-                    'Lo importante: ese archivo <strong>lleva los datos adentro</strong>. No necesita conexión permanente ni programas especiales para funcionar.'),
+                    'Lo importante: ese archivo <strong>lleva los datos adentro</strong>. No necesita conexión permanente ni programas especiales para funcionar.',
+                    'Con los mismos datos limpios se arma una segunda página, la <strong>vista de trayectorias de los Servicios Locales</strong>, que también lleva sus datos adentro.'),
          chip_in=list(ico='percent', tx='Porcentajes calculados'),
-         chip_out=list(ico='file-code-2', tx='Un archivo navegable')),
+         chip_out=list(ico='file-code-2', tx='Dos archivos navegables')),
     list(icon='monitor', color='var(--plum)', paso='Paso 5 · Producto terminado', titulo='La herramienta lista para usar',
          parrafos=c('El resultado es un <strong>tablero que se abre en cualquier navegador</strong>. Permite elegir una comuna, un Servicio Local, una región o un establecimiento educacional y ver el % Adecuado por grupo socioeconómico, su evolución y, si se quiere, el desglose en los tres estándares.',
-                    'Está publicado en línea para consulta, y se actualiza cada vez que llega un año nuevo: basta con repetir la línea de producción completa.'),
+                    'La vista de trayectorias responde otra pregunta: <strong>cómo se ha movido cada Servicio Local, año a año</strong>, en el porcentaje de estudiantes en nivel Adecuado y en nivel Insuficiente, antes y después de recibir sus establecimientos, junto a un grupo de referencia: los establecimientos que en 2014 eran municipales y que todavía no pasan a un Servicio Local. Muestra trayectorias; no mide el efecto del traspaso. Se abre en <a href="https://tomgc.github.io/slep_simce_adecuado/trayectorias.html">tomgc.github.io/slep_simce_adecuado/trayectorias.html</a> y desde el menú del tablero.',
+                    'Las dos páginas están publicadas en línea para consulta, y se actualizan cada vez que llega un año nuevo: basta con repetir la línea de producción completa.'),
          chip_in=NULL, chip_out=list(ico='globe', tx='Tablero publicado y consultable'))
   ),
 
@@ -302,7 +321,9 @@ cfg <- list(
     list(icon='shapes', titulo='No mezclamos niveles ni pruebas', d='4° básico y 2° medio, Lectura y Matemática, se cuentan y se muestran siempre por separado. Mezclarlos daría una cifra sin sentido.'),
     list(icon='shield-check', titulo='Respetamos las reglas de la fuente', d='Se excluyen los resultados que la Agencia suprime y los grupos con muy pocos estudiantes evaluados, igual que en las publicaciones oficiales.'),
     list(icon='git-commit', titulo='Mostramos la trayectoria completa', d='Para cada territorio y establecimiento educacional se ve la evolución año a año, no solo el último resultado. Así se distingue una mejora sostenida de un dato puntual.'),
-    list(icon='info', titulo='Solo años con datos reales', d='Se muestran únicamente los años efectivamente publicados (desde 2014, sin 2019 a 2021, hasta el último año cargado). No hay Simce 2019–2021; esos años no se inventan ni se imputan. El 2025 se marca como preliminar.')
+    list(icon='info', titulo='Solo años con datos reales', d='Se muestran únicamente los años efectivamente publicados (desde 2014, sin 2019 a 2021, hasta el último año cargado). No hay Simce 2019–2021; esos años no se inventan ni se imputan. Si la Agencia todavía no publica la versión final de un año, ese año se marca como preliminar.'),
+    list(icon='settings', titulo='Antes de producir, se revisa el equipo', d='Antes de leer una sola planilla, la línea de producción comprueba que el computador maneje bien las tildes y la ñ, y que el proyecto esté bien instalado. Si algo falla, se detiene sin producir nada.'),
+    list(icon='list-checks', titulo='Se prueba antes de publicar', d='Antes de publicar una versión nueva, dos baterías de pruebas revisan el tablero y la vista de trayectorias. Solo se publica si las dos pasan.')
   ),
 
   # ---- 1.11 "En qué fijarte" ------------------------------------------------
@@ -321,8 +342,9 @@ cfg <- list(
     list(q='¿Qué muestra esta herramienta?', a='El porcentaje de estudiantes en nivel Adecuado según el Simce por estándares de aprendizaje, por comuna, Servicio Local, región, establecimiento o a nivel país, siempre separado por grupo socioeconómico, nivel (4° básico o 2° medio) y prueba (Lectura o Matemática).', abierta=TRUE),
     list(q='¿Por qué se pondera por número de estudiantes y no se cuentan establecimientos?', a='Porque el dato de cada establecimiento es una proporción de estudiantes, no una etiqueta. Para saber qué porcentaje de los estudiantes de un territorio alcanza el nivel Adecuado, hay que dar a cada establecimiento el peso de sus estudiantes evaluados; promediar porcentajes sin ponderar trataría igual a uno grande y a uno pequeño.', abierta=FALSE),
     list(q='¿Por qué siempre se separa por grupo socioeconómico?', a='Porque el Simce por estándares no ajusta por el contexto socioeconómico del establecimiento. Comparar resultados en bruto entre territorios con composición distinta puede ser engañoso. Fijar el grupo socioeconómico asegura que la comparación sea entre realidades parecidas.', abierta=FALSE),
-    list(q='¿Qué años cubre?', a='Desde 2014, sin 2019, 2020 ni 2021 (años sin Simce), hasta el último año cargado en 20_insumos/simce/. El año más reciente, 2025, es preliminar y se muestra marcado como tal.', abierta=FALSE),
+    list(q='¿Qué años cubre?', a='Desde 2014, sin 2019, 2020 ni 2021 (años sin Simce), hasta el último año cargado en 20_insumos/simce/. Si la base de un año todavía es preliminar, ese año se marca con un asterisco hasta que la Agencia publica la base final.', abierta=FALSE),
     list(q='¿Por qué un SLEP muestra años anteriores a su creación?', a='Porque la herramienta agrupa los establecimientos por su dependencia actual a lo largo de toda su historia. Los años previos al traspaso corresponden a la gestión municipal de esos establecimientos, no al SLEP; la herramienta lo advierte cuando seleccionas una dependencia SLEP.', abierta=FALSE),
+    list(q='¿Qué es la vista de trayectorias?', a='Una segunda página, publicada junto a esta herramienta, que responde otra pregunta: cómo se ha movido cada Servicio Local, año a año, en el porcentaje de estudiantes en nivel Adecuado y en nivel Insuficiente, antes y después de recibir sus establecimientos, junto a un grupo de referencia (los establecimientos que en 2014 eran municipales y que todavía no pasan a un Servicio Local). Muestra trayectorias; no mide el efecto del traspaso. Se abre en <a href="https://tomgc.github.io/slep_simce_adecuado/trayectorias.html">tomgc.github.io/slep_simce_adecuado/trayectorias.html</a> o desde el menú de la herramienta.', abierta=FALSE),
     list(q='¿Necesito instalar algo para usarla?', a='No. Es un archivo que se abre en cualquier navegador. También está publicada en línea para consultarla directamente.', abierta=FALSE)
   ),
 
@@ -331,16 +353,16 @@ cfg <- list(
     doc_que = c(
       '<code class="inl">slep_simce_adecuado</code> es una herramienta de análisis interno que permite <strong>comparar los resultados Simce por estándares de aprendizaje</strong> —con foco en el porcentaje de estudiantes en nivel Adecuado— entre comunas, Servicios Locales, regiones, establecimientos y el nivel nacional, siempre por grupo socioeconómico y separando 4° básico de 2° medio y Lectura de Matemática.',
       'El problema que resuelve es concreto: los resultados se publican por establecimiento, año, nivel y prueba, en planillas dispersas y con formatos que cambian de un año a otro. Responder algo tan simple como “¿cómo evolucionó el % Adecuado de mi comuna en cada grupo socioeconómico?” exige consolidar varios años de planillas, homologar etiquetas y códigos que cambiaron, y recuperar el territorio de cada establecimiento educacional. Esta herramienta hace ese trabajo y entrega el resultado en un único archivo navegable.',
-      'El producto final es un <strong>archivo HTML autónomo</strong> (<code class="inl">motor_comparacion.html</code>): se abre en cualquier navegador y permite explorar el % Adecuado por grupo socioeconómico y la trayectoria de cada territorio o establecimiento. Está publicado para consulta en línea.'
+      'El producto final son <strong>dos archivos HTML autónomos</strong>: el motor de comparación (<code class="inl">motor_comparacion.html</code>), que permite explorar el % Adecuado por grupo socioeconómico y la trayectoria de cada territorio o establecimiento, y la vista de trayectorias de los Servicios Locales (<code class="inl">trayectorias_traspasos.html</code>), que sigue año a año a cada Servicio Local por cohorte de traspaso. Los dos se abren en cualquier navegador y están publicados para consulta en línea (<code class="inl">docs/index.html</code> y <code class="inl">docs/trayectorias.html</code>).'
     ),
     doc_pipeline = c(
-      'Detrás del archivo navegable hay un <strong>pipeline en R</strong> de cuatro etapas, orquestado por un único script (<code class="inl">00_build.R</code>). Cada etapa lee el resultado de la anterior y escribe el suyo, de modo que el proceso completo es reproducible de principio a fin. El motor resultante es un HTML autocontenido que embebe <em>inline</em> D3 v7 y pako (versionados en <code class="inl">10_utils/</code>); React 18.3.1, ReactDOM 18.3.1 y Babel 7.29.0 viajan por CDN (unpkg, con SRI) y Babel compila el JSX en el cliente. En prosa, las etapas son:'
+      'Detrás de los archivos navegables hay un <strong>pipeline en R</strong> de cinco etapas, orquestado por un único script (<code class="inl">00_build.R</code>). Antes de leer insumos, el script instala la guarda de locale UTF-8 (<code class="inl">10_configuracion.R</code>, que aborta si no puede corregirla) y valida la portabilidad del entorno; una falla crítica detiene el build. Cada etapa escribe su resultado y las siguientes lo leen, de modo que el proceso completo es reproducible de principio a fin. Las dos salidas son HTML autocontenidos que no cargan nada por red: el motor embebe <em>inline</em> D3 v7, pako, React 18.3.1 y ReactDOM 18.3.1 (vendorizados en <code class="inl">10_utils/</code>, junto con Babel 7.29.0), y su JSX se transpila en el build con Babel dentro de V8, así que Babel no viaja; la vista de trayectorias usa JavaScript propio, sin bibliotecas. Dos baterías versionadas (<code class="inl">33_verificar_motor.R</code> y <code class="inl">36_verificar_trayectorias.R</code>) se corren a mano y deben quedar en PASA antes de cada copia a <code class="inl">docs/</code>. En prosa, las etapas son:'
     ),
     gen_porque = c(
       'Los resultados Simce se publican cada año en planillas separadas por nivel y prueba, con formatos que cambian y códigos que no siempre calzan entre un año y otro. Responder algo tan simple como <em>“¿cómo evolucionó el porcentaje de estudiantes en nivel Adecuado de mi comuna, en cada grupo socioeconómico?”</em> normalmente exige horas de trabajo y conocimiento técnico.',
       'Esta herramienta hace ese trabajo una sola vez, con reglas claras, y entrega la respuesta lista para mirar. El objetivo es que la conversación sea sobre <strong>qué dicen los datos</strong>, no sobre cómo armarlos.'
     ),
-    etapas_pipeline = '<h3>1 · Construir el mapa del territorio</h3><p>Se arman los catálogos que traducen un establecimiento (RBD) a su comuna, su SLEP y su dependencia, y se prepara la caracterización de Costa Central.</p><h3>2 · Leer y limpiar las planillas</h3><p>Se leen los 18 archivos por nombre de columna, se homologa el grupo socioeconómico, se corrigen códigos de comuna mal formados y pre-Ñuble, y se recupera el territorio y la dependencia de cada establecimiento educacional.</p><h3>3 · Agregar por territorio y GSE</h3><p>En cada comuna, SLEP, región y a nivel país se calcula el % Adecuado <strong>ponderando por número de estudiantes evaluados</strong>, siempre dentro de cada grupo socioeconómico.</p><h3>4 · Generar el motor navegable</h3><p>Los porcentajes se empaquetan dentro de un archivo HTML autónomo. La publicación a <code class="inl">docs/index.html</code> es un paso manual posterior.</p>'
+    etapas_pipeline = '<h3>1 · Construir el mapa del territorio</h3><p>Se arman los catálogos que traducen un establecimiento (RBD) a su comuna, su SLEP y su dependencia, y se prepara la caracterización de Costa Central.</p><h3>2 · Leer y limpiar las planillas</h3><p>Se leen las planillas Simce de cada año y nivel (hoy 18) por nombre de columna, se homologa el grupo socioeconómico, se corrigen códigos de comuna mal formados y pre-Ñuble, y se recupera el territorio y la dependencia de cada establecimiento educacional.</p><h3>3 · Agregar por territorio y GSE</h3><p>En cada comuna, SLEP, región y a nivel país se calcula el % Adecuado <strong>ponderando por número de estudiantes evaluados</strong>, siempre dentro de cada grupo socioeconómico.</p><h3>4 · Generar el motor navegable</h3><p>Los porcentajes se empaquetan dentro de un archivo HTML autónomo, que no carga nada por red.</p><h3>5 · Generar la vista de trayectorias</h3><p>Con los resultados por establecimiento, el catálogo de Servicios Locales y el de olas de traspaso se arma una segunda página, también autónoma: sigue a cada Servicio Local, año a año y por cohorte de traspaso, junto al referente municipal anclado en 2014 y a las cohortes que se traspasan de 2027 a 2029. La publicación de las dos páginas en <code class="inl">docs/</code> es un paso manual posterior, con las dos baterías de verificación en PASA.</p>'
   ),
 
   # ---- 1.14 Gobernanza ------------------------------------------------------
@@ -352,7 +374,7 @@ cfg <- list(
     lbl_auxiliares  = 'Tablas auxiliares <span class="sub">20_insumos/auxiliares/</span>',
     lbl_intermedios = 'Datos intermedios <span class="sub">40_salidas/intermedios/</span>',
     norm_titulo     = 'Anomalías de origen resueltas (datos crudos Agencia de Calidad)',
-    exec = '<span class="cm"># Ejecución canónica del pipeline completo:</span><br><span class="fn">source</span>(<span class="str">"00_build.R"</span>)<br><br><span class="cm"># El deploy a GitHub Pages es manual (el pipeline no toca docs/):</span><br><span class="cm"># copiar 40_salidas/motor_comparacion.html a docs/index.html y git push.</span>'
+    exec = '<span class="cm"># Ejecución canónica del pipeline completo:</span><br><span class="fn">source</span>(<span class="str">"00_build.R"</span>)<br><br><span class="cm"># Antes de leer insumos: guarda de locale UTF-8 (10_configuracion.R) y</span><br><span class="cm"># validación de portabilidad; una falla crítica detiene el build.</span><br><br><span class="cm"># Baterías versionadas (manuales), las dos en PASA antes de copiar a docs/:</span><br><span class="cm"># Rscript 30_procesamiento/33_verificar_motor.R</span><br><span class="cm"># Rscript 30_procesamiento/36_verificar_trayectorias.R</span><br><br><span class="cm"># El deploy a GitHub Pages es manual (el pipeline no toca docs/): copia íntegra de</span><br><span class="cm"># 40_salidas/motor_comparacion.html a docs/index.html y de</span><br><span class="cm"># 40_salidas/trayectorias_traspasos.html a docs/trayectorias.html, y git push.</span>'
   ),
 
   # ---- 1.16 Leyenda del diagrama técnico ------------------------------------
@@ -378,9 +400,9 @@ cfg <- list(
 
   # ---- 1.18 Pie por documento -----------------------------------------------
   pie_extra = list(
-    arq_tec = "Anomalías A1–A4 documentadas en 50_documentacion/activa/decisiones/. Runtime del motor: D3 v7 y pako inline (10_utils/); React 18.3.1, ReactDOM 18.3.1 y Babel 7.29.0 por CDN unpkg con SRI. El deploy a docs/index.html es manual (el pipeline no lo realiza).",
+    arq_tec = "Anomalías A1 a A4 documentadas en 50_documentacion/activa/referencia_glosas_simce.md. Runtime del motor: D3 v7, pako, React 18.3.1 y ReactDOM 18.3.1 inline, vendorizados en 10_utils/ (el build verifica el sha384 de React, ReactDOM y Babel); el JSX se transpila en el build con Babel 7.29.0 dentro de V8. La vista de trayectorias usa JavaScript propio, sin bibliotecas. Ninguna de las dos páginas carga nada por red. El deploy a docs/ es manual (el pipeline no lo realiza) y exige las dos baterías en PASA.",
     doc_tec = "",
-    arq_gen = "¿Necesitas el detalle técnico? Abre arquitectura_slep_simce_adecuado.html",
+    arq_gen = "¿Necesitas el detalle técnico? Abre arquitectura_slep_simce_adecuado_standalone.html",
     doc_gen = ""
   ),
 
@@ -416,7 +438,8 @@ cfg <- list(
 )
 
 # ---- Generación de los 4 HTML ---------------------------------------------
-# verificar = TRUE: aborta si quedara algún residuo del ejemplo de fábrica.
+# verificar = FALSE (ver el encabezado): la lista de residuos de suitedoc marca
+# términos legítimos de este proyecto.
 suitedoc::generar_suite(
   cfg,
   salida_dir  = here::here("50_documentacion", "suite"),
