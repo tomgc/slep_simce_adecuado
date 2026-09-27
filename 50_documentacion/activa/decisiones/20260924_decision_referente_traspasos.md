@@ -294,3 +294,13 @@ El titular revisó en Safari y en un teléfono lo publicado por s35h y s35i (mod
 - Q-87: un encargo corto pone al día `README.md` (L7, L34 y L239) y los comentarios de `32_agregar_comunal.R` L9 y de `31_leer_normalizar.R` L49 y L315.
 - Q-88: «Últimos cambios» de `CLAUDE.md` guarda las 5 entradas más recientes; los encargos quedan autorizados a recortar la lista al agregar la suya.
 - Q-89: el glosario técnico de la suite pasa a «término: definición», sin guiones largos, en la próxima regeneración.
+
+## Decisiones del titular tras el encargo `encargo_readme_s35o.md` (sesión 35, 2026-09-26)
+
+### D35-25. Últimos textos de documentación
+
+- Q-90: `.Renviron.example` deja de documentar la raíz de datos y `obtener_data_root_proyecto()`.
+- Q-91: el bloque de portabilidad del README pierde la marca «bloque generado, no editar a mano».
+- Q-92: `publicacion_github_pages.md` usa la regla del GSE como la dice ahora el README y exige las dos baterías antes de publicar.
+- Q-93: los comentarios de `10_utils/10_utils.R` y de `30_procesamiento/30_construir_auxiliares.R` se ponen al día.
+- Q-94: los tres documentos de junio de `50_documentacion/activa/` que la suite reemplaza pasan a `_archivo/`.
