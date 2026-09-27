@@ -6,8 +6,8 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # ----------------------------------------------------------------------------
-# Construye la agregación a nivel comuna × GSE × prueba × nivel × año a
-# partir de simce_rbd.parquet, joineando con comunas_chile.parquet para
+# Construye la agregación comuna × GSE × dependencia × prueba × nivel × año
+# a partir de simce_rbd.parquet, joineando con comunas_chile.parquet para
 # incluir nombres de comuna y región.
 #
 # Salida: 40_salidas/intermedios/simce_comunal.parquet
