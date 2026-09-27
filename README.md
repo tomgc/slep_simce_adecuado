@@ -243,17 +243,6 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
   técnica), que genera `50_documentacion/suite/documentar.R`.
 - [`50_documentacion/activa/publicacion_github_pages.md`](50_documentacion/activa/publicacion_github_pages.md):
   cómo se publican las dos páginas en GitHub Pages.
-- [`50_documentacion/activa/documentacion_proyecto_slep_simce_adecuado.md`](50_documentacion/activa/documentacion_proyecto_slep_simce_adecuado.md):
-  presentación conceptual del proyecto para lectores internos (versión
-  navegable en GitHub; existe también una versión HTML:
-  `50_documentacion/activa/documentacion_proyecto_slep_simce_adecuado.html`).
-  Es de junio de 2026, anterior a la vista de trayectorias; la suite trae la
-  versión al día.
-- [`50_documentacion/activa/arquitectura_slep_simce_adecuado.html`](50_documentacion/activa/arquitectura_slep_simce_adecuado.html):
-  diagrama de arquitectura del pipeline de junio de 2026 (insumos → 30 → 31 →
-  32 → 33 → motor), sin el paso 36; la suite trae la versión al día. Abrir
-  localmente o vía vista previa del repo (no se publica en GitHub Pages, que
-  solo sirve `docs/`).
 - [`50_documentacion/activa/backlog_acumulativo.md`](50_documentacion/activa/backlog_acumulativo.md):
   registro acumulativo de cambios del proyecto (documento vivo).
 - Estructura del repo y esquemas de datos: ver secciones "Responsabilidades por
