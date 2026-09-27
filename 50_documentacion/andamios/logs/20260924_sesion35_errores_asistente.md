@@ -317,3 +317,14 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: un control positivo que altera una constante leída por más de un paso del pipeline.
 - `intentos_previos`: 0.
 - `costo`: una desviación declarada.
+
+## ERR-35-28
+
+- `que_paso`: el encargo s35n no pedía medir el ancho de la suite regenerada a 375 px, aunque en s35h ya se había visto que lo publicado se lee en teléfonos; la suite nueva desbordaba (469 y 456 px) y solo lo halló una medición que el ejecutor agregó por su cuenta (R-26). Tampoco previó que generar la suite requiere `npm` y red.
+- `regla_violada`: instrumento de encargos v1.6 (criterio que cubra el uso real del entregable).
+- `causa_raiz`: traté la suite como texto y no como páginas que el equipo abre en cualquier pantalla.
+- `salvaguarda_presente`: FASE R del ejecutor (funcionó).
+- `patron`: PAT-03 (alcance que no recoge lo medible).
+- `gatillo_observable`: un encargo que regenera HTML sin un criterio de `scrollWidth` a 375 px.
+- `intentos_previos`: 0.
+- `costo`: una reparación en FASE R.
