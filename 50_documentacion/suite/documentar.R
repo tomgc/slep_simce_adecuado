@@ -86,7 +86,7 @@ cfg <- list(
       tagline = "De las planillas dispersas de la Agencia de Calidad a un tablero que se abre en el navegador, explicado como una línea de producción. Sin nombres de programas ni tecnicismos: solo qué entra, qué pasa en cada paso y qué sale.",
       metas   = list(
         list(c="var(--coral)", k="Para",            v="directivos, equipos y comunidad"),
-        list(c="var(--olive)", k="Versión técnica", v="arquitectura_slep_simce_adecuado_standalone.html")
+        list(c="var(--olive)", k="Versión técnica", v='<span style="overflow-wrap:anywhere">arquitectura_slep_simce_adecuado_standalone.html</span>')
       )
     ),
     doc_gen = list(
@@ -96,7 +96,7 @@ cfg <- list(
       tagline = "Una guía breve y sin tecnicismos para entender qué muestra el comparador de resultados Simce por estándares de aprendizaje, qué se puede ver en él y en qué conviene fijarse al interpretarlo.",
       metas   = list(
         list(c="var(--coral)", k="Para",            v="directivos, docentes, apoderados y comunidad"),
-        list(c="var(--olive)", k="Detalle técnico", v="documentacion_proyecto_slep_simce_adecuado_standalone.html")
+        list(c="var(--olive)", k="Detalle técnico", v='<span style="overflow-wrap:anywhere">documentacion_proyecto_slep_simce_adecuado_standalone.html</span>')
       )
     )
   ),
@@ -308,7 +308,7 @@ cfg <- list(
          chip_out=list(ico='file-code-2', tx='Dos archivos navegables')),
     list(icon='monitor', color='var(--plum)', paso='Paso 5 · Producto terminado', titulo='La herramienta lista para usar',
          parrafos=c('El resultado es un <strong>tablero que se abre en cualquier navegador</strong>. Permite elegir una comuna, un Servicio Local, una región o un establecimiento educacional y ver el % Adecuado por grupo socioeconómico, su evolución y, si se quiere, el desglose en los tres estándares.',
-                    'La vista de trayectorias responde otra pregunta: <strong>cómo se ha movido cada Servicio Local, año a año</strong>, en el porcentaje de estudiantes en nivel Adecuado y en nivel Insuficiente, antes y después de recibir sus establecimientos, junto a un grupo de referencia: los establecimientos que en 2014 eran municipales y que todavía no pasan a un Servicio Local. Muestra trayectorias; no mide el efecto del traspaso. Se abre en <a href="https://tomgc.github.io/slep_simce_adecuado/trayectorias.html">tomgc.github.io/slep_simce_adecuado/trayectorias.html</a> y desde el menú del tablero.',
+                    'La vista de trayectorias responde otra pregunta: <strong>cómo se ha movido cada Servicio Local, año a año</strong>, en el porcentaje de estudiantes en nivel Adecuado y en nivel Insuficiente, antes y después de recibir sus establecimientos, junto a un grupo de referencia: los establecimientos que en 2014 eran municipales y que todavía no pasan a un Servicio Local. Muestra trayectorias; no mide el efecto del traspaso. Se abre en <a href="https://tomgc.github.io/slep_simce_adecuado/trayectorias.html" style="overflow-wrap:anywhere">tomgc.github.io/slep_simce_adecuado/trayectorias.html</a> y desde el menú del tablero.',
                     'Las dos páginas están publicadas en línea para consulta, y se actualizan cada vez que llega un año nuevo: basta con repetir la línea de producción completa.'),
          chip_in=NULL, chip_out=list(ico='globe', tx='Tablero publicado y consultable'))
   ),
@@ -344,7 +344,7 @@ cfg <- list(
     list(q='¿Por qué siempre se separa por grupo socioeconómico?', a='Porque el Simce por estándares no ajusta por el contexto socioeconómico del establecimiento. Comparar resultados en bruto entre territorios con composición distinta puede ser engañoso. Fijar el grupo socioeconómico asegura que la comparación sea entre realidades parecidas.', abierta=FALSE),
     list(q='¿Qué años cubre?', a='Desde 2014, sin 2019, 2020 ni 2021 (años sin Simce), hasta el último año cargado en 20_insumos/simce/. Si la base de un año todavía es preliminar, ese año se marca con un asterisco hasta que la Agencia publica la base final.', abierta=FALSE),
     list(q='¿Por qué un SLEP muestra años anteriores a su creación?', a='Porque la herramienta agrupa los establecimientos por su dependencia actual a lo largo de toda su historia. Los años previos al traspaso corresponden a la gestión municipal de esos establecimientos, no al SLEP; la herramienta lo advierte cuando seleccionas una dependencia SLEP.', abierta=FALSE),
-    list(q='¿Qué es la vista de trayectorias?', a='Una segunda página, publicada junto a esta herramienta, que responde otra pregunta: cómo se ha movido cada Servicio Local, año a año, en el porcentaje de estudiantes en nivel Adecuado y en nivel Insuficiente, antes y después de recibir sus establecimientos, junto a un grupo de referencia (los establecimientos que en 2014 eran municipales y que todavía no pasan a un Servicio Local). Muestra trayectorias; no mide el efecto del traspaso. Se abre en <a href="https://tomgc.github.io/slep_simce_adecuado/trayectorias.html">tomgc.github.io/slep_simce_adecuado/trayectorias.html</a> o desde el menú de la herramienta.', abierta=FALSE),
+    list(q='¿Qué es la vista de trayectorias?', a='Una segunda página, publicada junto a esta herramienta, que responde otra pregunta: cómo se ha movido cada Servicio Local, año a año, en el porcentaje de estudiantes en nivel Adecuado y en nivel Insuficiente, antes y después de recibir sus establecimientos, junto a un grupo de referencia (los establecimientos que en 2014 eran municipales y que todavía no pasan a un Servicio Local). Muestra trayectorias; no mide el efecto del traspaso. Se abre en <a href="https://tomgc.github.io/slep_simce_adecuado/trayectorias.html" style="overflow-wrap:anywhere">tomgc.github.io/slep_simce_adecuado/trayectorias.html</a> o desde el menú de la herramienta.', abierta=FALSE),
     list(q='¿Necesito instalar algo para usarla?', a='No. Es un archivo que se abre en cualquier navegador. También está publicada en línea para consultarla directamente.', abierta=FALSE)
   ),
 
