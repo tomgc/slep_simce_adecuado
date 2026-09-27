@@ -163,7 +163,7 @@ cols_csv_esperadas <- c(
   "AGNO", "RBD", "NOM_RBD",
   "COD_COM_RBD", "NOM_COM_RBD",
   "COD_REG_RBD", "NOM_REG_RBD_A",
-  "COD_DEPE2",
+  "COD_DEPE", "COD_DEPE2",
   "MATRICULA", "ESTADO_ESTAB"
 )
 faltan_csv <- setdiff(cols_csv_esperadas, names(df_dir_raw))
