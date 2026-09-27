@@ -285,3 +285,12 @@ Se registran en el lock los paquetes de CRAN que faltan (entre ellos `V8` y `ope
 ### D35-23. Revisión del titular de s35h y s35i
 
 El titular revisó en Safari y en un teléfono lo publicado por s35h y s35i (modal y supergrid a 375 px, centrado de Q-57 y un PNG exportado con gobCL) y lo aprobó (2026-09-26).
+
+## Decisiones del titular tras el encargo `encargo_suite_s35n.md` (sesión 35, 2026-09-26)
+
+### D35-24. Suite, README y CLAUDE.md
+
+- Q-86: no se guarda copia local de los íconos de `lucide-static`; generar la suite sigue requiriendo `npm` y red.
+- Q-87: un encargo corto pone al día `README.md` (L7, L34 y L239) y los comentarios de `32_agregar_comunal.R` L9 y de `31_leer_normalizar.R` L49 y L315.
+- Q-88: «Últimos cambios» de `CLAUDE.md` guarda las 5 entradas más recientes; los encargos quedan autorizados a recortar la lista al agregar la suya.
+- Q-89: el glosario técnico de la suite pasa a «término: definición», sin guiones largos, en la próxima regeneración.
