@@ -28,14 +28,22 @@ motor. Ninguna de las dos carga nada por red.
 ## Gobernanza
 
 - Los dos HTML contienen **únicamente datos agregados públicos** extraídos de la
-  Agencia de Calidad de la Educación (SIMCE a nivel RBD, ponderado por GSE).
+  Agencia de Calidad de la Educación (resultados SIMCE por RBD y sus agregados,
+  ponderados por número de evaluados).
 - No contiene resultados individuales ni datos personales de menores.
-- La segmentación por GSE es inviolable y se mantiene en el output publicado.
-- Antes de cada republicación, verificar que el JSON embebido sigue siendo
-  solo agregado público (invariante metodológico del pipeline).
-- Antes de republicar la vista de trayectorias, la batería del paso 36 debe
-  pasar completa (`Rscript 30_procesamiento/36_verificar_trayectorias.R`,
-  código 0).
+- **Segmentación por GSE:** en la vista de comparación del motor, todo
+  resultado se reporta por GSE (Bajo / Medio bajo / Medio / Medio alto / Alto).
+  El panorama territorial del motor combina los cinco grupos en una sola
+  distribución ("GSE combinado") y la vista de trayectorias ofrece, junto a cada
+  grupo, "Todos los grupos"; las dos pantallas lo indican.
+- Antes de cada republicación, verificar que el JSON embebido en cada página
+  sigue siendo solo agregado público (invariante metodológico del pipeline).
+- Antes de cada copia a `docs/`, las dos baterías deben pasar completas, con
+  código 0 (decisiones D35-21 y D35-25, en
+  `decisiones/20260924_decision_referente_traspasos.md`): la del motor
+  (`Rscript 30_procesamiento/33_verificar_motor.R`) y la de la vista
+  (`Rscript 30_procesamiento/36_verificar_trayectorias.R`). Leen las salidas de
+  `40_salidas/` y necesitan Google Chrome.
 
 ## Configuración inicial (ya realizada — referencia)
 
@@ -53,7 +61,8 @@ cd ~/Projects/slep_simce_adecuado
 # 1. Regenerar los dos HTML (corre el pipeline completo, pasos 33 y 36)
 Rscript 00_build.R
 
-# 2. Batería de la vista de trayectorias (debe terminar con código 0)
+# 2. Las dos baterías, motor y vista (cada una debe terminar con código 0)
+Rscript 30_procesamiento/33_verificar_motor.R
 Rscript 30_procesamiento/36_verificar_trayectorias.R
 
 # 3. Copia íntegra de cada salida a la carpeta de publicación
@@ -82,7 +91,7 @@ Abrir https://tomgc.github.io/slep_simce_adecuado/ y verificar:
 1. El motor carga completo.
 2. Buscador con diacríticos: "valparaiso" devuelve VALPARAÍSO primero.
 3. Tooltip se voltea hacia adentro en los extremos del viewport.
-4. Datos segmentados por GSE.
+4. La comparación entre territorios muestra los datos por GSE.
 5. «Trayectorias de los Servicios Locales» abre la vista; desde ella,
    «Panorama territorial» abre el motor en esa pestaña y «Comparación entre
    territorios» en la comparación.
@@ -91,7 +100,7 @@ Abrir https://tomgc.github.io/slep_simce_adecuado/ y verificar:
 
 ## Optimización pendiente (opcional, no urgente)
 
-El motor pesa 2.921.439 B y la vista 2.206.558 B (sesión 35), casi todo por el JSON embebido. Si la carga inicial molesta en la
+El motor pesa 2.934.457 B y la vista 2.212.989 B (sesión 35), casi todo por el JSON embebido. Si la carga inicial molesta en la
 práctica, separar el JSON del HTML (fetch externo) reduciría el HTML a ~200 KB
 y la segunda visita sería instantánea por caché. Requiere modificar
 `33_generar_html.R` para emitir HTML + JSON por separado. Cambio acotado, no
