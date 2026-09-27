@@ -274,7 +274,7 @@ datos directamente de la fuente oficial
 condiciones. Ver [`NOTICE`](NOTICE) para el alcance completo y los componentes
 de terceros.
 
-<!-- portabilidad-cross-os: bloque generado, no editar a mano -->
+<!-- portabilidad-cross-os: bloque que se mantiene a mano desde s35o (2026-09-26) -->
 
 ## Portabilidad cross-OS
 
