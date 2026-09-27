@@ -46,9 +46,9 @@ library(fs)
 # ============================================================================
 # Bloque 0 — Mapa RBD → cod_com_rbd canónico (para anomalía A3)
 # ============================================================================
-# Algunos xlsx (2015/2m, 2017/4b) traen cod_com_rbd con basura — códigos de
-# 1-2 dígitos en vez del formato canónico 4-5 dígitos. Se recupera el código
-# correcto vía join contra directorio_oficial_ee.csv (snapshot 2025).
+# Algunos xlsx (2015/2m, 2015/4b y 2017/4b) traen cod_com_rbd con basura:
+# códigos de 1-2 dígitos en vez del formato canónico 4-5 dígitos. Se recupera
+# el código correcto vía join contra directorio_oficial_ee.csv (snapshot 2025).
 # Asunción: un RBD no cambia de comuna entre años (general, no validado).
 
 message("[0] Cargando mapa RBD → cod_com_rbd desde directorio oficial...")
@@ -312,9 +312,9 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
   )
 
   # --- Anomalía A3: cod_com_rbd con formato no canónico ---
-  # En 2015/2m y 2017/4b la columna trae valores de 1-2 dígitos en lugar
-  # de los códigos canónicos de 4-5 dígitos. Se recupera desde el mapa
-  # RBD → comuna del directorio oficial 2025.
+  # En 2015/2m, 2015/4b y 2017/4b la columna trae valores de 1-2 dígitos
+  # en lugar de los códigos canónicos de 4-5 dígitos. Se recupera desde el
+  # mapa RBD → comuna del directorio oficial 2025.
   cod_com_chr <- as.character(df_raw$cod_com_rbd)
   prop_cortos <- mean(nchar(cod_com_chr) < 4, na.rm = TRUE)
   if (!is.nan(prop_cortos) && prop_cortos > 0.5) {
