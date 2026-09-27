@@ -304,3 +304,12 @@ El titular revisó en Safari y en un teléfono lo publicado por s35h y s35i (mod
 - Q-92: `publicacion_github_pages.md` usa la regla del GSE como la dice ahora el README y exige las dos baterías antes de publicar.
 - Q-93: los comentarios de `10_utils/10_utils.R` y de `30_procesamiento/30_construir_auxiliares.R` se ponen al día.
 - Q-94: los tres documentos de junio de `50_documentacion/activa/` que la suite reemplaza pasan a `_archivo/`.
+
+## Decisiones del titular tras el encargo `encargo_documentacion_s35p.md` (sesión 35, 2026-09-26)
+
+### D35-26. Enlaces del README, `.Renviron.example`, `json_motor` y `COD_DEPE`
+
+- **Q-97.** Quitar del README las entradas que enlazan los documentos archivados.
+- **Q-95.** Ejecutar P1 de s35p: `.Renviron.example` sin la raíz de datos. Las dos líneas del validador que nombran esas variables solo las revisan como parte de la plantilla de la cartera; no cuentan como uso.
+- **Q-96.** El criterio de `json_motor` de s35p se mide como palabra completa (`git grep -nw`): queda cumplido.
+- **Q-98.** El paso 30 valida también la columna `COD_DEPE` del directorio, que usa y hoy no revisa.

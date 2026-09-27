@@ -328,3 +328,14 @@ Registro al momento de identificarlos (POLITICA 0.5; SETTINGS §2.2.15, diez cam
 - `gatillo_observable`: un encargo que regenera HTML sin un criterio de `scrollWidth` a 375 px.
 - `intentos_previos`: 0.
 - `costo`: una reparación en FASE R.
+
+## ERR-35-29
+
+- `que_paso`: tres premisas del encargo s35p fallaron. P5: afirmé que los documentos de junio «solo se citan entre sí», pero mi `git grep` iba cortado con `head` y no mostró el `README.md`, que los enlazaba; archivarlos dejó tres enlaces rotos en el README publicado (Q-97). P4: puse como criterio `grep 'json_motor'` → 0 sin correrlo; da 2 por `extraer_json_motor()` de la batería (Q-96). P1: congelé la tarea si el `git grep` hallaba algo, aunque el log de s35o ya decía que el validador contiene esos nombres (Q-95).
+- `regla_violada`: SETTINGS §1.2.6 (premisa sin medir completa) y regla propia de correr cada comando del encargo antes de escribirlo.
+- `causa_raiz`: truncar la salida de una búsqueda y tratar el recorte como resultado completo; escribir criterios de `grep` sin correrlos.
+- `salvaguarda_presente`: regla de detención de P1 y registro de P5 por el ejecutor (funcionaron).
+- `patron`: PAT-01 (afirmar sin leer) y PAT-03.
+- `gatillo_observable`: una premisa de ausencia («no se cita», «da 0») respaldada por una salida con `head`.
+- `intentos_previos`: 3 (ERR-35-25, 26 y 27).
+- `costo`: un defecto publicado (enlaces rotos en el README) y un encargo más.
