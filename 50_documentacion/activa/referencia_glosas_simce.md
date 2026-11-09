@@ -220,3 +220,10 @@ estándares de aprendizaje) **solo aparece en 2014**.
 
 La elección afecta directamente cuáles establecimientos se incluyen en
 cada agregación de `% adecuado`.
+
+**Resuelta por D36-1 (2026-11-09): deroga la opción a.** La marca ya no es
+filtro de exclusión: entra todo resultado por estándar que publica la Agencia
+(tres porcentajes con suma entre 99 y 101), con o sin marca, y una fila con
+resultado y marca es un resultado con simbología adicional, que el motor
+señala con «‡» y permite excluir. Decisión en
+`decisiones/20261109_decision_inclusion_resultados_simbologia.md`.

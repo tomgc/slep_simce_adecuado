@@ -135,11 +135,22 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
   % nivel = sum(nalu * palu_eda_<nivel> / 100) / sum(nalu) * 100
   ```
   donde `<nivel>` es `ade` (adecuado), `ele` (elemental) o `ins` (insuficiente).
-- **Filtros de exclusión (umbral MINEDUC):**
-  - Establecimientos con `nalu < 10` se excluyen.
-  - Establecimientos con `marca_<prueba><nivel>_rbd` distinto de NA se excluyen.
-  - Estos filtros gobiernan las filas para los tres niveles por igual, de modo
-    que el % Adecuado es idéntico exista o no el desglose Elem/Insuf.
+- **Regla de inclusión (D36-1,
+  [`decisiones/20261109_decision_inclusion_resultados_simbologia.md`](50_documentacion/activa/decisiones/20261109_decision_inclusion_resultados_simbologia.md)):**
+  - Entra todo resultado por estándar que publica la Agencia: una fila
+    establecimiento × prueba cuyos tres porcentajes existen y suman entre
+    `SUMA_NIVELES_MIN` y `SUMA_NIVELES_MAX` (99 y 101,
+    `10_utils/10_configuracion.R`), con o sin `marca_<prueba><nivel>_rbd`. Las
+    filas con los tres porcentajes en 0 no son resultados y quedan fuera.
+  - Una fila con resultado y `marca` es un **resultado con simbología
+    adicional**: entra al cálculo, el motor la señala con «‡» y la casilla
+    «Excluir resultados con simbología adicional» la quita y muestra su motivo
+    (`MOTIVOS_SIMBOLOGIA`).
+  - El umbral de 10 evaluados (`UMBRAL_EVALUADOS`) es una aserción, no un
+    filtro: el build se detiene si una fila con resultado trae menos.
+  - La regla gobierna las filas para los tres niveles por igual, de modo que
+    el % Adecuado es idéntico exista o no el desglose Elem/Insuf. La usan el
+    motor y la vista de trayectorias.
 - **Segmentación por GSE:** en la vista de comparación del motor, todo
   resultado se reporta por GSE (Bajo / Medio bajo / Medio / Medio alto / Alto).
   El panorama territorial del motor combina los cinco grupos en una sola
@@ -211,8 +222,10 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
 | palu_eda_ade  | double    | % en estándar adecuado               |
 | palu_eda_ele  | double    | % en estándar elemental              |
 | palu_eda_ins  | double    | % en estándar insuficiente           |
-| marca         | character | Marca de supresión (NA si válido)    |
+| marca         | character | Marca de la Agencia (NA sin marca); con resultado, simbología adicional (D36-1) |
 | preliminar    | logical   | TRUE si viene de un `_preliminar`    |
+| simbologia    | logical   | TRUE si la fila tiene resultado y marca (D36-1) |
+| cod_simbologia | character | Código del motivo, "1".."4", o NA   |
 
 ### simce_comunal.parquet
 
@@ -230,8 +243,10 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
 | pct_adecuado  | double    | % ponderado agregado, adecuado       |
 | pct_elemental | double    | % ponderado agregado, elemental      |
 | pct_insuficiente | double | % ponderado agregado, insuficiente   |
-| n_evaluados   | integer   | sum(nalu) tras filtros MINEDUC       |
+| n_evaluados   | integer   | sum(nalu) de las filas con resultado (D36-1) |
 | n_estab       | integer   | N° establecimientos en la agregación |
+| n_estab_simb, n_evaluados_simb | integer | De ellos, con simbología adicional (D36-1) |
+| num_ade_simb, num_ele_simb, num_ins_simb | double | Numeradores en estudiantes de esos establecimientos |
 
 ## Documentación
 
