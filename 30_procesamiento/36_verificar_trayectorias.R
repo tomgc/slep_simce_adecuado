@@ -12,7 +12,8 @@
 # queda congelado): D1 a D8 se conservan con su cálculo independiente sobre el
 # parquet; se agregan D9 a D13, que comprueban el DATA que produce el
 # generador y el HTML escrito, y D14, que comprueba la regla de filas del motor
-# adoptada en la sesión 33 (sin marca de la Agencia y al menos 10 evaluados).
+# de D36-1 (todo resultado por estándar, con o sin simbología adicional de la
+# Agencia; las filas en ceros quedan fuera).
 # C1 a C5 (sesión 35) comprueban las cohortes por traspasar de la decisión
 # D35-2 (20260924_decision_referente_traspasos.md), R1 a R4, el rótulo y la
 # marca de ola del referente de la decisión D35-1 (misma decisión), y R5 y R6
@@ -101,10 +102,11 @@ simce <- read_parquet(file.path(RUTA, "simce_rbd.parquet"))
 sleps <- read_parquet(file.path(RUTA, "sleps_chile.parquet"))
 stopifnot(nrow(simce) > 0, nrow(sleps) > 0)
 
+# Regla de filas de D36-1, escrita aquí por cuenta propia: los tres niveles
+# publicados con suma entre 99 y 101, con o sin marca de la Agencia.
 base <- simce |>
   filter(!is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins),
-         !is.na(nalu), !is.na(cod_grupo),
-         is.na(marca), nalu >= 10) |>
+         !is.na(nalu), !is.na(cod_grupo)) |>
   mutate(suma_niveles = palu_eda_ade + palu_eda_ele + palu_eda_ins) |>
   filter(suma_niveles >= 99, suma_niveles <= 101) |>
   mutate(np      = paste0(nivel, "_", prueba),
@@ -338,7 +340,7 @@ comprobar(
 
 # ---- D10. Fidelidad al mockup auditado de la sesión 30 ----------------------
 # Coteja la maquinaria de agregación con la regla de filas del mockup, que
-# incluía las filas marcadas (excluir_marcadas = FALSE): la regla vigente la
+# incluía las filas marcadas: desde D36-1 es también la regla vigente, que
 # comprueba D14. Las mismas filas y claves que el mockup; toda cifra distinta debe ser un
 # empate exacto de redondeo (el mockup los resolvía en coma flotante; el
 # generador, hacia arriba en aritmética entera) y distar un décimo. El número de
@@ -374,15 +376,13 @@ cotejar <- function(gen, mock, claves) {
   )
 }
 DATA_M  <- construir_datos_trayectorias(insumos, conservar_brutos = TRUE,
-                                        excluir_marcadas = FALSE,
                                         incluir_futuras = FALSE)
 c_datos <- cotejar(DATA_M$datos, mock_datos, c("id", "anio", "np", "g", "panel"))
 c_nube  <- cotejar(DATA_M$nube, mock_nube, c("com", "anio", "np", "g"))
 
 ctx <- V8::v8()
 ctx$assign("a", extraer_data(RUTA_MOCKUP))
-ctx$assign("b", datos_a_json(construir_datos_trayectorias(insumos, excluir_marcadas = FALSE,
-                                                          incluir_futuras = FALSE)))
+ctx$assign("b", datos_a_json(construir_datos_trayectorias(insumos, incluir_futuras = FALSE)))
 ctx$assign("r", datos_a_json(construir_datos_trayectorias(insumos)))
 ctx$eval("var A=JSON.parse(a), B=JSON.parse(b), R=JSON.parse(r);")
 iguales_js <- vapply(c("anios", "meta", "nac", "comunas"), function(k) {
@@ -419,16 +419,17 @@ comprobar(
 html <- paste(readLines(RUTA_HTML, encoding = "UTF-8", warn = FALSE), collapse = "\n")
 n_ref_txt <- format(DATA$meta[[ID_REFERENTE]]$cat, big.mark = ".", decimal.mark = ",")
 n_com_txt <- sprintf("(%d en total)", length(DATA$comunas))
-# Recuento independiente de las filas marcadas que excluye la regla del motor.
+# Recuento independiente de los resultados con simbología adicional que la
+# regla de D36-1 incluye (filas con resultado y marca de la Agencia).
 marcadas_ind <- simce |>
   filter(rbd %in% as.character(sleps$rbd),
          !is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins),
          !is.na(nalu),
          palu_eda_ade + palu_eda_ele + palu_eda_ins >= 99,
          palu_eda_ade + palu_eda_ele + palu_eda_ins <= 101,
-         !is.na(marca) | nalu < 10) |>
+         !is.na(marca)) |>
   nrow()
-marcadas_txt <- sprintf("y %s filas con marca de la Agencia",
+marcadas_txt <- sprintf("entre ellas %s resultados con simbología adicional de la Agencia",
                         format(marcadas_ind, big.mark = ".", decimal.mark = ","))
 # El ejemplo de la nube es literal en la plantilla: debe seguir en los datos.
 cod_palena <- names(DATA$comunas)[unlist(DATA$comunas) == "Palena"]
@@ -488,29 +489,44 @@ comprobar(
   !identical(datos_a_json(DATA_plantado), json_base)
 )
 
-# ---- D14. La regla de filas es la del motor --------------------------------
-# Ninguna fila de la base tiene marca de la Agencia ni menos de 10 evaluados, y
-# la regla excluye exactamente las filas que cumplen alguna de las dos
-# condiciones (recuento independiente sobre el parquet).
+# ---- D14. La regla de filas es la del motor (D36-1) -------------------------
+# La base no trae filas en ceros (los tres niveles en 0 no son resultado) y trae
+# exactamente las filas con resultado y marca de la Agencia (simbología
+# adicional) del recuento independiente: la sonda S1 del encargo
+# 20261109_inclusion_resultados_simbologia, que cuenta sobre los 18 xlsx sin
+# pasar por el pipeline, y el recuento de esta batería sobre el parquet.
+ESPERADO_FILAS_VALIDAS <- 142353L  # sonda S1, línea «validas»
+ESPERADO_FILAS_SIMB    <- 2008L    # sonda S1, línea «simb»
 
-base_sin_regla <- base_valida(insumos$simce, excluir_marcadas = FALSE)
-excluidas_ind  <- sum(!is.na(base_sin_regla$marca) | base_sin_regla$nalu < 10)
+ceros_base <- sum(base_g$palu_eda_ade + base_g$palu_eda_ele + base_g$palu_eda_ins == 0)
+simb_base  <- sum(!is.na(base_g$marca))
+simb_ind   <- simce |>
+  filter(!is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins),
+         palu_eda_ade + palu_eda_ele + palu_eda_ins >= 99,
+         palu_eda_ade + palu_eda_ele + palu_eda_ins <= 101,
+         !is.na(marca)) |>
+  nrow()
 comprobar(
-  "D14", "La base no trae filas con marca ni con menos de 10 evaluados, y excluye exactamente esas",
-  sum(!is.na(base_g$marca)) == 0 && sum(base_g$nalu < 10) == 0 &&
-    nrow(base_sin_regla) - nrow(base_g) == excluidas_ind && excluidas_ind > 0,
-  sprintf("excluidas %d de %d filas coherentes", nrow(base_sin_regla) - nrow(base_g),
-          nrow(base_sin_regla))
+  "D14", "La base no trae filas en ceros y trae exactamente las filas con simbología adicional del recuento independiente",
+  ceros_base == 0 && nrow(base_g) == ESPERADO_FILAS_VALIDAS &&
+    simb_base == ESPERADO_FILAS_SIMB && simb_base == simb_ind &&
+    sum(base_g$simbologia) == simb_base,
+  sprintf("filas en ceros %d; filas %d (esperado %d); con simbología %d (sonda %d, recuento %d, columna simbologia %d)",
+          ceros_base, nrow(base_g), ESPERADO_FILAS_VALIDAS, simb_base,
+          ESPERADO_FILAS_SIMB, simb_ind, sum(base_g$simbologia))
 )
 
-# Control positivo de D14: marcar una fila válida la saca de la base.
+# Control positivo de D14: poner en ceros una fila válida la deja fuera de la
+# base, exactamente una.
 simce_plantado <- insumos$simce
-idx_valida <- which(is.na(simce_plantado$marca) & !is.na(simce_plantado$palu_eda_ade) &
-                      simce_plantado$nalu >= 10)
-idx_valida <- idx_valida[as.character(simce_plantado$rbd[idx_valida]) %in% base_g$rbd][1]
-simce_plantado$marca[idx_valida] <- "plantada"
+suma_plantado  <- simce_plantado$palu_eda_ade + simce_plantado$palu_eda_ele +
+  simce_plantado$palu_eda_ins
+idx_valida <- which(!is.na(suma_plantado) & suma_plantado >= 99 & suma_plantado <= 101)[1]
+simce_plantado$palu_eda_ade[idx_valida] <- 0
+simce_plantado$palu_eda_ele[idx_valida] <- 0
+simce_plantado$palu_eda_ins[idx_valida] <- 0
 comprobar(
-  "D14c", "Control positivo: marcar una fila válida la saca de la base, exactamente una",
+  "D14c", "Control positivo: poner en ceros una fila válida la deja fuera de la base, exactamente una",
   nrow(base_g) - nrow(base_valida(simce_plantado)) == 1,
   sprintf("filas que salen %d", nrow(base_g) - nrow(base_valida(simce_plantado)))
 )
@@ -697,13 +713,18 @@ comprobar("C6", "Cada botón de cohorte trae su año en un único span.tx escrit
 # Valores esperados con los insumos vigentes (enmienda D35-4): el referente,
 # cuántos de sus establecimientos están presentes en el directorio y cuántos
 # traspasa cada ola, según la comuna que el directorio les registra y el
-# catálogo de olas. Los 17 que faltan para 1.299 cerraron antes de su traspaso y
+# catálogo de olas. Los 17 que faltan para 1.333 cerraron antes de su traspaso y
 # no están en el directorio. Hasta el encargo pendientes s35b, las olas se
 # contaban por la comuna de la fila más reciente en simce_rbd (479, 407 y 408,
-# con 12 de los 17 cerrados dentro).
-ESPERADO_REF_CAT  <- 1299L
-ESPERADO_REF_VIG  <- 1282L
-ESPERADO_REF_OLAS <- c("2027" = 475L, "2028" = 406L, "2029" = 401L)
+# con 12 de los 17 cerrados dentro). Con la regla de filas de D36-1 (encargo
+# 20261109_inclusion_resultados_simbologia) el referente gana los 34
+# establecimientos cuyo único resultado de 2014 traía simbología adicional: los
+# valores pasan de 1.299, 1.282 y 475/406/401 a 1.333, 1.316 y 491/417/408,
+# según un recuento independiente sobre los xlsx, el directorio, el listado de
+# Servicios Locales y el catálogo de olas (log del encargo, FASE T2).
+ESPERADO_REF_CAT  <- 1333L
+ESPERADO_REF_VIG  <- 1316L
+ESPERADO_REF_OLAS <- c("2027" = 491L, "2028" = 417L, "2029" = 408L)
 # R3 agrega un año sintético que copia el último año publicado del referente;
 # los establecimientos de OLA_SINTETICA pasan a la dependencia de un Servicio
 # Local (cod_depe2 "5"), como si se hubieran traspasado.
@@ -800,7 +821,7 @@ olas_de <- function(meta_ref) {
   stats::setNames(as.integer(unlist(o)), names(o))
 }
 
-# ---- R1. El referente tiene 1.299 establecimientos --------------------------
+# ---- R1. El referente tiene 1.333 establecimientos --------------------------
 # Control positivo: un tamaño plantado con uno de más se detecta.
 
 r1_ok <- function(cat_ref) identical(as.integer(cat_ref), ESPERADO_REF_CAT)
@@ -811,7 +832,7 @@ r1 <- evaluar({
                          fmt_entero(cat_ref), fmt_entero(length(ref_ind)),
                          fmt_entero(ESPERADO_REF_CAT), !r1_ok(cat_ref + 1L)))
 })
-comprobar("R1", "El referente tiene 1.299 establecimientos con los insumos vigentes", r1$ok, r1$detalle)
+comprobar("R1", "El referente tiene 1.333 establecimientos con los insumos vigentes", r1$ok, r1$detalle)
 
 # ---- R2. El rótulo dice el tamaño del grupo y cuántos tienen resultado -------
 # En la vista escrita, en su estado inicial, la leyenda del referente trae
@@ -971,8 +992,8 @@ comprobar("R4", "Las marcas de ola salen de los datos: ninguna con los datos act
 # independiente por el directorio (presentes_ind y ola_ref_ind) se declaran con
 # los del referente, antes de R1: R3 y R4 usan la misma regla.
 
-# ---- R5. El referente se cuenta por ola con el directorio: 475, 406 y 401 ------
-# meta$REF$olas vale lo esperado por ola, suma 1.282 y coincide con meta$REF$vig;
+# ---- R5. El referente se cuenta por ola con el directorio: 491, 417 y 408 ------
+# meta$REF$olas vale lo esperado por ola, suma 1.316 y coincide con meta$REF$vig;
 # el recuento independiente da lo mismo. Control positivo: un reparto con un
 # establecimiento de más en la primera ola se detecta.
 
@@ -997,15 +1018,15 @@ r5 <- evaluar({
                          fmt_entero(length(ref_ind) - vig_ind),
                          a_texto(ESPERADO_REF_OLAS), fmt_entero(ESPERADO_REF_VIG), control))
 })
-comprobar("R5", "El referente se cuenta por ola con el directorio: 475, 406 y 401, que suman 1.282",
+comprobar("R5", "El referente se cuenta por ola con el directorio: 491, 417 y 408, que suman 1.316",
           r5$ok, r5$detalle)
 
-# ---- R6. Con la copia de R3, la leyenda dice «807 de 1.282 aún municipales» ---
+# ---- R6. Con la copia de R3, la leyenda dice «825 de 1.316 aún municipales» ---
 # La vista escrita con el DATA de la copia de R3, en su último año (el
 # sintético, que ya pasó la ola OLA_SINTETICA), trae el rótulo de D35-4 completo:
-# «Referente: 1.299 municipales en 2014 · 1.282 se traspasan entre 2027 y 2029 ·
-# con resultado en 2027: <e> · 807 de 1.282 aún municipales». Las cifras
-# esperadas salen de las constantes de D35-4 (807 = 1.282 - 475), no del DATA de
+# «Referente: 1.333 municipales en 2014 · 1.316 se traspasan entre 2027 y 2029 ·
+# con resultado en 2027: <e> · 825 de 1.316 aún municipales». Las cifras
+# esperadas salen de las constantes de D35-4 (825 = 1.316 - 491), no del DATA de
 # la copia; el año ancla es el primero de la serie y `e` se lee de la copia.
 # Control positivo: la misma leyenda no pasa con un establecimiento más de los
 # que siguen municipales.
@@ -1031,7 +1052,7 @@ r6 <- evaluar({
        detalle = sprintf("año en pantalla %s; esperado «%s»; leyenda «%s»; control plantado detectado: %s",
                          ctrl$yr, esperado, ctrl$lg, control))
 })
-comprobar("R6", "Con la copia de R3, la leyenda trae el rótulo de D35-4 y «807 de 1.282 aún municipales»",
+comprobar("R6", "Con la copia de R3, la leyenda trae el rótulo de D35-4 y «825 de 1.316 aún municipales»",
           r6$ok, r6$detalle)
 
 # ---- R7. El tooltip del referente dice sus cifras desde DATA (Q-26) ----------

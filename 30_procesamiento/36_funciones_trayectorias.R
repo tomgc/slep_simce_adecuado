@@ -41,11 +41,15 @@
 #   - cifras_notas(insumos, DATA): las cifras de las notas metodológicas, ya
 #     formateadas, que el generador inserta en los marcadores __NOTA_*__.
 #
-# Regla de filas (sesión 33, decisión del titular): la misma del motor
-# (invariante 5, 33_generar_html.R), es decir, sin marca de la Agencia y con al
-# menos UMBRAL_EVALUADOS evaluados. El mockup de la sesión 30 incluía las filas
-# marcadas; `excluir_marcadas = FALSE` reproduce su regla y solo lo usa la
-# prueba D10, que coteja la maquinaria de agregación contra él.
+# Regla de filas (D36-1, decisiones/20261109_decision_inclusion_resultados_
+# simbologia.md): la misma del motor (agregar_ponderado(), 10_utils.R). Entra
+# toda fila cuyos tres porcentajes existen y suman entre SUMA_NIVELES_MIN y
+# SUMA_NIVELES_MAX, con o sin marca de la Agencia (simbología adicional), y una
+# fila así con menos de UMBRAL_EVALUADOS evaluados detiene. Las tres constantes
+# viven en 10_utils/10_configuracion.R. Deroga la regla de la sesión 33 (D33-1:
+# sin marca y con al menos 10 evaluados); la del mockup de la sesión 30, que
+# incluía las filas marcadas, vuelve a coincidir con la vigente, así que la
+# prueba D10 ya no necesita una regla aparte.
 #
 # Universos (reconstruidos del mockup y comprobados celda a celda contra él en
 # la sesión 32, prueba D10 de 36_verificar_trayectorias.R: solo difieren
@@ -79,17 +83,9 @@
 # Dependencia municipal en COD_DEPE2 (glosa en referencia_glosas_simce.md).
 DEPE_MUNICIPAL <- "1"
 
-# Una fila entra a la base solo si Adecuado + Elemental + Insuficiente cae en
-# este rango: fuera de él, la fila es una celda suprimida (los tres en 0) o un
-# redondeo anómalo de la Agencia.
-SUMA_NIVELES_MIN <- 99
-SUMA_NIVELES_MAX <- 101
-# Umbral MINEDUC de evaluados por fila: el mismo que aplica el motor
-# (33_generar_html.R, invariante 5). En la base de la vista no descarta ninguna
-# fila, porque la Agencia no publica porcentajes por nivel bajo ese umbral
-# (sesión 33); se declara igual para que la regla sea la del motor y no dependa
-# de esa práctica de publicación.
-UMBRAL_EVALUADOS <- 10
+# SUMA_NIVELES_MIN, SUMA_NIVELES_MAX y UMBRAL_EVALUADOS (regla de filas, D36-1)
+# viven en 10_utils/10_configuracion.R, que cargan antes 36_generar_trayectorias.R
+# y 36_verificar_trayectorias.R.
 
 # Decimales de los porcentajes publicados en la vista. El redondeo ocurre una
 # sola vez, al final, sobre numeradores acumulados (A29-5).
@@ -199,7 +195,7 @@ leer_insumos_trayectorias <- function() {
       "simce_rbd.parquet",
       c("anio", "nivel", "prueba", "rbd", "cod_com_rbd", "cod_grupo",
         "cod_depe2", "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins",
-        "marca")
+        "marca", "simbologia")
     ),
     sleps = leer_intermedio(
       "sleps_chile.parquet",
@@ -220,22 +216,23 @@ leer_insumos_trayectorias <- function() {
 
 # ---- Base y agregación -----------------------------------------------------
 
-# Filas con los tres niveles y el número de evaluados publicados, y con una
-# suma de niveles coherente; con `excluir_marcadas = TRUE` (la regla vigente),
-# además sin marca de la Agencia y con al menos UMBRAL_EVALUADOS evaluados.
+# Filas con resultado por estándar (D36-1): los tres niveles publicados y una
+# suma de niveles coherente, con o sin marca de la Agencia. Una fila así sin
+# evaluados o con menos de UMBRAL_EVALUADOS detiene (aserción, no filtro).
 # Agrega la clave nivel_prueba y los numeradores crudos de Adecuado e
 # Insuficiente.
-base_valida <- function(simce, excluir_marcadas = TRUE) {
+base_valida <- function(simce) {
   base <- simce |>
     dplyr::filter(
-      !is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins),
-      !is.na(nalu)
+      !is.na(palu_eda_ade), !is.na(palu_eda_ele), !is.na(palu_eda_ins)
     ) |>
     dplyr::mutate(suma_niveles = palu_eda_ade + palu_eda_ele + palu_eda_ins) |>
     dplyr::filter(suma_niveles >= SUMA_NIVELES_MIN,
                   suma_niveles <= SUMA_NIVELES_MAX)
-  if (excluir_marcadas) {
-    base <- base |> dplyr::filter(is.na(marca), nalu >= UMBRAL_EVALUADOS)
+  bajo_umbral <- is.na(base$nalu) | base$nalu < UMBRAL_EVALUADOS
+  if (any(bajo_umbral)) {
+    stop("base_valida(): ", sum(bajo_umbral), " fila(s) con resultado por estándar y menos de ",
+         UMBRAL_EVALUADOS, " evaluados (D36-1: el umbral es aserción).", call. = FALSE)
   }
   base |>
     dplyr::mutate(
@@ -485,18 +482,16 @@ marcas_ola <- function(anios, olas_ref) {
 # `conservar_brutos = TRUE` agrega a `datos` y `nube` los numeradores y el
 # denominador enteros (ade_num, ins_num, den); solo lo usa la verificación,
 # para distinguir un empate de redondeo de una diferencia real.
-# `excluir_marcadas` pasa a base_valida(); FALSE solo para la prueba D10.
 # `incluir_futuras = TRUE` agrega las unidades de las olas OLAS_FUTURAS (D35-2)
 # después de las vigentes, y a la ficha del referente sus presentes en el
 # directorio, sus olas y sus marcas de ola (D35-1 y D35-4); FALSE reproduce el
 # DATA anterior a la sesión 35 y solo lo usan las pruebas C3 y D10.
 construir_datos_trayectorias <- function(insumos, conservar_brutos = FALSE,
-                                         excluir_marcadas = TRUE,
                                          incluir_futuras = TRUE) {
   catalogo <- insumos$sleps |>
     dplyr::mutate(rbd = as.character(rbd), cod_slep = as.character(cod_slep))
 
-  base <- base_valida(insumos$simce, excluir_marcadas)
+  base <- base_valida(insumos$simce)
 
   anios   <- sort(unique(base$anio))
   n_anios <- length(anios)
@@ -672,7 +667,7 @@ cambios_anuales <- function(df, claves) {
 #
 # Devuelve una lista con nombre: cada elemento es el texto que reemplaza al
 # marcador __NOTA_<nombre>__.
-cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
+cifras_notas <- function(insumos, DATA) {
   catalogo <- insumos$sleps |>
     dplyr::mutate(rbd = as.character(rbd), cod_slep = as.character(cod_slep))
   np_pruebas <- setdiff(unique(DATA$datos$np), NP_TODO)
@@ -695,14 +690,15 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
         !is.na(palu_eda_ins) & !is.na(nalu),
       suma = palu_eda_ade + palu_eda_ele + palu_eda_ins,
       coherente = con_pct & suma >= SUMA_NIVELES_MIN & suma <= SUMA_NIVELES_MAX,
-      marcada = coherente & (!is.na(marca) | nalu < UMBRAL_EVALUADOS)
+      # Resultado con simbología adicional (D36-1): entra, y la nota lo cuenta.
+      simb = coherente & simbologia
     )
-  n_marcadas <- if (excluir_marcadas) sum(filas_slep$marcada) else 0L
-  pct_marcadas <- 100 * sum(filas_slep$nalu[filas_slep$marcada]) /
+  n_simb <- sum(filas_slep$simb)
+  pct_simb <- 100 * sum(filas_slep$nalu[filas_slep$simb]) /
     sum(filas_slep$nalu[filas_slep$coherente])
 
   # -- Pares Servicio Local por grupo y grupos que cambian entre niveles --
-  base <- base_valida(insumos$simce, excluir_marcadas)
+  base <- base_valida(insumos$simce)
   pares_existen <- base |>
     dplyr::inner_join(dplyr::distinct(catalogo, cod_slep, rbd), by = "rbd") |>
     dplyr::filter(!is.na(cod_grupo)) |>
@@ -768,13 +764,12 @@ cifras_notas <- function(insumos, DATA, excluir_marcadas = TRUE) {
     FILAS_TOTAL      = fmt_entero(nrow(filas_slep)),
     FILAS_SIN_PCT    = fmt_entero(sum(!filas_slep$con_pct)),
     FILAS_SUPRIMIDAS = fmt_entero(sum(filas_slep$con_pct & !filas_slep$coherente)),
-    FILAS_MARCADAS   = fmt_entero(n_marcadas),
-    PCT_MARCADAS     = fmt_decimal(pct_marcadas, 1),
-    FILAS_VALIDAS    = fmt_entero(sum(filas_slep$coherente) - n_marcadas),
+    FILAS_SIMB       = fmt_entero(n_simb),
+    PCT_SIMB         = fmt_decimal(pct_simb, 1),
+    FILAS_VALIDAS    = fmt_entero(sum(filas_slep$coherente)),
     PARES_EXISTEN    = fmt_entero(pares_existen),
     GSE_MEZCLA       = fmt_entero(sum(grupos_escuela$grupos > 1)),
     GSE_PARES        = fmt_entero(nrow(grupos_escuela)),
-    UMBRAL           = fmt_entero(UMBRAL_EVALUADOS),
     UMBRAL_COMPOSICION = fmt_entero(100 * UMBRAL_COMPOSICION),
     N_VIGENTES       = fmt_entero(length(cod_vigentes)),
     PARES_POSIBLES   = fmt_entero(length(cod_vigentes) * n_grupos),
