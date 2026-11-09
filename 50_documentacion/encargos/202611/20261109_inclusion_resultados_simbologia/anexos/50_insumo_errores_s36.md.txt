@@ -1,0 +1,64 @@
+# Errores del asistente · sesión 36 (registro en el momento)
+
+Registro de la sesión 36 de `slep_simce_adecuado` (SETTINGS §2.2.15, diez campos). El traspaso v36 los
+copia a su §15.
+
+**ERR-36-01**
+- `momento`: texto de inicio de la sesión 36, redactado tras el cierre v35 (2026-09-27).
+- `disparador`: usuario lo corrigió.
+- `que_paso`: el texto de inicio traía un hueco «[pega aquí el eco completo que imprime /apertura]», que le dejaba al titular armar el mensaje con textos de otra fuente.
+- `regla_violada`: preferencia del Project «el mensaje de apertura se entrega como un solo bloque completo y autosuficiente, sin collage»; SETTINGS §1.2.6, entrega materializada (la autoría del artefacto es del asistente).
+- `causa_raiz`: seguí la forma de SETTINGS §1.2.1 (el titular pega el eco de /apertura) sin contrastarla con la preferencia, que ya estaba en la memoria; el eco no existía aún y, en vez de diseñar un texto que no lo necesitara, dejé el hueco.
+- `salvaguarda_presente`: memoria del Project (preferencias) y userPreferences (materialización).
+- `patron`: PAT-07, preferencia leída no propagada a la forma del entregable.
+- `gatillo_observable`: restriccion-no-propagada: un texto para el titular con un marcador entre corchetes que él debe reemplazar.
+- `intentos_previos`: 0.
+- `costo`: un turno del titular y una segunda emisión del texto.
+
+**ERR-36-02**
+- `momento`: apertura de emergencia, resolución del kit sucio que detenía `/apertura`.
+- `disparador`: asistente lo señaló espontáneamente.
+- `que_paso`: escribí tres rutas en `.git/info/exclude` de `herramientas_dev` desde el puente.
+- `regla_violada`: traspaso v35 §12, «⚠️ NO correr git que escriba desde el puente».
+- `causa_raiz`: actué sobre el kit antes de leer el traspaso, bajo la urgencia de abrir la sesión.
+- `salvaguarda_presente`: traspaso v35.
+- `patron`: PAT-09, costo sobre regla.
+- `gatillo_observable`: costo-sobre-regla: escritura dentro de `.git/` desde el puente.
+- `intentos_previos`: 0.
+- `costo`: tres rutas del kit que hoy necesitan `git add -f` (o quitar las líneas) para versionarse.
+
+**ERR-36-03**
+- `momento`: diagnóstico de la discrepancia 55/54 en Costa Central.
+- `disparador`: asistente lo señaló espontáneamente, al preparar la propuesta.
+- `que_paso`: afirmé que 8.216 filas con resultados publicados quedaban fuera por el umbral de 10 evaluados; eran filas con los tres porcentajes en 0, que no son resultados, y recomendé la opción B sobre esa premisa.
+- `regla_violada`: SETTINGS §1.2.6, marcador de fuente tipo 3 (la cifra se contó, pero su clasificación no se midió).
+- `causa_raiz`: usé «porcentaje no vacío» como prueba de resultado publicado sin comprobar que los tres porcentajes sumaran 100.
+- `salvaguarda_presente`: SETTINGS; la regla de suma ya existía en `36_funciones_trayectorias.R` (`SUMA_NIVELES_MIN`, `SUMA_NIVELES_MAX`).
+- `patron`: PAT-13, criterio que mide un proxy (porcentaje no vacío) y no el riesgo (resultado publicado).
+- `gatillo_observable`: cifras-datos: un conteo de «resultados publicados» sin condición de coherencia de los porcentajes.
+- `intentos_previos`: 0.
+- `costo`: una recomendación corregida en el turno siguiente.
+
+**ERR-36-04**
+- `momento`: propuesta de nota metodológica (primera y segunda versión).
+- `disparador`: usuario lo corrigió.
+- `que_paso`: afirmé que con la marca 2 la Agencia no muestra el puntaje promedio pero sí la distribución por estándares; las 2.008 filas con marca y resultado válido traen puntaje promedio publicado.
+- `regla_violada`: SETTINGS §1.2.6, marcador de fuente tipo 1 y regla de estructura (la fuente de una conducta es el dato, no su descripción).
+- `causa_raiz`: tomé el rótulo de la glosa («razón por la que no se muestra el puntaje promedio») como descripción de lo que la base trae, sin contarlo.
+- `salvaguarda_presente`: SETTINGS; A35-1 y ERR-35-18 (documentación tomada como fuente del comportamiento).
+- `patron`: PAT-01, afirmación desde la documentación y no desde los datos.
+- `gatillo_observable`: afirmar-sin-leer: afirmación sobre lo que la Agencia publica sin recuento de `prom_*` en las filas marcadas.
+- `intentos_previos`: 1 (ERR-36-03, misma familia en el mismo diagnóstico).
+- `costo`: una nota metodológica reescrita y un turno del titular.
+
+**ERR-36-05**
+- `momento`: redacción del encargo `20261109_inclusion_resultados_simbologia`, inserción de los md5 en §4bis.
+- `disparador`: asistente lo señaló espontáneamente, al leer el informe de la segunda ronda de auditoría.
+- `que_paso`: un reemplazo global de dos comillas invertidas por una, pensado para los md5, colapsó las 17 cercas de código del encargo a una sola comilla.
+- `regla_violada`: SETTINGS §1.2.6, «Generar, verificar, consumar» (el reemplazo no tuvo verificación intermedia del resto del archivo).
+- `causa_raiz`: apliqué un reemplazo de texto a todo el archivo cuando su objetivo eran cuatro celdas, sin contar antes sus coincidencias.
+- `salvaguarda_presente`: SETTINGS; la auditoría de segunda ronda lo detectó antes de la entrega.
+- `patron`: PAT-02, edición global sin verificación intermedia.
+- `gatillo_observable`: otro: reemplazo de texto sin recuento previo de coincidencias en el archivo completo.
+- `intentos_previos`: 0.
+- `costo`: una corrección del encargo; nada llegó a la ejecución.
