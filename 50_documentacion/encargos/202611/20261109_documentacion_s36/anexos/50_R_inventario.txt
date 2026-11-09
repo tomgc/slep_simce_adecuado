@@ -1,0 +1,15 @@
+Inventario de afirmaciones auditables (FASE R, documentacion_s36)
+Derivado del log antes de auditar.
+
+R-01 FASE 0 H2: los tres destinos en 338e64f tenian los md5 de partida de §1 y el destino nuevo no existia.
+R-02 T1: el contenido de cada destino en HEAD es identico a su insumo (md5 de §4bis).
+R-03 T1: <NUMSTAT> contra hash_inicial 25400c5 = 4/167, 174/0, 1/1, 6/2.
+R-04 T1: README.md y publicacion_github_pages.md ya no citan 20260924_decision_referente_traspasos (0 coincidencias).
+R-05 Invariante 1: solo cambian los cuatro destinos fuera de 50_documentacion/encargos/.
+R-06 Invariante 2: sin atribucion (<ATRIB> = 0 0).
+R-07 Invariante 3: encargo e insumos intactos desde hash_inicial.
+R-08 Invariante 4: nada de 10_utils, 20_insumos, 30_procesamiento ni docs.
+R-09 Alcance global: git diff hash_inicial..HEAD dentro de los ALCANCE; arbol sin residuo fuera del log y anexos; md5 del encargo = encargo_md5.
+R-10 Regresion: sin arnes de pruebas (declarado por el encargo; no toca codigo).
+R-11 Control positivo: un insumo alterado en una copia temporal cambia su md5.
+R-12 Lecturas previas al testigo (ls -la del expediente), que §0.3 manda juzgar ADVIERTE. (Agregada durante la auditoria: omitida al derivar el inventario.)
