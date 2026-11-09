@@ -32,13 +32,21 @@
 #       641, 670 y 700 px (Q-34 y Q-66; M2 de s35h y M5 de s35i).
 #   M7  A 375 px, el tooltip no tapa el punto en los casos de G3 de s35g (Q-54).
 #   M8  El PNG exportado del supergrid usa gobCL-sitio (Q-31; M4 de s35h).
+#   M9  SLEP Costa Central, 4° básico, Lectura, 2025: 55 establecimientos y
+#       1.194 evaluados con la casilla de simbología adicional desmarcada, 54 y
+#       1.184 marcada (D36-1; cifras de la sonda S1 del encargo
+#       20261109_inclusion_resultados_simbologia).
+#   M10 Con la casilla marcada, el modal en 2025 lista exactamente los
+#       establecimientos con simbología de los territorios en pantalla, con su
+#       motivo, y ninguno de otro territorio (D36-1).
+#   M11 A 375 px, la fila de acciones con la casilla no desborda (criterio de M4).
 #
 # Insumos:  40_salidas/motor_comparacion.html (correr antes el paso 33), o la
 #           ruta que se pase como primer argumento;
 #           20_insumos/simce/{2m,4b}/ (M3);
 #           30_procesamiento/33_motor_template.html, 33_fragmento_sitio.html y
 #           10_utils/10_html.R (M2).
-# Requiere: chromote y Chrome (M4 a M8 leen el motor en el navegador).
+# Requiere: chromote y Chrome (M4 a M11 leen el motor en el navegador).
 # Salida:   el informe en consola, una línea por prueba. No escribe archivos en
 #           el árbol; M7 y M8 escriben un HTML de control en tempdir() y lo
 #           borran al leerlo.
@@ -115,6 +123,15 @@ ANCHO_PNG <- 1280L
 TOL_TINTA_PX <- 2        # px de PNG
 FRAGMENTO_FUENTE_PNG <- "new Blob([svgConFuenteSitio(svgStr)]"
 ESPERA_EXPORTAR_S <- 20
+# M9 a M11 (D36-1). Esperados de la sonda S1 del encargo
+# 20261109_inclusion_resultados_simbologia (línea cc_4b_lect_2025: 55 1194 54 1184),
+# un recuento sobre los xlsx y el directorio que no pasa por el pipeline.
+ANIO_SIMB         <- 2025L
+ESPERADO_M9_INCL  <- c(n_estab = 55L, n_eval = 1194L)
+ESPERADO_M9_EXCL  <- c(n_estab = 54L, n_eval = 1184L)
+ESPERADO_M10_FILAS <- 1L   # 55 - 54: el establecimiento con simbología en Lectura 2025
+ANCHO_CASILLA     <- 375L
+ANCHO_CONTROL_CASILLA <- "600px"   # ancho mínimo plantado en la etiqueta para el control de M11
 
 # ---- Informe ---------------------------------------------------------------------
 
@@ -691,7 +708,152 @@ comprobar(
                                                             if (m8_ctl_detecta) "FALLA, detectado" else "no detectado"))
 )
 
-# Cierra el navegador que abrió chromote para M4 a M8.
+# ---- M9. La casilla de simbología adicional cambia las cifras de Costa Central ------------
+
+# Evalúa en la página la serie del panorama del SLEP Costa Central (el territorio
+# por defecto del panorama, derivado igual que en el motor) en ANIO_SIMB, con la
+# casilla desmarcada y marcada, y deja el estado como estaba.
+JS_M9 <- sprintf("(() => {
+  const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+  const sl = SimceData.SLEPS.find(x => norm(x.nombre).includes('costa central'));
+  if (!sl) return JSON.stringify({ slep: false });
+  const ent = { id: 'm9', name: 'SLEP ' + sl.nombre, kind: 'slep', rbds: sl.rbds, comunas: sl.comunas };
+  const nv = DATA.meta.niveles['4b'], pr = DATA.meta.pruebas['lect'];
+  const leer = () => { const p = SimceData.generateSeriesGseCombinado(ent, nv, pr).find(q => q.year === %d) || {};
+                       return { n_estab: p.n_estab, n_eval: p.n_eval, n_simb: p.n_simb }; };
+  const antes = SimceData.getExcluirSimb();
+  SimceData.setExcluirSimb(false); const incl = leer();
+  SimceData.setExcluirSimb(true);  const excl = leer();
+  SimceData.setExcluirSimb(antes);
+  return JSON.stringify({ slep: true, incl, excl, estado_inicial: antes });
+})()", ANIO_SIMB)
+m9_cumple <- function(x, esperado) isTRUE(x$n_estab == esperado[["n_estab"]] && x$n_eval == esperado[["n_eval"]])
+m9 <- intentar(con_motor(RUTA_MOTOR, ANCHO_PNG, ALTO_VENTANA, function(s) js_json(s, JS_M9)))
+m9_ok_real <- !es_error(m9) && isTRUE(m9$slep) && identical(m9$estado_inicial, FALSE) &&
+  m9_cumple(m9$incl, ESPERADO_M9_INCL) && m9_cumple(m9$excl, ESPERADO_M9_EXCL)
+# Control positivo: la cifra con la casilla desmarcada, cotejada con el esperado
+# de la casilla marcada, tiene que no pasar.
+m9_ctl_detecta <- !es_error(m9) && isTRUE(m9$slep) && !m9_cumple(m9$incl, ESPERADO_M9_EXCL)
+comprobar(
+  "M9", sprintf("SLEP Costa Central, 4° básico, Lectura, %d: 55 establecimientos y 1.194 evaluados con la casilla desmarcada; 54 y 1.184 marcada", ANIO_SIMB),
+  m9_ok_real && m9_ctl_detecta,
+  if (es_error(m9)) mensaje(m9) else sprintf(
+    "casilla al cargar: %s; desmarcada %s y %s (con simbología %s); marcada %s y %s; m9_ctl_detecta: %s",
+    if (isTRUE(m9$estado_inicial)) "marcada" else "desmarcada",
+    m9$incl$n_estab, m9$incl$n_eval, m9$incl$n_simb, m9$excl$n_estab, m9$excl$n_eval,
+    if (m9_ctl_detecta) "TRUE (cotejar la cifra desmarcada con 54 y 1.184 FALLA, detectado)" else "FALSE")
+)
+
+# ---- M10. El modal lista los establecimientos con simbología de los territorios en pantalla --
+
+# Con los territorios por defecto de la comparación (las comunas de Costa Central
+# con dependencia Servicio Local) y el nivel y la prueba por defecto (4° básico,
+# Lectura): marca la casilla, elige ANIO_SIMB en el modal y abre la lista. Cada
+# fila listada se coteja con DATA: su RBD tiene simbología en ese año, nivel y
+# prueba, su comuna y dependencia del directorio son las de algún territorio en
+# pantalla y su motivo es el de meta.motivos_simbologia para su código.
+JS_M10_ABRIR <- "(() => {
+  document.querySelector('.results-head .casilla-simb input').click();
+  return true; })()"
+JS_M10_ANIO <- sprintf("(() => {
+  const b = Array.from(document.querySelectorAll('.modal-simb .simb-anios button')).find(x => x.textContent.trim().startsWith('%d'));
+  if (!b) return false; b.click(); const d = document.querySelector('.modal-simb details'); if (d) d.open = true; return true; })()", ANIO_SIMB)
+JS_M10_LEER <- sprintf("(() => {
+  const C = DATA.simbologia, M = DATA.meta.motivos_simbologia;
+  const estab = new Map(DATA.establecimientos.map(r => [String(r.rbd), r]));
+  const filas = Array.from(document.querySelectorAll('.modal-simb .simb-fila')).map(tr => {
+    const rbd = tr.dataset.rbd, celdas = Array.from(tr.querySelectorAll('td')).map(td => td.textContent);
+    let cod = null;
+    for (let i = 0; i < C.rbd.length; i++) if (String(C.rbd[i]) === rbd && C.anio[i] === %d && C.nivel[i] === '4b' && C.prueba[i] === 'lect') cod = C.cod[i];
+    const e = estab.get(rbd);
+    return { rbd, cod, motivo_ok: cod != null && celdas[celdas.length - 1] === M[cod],
+             en_territorio: !!e && String(e.cod_depe2) === '5' && window.__M10_COMUNAS.includes(String(e.cod_com_rbd)) };
+  });
+  const activo = (document.querySelector('.modal-simb .simb-anios button.is-active') || {}).textContent || '';
+  return JSON.stringify({ modal: !!document.querySelector('.modal-simb'), activo, filas,
+                          signos: Array.from(document.querySelectorAll('svg tspan')).filter(t => t.textContent === '\\u2021').length });
+})()", ANIO_SIMB)
+# Comunas de los territorios en pantalla, leídas del estado por defecto del motor.
+JS_M10_COMUNAS <- "(() => {
+  const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+  const sl = SimceData.SLEPS.find(x => norm(x.nombre).includes('costa central'));
+  window.__M10_COMUNAS = sl ? sl.comunas.map(String) : []; return window.__M10_COMUNAS.length; })()"
+# Control: una fila de un establecimiento de otro territorio (el primero del
+# directorio fuera de esas comunas) plantada en la lista abierta.
+JS_M10_PLANTAR <- "(() => {
+  const ajeno = DATA.establecimientos.find(r => !window.__M10_COMUNAS.includes(String(r.cod_com_rbd)));
+  const tr = document.querySelector('.modal-simb .simb-fila').cloneNode(true);
+  tr.dataset.rbd = String(ajeno.rbd); tr.classList.add('m10-plantada');
+  document.querySelector('.modal-simb .simb-fila').parentNode.appendChild(tr); return true; })()"
+m10_eval <- function(m) {
+  f <- m$filas
+  n <- if (is.null(f) || length(f) == 0) 0L else NROW(f)
+  list(n = n, todos_ok = n > 0 && all(f$en_territorio) && all(f$motivo_ok) && all(!is.na(f$cod)))
+}
+m10_ctl <- NULL
+m10 <- intentar(con_motor(RUTA_MOTOR, ANCHO_PNG, ALTO_VENTANA, function(s) {
+  js(s, JS_M10_COMUNAS)
+  js(s, JS_M10_ABRIR)
+  esperar(s, "!!document.querySelector('.modal-simb')", 10); cuadro(s)
+  js(s, JS_M10_ANIO); Sys.sleep(ESPERA_CLIC_S); cuadro(s)
+  m <- js_json(s, JS_M10_LEER)
+  js(s, JS_M10_PLANTAR); cuadro(s)
+  m10_ctl <<- js_json(s, JS_M10_LEER)
+  m
+}))
+m10_r <- if (es_error(m10)) NULL else m10_eval(m10)
+m10_ok_real <- !es_error(m10) && isTRUE(m10$modal) && startsWith(m10$activo, as.character(ANIO_SIMB)) &&
+  m10_r$n == ESPERADO_M10_FILAS && m10_r$todos_ok && m10$signos == 0
+m10_ctl_detecta <- !is.null(m10_ctl) && !m10_eval(m10_ctl)$todos_ok
+comprobar(
+  "M10", sprintf("Con la casilla marcada, el modal en %d lista exactamente el establecimiento con simbología de los territorios en pantalla, con su motivo, y ninguno de otro territorio", ANIO_SIMB),
+  m10_ok_real && m10_ctl_detecta,
+  if (es_error(m10)) mensaje(m10) else sprintf(
+    "modal abierto: %s; año activo «%s»; filas %d (esperado %d); en territorio y con su motivo: %s; signos «‡» en pantalla con la casilla marcada: %d; control con una fila de otro territorio plantada: %s",
+    m10$modal, m10$activo, m10_r$n, ESPERADO_M10_FILAS, m10_r$todos_ok, m10$signos,
+    if (m10_ctl_detecta) "FALLA, detectado" else "no detectado")
+)
+
+# ---- M11. A 375 px, la fila de acciones con la casilla no desborda -------------------------
+
+# Criterio de M4 (scrollWidth del documento igual al ancho de la ventana) más la
+# caja de la casilla dentro de la ventana, en #comparacion y en #panorama.
+JS_CASILLA <- paste0("JSON.stringify({sw: document.documentElement.scrollWidth, ",
+                     "cw: document.documentElement.clientWidth, vw: window.innerWidth, ",
+                     "n: document.querySelectorAll('.section-actions .casilla-simb').length, ",
+                     "der: Math.max(...Array.from(document.querySelectorAll('.section-actions .casilla-simb')).map(e => e.getBoundingClientRect().right)), ",
+                     "izq: Math.min(...Array.from(document.querySelectorAll('.section-actions .casilla-simb')).map(e => e.getBoundingClientRect().left))})")
+casilla_desborda <- function(m) desborda(m) || m$der > m$vw + TOL_PX || m$izq < -TOL_PX
+m11 <- list(); m11_ctl <- NULL
+for (vista in c("comparacion", "panorama")) {
+  r <- intentar(con_motor(RUTA_MOTOR, ANCHO_CASILLA, ALTO_VENTANA, function(s) {
+    m <- js_json(s, JS_CASILLA)
+    if (vista == "comparacion") {
+      js(s, sprintf("document.querySelector('.casilla-simb-label').style.cssText = 'white-space:nowrap;min-width:%s'", ANCHO_CONTROL_CASILLA)); cuadro(s)
+      m11_ctl <<- js_json(s, JS_CASILLA)
+      js(s, "document.querySelector('.casilla-simb-label').style.cssText = ''")
+    }
+    m
+  }, hash = if (vista == "panorama") "#panorama" else "",
+     esperar_js = if (vista == "panorama") JS_ESPERA_PANORAMA else JS_ESPERA_COMPARACION))
+  m11[[length(m11) + 1]] <- list(vista = vista, m = r)
+}
+m11_desc <- vapply(m11, function(x) {
+  if (es_error(x$m)) sprintf("%s: %s", x$vista, mensaje(x$m))
+  else sprintf("%s: %d casilla(s), documento %d/%d, casilla de %.1f a %.1f px", x$vista, x$m$n, x$m$sw, x$m$vw, x$m$izq, x$m$der)
+}, character(1))
+m11_ok_real <- all(vapply(m11, function(x) !es_error(x$m) && x$m$n == 1L && !casilla_desborda(x$m), logical(1)))
+m11_ctl_detecta <- !is.null(m11_ctl) && casilla_desborda(m11_ctl)
+comprobar(
+  "M11", "A 375 px, la fila de acciones con la casilla de simbología adicional no desborda en #comparacion ni en #panorama",
+  m11_ok_real && m11_ctl_detecta,
+  sprintf("%s; control con la etiqueta sin envolver y de %s (comparacion): %s",
+          paste(m11_desc, collapse = "; "), ANCHO_CONTROL_CASILLA,
+          if (is.null(m11_ctl)) "sin medida" else sprintf("documento %d/%d, casilla hasta %.1f px, %s", m11_ctl$sw, m11_ctl$vw, m11_ctl$der,
+                                                          if (m11_ctl_detecta) "FALLA, detectado" else "no detectado"))
+)
+
+# Cierra el navegador que abrió chromote para M4 a M11.
 if (requireNamespace("chromote", quietly = TRUE) && chromote::has_default_chromote_object()) {
   try(chromote::default_chromote_object()$close(), silent = TRUE)
 }

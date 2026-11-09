@@ -463,6 +463,36 @@ body {
   /* gobCL dibuja «†» igual que «+» (R-47): el signo usa la familia del sistema. */
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
+/* Simbología adicional de la Agencia (D36-1): «‡» con la familia del sistema,
+   como «†» (R-47), y la casilla de exclusión en la fila de acciones. La
+   etiqueta envuelve en pantallas angostas: la fila no desborda a 375 px. */
+.signo-simb {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.casilla-simb {
+  display: inline-flex; align-items: center; gap: 4px 10px;
+  flex-wrap: wrap; min-width: 0; max-width: 100%;
+}
+.casilla-simb-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-body); color: var(--fg-2); cursor: pointer;
+  min-width: 0; white-space: normal;
+}
+.casilla-simb-label input[type="checkbox"] { accent-color: var(--ocean); flex-shrink: 0; margin: 0; }
+.casilla-simb-lista {
+  background: transparent; border: 0; padding: 0;
+  font-family: var(--font-body); font-size: var(--fs-body);
+  color: var(--ocean); text-decoration: underline; cursor: pointer;
+}
+.modal-simb-sub { margin: 4px 0 0; font-size: var(--fs-caption); color: var(--fg-3); }
+.simb-anios { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.simb-anios .btn:disabled { opacity: 0.45; cursor: default; }
+.simb-resumen { margin: 0 0 12px; font-size: var(--fs-body); color: var(--fg-1); }
+.simb-lista summary { cursor: pointer; font-weight: 600; color: var(--ocean); margin-bottom: 8px; }
+.simb-tabla { width: 100%; }
+.simb-tabla td, .simb-tabla th { text-align: left; vertical-align: top; }
+.simb-motivo { min-width: 200px; }
+.modal-simb-pie { justify-content: flex-start; font-size: var(--fs-caption); color: var(--fg-3); }
 .hint-asterisk {
   display: inline-flex; align-items: center;
   font-weight: 900; color: var(--ocean); font-size: var(--fs-body-lg);
@@ -1449,7 +1479,60 @@ code {
       };
       const DEPE2_CODES = M.depe2 || ["1", "2", "3", "4", "5"];
 
-      // Construye un punto de serie desde un acumulador {num,num_ele,num_ins,den,n_estab}.
+      // ----------------------------------------------------------
+      // Simbología adicional de la Agencia (D36-1)
+      // ----------------------------------------------------------
+      // Las cifras incluyen por defecto los resultados que la Agencia publica
+      // con simbología adicional. Con la casilla «Excluir resultados con
+      // simbología adicional» marcada (EXCLUIR_SIMB), cada agregado los quita:
+      // las filas de DATA.datos restan sus subtotales *_simb y las de
+      // DATA.simce_rbd con simb == 1 se saltan. Un agregado que queda sin
+      // estudiantes queda vacío. En los dos estados, el acumulador cuenta en
+      // n_simb los establecimientos con simbología del agregado (incluidos o
+      // excluidos), que el CSV publica y que «‡» señala con la casilla
+      // desmarcada.
+      let EXCLUIR_SIMB = false;
+      function setExcluirSimb(v) { EXCLUIR_SIMB = !!v; }
+      function getExcluirSimb() { return EXCLUIR_SIMB; }
+      const nuevoAcc = (nEstab) => ({ num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: nEstab, n_simb: 0 });
+      // Aporte de la fila i de DATA.datos, ya sin los resultados con simbología
+      // si EXCLUIR_SIMB; null si la fila no trae resultado.
+      function aporteDatos(i) {
+        const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
+        if (p == null || n == null || n === 0) return null;
+        const pe = D.pct_ele[i], pi = D.pct_ins[i];
+        const simb = D.n_estab_simb ? (D.n_estab_simb[i] || 0) : 0;
+        const a = {
+          p, pe, pi, simb,
+          num: (p * n) / 100,
+          num_ele: pe != null ? (pe * n) / 100 : 0,
+          num_ins: pi != null ? (pi * n) / 100 : 0,
+          den: n, n_estab: e,
+        };
+        if (EXCLUIR_SIMB && simb > 0) {
+          a.num = Math.max(0, a.num - D.num_ade_simb[i]);
+          a.num_ele = Math.max(0, a.num_ele - D.num_ele_simb[i]);
+          a.num_ins = Math.max(0, a.num_ins - D.num_ins_simb[i]);
+          a.den -= D.n_evaluados_simb[i];
+          a.n_estab -= simb;
+        }
+        return a;
+      }
+      function sumarAporte(acc, a) {
+        acc.n_simb += a.simb;
+        if (a.den <= 0) return;
+        acc.num += a.num; acc.num_ele += a.num_ele; acc.num_ins += a.num_ins;
+        acc.den += a.den; acc.n_estab += a.n_estab;
+      }
+      // Fila i de DATA.simce_rbd con simbología adicional.
+      const esSimbRbd = (D2, i) => !!(D2.simb && D2.simb[i] === 1);
+      // Punto vacío de un año: conserva n_simb del acumulador, si lo hubo.
+      const puntoVacio = (year, acc, preliminar) => ({
+        year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null,
+        n_simb: acc ? acc.n_simb : 0, preliminar,
+      });
+
+      // Construye un punto de serie desde un acumulador {num,num_ele,num_ins,den,n_estab,n_simb}.
       // Normaliza los tres niveles a 100 para el apilado: Adecuado se conserva
       // exacto (no cambia respecto al modo solo-Adecuado); Elem e Insuf se ajustan
       // proporcionalmente para absorber el ±0.1 de redondeo de la fuente, de modo
@@ -1467,7 +1550,8 @@ code {
         } else {
           pe = 0; pi = Math.round(resto * 10) / 10;
         }
-        return { year, pct, pct_ele: pe, pct_ins: pi, n_eval: acc.den, n_estab: acc.n_estab, preliminar };
+        return { year, pct, pct_ele: pe, pct_ins: pi, n_eval: acc.den, n_estab: acc.n_estab,
+                 n_simb: acc.n_simb || 0, preliminar };
       }
 
       // generateSeries por lista de RBDs: agrega ponderado por nalu sobre los
@@ -1496,7 +1580,8 @@ code {
           const pe = D2.palu_ele[i], pi = D2.palu_ins[i];
           const y = D2.anio[i];
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
+          if (!acc) { acc = nuevoAcc(0); porAnio.set(y, acc); }
+          if (esSimbRbd(D2, i)) { acc.n_simb += 1; if (EXCLUIR_SIMB) continue; }
           acc.num += (p * n) / 100;
           if (pe != null) acc.num_ele += (pe * n) / 100;
           if (pi != null) acc.num_ins += (pi * n) / 100;
@@ -1507,7 +1592,7 @@ code {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
           if (acc && acc.den > 0) return mkPunto(year, acc, preliminar);
-          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
+          return puntoVacio(year, acc, preliminar);
         });
       }
 
@@ -1524,22 +1609,17 @@ code {
           if (!setCom.has(D.cod_com[i])) continue;
           if (depe2 && D.cod_depe2 && D.cod_depe2[i] !== depe2) continue;
           const y = D.anio[i];
-          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
-          if (p == null || n == null || n === 0) continue;
-          const pe = D.pct_ele[i], pi = D.pct_ins[i];
+          const a = aporteDatos(i);
+          if (!a) continue;
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
-          acc.num += (p * n) / 100;
-          if (pe != null) acc.num_ele += (pe * n) / 100;
-          if (pi != null) acc.num_ins += (pi * n) / 100;
-          acc.den += n;
-          acc.n_estab += e;
+          if (!acc) { acc = nuevoAcc(0); porAnio.set(y, acc); }
+          sumarAporte(acc, a);
         }
         return YEARS.map(year => {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
           if (acc && acc.den > 0) return mkPunto(year, acc, preliminar);
-          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
+          return puntoVacio(year, acc, preliminar);
         });
       }
 
@@ -1565,7 +1645,8 @@ code {
           if (n == null || n === 0 || p == null) continue;
           const pe = D2.palu_ele[i], pi = D2.palu_ins[i];
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 1 }; porAnio.set(y, acc); }
+          if (!acc) { acc = nuevoAcc(1); porAnio.set(y, acc); }
+          if (esSimbRbd(D2, i)) { acc.n_simb = 1; if (EXCLUIR_SIMB) continue; }
           acc.num += (p * n) / 100;
           if (pe != null) acc.num_ele += (pe * n) / 100;
           if (pi != null) acc.num_ins += (pi * n) / 100;
@@ -1575,7 +1656,7 @@ code {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
           if (acc && acc.den > 0) { const pt = mkPunto(year, acc, preliminar); pt.n_estab = 1; return pt; }
-          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
+          return puntoVacio(year, acc, preliminar);
         });
       }
 
@@ -1591,22 +1672,17 @@ code {
         for (const i of ix) {
           if (depe2 && D.cod_depe2 && D.cod_depe2[i] !== depe2) continue;
           const y = D.anio[i];
-          const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
-          if (p == null || n == null || n === 0) continue;
-          const pe = D.pct_ele[i], pi = D.pct_ins[i];
+          const a = aporteDatos(i);
+          if (!a) continue;
           let acc = porAnio.get(y);
-          if (!acc) { acc = { num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 }; porAnio.set(y, acc); }
-          acc.num += (p * n) / 100;
-          if (pe != null) acc.num_ele += (pe * n) / 100;
-          if (pi != null) acc.num_ins += (pi * n) / 100;
-          acc.den += n;
-          acc.n_estab += e;
+          if (!acc) { acc = nuevoAcc(0); porAnio.set(y, acc); }
+          sumarAporte(acc, a);
         }
         return YEARS.map(year => {
           const acc = porAnio.get(year);
           const preliminar = PRELIMINAR_YEARS.includes(year);
           if (acc && acc.den > 0) return mkPunto(year, acc, preliminar);
-          return { year, pct: null, pct_ele: null, pct_ins: null, n_eval: null, n_estab: null, preliminar };
+          return puntoVacio(year, acc, preliminar);
         });
       }
 
@@ -1645,7 +1721,7 @@ code {
         if (!entity || !nv || !pr) return vacia();
 
         const porAnio = new Map();
-        const acc0 = () => ({ num: 0, num_ele: 0, num_ins: 0, den: 0, n_estab: 0 });
+        const acc0 = () => nuevoAcc(0);
 
         if (entity.kind === "slep" || entity.kind === "estab") {
           // Fuente por establecimiento. Un RBD pertenece a un solo GSE por año,
@@ -1667,6 +1743,7 @@ code {
             const y = D2.anio[i];
             let acc = porAnio.get(y);
             if (!acc) { acc = acc0(); porAnio.set(y, acc); }
+            if (esSimbRbd(D2, i)) { acc.n_simb += 1; if (EXCLUIR_SIMB) continue; }
             acc.num += (p * n) / 100;
             if (pe != null) acc.num_ele += (pe * n) / 100;
             if (pi != null) acc.num_ins += (pi * n) / 100;
@@ -1681,18 +1758,13 @@ code {
           for (const i of ix) {
             if (setCom && !setCom.has(D.cod_com[i])) continue;
             if (depe2 && D.cod_depe2 && D.cod_depe2[i] !== depe2) continue;
-            const p = D.pct[i], n = D.n_evaluados[i], e = D.n_estab[i];
-            if (p == null || n == null || n === 0) continue;
-            const pe = D.pct_ele[i], pi = D.pct_ins[i];
-            if (filaSuprimida(p, pe, pi)) continue;
+            const a = aporteDatos(i);
+            if (!a) continue;
+            if (filaSuprimida(a.p, a.pe, a.pi)) continue;
             const y = D.anio[i];
             let acc = porAnio.get(y);
             if (!acc) { acc = acc0(); porAnio.set(y, acc); }
-            acc.num += (p * n) / 100;
-            if (pe != null) acc.num_ele += (pe * n) / 100;
-            if (pi != null) acc.num_ins += (pi * n) / 100;
-            acc.den += n;
-            acc.n_estab += e;
+            sumarAporte(acc, a);
           }
         }
 
@@ -1703,7 +1775,7 @@ code {
             return {
               year, pct: null, pct_ele: null, pct_ins: null,
               n_eval: null, n_estab: null, n_adec: null, n_ele: null, n_ins: null,
-              preliminar,
+              n_simb: acc ? acc.n_simb : 0, preliminar,
             };
           }
           const pt = mkPunto(year, acc, preliminar);
@@ -1802,6 +1874,7 @@ code {
         generateSeriesByEstab, generateSeriesByNacional, gseActualDeEstab, ESTAB_LIST,
         getSeriesForEntity,
         generateSeriesGseCombinado,
+        setExcluirSimb, getExcluirSimb,
         REGIONES, COMUNA_BY_COD,
         SLEPS, DEPE2_LABELS, DEPE2_CODES,
         NIVEL_LABEL_TO_COD, PRUEBA_LABEL_TO_COD,
@@ -2185,6 +2258,14 @@ code {
           return m;
         };
         if (s.n_estab === 1 && s.pct != null) tip.querySelector(".tt-adec").appendChild(marcaUnico());
+        // Simbología adicional (D36-1): «‡» después de «†», con la misma familia.
+        const marcaSimb = () => {
+          const m = document.createElement("span");
+          m.style.fontFamily = FONT_SIGNO;
+          m.textContent = ASTERISCO_SIMB;
+          return m;
+        };
+        if (conSimb(s)) tip.querySelector(".tt-adec").appendChild(marcaSimb());
         tip.querySelector(".tt-ele").textContent = (s.pct == null) ? "—"
           : (s.pct_ele != null ? fmtPct(s.pct_ele) : "—");
         tip.querySelector(".tt-ins").textContent = (s.pct == null) ? "—"
@@ -2220,6 +2301,12 @@ code {
           // La advertencia empieza con la marca, como la leyenda y la nota
           // «† Un solo establecimiento».
           warn.append(marcaUnico(), " " + warnText);
+          tip.appendChild(warn);
+        }
+        if (conSimb(s)) {
+          const warn = document.createElement("div");
+          warn.className = "tt-warn";
+          warn.append(marcaSimb(), ` Incluye ${fmtInt(s.n_simb)} ${s.n_simb === 1 ? "establecimiento" : "establecimientos"} con simbología adicional de la Agencia`);
           tip.appendChild(warn);
         }
         if (s.preliminar) {
@@ -2571,6 +2658,7 @@ code {
 
     function SparklineSubchart({ entity, gse, nivel, prueba }) {
       const ref = React.useRef(null);
+      const excluirSimb = React.useContext(SimbCtx);
       // Con la fuente del sitio ya cargada, la sparkline se vuelve a dibujar y
       // colocarCifrasSparkline mide las cajas con gobCL-sitio (Q-48). El efecto
       // limpia el SVG antes de dibujar, así que el nuevo dibujo es idempotente.
@@ -2722,7 +2810,8 @@ code {
             .attr("opacity", opacity * 0.9)
             .style("pointer-events", "none")
             .text(Math.round(s.pct) + "%")
-            .call(conMarcaUnico, isLowN);
+            .call(conMarcaUnico, isLowN)
+            .call(conMarcaSimb, s);
           cajasAnio.push(g.append("text")
             .attr("x", cx).attr("y", ih + SPARK_DIMS.anios.linea)
             .attr("text-anchor", "middle")
@@ -2746,7 +2835,7 @@ code {
           cifras.push({ anio: s.year, pct: s.pct, valor: Math.round(s.pct), cx, y0: labelY, sel: cifra, asterisco });
         });
         colocarCifrasSparkline(cifras, { cajaTraspaso, cajasAnio, iw });
-      }, [entity.id, entity.name, entity.anio_traspaso, entity.kind, (entity.comunas || []).join(","), gse, nivel, prueba, fuentesListas]);
+      }, [entity.id, entity.name, entity.anio_traspaso, entity.kind, (entity.comunas || []).join(","), gse, nivel, prueba, fuentesListas, excluirSimb]);
       return <svg ref={ref} className="sparkline-svg" />;
     }
 
@@ -2790,6 +2879,19 @@ code {
       if (conMarca) sel.append("tspan").attr("font-family", FONT_SIGNO).text(ASTERISCO_UNICO);
       return sel;
     };
+    // Señal de simbología adicional (D36-1 punto 3): la cifra cuyo agregado
+    // incluye uno o más resultados que la Agencia publica con simbología
+    // adicional lleva «‡», con la misma colocación y familia que «†»; si lleva
+    // las dos, «†» va primero (se llama después de conMarcaUnico). Con la casilla
+    // de exclusión marcada esos resultados salen del cálculo y el signo no va.
+    const ASTERISCO_SIMB = "‡";
+    const conSimb = s => !!(s && s.pct != null && s.n_simb > 0 && !SimceData.getExcluirSimb());
+    const conMarcaSimb = (sel, s) => {
+      if (conSimb(s)) sel.append("tspan").attr("font-family", FONT_SIGNO).text(ASTERISCO_SIMB);
+      return sel;
+    };
+    // Estado de la casilla, para que los gráficos se redibujen al cambiarla.
+    const SimbCtx = React.createContext(false);
     // Regla única de rotulado (la de slep_idps s29 y la del panorama s29): una
     // franja lleva su cifra adentro solo si la cifra cabe entera; si no, la cifra
     // baja completa bajo el año, con la inicial del nivel en su color. Nunca una
@@ -2799,6 +2901,7 @@ code {
 
     function RecentBarsSubchart({ entity, gse, nivel, prueba, showElemInsuf, yScale, recentN = 3 }) {
       const ref = React.useRef(null);
+      const excluirSimb = React.useContext(SimbCtx);
       React.useEffect(() => {
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove();
@@ -2904,7 +3007,8 @@ code {
                     .attr("fill", seg.fill === COLOR_ELEM ? TINTA_SOBRE_ELEM : "#FFFFFF")
                     .style("pointer-events", "none")
                     .text(fmtPctShort(seg.val))
-                    .call(conMarcaUnico, isLowN);
+                    .call(conMarcaUnico, isLowN)
+                    .call(conMarcaSimb, s);
                 } else {
                   rescatadas.push(seg);
                 }
@@ -2938,7 +3042,8 @@ code {
               .attr("fill", stacked ? "#FFFFFF" : COLOR_ADEC)
               .style("pointer-events", "none")
               .text(fmtPctShort(s.pct))
-              .call(conMarcaUnico, isLowN);
+              .call(conMarcaUnico, isLowN)
+              .call(conMarcaSimb, s);
           } else {
             rescatadas.unshift({ val: s.pct, fill: COLOR_ADEC, sigla: "A" });
           }
@@ -2956,7 +3061,8 @@ code {
               .attr("fill", tintaNivel(seg.fill))
               .style("pointer-events", "none")
               .text(seg.sigla + " " + fmtPct(seg.val))
-              .call(conMarcaUnico, isLowN);
+              .call(conMarcaUnico, isLowN)
+              .call(conMarcaSimb, s);
           });
 
           g.append("text")
@@ -2995,7 +3101,7 @@ code {
             .call(conMarcaUnico, true)
             .append("tspan").text(NOTA_UNICO.slice(ASTERISCO_UNICO.length));
         }
-      }, [entity.id, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN]);
+      }, [entity.id, entity.name, (entity.comunas || []).join(","), gse, nivel, prueba, showElemInsuf, yScale, recentN, excluirSimb]);
       return <svg ref={ref} className="bars-svg" />;
     }
 
@@ -3124,7 +3230,7 @@ code {
                             <span className="td-empty">—</span>
                           ) : (
                             <>
-                              <span className="td-pct">{s.pct.toFixed(1).replace(".", ",")}%</span>
+                              <span className="td-pct">{s.pct.toFixed(1).replace(".", ",")}%{conSimb(s) && <span className="signo-simb">{ASTERISCO_SIMB}</span>}</span>
                               <span className="td-n"> ({fmtInt(s.n_eval)})</span>
 
                             </>
@@ -3180,12 +3286,19 @@ code {
     }
 
     function ChartHints({ showElemInsuf }) {
+      const excluirSimb = React.useContext(SimbCtx);
       return (
         <div className="chart-hints">
           <span className="hint-item">
             <span className="hint-signo">{ASTERISCO_UNICO}</span>
             <span>Un solo establecimiento</span>
           </span>
+          {!excluirSimb && (
+            <span className="hint-item">
+              <span className="hint-signo">{ASTERISCO_SIMB}</span>
+              <span>Incluye simbología adicional de la Agencia</span>
+            </span>
+          )}
           <span className="hint-item">
             <span className="hint-box" style={{ background: COLOR_ADEC }} />
             <span>Adecuado</span>
@@ -3219,7 +3332,12 @@ code {
         ? SimceData.GSE_LEVELS.filter(g => g === gseFilter)
         : SimceData.GSE_LEVELS;
 
-      const rows = [["territorio", "nivel", "prueba", "gse", "gse_label", "anio", "pct_adecuado", "n_evaluados", "preliminar"]];
+      // n_estab_simbologia: establecimientos con simbología adicional del
+      // agregado, incluidos o excluidos; excluye_simbologia: estado de la casilla
+      // (D36-1 punto 5).
+      const excluye = SimceData.getExcluirSimb() ? "si" : "no";
+      const rows = [["territorio", "nivel", "prueba", "gse", "gse_label", "anio", "pct_adecuado", "n_evaluados", "preliminar",
+                     "n_estab_simbologia", "excluye_simbologia"]];
       entities.forEach(ent => {
         GSE_LEVELS.forEach(gse => {
           const series = SimceData.getSeriesForEntity(ent, gse, nivel, prueba);
@@ -3233,7 +3351,9 @@ code {
               s.year,
               s.pct != null ? String(s.pct).replace(".", ",") : "",
               s.n_eval != null ? s.n_eval : "",
-              s.preliminar ? "1" : "0"
+              s.preliminar ? "1" : "0",
+              s.n_simb || 0,
+              excluye
             ]);
           });
         });
@@ -3743,7 +3863,8 @@ code {
                 .attr("font-size", FS_SVG.panorama.valorSegmento)
                 .attr("font-weight", 700)
                 .attr("fill", seg.fill === COLOR_ELEM ? TINTA_SOBRE_ELEM : "#FFFFFF")
-                .text(fmtPctShort(v));
+                .text(fmtPctShort(v))
+                .call(conMarcaSimb, s);
             } else {
               rescatadas.push(seg);
             }
@@ -3760,7 +3881,8 @@ code {
               .attr("font-size", FS_SVG.panorama.valorFuera)
               .attr("font-weight", 700)
               .attr("fill", tintaNivel(seg.fill))
-              .text(seg.sigla + " " + fmtPct(seg.val));
+              .text(seg.sigla + " " + fmtPct(seg.val))
+              .call(conMarcaSimb, s);
           });
         }
 
@@ -3796,6 +3918,7 @@ code {
 
     function PanoramaChart({ entity, nivel, prueba }) {
       const ref = React.useRef(null);
+      const excluirSimb = React.useContext(SimbCtx);
       React.useEffect(() => {
         const { W, H, M } = PANORAMA_DIMS;
         const iw = W - M.left - M.right;
@@ -3811,7 +3934,7 @@ code {
         dibujarPanoramaEnGrupo(g, { series, iw, ih });
       }, [entity.id, entity.kind, entity.rbd, entity.depe2,
           (entity.comunas || []).join(","), (entity.rbds || []).join(","),
-          nivel, prueba]);
+          nivel, prueba, excluirSimb]);
       return <svg ref={ref} className="panorama-svg" />;
     }
 
@@ -3909,7 +4032,9 @@ code {
         "pct_adecuado", "pct_elemental", "pct_insuficiente",
         "n_evaluados", "n_adecuado_derivado", "n_elemental_derivado", "n_insuficiente_derivado",
         "n_establecimientos", "preliminar",
+        "n_estab_simbologia", "excluye_simbologia",
       ]];
+      const excluye = SimceData.getExcluirSimb() ? "si" : "no";
       pruebas.forEach(prueba => {
         SimceData.generateSeriesGseCombinado(entity, nivel, prueba).forEach(s => {
           rows.push([
@@ -3928,6 +4053,8 @@ code {
             s.n_ins != null ? s.n_ins : "",
             s.n_estab != null ? s.n_estab : "",
             s.preliminar ? "1" : "0",
+            s.n_simb || 0,
+            excluye,
           ]);
         });
       });
@@ -4022,8 +4149,9 @@ code {
       );
     }
 
-    function PanoramaSection({ entity, nivel, setNivel, niveles, onOpenSelector }) {
+    function PanoramaSection({ entity, nivel, setNivel, niveles, onOpenSelector, casillaSimb }) {
       const pruebas = Object.values(DATA.meta.pruebas);
+      const excluirSimb = React.useContext(SimbCtx);
       // Un territorio sin ninguna celda con dato en ningún año y ninguna prueba
       // no es un error: hay comunas y establecimientos en esa condición. La
       // vista lo dice en vez de mostrar dos ejes vacíos.
@@ -4038,7 +4166,7 @@ code {
       // Es la misma lista que usa PanoramaChart, por la misma razón.
       }, [entity && entity.id, entity && entity.kind, entity && entity.depe2,
           entity && entity.rbd, ((entity && entity.comunas) || []).join(","),
-          ((entity && entity.rbds) || []).join(","), nivel]);
+          ((entity && entity.rbds) || []).join(","), nivel, excluirSimb]);
 
       // Meta de la tarjeta: se lee de la propia serie, nunca se declara a mano.
       // Toma el año más reciente con dato entre las dos pruebas y el mayor
@@ -4070,7 +4198,7 @@ code {
       // Es la misma lista que usa PanoramaChart, por la misma razón.
       }, [entity && entity.id, entity && entity.kind, entity && entity.depe2,
           entity && entity.rbd, ((entity && entity.comunas) || []).join(","),
-          ((entity && entity.rbds) || []).join(","), nivel]);
+          ((entity && entity.rbds) || []).join(","), nivel, excluirSimb]);
 
       if (!entity) {
         return (
@@ -4107,6 +4235,7 @@ code {
                 onExport={() => exportarPanoramaSVG({ entity, nivel })} />
               <IconExport label="Exportar PNG" icon="image"
                 onExport={() => exportarPanoramaPNG({ entity, nivel })} />
+              {casillaSimb}
             </div>
           </div>
 
@@ -4741,6 +4870,153 @@ code {
     }
 
     // ============================================================
+    // Simbología adicional de la Agencia (D36-1): casilla y modal
+    // ============================================================
+    // La casilla va en las filas de acciones que tienen «Exportar PNG»
+    // (comparación y panorama), justo después de ese botón; las dos reflejan el
+    // mismo estado. Desmarcada por defecto. Al marcarla, las cifras se
+    // recalculan sin los resultados con simbología adicional, «‡» desaparece,
+    // se abre el modal y aparece el enlace «ver lista», que lo reabre.
+    const TEXTO_CASILLA_SIMB = "Excluir resultados con simbología adicional de la Agencia";
+    function CasillaSimb({ excluir, onChange, onVerLista }) {
+      return (
+        <span className="casilla-simb">
+          <label className="casilla-simb-label" title={TEXTO_CASILLA_SIMB}>
+            <input type="checkbox" checked={excluir}
+              onChange={e => onChange(e.target.checked)}
+              title={TEXTO_CASILLA_SIMB} aria-label={TEXTO_CASILLA_SIMB} />
+            <span className="control-texto">Excluir resultados con simbología adicional <span className="signo-simb">{ASTERISCO_SIMB}</span></span>
+          </label>
+          {excluir && (
+            <button type="button" className="casilla-simb-lista" onClick={onVerLista}>ver lista</button>
+          )}
+        </span>
+      );
+    }
+
+    // RBD de los establecimientos de un territorio, con la misma regla que el
+    // popup de establecimientos: un SLEP por su lista de RBD, un establecimiento
+    // por su RBD, el nacional sin filtro (null) y los demás por comuna y, si la
+    // tiene, dependencia (directorio oficial, DATA.establecimientos).
+    function rbdsDeTerritorio(entity) {
+      if (entity.kind === "slep") return new Set((entity.rbds || []).map(String));
+      if (entity.kind === "estab") return new Set([String(entity.rbd)]);
+      if (entity.kind === "nacional" && !entity.depe2) return null;
+      const setCom = entity.kind === "nacional" ? null : new Set(entity.comunas || []);
+      return new Set((DATA.establecimientos || []).filter(r =>
+        (!setCom || setCom.has(String(r.cod_com_rbd))) &&
+        (!entity.depe2 || String(r.cod_depe2) === String(entity.depe2))
+      ).map(r => String(r.rbd)));
+    }
+
+    // Modal «Resultados excluidos del cálculo»: un año a la vez, con los
+    // establecimientos con simbología adicional de los territorios en pantalla,
+    // del nivel y las pruebas activos (DATA.simbologia; nombre y comuna desde
+    // DATA.establecimientos; motivo desde meta.motivos_simbologia). Estilos y
+    // conducta del modal «Agregar territorio»: cierra con la ×, con Escape y con
+    // un clic fuera.
+    function ModalSimbologia({ entities, nivel, pruebas, onClose }) {
+      React.useEffect(() => {
+        const alTeclear = e => { if (e.key === "Escape") onClose(); };
+        document.addEventListener("keydown", alTeclear);
+        return () => document.removeEventListener("keydown", alTeclear);
+      }, [onClose]);
+
+      const filas = React.useMemo(() => {
+        const C = DATA.simbologia;
+        if (!C || !C.rows) return [];
+        const nv = SimceData.NIVEL_LABEL_TO_COD[nivel];
+        const prs = new Set(pruebas.map(p => SimceData.PRUEBA_LABEL_TO_COD[p]));
+        const sets = entities.map(rbdsDeTerritorio);
+        const enPantalla = rbd => sets.some(s => s === null || s.has(rbd));
+        const estab = new Map((DATA.establecimientos || []).map(r => [String(r.rbd), r]));
+        const nomPrueba = DATA.meta.pruebas;
+        const out = [];
+        for (let i = 0; i < C.rbd.length; i++) {
+          if (C.nivel[i] !== nv || !prs.has(C.prueba[i])) continue;
+          const rbd = String(C.rbd[i]);
+          if (!enPantalla(rbd)) continue;
+          const e = estab.get(rbd);
+          out.push({
+            anio: C.anio[i], rbd, prueba: nomPrueba[C.prueba[i]] || C.prueba[i],
+            nom: e ? e.nom_rbd : "—", com: e ? aNombrePropio(e.nom_com_rbd) : "—",
+            nalu: C.nalu[i], motivo: (DATA.meta.motivos_simbologia || {})[C.cod[i]] || C.cod[i],
+          });
+        }
+        return out.sort((a, b) => a.prueba.localeCompare(b.prueba, "es") || a.nom.localeCompare(b.nom, "es"));
+      }, [entities, nivel, pruebas]);
+
+      const porAnio = SimceData.YEARS.map(y => ({ y, n: filas.filter(f => f.anio === y).length }));
+      const conCasos = porAnio.filter(a => a.n > 0);
+      const [anio, setAnio] = React.useState(conCasos.length ? conCasos[conCasos.length - 1].y : null);
+      const delAnio = filas.filter(f => f.anio === anio);
+      const evaluados = delAnio.reduce((s, f) => s + (f.nalu || 0), 0);
+      const nEstab = new Set(delAnio.map(f => f.rbd)).size;
+      const territorios = entities.map(e => e.name).join(", ");
+      const varias = pruebas.length > 1;
+
+      return (
+        <div className="modal-backdrop" onClick={onClose}>
+          <div className="modal modal-simb" role="dialog" aria-modal="true" aria-labelledby="modal-simb-titulo"
+            onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <h3 className="modal-title" id="modal-simb-titulo">Resultados excluidos del cálculo</h3>
+                <p className="modal-simb-sub">{territorios} · {nivel} · {pruebas.join(" y ")}</p>
+              </div>
+              <button className="icon-btn" onClick={onClose} aria-label="Cerrar"><Icon name="x" /></button>
+            </div>
+            <div className="modal-body">
+              <div className="simb-anios" role="group" aria-label="Año">
+                {porAnio.map(a => (
+                  <button key={a.y} type="button" disabled={a.n === 0}
+                    className={"btn btn-ghost btn-small btn-toggle" + (a.y === anio ? " is-active" : "")}
+                    aria-pressed={a.y === anio}
+                    onClick={() => setAnio(a.y)}>
+                    <span className="control-texto">{a.y} ({fmtInt(a.n)})</span>
+                  </button>
+                ))}
+              </div>
+              <p className="simb-resumen">
+                {anio == null
+                  ? "Ningún resultado con simbología adicional en los territorios, el nivel y la prueba en pantalla."
+                  : `${anio}: ${fmtInt(nEstab)} ${nEstab === 1 ? "establecimiento" : "establecimientos"} con simbología adicional de la Agencia, ${fmtInt(evaluados)} estudiantes evaluados fuera del cálculo.`}
+              </p>
+              {anio != null && (
+                <details className="simb-lista">
+                  <summary>Ver {delAnio.length === 1 ? "el resultado" : `los ${fmtInt(delAnio.length)} resultados`}</summary>
+                  <div className="table-wrap">
+                    <table className="data-table simb-tabla">
+                      <thead>
+                        <tr>
+                          <th>RBD</th><th>Establecimiento</th><th>Comuna</th>
+                          {varias && <th>Prueba</th>}
+                          <th>Evaluados</th><th>Motivo</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {delAnio.map((f, k) => (
+                          <tr key={f.rbd + "|" + f.prueba + "|" + k} className="simb-fila" data-rbd={f.rbd}>
+                            <td>{f.rbd}</td><td>{f.nom}</td><td>{f.com}</td>
+                            {varias && <td>{f.prueba}</td>}
+                            <td>{fmtInt(f.nalu)}</td><td className="simb-motivo">{f.motivo}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              )}
+            </div>
+            <div className="modal-footer modal-simb-pie">
+              <span>Fuente: Agencia de Calidad de la Educación, bases por establecimiento; nombres: directorio oficial MINEDUC</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================
     // App principal
     // ============================================================
     function App() {
@@ -4791,6 +5067,20 @@ code {
       // sesión 10). showElemInsuf controlable vía toggle (sesión 14).
       const [showElemInsuf, setShowElemInsuf] = React.useState(false);
       const yScale = "100";
+
+      // Casilla de simbología adicional (D36-1): desmarcada al cargar. El estado
+      // vive en SimceData (lo leen los generadores) y aquí (redibuja la página).
+      const [excluirSimb, setExcluirSimbEstado] = React.useState(false);
+      const [modalSimb, setModalSimb] = React.useState(false);
+      function alternarSimb(v) {
+        SimceData.setExcluirSimb(v);
+        setExcluirSimbEstado(v);
+        setModalSimb(v);
+      }
+      const cerrarModalSimb = React.useCallback(() => setModalSimb(false), []);
+      const casillaSimb = (
+        <CasillaSimb excluir={excluirSimb} onChange={alternarSimb} onVerLista={() => setModalSimb(true)} />
+      );
 
       const firstRender = React.useRef(true);
       React.useEffect(() => {
@@ -4923,6 +5213,7 @@ code {
       const containerClass = "app is-comfy ";
 
       return (
+        <SimbCtx.Provider value={excluirSimb}>
         <div className={containerClass}>
           <main className="app-main">
             {vista === "comparacion" && (
@@ -4932,7 +5223,8 @@ code {
 
             {vista === "panorama" ? (
               <PanoramaSection entity={panoramaEntity} nivel={nivel} setNivel={setNivel}
-                niveles={niveles} onOpenSelector={() => setPanoramaModal(true)} />
+                niveles={niveles} onOpenSelector={() => setPanoramaModal(true)}
+                casillaSimb={casillaSimb} />
             ) : (
             <React.Fragment>
             <EntitiesBar entities={entities} setEntities={setEntities}
@@ -4965,6 +5257,7 @@ code {
                     </button>
                     <IconExport label="Exportar SVG" icon="chart" onExport={() => exportarGraficosSVG({ entities, nivel, prueba })} />
                     <IconExport label="Exportar PNG" icon="image" onExport={() => exportarGraficosPNG({ entities, nivel, prueba })} />
+                    {casillaSimb}
                   </div>
                   <ChartHints showElemInsuf={showElemInsuf} />
                 </div>
@@ -5056,6 +5349,10 @@ code {
                       <p>Donde <code>nalu</code> es el número de estudiantes evaluados y <code>palu_eda_ade</code> el % en nivel Adecuado, ambos por combinación de establecimiento × prueba × nivel. Este método garantiza que un establecimiento con 200 estudiantes evaluados tenga el doble de peso que uno con 100, independientemente del nivel de agrupación (comuna, SLEP, región).</p>
                     </article>
                     <article className="note">
+                      <h4>Resultados con simbología adicional</h4>
+                      <p>Se incluyen todos los resultados por estándar de aprendizaje que publica la Agencia de Calidad de la Educación, incluyendo los que la Agencia acompaña de simbología adicional. Cuando una cifra incorpora uno o más de esos resultados, se señala con «‡», indicando el número de establecimientos. Al marcar «Excluir resultados con simbología adicional de la Agencia», se quitan del cálculo y se muestra cada establecimiento con el motivo que informa la Agencia.</p>
+                    </article>
+                    <article className="note">
                       <h4>Regla GSE dinámico</h4>
                       <p>El GSE de cada establecimiento se toma del año correspondiente. <b>No se imputa entre años</b>: si un establecimiento cambia de GSE entre 2018 y 2022, aparece en la categoría vigente cada año.</p>
                     </article>
@@ -5135,7 +5432,17 @@ code {
               onCancel={() => setModal(null)}
             />
           )}
+
+          {modalSimb && excluirSimb && (
+            <ModalSimbologia
+              entities={vista === "panorama" ? (panoramaEntity ? [panoramaEntity] : []) : entities}
+              nivel={nivel}
+              pruebas={vista === "panorama" ? Object.values(DATA.meta.pruebas) : [prueba]}
+              onClose={cerrarModalSimb}
+            />
+          )}
         </div>
+        </SimbCtx.Provider>
       );
     }
 
