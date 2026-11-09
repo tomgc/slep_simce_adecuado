@@ -7,8 +7,8 @@ sesion_actual: v35
 ultima_actividad: 2026-09-26
 maneja_sensibles: false
 tipo_pendiente: deuda_tecnica
-sesion_abierta: false
-maquina: MacBook-Pro-de-Tomas.local
+sesion_abierta: true
+maquina: estacion_windows
 commit_cierre: 1db4d0a
 traspaso_vigente: traspaso_cierre_v35.md
 cierre_incompleto: no
