@@ -3,46 +3,104 @@
 # Funciones utilitarias del proyecto slep_simce_adecuado.
 #
 # Funciones expuestas:
-#   - agregar_ponderado(df, group_vars): agrega el % adecuado ponderado por
-#     número de evaluados, respetando umbral MINEDUC (>=10) y marca de
-#     supresión NA. Devuelve tibble con n_estab, n_evaluados, pct_adecuado y,
-#     si df trae palu_eda_ele o palu_eda_ins, pct_elemental o pct_insuficiente.
-#   - .tests_agregar_ponderado(): pruebas inline de agregar_ponderado() (siete
+#   - fila_con_resultado(ade, ele, ins): TRUE si la fila trae resultado por
+#     estándar (los tres porcentajes existen y suman entre SUMA_NIVELES_MIN y
+#     SUMA_NIVELES_MAX; D36-1). La regla única de filas del motor y la vista.
+#   - marca_presente(marca): TRUE si la Agencia puso marca en la fila. Una fila
+#     con resultado y marca es un resultado con simbología adicional (D36-1).
+#   - afirmar_umbral_evaluados(nalu, valida, origen): detiene si una fila con
+#     resultado trae menos de UMBRAL_EVALUADOS evaluados (D36-1: el umbral es
+#     aserción, no filtro).
+#   - agregar_ponderado(df, group_vars): agrega el % adecuado, elemental e
+#     insuficiente ponderado por número de evaluados sobre las filas con
+#     resultado, con o sin marca, y suma los subtotales de las filas con
+#     simbología adicional (n_estab_simb, n_evaluados_simb, num_*_simb).
+#   - .tests_agregar_ponderado(): pruebas inline de agregar_ponderado() (nueve
 #     casos), que se corren a mano desde la consola.
+#
+# Requiere las constantes de 10_utils/10_configuracion.R (SUMA_NIVELES_MIN,
+# SUMA_NIVELES_MAX, UMBRAL_EVALUADOS), cargado antes.
 #
 # Convención: paquetes prefijados (dplyr::, tibble::). Sin library() acá.
 # ----------------------------------------------------------------------------
 
 
-#' Agregar % adecuado ponderado por número de evaluados
+#' Fila con resultado por estándar (regla de inclusión D36-1)
+#'
+#' @param ade,ele,ins Vectores numéricos con los porcentajes Adecuado,
+#'   Elemental e Insuficiente.
+#' @return Vector lógico sin NA: TRUE si los tres existen y su suma cae entre
+#'   SUMA_NIVELES_MIN y SUMA_NIVELES_MAX.
+fila_con_resultado <- function(ade, ele, ins) {
+  suma <- ade + ele + ins
+  !is.na(suma) & suma >= SUMA_NIVELES_MIN & suma <= SUMA_NIVELES_MAX
+}
+
+
+#' Marca de la Agencia presente en la fila
+#'
+#' @param marca Vector con la marca de la fila (texto o código).
+#' @return Vector lógico sin NA: TRUE si la marca no es NA ni vacía.
+marca_presente <- function(marca) {
+  !is.na(marca) & trimws(as.character(marca)) != ""
+}
+
+
+#' Aserción del umbral de evaluados (D36-1)
+#'
+#' @param nalu Vector de evaluados.
+#' @param valida Vector lógico de fila_con_resultado().
+#' @param origen Texto que identifica al llamador en el mensaje de error.
+#' @return invisible(TRUE); detiene con stop() si alguna fila con resultado trae
+#'   nalu NA o menor que UMBRAL_EVALUADOS.
+afirmar_umbral_evaluados <- function(nalu, valida, origen) {
+  bajo <- valida & (is.na(nalu) | nalu < UMBRAL_EVALUADOS)
+  if (any(bajo)) {
+    stop(sprintf(
+      "%s: %d fila(s) con resultado por estándar y menos de %d evaluados (D36-1: el umbral es aserción).",
+      origen, sum(bajo), UMBRAL_EVALUADOS
+    ), call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+
+#' Agregar % por estándar ponderado por número de evaluados
 #'
 #' Toma un data frame en formato largo con una fila por
 #' establecimiento × prueba × nivel × año y agrega el porcentaje de
-#' estudiantes en nivel Adecuado ponderado por el número de estudiantes
-#' evaluados. Aplica los filtros de exclusión MINEDUC antes de agregar.
+#' estudiantes en cada estándar ponderado por el número de estudiantes
+#' evaluados.
 #'
-#' Filtros aplicados (en orden):
-#'   1. nalu no NA
-#'   2. nalu >= 10           (umbral MINEDUC)
-#'   3. marca es NA          (sin marca de supresión)
-#'   4. palu_eda_ade no NA   (defensivo)
+#' Regla de filas (D36-1):
+#'   1. Entra toda fila con resultado por estándar: palu_eda_ade,
+#'      palu_eda_ele y palu_eda_ins existen y suman entre SUMA_NIVELES_MIN y
+#'      SUMA_NIVELES_MAX, con o sin marca de la Agencia.
+#'   2. Una fila con resultado y menos de UMBRAL_EVALUADOS evaluados detiene
+#'      con stop() (aserción; la Agencia no publica porcentajes bajo el umbral).
+#'   3. Las filas con resultado y marca (simbología adicional) entran y además
+#'      se suman aparte en las columnas *_simb.
 #'
 #' Fórmula de agregación:
 #'   pct_adecuado = sum(nalu * palu_eda_ade / 100) / sum(nalu) * 100
+#'   (ídem elemental e insuficiente)
 #'
 #' @param df Data frame / tibble con al menos las columnas `nalu`,
-#'   `palu_eda_ade`, `marca` y todas las indicadas en `group_vars`.
+#'   `palu_eda_ade`, `palu_eda_ele`, `palu_eda_ins`, `marca` y todas las
+#'   indicadas en `group_vars`.
 #' @param group_vars Vector character con los nombres de las columnas por
 #'   las que agrupar. Ejemplo:
 #'   c("anio", "nivel", "prueba", "cod_com_rbd", "cod_grupo").
 #'
 #' @return Tibble (no agrupado) con una fila por combinación única de
 #'   `group_vars` y columnas adicionales `n_estab`, `n_evaluados`,
-#'   `pct_adecuado` y, si `df` trae `palu_eda_ele` o `palu_eda_ins`,
-#'   `pct_elemental` o `pct_insuficiente`, respectivamente.
+#'   `pct_adecuado`, `pct_elemental`, `pct_insuficiente` y los subtotales de
+#'   las filas con simbología adicional: `n_estab_simb`, `n_evaluados_simb` y
+#'   los numeradores en estudiantes `num_ade_simb`, `num_ele_simb` y
+#'   `num_ins_simb` (nalu * palu / 100).
 agregar_ponderado <- function(df, group_vars) {
   # --- Validaciones de input ---
-  cols_requeridas <- c("nalu", "palu_eda_ade", "marca")
+  cols_requeridas <- c("nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca")
 
   stopifnot(
     "df debe ser data frame o tibble" = is.data.frame(df),
@@ -50,58 +108,46 @@ agregar_ponderado <- function(df, group_vars) {
       is.character(group_vars) && length(group_vars) >= 1,
     "Faltan columnas en df indicadas por group_vars" =
       all(group_vars %in% names(df)),
-    "Faltan columnas requeridas en df (nalu, palu_eda_ade, marca)" =
+    "Faltan columnas requeridas en df (nalu, palu_eda_ade, palu_eda_ele, palu_eda_ins, marca)" =
       all(cols_requeridas %in% names(df))
   )
 
-  # ele/ins son opcionales: si están presentes, se agregan con la MISMA
-  # ponderación y los MISMOS filtros que adecuado. El conjunto de filas que
-  # entra al cálculo lo gobierna palu_eda_ade (no-NA), de modo que el % adecuado
-  # resultante es idéntico exista o no la columna ele/ins. Las filas suprimidas
-  # (nalu < 10, o marca presente) quedan fuera por igual para los tres niveles.
-  tiene_ele <- "palu_eda_ele" %in% names(df)
-  tiene_ins <- "palu_eda_ins" %in% names(df)
+  valida <- fila_con_resultado(df$palu_eda_ade, df$palu_eda_ele, df$palu_eda_ins)
+  afirmar_umbral_evaluados(df$nalu, valida, "agregar_ponderado()")
 
-  base <- df |>
-    dplyr::filter(
-      !is.na(nalu),
-      nalu >= 10,
-      is.na(marca),
-      !is.na(palu_eda_ade)
-    ) |>
-    dplyr::group_by(dplyr::across(dplyr::all_of(group_vars)))
-
-  res <- base |>
+  df[valida, , drop = FALSE] |>
+    dplyr::mutate(.simb = marca_presente(marca)) |>
     dplyr::summarise(
-      n_estab      = dplyr::n(),
-      n_evaluados  = sum(nalu, na.rm = TRUE),
-      pct_adecuado = sum(nalu * palu_eda_ade / 100, na.rm = TRUE) /
-                     sum(nalu, na.rm = TRUE) * 100,
-      pct_elemental = if (tiene_ele)
-        sum(nalu * palu_eda_ele / 100, na.rm = TRUE) /
-        sum(nalu, na.rm = TRUE) * 100 else NA_real_,
-      pct_insuficiente = if (tiene_ins)
-        sum(nalu * palu_eda_ins / 100, na.rm = TRUE) /
-        sum(nalu, na.rm = TRUE) * 100 else NA_real_,
-      .groups = "drop"
+      n_estab          = dplyr::n(),
+      n_evaluados      = sum(nalu),
+      pct_adecuado     = sum(nalu * palu_eda_ade / 100) / sum(nalu) * 100,
+      pct_elemental    = sum(nalu * palu_eda_ele / 100) / sum(nalu) * 100,
+      pct_insuficiente = sum(nalu * palu_eda_ins / 100) / sum(nalu) * 100,
+      n_estab_simb     = sum(.simb),
+      n_evaluados_simb = sum(nalu[.simb]),
+      num_ade_simb     = sum(nalu[.simb] * palu_eda_ade[.simb] / 100),
+      num_ele_simb     = sum(nalu[.simb] * palu_eda_ele[.simb] / 100),
+      num_ins_simb     = sum(nalu[.simb] * palu_eda_ins[.simb] / 100),
+      .by = dplyr::all_of(group_vars)
     )
-
-  # Si no venían ele/ins, no exponer columnas NA espurias (compatibilidad con
-  # llamadas históricas y con los tests inline).
-  if (!tiene_ele) res$pct_elemental <- NULL
-  if (!tiene_ins) res$pct_insuficiente <- NULL
-  res
 }
 
 
 # ----------------------------------------------------------------------------
 # Tests inline. Ejecutar manualmente desde consola:
-#   source("10_utils/10_utils.R"); .tests_agregar_ponderado()
-# Devuelve TRUE (invisible) si los 7 casos pasan; falla con stopifnot()
+#   source("10_utils/10_configuracion.R"); source("10_utils/10_utils.R")
+#   .tests_agregar_ponderado()
+# Devuelve TRUE (invisible) si los 9 casos pasan; falla con stopifnot()
 # en el primer caso que no se cumpla.
 # ----------------------------------------------------------------------------
 
 .tests_agregar_ponderado <- function() {
+
+  gv <- c("cod_com_rbd", "cod_grupo")
+  # TRUE si evaluar `expr` termina en error.
+  termina_en_error <- function(expr) {
+    inherits(tryCatch({ expr; NULL }, error = function(e) e), "error")
+  }
 
   # --- Caso 1: un solo establecimiento válido ---
   caso_1 <- tibble::tibble(
@@ -110,14 +156,19 @@ agregar_ponderado <- function(df, group_vars) {
     cod_grupo    = "3",
     nalu         = 50L,
     palu_eda_ade = 40,
+    palu_eda_ele = 35,
+    palu_eda_ins = 25,
     marca        = NA_character_
   )
-  r1 <- agregar_ponderado(caso_1, group_vars = c("cod_com_rbd", "cod_grupo"))
+  r1 <- agregar_ponderado(caso_1, group_vars = gv)
   stopifnot(
     "C1: una sola fila"      = nrow(r1) == 1L,
     "C1: n_estab=1"          = r1$n_estab == 1L,
     "C1: n_evaluados=50"     = r1$n_evaluados == 50L,
-    "C1: pct=40"             = abs(r1$pct_adecuado - 40) < 1e-9
+    "C1: pct=40"             = abs(r1$pct_adecuado - 40) < 1e-9,
+    "C1: ele=35, ins=25"     = abs(r1$pct_elemental - 35) < 1e-9 &&
+                               abs(r1$pct_insuficiente - 25) < 1e-9,
+    "C1: sin simbologia"     = r1$n_estab_simb == 0L && r1$n_evaluados_simb == 0L
   )
 
   # --- Caso 2: dos establecimientos con mismo palu → pct = palu ---
@@ -127,9 +178,11 @@ agregar_ponderado <- function(df, group_vars) {
     cod_grupo    = c("3", "3"),
     nalu         = c(50L, 150L),
     palu_eda_ade = c(40, 40),
+    palu_eda_ele = c(30, 30),
+    palu_eda_ins = c(30, 30),
     marca        = c(NA_character_, NA_character_)
   )
-  r2 <- agregar_ponderado(caso_2, group_vars = c("cod_com_rbd", "cod_grupo"))
+  r2 <- agregar_ponderado(caso_2, group_vars = gv)
   stopifnot(
     "C2: una fila resultante" = nrow(r2) == 1L,
     "C2: pct=40 (iguales)"    = abs(r2$pct_adecuado - 40) < 1e-9,
@@ -147,60 +200,70 @@ agregar_ponderado <- function(df, group_vars) {
     cod_grupo    = c("3", "3"),
     nalu         = c(50L, 150L),
     palu_eda_ade = c(20, 60),
+    palu_eda_ele = c(50, 30),
+    palu_eda_ins = c(30, 10),
     marca        = c(NA_character_, NA_character_)
   )
-  r3 <- agregar_ponderado(caso_3, group_vars = c("cod_com_rbd", "cod_grupo"))
+  r3 <- agregar_ponderado(caso_3, group_vars = gv)
   stopifnot(
     "C3: pct ponderado = 50" = abs(r3$pct_adecuado - 50) < 1e-9,
-    "C3: n_evaluados=200"    = r3$n_evaluados == 200L
+    "C3: n_evaluados=200"    = r3$n_evaluados == 200L,
+    "C3: ele ponderado = 35" = abs(r3$pct_elemental - 35) < 1e-9
   )
 
-  # --- Caso 4: nalu < 10 → establecimiento excluido ---
+  # --- Caso 4: fila con resultado y nalu < 10 → stop() (aserción D36-1) ---
   caso_4 <- tibble::tibble(
     rbd          = c("1", "2"),
     cod_com_rbd  = c("100", "100"),
     cod_grupo    = c("3", "3"),
-    nalu         = c(9L, 150L),        # rbd 1 cae por umbral
+    nalu         = c(9L, 150L),        # rbd 1 bajo el umbral con resultado
     palu_eda_ade = c(99, 30),
+    palu_eda_ele = c(1, 40),
+    palu_eda_ins = c(0, 30),
     marca        = c(NA_character_, NA_character_)
   )
-  r4 <- agregar_ponderado(caso_4, group_vars = c("cod_com_rbd", "cod_grupo"))
   stopifnot(
-    "C4: solo el válido contribuye" = r4$n_estab == 1L,
-    "C4: pct = palu del válido"     = abs(r4$pct_adecuado - 30) < 1e-9,
-    "C4: n_evaluados=150"           = r4$n_evaluados == 150L
+    "C4: nalu < 10 con resultado detiene" =
+      termina_en_error(agregar_ponderado(caso_4, group_vars = gv))
   )
 
-  # --- Caso 5: marca distinta de NA → establecimiento excluido ---
+  # --- Caso 5: la marca no excluye y cuenta en n_estab_simb ---
   caso_5 <- tibble::tibble(
     rbd          = c("1", "2"),
     cod_com_rbd  = c("100", "100"),
     cod_grupo    = c("3", "3"),
     nalu         = c(50L, 150L),
     palu_eda_ade = c(99, 30),
-    marca        = c("X", NA_character_)  # rbd 1 suprimido
+    palu_eda_ele = c(1, 40),
+    palu_eda_ins = c(0, 30),
+    marca        = c("2", NA_character_)  # rbd 1 con simbología adicional
   )
-  r5 <- agregar_ponderado(caso_5, group_vars = c("cod_com_rbd", "cod_grupo"))
+  r5 <- agregar_ponderado(caso_5, group_vars = gv)
   stopifnot(
-    "C5: solo el válido contribuye" = r5$n_estab == 1L,
-    "C5: pct = palu del válido"     = abs(r5$pct_adecuado - 30) < 1e-9
+    "C5: los dos contribuyen"      = r5$n_estab == 2L,
+    "C5: n_evaluados=200"          = r5$n_evaluados == 200L,
+    "C5: pct = (49.5 + 45) / 200"  = abs(r5$pct_adecuado - 47.25) < 1e-9,
+    "C5: n_estab_simb=1"           = r5$n_estab_simb == 1L,
+    "C5: n_evaluados_simb=50"      = r5$n_evaluados_simb == 50L,
+    "C5: num_ade_simb=49.5"        = abs(r5$num_ade_simb - 49.5) < 1e-9,
+    "C5: num_ele_simb=0.5"         = abs(r5$num_ele_simb - 0.5) < 1e-9,
+    "C5: num_ins_simb=0"           = abs(r5$num_ins_simb - 0) < 1e-9
   )
 
-  # --- Caso 6: todos los establecimientos excluidos → tibble vacío ---
+  # --- Caso 6: único establecimiento con resultado y nalu < 10 → stop() ---
   caso_6 <- tibble::tibble(
     rbd          = "1",
     cod_com_rbd  = "100",
     cod_grupo    = "3",
-    nalu         = 5L,                  # cae por umbral
+    nalu         = 5L,                  # bajo el umbral con resultado
     palu_eda_ade = 99,
+    palu_eda_ele = 1,
+    palu_eda_ins = 0,
     marca        = NA_character_
   )
-  r6 <- agregar_ponderado(caso_6, group_vars = c("cod_com_rbd", "cod_grupo"))
   stopifnot(
-    "C6: tibble vacío"           = nrow(r6) == 0L,
-    "C6: esquema preservado"     =
-      all(c("cod_com_rbd", "cod_grupo",
-            "n_estab", "n_evaluados", "pct_adecuado") %in% names(r6))
+    "C6: nalu < 10 con resultado detiene" =
+      termina_en_error(agregar_ponderado(caso_6, group_vars = gv))
   )
 
   # --- Caso 7: GSE como dimensión de agrupación funciona ---
@@ -210,9 +273,11 @@ agregar_ponderado <- function(df, group_vars) {
     cod_grupo    = c("1", "1", "5"),
     nalu         = c(50L, 50L, 100L),
     palu_eda_ade = c(20, 30, 80),
+    palu_eda_ele = c(40, 40, 15),
+    palu_eda_ins = c(40, 30, 5),
     marca        = rep(NA_character_, 3)
   )
-  r7 <- agregar_ponderado(caso_7, group_vars = c("cod_com_rbd", "cod_grupo"))
+  r7 <- agregar_ponderado(caso_7, group_vars = gv)
   stopifnot(
     "C7: dos GSE distintos" = nrow(r7) == 2L,
     "C7: pct GSE 1 = 25"    =
@@ -221,6 +286,37 @@ agregar_ponderado <- function(df, group_vars) {
       abs(r7$pct_adecuado[r7$cod_grupo == "5"] - 80) < 1e-9
   )
 
-  message("OK: 7/7 casos de .tests_agregar_ponderado() pasaron.")
+  # --- Caso 8: fila en ceros excluida (no es resultado), aunque traiga marca
+  # y menos de 10 evaluados ---
+  caso_8 <- tibble::tibble(
+    rbd          = c("1", "2"),
+    cod_com_rbd  = c("100", "100"),
+    cod_grupo    = c("3", "3"),
+    nalu         = c(5L, 100L),
+    palu_eda_ade = c(0, 30),
+    palu_eda_ele = c(0, 40),
+    palu_eda_ins = c(0, 30),
+    marca        = c("1", NA_character_)
+  )
+  r8 <- agregar_ponderado(caso_8, group_vars = gv)
+  stopifnot(
+    "C8: solo la fila con resultado" = r8$n_estab == 1L,
+    "C8: n_evaluados=100"            = r8$n_evaluados == 100L,
+    "C8: pct=30"                     = abs(r8$pct_adecuado - 30) < 1e-9,
+    "C8: la fila en ceros no cuenta como simbologia" = r8$n_estab_simb == 0L
+  )
+
+  # --- Caso 9: ninguna fila con resultado → tibble vacío con esquema ---
+  caso_9 <- caso_8[1, ]
+  r9 <- agregar_ponderado(caso_9, group_vars = gv)
+  stopifnot(
+    "C9: tibble vacío"           = nrow(r9) == 0L,
+    "C9: esquema preservado"     =
+      all(c("cod_com_rbd", "cod_grupo", "n_estab", "n_evaluados",
+            "pct_adecuado", "n_estab_simb", "n_evaluados_simb",
+            "num_ade_simb", "num_ele_simb", "num_ins_simb") %in% names(r9))
+  )
+
+  message("OK: 9/9 casos de .tests_agregar_ponderado() pasaron.")
   invisible(TRUE)
 }

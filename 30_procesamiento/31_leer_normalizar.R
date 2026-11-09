@@ -12,7 +12,7 @@
 #
 #   40_salidas/intermedios/simce_rbd.parquet
 #
-# Esquema final (14 columnas):
+# Esquema final (16 columnas):
 #   anio          integer    los de los xlsx (hoy 2014-2018, 2022-2025)
 #   nivel         character  "4b" | "2m"
 #   prueba        character  "lect" | "mate"
@@ -25,8 +25,14 @@
 #   palu_eda_ade  double     % en estándar adecuado
 #   palu_eda_ele  double     % en estándar elemental
 #   palu_eda_ins  double     % en estándar insuficiente
-#   marca         character  marca genérica de puntaje (decisión A2 opción a)
+#   marca         character  marca de la Agencia, tal como viene en la base
 #   preliminar    logical    TRUE si el año se leyó de un *_preliminar.xlsx (regla R3)
+#   simbologia    logical    TRUE si la fila tiene resultado por estándar
+#                            (fila_con_resultado()) y marca no vacía: resultado
+#                            con simbología adicional (D36-1)
+#   cod_simbologia character código del motivo, "1".."4", o NA sin simbología;
+#                            un código sin entrada en MOTIVOS_SIMBOLOGIA
+#                            (10_configuracion.R) detiene el build
 #
 # Anomalía A1 manejada: en simce4b2018, los sufijos vienen como "_2m_"
 # en lugar de "_4b_". Se reescriben antes de la normalización general.
@@ -40,6 +46,7 @@
 
 library(here)
 source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis)
+source(here::here("10_utils", "10_utils.R"))          # fila_con_resultado(), marca_presente() (D36-1)
 library(fs)
 
 
@@ -257,6 +264,16 @@ extraer_prueba <- function(df_raw, nivel, prueba) {
 }
 
 
+# Código del motivo de simbología a partir de la marca (D36-1 punto 2). Un
+# código numérico leído como "2.0" pasa a "2"; los textos literales de las
+# bases antiguas pasan a su código con CODIGOS_LITERALES_SIMBOLOGIA.
+codigo_simbologia <- function(marca) {
+  m <- sub("^([0-9]+)\\.0+$", "\\1", trimws(as.character(marca)))
+  literal <- unname(CODIGOS_LITERALES_SIMBOLOGIA[m])
+  ifelse(is.na(literal), m, literal)
+}
+
+
 # ============================================================================
 # Bloque 3 — Función principal: leer y normalizar un xlsx
 # ============================================================================
@@ -378,11 +395,32 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
   # El directorio 2025 es la fuente de verdad; RBDs sin match quedan NA.
   df_largo$cod_depe2 <- unname(mapa_rbd_depe2[df_largo$rbd])
 
+  # --- Simbología adicional (D36-1) ---
+  # Fila con resultado por estándar y marca de la Agencia. El código del motivo
+  # tiene que existir en MOTIVOS_SIMBOLOGIA: uno nuevo detiene el build.
+  df_largo$simbologia <- fila_con_resultado(
+    df_largo$palu_eda_ade, df_largo$palu_eda_ele, df_largo$palu_eda_ins
+  ) & marca_presente(df_largo$marca)
+  df_largo$cod_simbologia <- ifelse(
+    df_largo$simbologia, codigo_simbologia(df_largo$marca), NA_character_
+  )
+  sin_motivo <- setdiff(
+    unique(df_largo$cod_simbologia[df_largo$simbologia]),
+    names(MOTIVOS_SIMBOLOGIA)
+  )
+  if (length(sin_motivo) > 0) {
+    stop(sprintf(
+      "%s: código(s) de simbología sin motivo en MOTIVOS_SIMBOLOGIA (10_configuracion.R): %s",
+      archivo, paste(sin_motivo, collapse = ", ")
+    ))
+  }
+
   # Orden de columnas final.
   df_largo <- df_largo[, c(
     "anio", "nivel", "prueba", "rbd",
     "cod_com_rbd", "nom_com_rbd", "cod_grupo", "cod_depe2",
-    "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca", "preliminar"
+    "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca", "preliminar",
+    "simbologia", "cod_simbologia"
   )]
 
   df_largo
@@ -483,6 +521,6 @@ print(resumen, n = Inf)
 
 message("")
 message(sprintf(
-  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (14 columnas).",
+  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (16 columnas).",
   nrow(df_simce_rbd)
 ))

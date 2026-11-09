@@ -12,7 +12,7 @@
 #
 # Salida: 40_salidas/intermedios/simce_comunal.parquet
 #
-# Esquema final (14 columnas):
+# Esquema final (19 columnas):
 #   anio          integer
 #   nivel         character    "4b" | "2m"
 #   prueba        character    "lect" | "mate"
@@ -25,16 +25,21 @@
 #   pct_adecuado  double       % ponderado adecuado
 #   pct_elemental double       % ponderado elemental
 #   pct_insuficiente double    % ponderado insuficiente
-#   n_evaluados   integer      sum(nalu) tras filtros MINEDUC
+#   n_evaluados   integer      sum(nalu) de las filas con resultado
 #   n_estab       integer      n establecimientos en la agregación
+#   n_estab_simb     integer   de ellos, con simbología adicional (D36-1)
+#   n_evaluados_simb integer   evaluados de esos establecimientos
+#   num_ade_simb  double       numeradores en estudiantes de esos
+#   num_ele_simb  double       establecimientos (nalu * palu / 100), para que
+#   num_ins_simb  double       el motor reste su aporte con la casilla marcada
 #
 # Filtros aplicados:
 #   1. Pre-agregación: cod_grupo no-NA (establecimientos sin clasificar GSE
 #      excluidos).
-#   2. Aplicados por agregar_ponderado() internamente:
-#        - nalu >= 10 (umbral MINEDUC)
-#        - marca es NA (sin marca de supresión)
-#        - palu_eda_ade no-NA (defensivo)
+#   2. Regla de filas de agregar_ponderado() (D36-1): entra toda fila con
+#      resultado por estándar (los tres porcentajes suman entre
+#      SUMA_NIVELES_MIN y SUMA_NIVELES_MAX), con o sin marca de la Agencia; una
+#      fila con resultado y menos de UMBRAL_EVALUADOS evaluados detiene.
 #
 # Uso:
 #   source(here::here("30_procesamiento", "32_agregar_comunal.R"))
@@ -69,7 +74,7 @@ message(sprintf("    comunas_chile.parquet: %d comunas, %d columnas",
 # Validar columnas requeridas.
 cols_rbd_req <- c("anio", "nivel", "prueba", "rbd",
                   "cod_com_rbd", "cod_grupo", "cod_depe2",
-                  "nalu", "palu_eda_ade", "marca")
+                  "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca")
 faltan_rbd <- setdiff(cols_rbd_req, names(df_rbd))
 if (length(faltan_rbd) > 0) {
   stop(sprintf("Faltan columnas en simce_rbd.parquet: %s",
@@ -166,7 +171,8 @@ df_comunal <- df_comunal |>
     anio, nivel, prueba,
     cod_com_rbd, nom_com_rbd, cod_reg_rbd, nom_reg_rbd,
     cod_grupo, cod_depe2,
-    pct_adecuado, pct_elemental, pct_insuficiente, n_evaluados, n_estab
+    pct_adecuado, pct_elemental, pct_insuficiente, n_evaluados, n_estab,
+    n_estab_simb, n_evaluados_simb, num_ade_simb, num_ele_simb, num_ins_simb
   ) |>
   dplyr::arrange(anio, nivel, prueba, cod_com_rbd, cod_depe2, cod_grupo)
 
@@ -216,6 +222,6 @@ print(cc, n = Inf, width = 200)
 
 message("")
 message(sprintf(
-  "32_agregar_comunal.R: OK. Total %d filas en simce_comunal.parquet (14 columnas).",
+  "32_agregar_comunal.R: OK. Total %d filas en simce_comunal.parquet (19 columnas).",
   nrow(df_comunal)
 ))

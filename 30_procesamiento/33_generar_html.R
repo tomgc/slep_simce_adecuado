@@ -31,6 +31,7 @@
 library(here)
 source(here::here("10_utils", "10_configuracion.R"))  # guarda de locale UTF-8 (POLITICA 5.2bis), ANIOS_SIN_SIMCE
 source(here::here("10_utils", "10_html.R"))           # reemplazar_literal(), insertar_sitio(), sustituir_anios()
+source(here::here("10_utils", "10_utils.R"))          # fila_con_resultado(), afirmar_umbral_evaluados() (D36-1)
 
 
 # ============================================================================
@@ -232,7 +233,10 @@ meta <- list(
     "3" = "Particular Pagado",
     "4" = "Corp. Admin. Delegada",
     "5" = "Servicio Local de Educación Pública (SLEP)"
-  )
+  ),
+  # Motivo de cada código de simbología adicional (D36-1), desde
+  # MOTIVOS_SIMBOLOGIA de 10_configuracion.R; lo muestra el modal del motor.
+  motivos_simbologia = as.list(MOTIVOS_SIMBOLOGIA)
 )
 
 # --- Datos en formato columnar ---
@@ -252,7 +256,14 @@ datos_lst <- list(
   pct_ele     = round(df_ord$pct_elemental, 2),
   pct_ins     = round(df_ord$pct_insuficiente, 2),
   n_evaluados = as.integer(df_ord$n_evaluados),
-  n_estab     = as.integer(df_ord$n_estab)
+  n_estab     = as.integer(df_ord$n_estab),
+  # Subtotales de las filas con simbología adicional (D36-1): con la casilla
+  # «Excluir resultados con simbología adicional» marcada, el motor los resta.
+  n_estab_simb     = as.integer(df_ord$n_estab_simb),
+  n_evaluados_simb = as.integer(df_ord$n_evaluados_simb),
+  num_ade_simb     = round(df_ord$num_ade_simb, 2),
+  num_ele_simb     = round(df_ord$num_ele_simb, 2),
+  num_ins_simb     = round(df_ord$num_ins_simb, 2)
 )
 
 # --- Catálogo de establecimientos (RBDs únicos con nombre y dependencia) ---
@@ -263,20 +274,30 @@ establecimientos_lst <- df_rbd |>
   dplyr::select(rbd, nom_rbd, cod_com_rbd, nom_com_rbd, cod_depe2) |>
   dplyr::arrange(cod_com_rbd, nom_rbd)
 
+# --- Filas con resultado por estándar (D36-1) ---
+# Una sola función, la regla de agregar_ponderado(): entra toda fila cuyos tres
+# porcentajes existen y suman entre SUMA_NIVELES_MIN y SUMA_NIVELES_MAX, con o
+# sin marca de la Agencia, y una fila con resultado y menos de UMBRAL_EVALUADOS
+# evaluados detiene el build. La comparten los dos catálogos del popup y la
+# tabla por establecimiento: el motor no puede reaplicar la regla en el
+# navegador (la marca no viaja en el JSON), así que se aplica aquí, una vez
+# (auditoría A2, s13: si una de las tres tablas siguiera otra regla, los % de
+# SLEP divergirían del resto del motor).
+leer_simce_con_resultado <- function() {
+  simce <- arrow::read_parquet(
+    here::here("40_salidas", "intermedios", "simce_rbd.parquet")
+  )
+  valida <- fila_con_resultado(simce$palu_eda_ade, simce$palu_eda_ele,
+                               simce$palu_eda_ins)
+  afirmar_umbral_evaluados(simce$nalu, valida, "33_generar_html.R")
+  simce[valida, , drop = FALSE]
+}
+df_simce_valido <- leer_simce_con_resultado()
+
 # --- RBDs por nivel × prueba (para filtrar popup de establecimientos) ---
-# Fuente: simce_rbd.parquet — qué RBDs rindieron cada combinación nivel×prueba.
-# Filtro COMPLETO de producción (auditoría A2, s13): mismo criterio que
-# agregar_ponderado() — palu publicado, umbral MINEDUC (nalu >= 10) y sin
-# marca de supresión. Solo palu no-NA es insuficiente: listaría RBDs que no
-# aportan al % mostrado.
-df_rbd_np <- arrow::read_parquet(
-  here::here("40_salidas", "intermedios", "simce_rbd.parquet")
-) |>
-  dplyr::filter(
-    !is.na(.data$palu_eda_ade),
-    !is.na(.data$nalu), .data$nalu >= 10,
-    is.na(.data$marca)
-  ) |>
+# Fuente: simce_rbd.parquet — qué RBDs tienen resultado en cada combinación
+# nivel × prueba, con la regla de filas de D36-1.
+df_rbd_np <- df_simce_valido |>
   dplyr::distinct(rbd, nivel, prueba) |>
   dplyr::mutate(rbd = as.character(rbd)) |>
   dplyr::arrange(nivel, prueba, rbd)
@@ -284,42 +305,22 @@ df_rbd_np <- arrow::read_parquet(
 # --- RBDs por nivel × prueba × GSE (para filtro GSE en popup de celda) ---
 # Distinct de rbd × nivel × prueba × cod_grupo. Se usa en EstabPopup cuando
 # se abre desde una celda de la tabla (P7) para mostrar solo los establecimientos
-# del GSE clicado. ~15-20k filas vs 185k del parquet completo.
-# Solo combinaciones que APORTAN al cálculo (auditoría A2, s13): palu no-NA,
-# nalu >= 10 (umbral MINEDUC) y marca NA — el mismo criterio de
-# agregar_ponderado(). La Agencia suprime resultados (palu = NA aunque
-# nalu > 0) y además producción excluye nalu < 10 y marcas de supresión;
-# un RBD que no cumple cualquiera de las tres condiciones no debe listarse.
-df_rbd_gse <- arrow::read_parquet(
-  here::here("40_salidas", "intermedios", "simce_rbd.parquet")
-) |>
-  dplyr::filter(
-    !is.na(.data$palu_eda_ade),
-    !is.na(.data$nalu), .data$nalu >= 10,
-    is.na(.data$marca)
-  ) |>
+# del GSE clicado. Solo combinaciones que aportan al cálculo: la regla de
+# filas de D36-1 (la Agencia publica algunos resultados sin porcentajes, y esos
+# no se listan).
+df_rbd_gse <- df_simce_valido |>
   dplyr::distinct(rbd, nivel, prueba, cod_grupo) |>
   dplyr::mutate(rbd = as.character(rbd)) |>
   dplyr::arrange(nivel, prueba, cod_grupo, rbd)
 
 # --- Datos por establecimiento (para entidades tipo establecimiento) ---
-# 8 columnas necesarias para graficar; excluye marca, nom_com_rbd, preliminar
+# Columnas necesarias para graficar; excluye marca, nom_com_rbd, preliminar
 # (recuperables desde otros catálogos). Formato columnar para compacidad.
-# Filtro COMPLETO de producción (auditoría A2, s13): generateSeriesByRbd y
-# los conteos del motor consumen esta tabla SIN poder reaplicar el umbral
-# MINEDUC ni la marca (marca no viaja en el JSON). Si acá entran filas con
-# nalu < 10 o marca no-NA, los % de SLEP divergen del resto del motor
-# (divergencias de hasta 42.6 pp medidas en la auditoría). La regla del
-# invariante 5 se aplica una sola vez, acá, en R.
-df_simce_rbd <- arrow::read_parquet(
-  here::here("40_salidas", "intermedios", "simce_rbd.parquet")
-) |>
-  dplyr::filter(
-    !is.na(.data$palu_eda_ade),
-    !is.na(.data$nalu), .data$nalu >= 10,
-    is.na(.data$marca)
-  ) |>
-  dplyr::select(rbd, nivel, prueba, cod_grupo, anio, nalu, palu_eda_ade, palu_eda_ele, palu_eda_ins, cod_depe2) |>
+# `simb` (0 o 1) marca las filas con simbología adicional (D36-1), para que el
+# motor las salte con la casilla de exclusión marcada.
+df_simce_rbd <- df_simce_valido |>
+  dplyr::select(rbd, nivel, prueba, cod_grupo, anio, nalu, palu_eda_ade, palu_eda_ele, palu_eda_ins, cod_depe2,
+                simbologia) |>
   dplyr::mutate(
     rbd       = as.character(rbd),
     palu_eda_ade = round(palu_eda_ade, 2),
@@ -339,7 +340,28 @@ simce_rbd_lst <- list(
   palu       = df_simce_rbd$palu_eda_ade,
   palu_ele   = df_simce_rbd$palu_eda_ele,
   palu_ins   = df_simce_rbd$palu_eda_ins,
-  cod_depe2  = df_simce_rbd$cod_depe2
+  cod_depe2  = df_simce_rbd$cod_depe2,
+  simb       = as.integer(df_simce_rbd$simbologia)
+)
+
+# --- Catálogo de resultados con simbología adicional (D36-1) ---
+# Una fila por establecimiento × año × nivel × prueba con resultado y marca, con
+# el código de su motivo (meta$motivos_simbologia). Solo RBD: el nombre y la
+# comuna se unen en el navegador con `establecimientos`. Lo lista el modal de
+# la casilla de exclusión.
+df_simbologia <- df_simce_valido |>
+  dplyr::filter(simbologia) |>
+  dplyr::mutate(rbd = as.character(rbd)) |>
+  dplyr::arrange(anio, nivel, prueba, rbd)
+
+simbologia_lst <- list(
+  rows   = nrow(df_simbologia),
+  rbd    = df_simbologia$rbd,
+  anio   = as.integer(df_simbologia$anio),
+  nivel  = df_simbologia$nivel,
+  prueba = df_simbologia$prueba,
+  nalu   = as.integer(df_simbologia$nalu),
+  cod    = df_simbologia$cod_simbologia
 )
 
 # --- Catálogo de SLEPs (una fila por SLEP × RBD) ---
@@ -364,7 +386,8 @@ json_root <- list(
   establecimientos = establecimientos_lst,
   rbds_por_nivel   = df_rbd_np,
   rbd_gse          = df_rbd_gse,
-  simce_rbd        = simce_rbd_lst
+  simce_rbd        = simce_rbd_lst,
+  simbologia       = simbologia_lst
 )
 
 # Serialización: auto_unbox=TRUE para que escalares (anios_preliminar=2025L)
@@ -524,7 +547,7 @@ n_simce_rbd <- nrow(df_simce_rbd)
 # json_str, json_b64 y html pueden superar 14 MB combinados en memoria.
 rm(json_str, json_gzip, json_b64, html, d3_code, pako_code, plantilla,
    react_code, reactdom_code, babel_code, app_jsx, app_js, resto,
-   simce_rbd_lst, df_simce_rbd)
+   simce_rbd_lst, df_simce_rbd, df_simce_valido)
 gc(verbose = FALSE)
 
 
@@ -542,6 +565,7 @@ message(sprintf("  Establec.:     %d RBDs distintos", nrow(establecimientos_lst)
 message(sprintf("  RBDs×nivel:    %d filas (catálogo popup)", nrow(df_rbd_np)))
 message(sprintf("  RBDs×GSE:      %d filas (catálogo popup celda)", nrow(df_rbd_gse)))
 message(sprintf("  simce_rbd:     %d filas (datos por establecimiento)", n_simce_rbd))
+message(sprintf("  Simbología:    %d filas con simbología adicional (D36-1)", simbologia_lst$rows))
 message(sprintf("  Años:          %d (%s)", length(meta$anios),
                 paste(meta$anios, collapse = ", ")))
 message(sprintf("  Peso HTML:     %.1f KB", tamano_kb))
