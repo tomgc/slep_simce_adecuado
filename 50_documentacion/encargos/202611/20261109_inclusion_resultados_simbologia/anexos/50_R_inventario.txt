@@ -1,0 +1,31 @@
+# Inventario de afirmaciones auditables, FASE R (encargo 20261109_inclusion_resultados_simbologia)
+# Derivado del log (secciones FASE 0 a FASE T4), antes de auditar.
+R-01 FASE 0: H1 (repo slep_simce_adecuado, HEAD y origin/main d32ad14, rama main, stash 0, staging 0), árbol de 6 líneas, H2 0.
+R-02 FASE 0: H3, md5 de los cuatro insumos, del directorio y de CLAUDE.md iguales a los esperados.
+R-03 FASE 0: hash_inicial eee2b50 = commit docs(encargo) con las 5 rutas del expediente.
+R-04 FASE 0: H4 línea base: BUILD f0 rc 0, TAGREG f0 7/7, VMOTOR f0 8/8, VTRAY f0 35/35.
+R-05 FASE 0: H5, SONDA1 = fila S1 (validas 142353, simb 2008, ceros 8216, cc 55 1194 54 1184 y 53 1187 52 1175, 7 códigos).
+R-06 FASE 0: SONDA2 f0 = fila S2 de partida (54 1184, 52 1175, 140345, ausente, ausente, 0).
+R-07 FASE 0: grep «supresión» en 10_utils, 30_procesamiento y README = 5.
+R-08 T1: BUILD T1 rc 0.
+R-09 T1: TAGREG T1 rc 0 y 9/9.
+R-10 T1: SONDA2 T1 = 55 1194, 53 1187, 142353, 2008, 2008, 0.
+R-11 T1: grep «supresión» en los cuatro archivos de T1 = 0.
+R-12 T2: VTRAY T2 35/35 tras actualizar las constantes del referente.
+R-13 T2: regla 9, recuento independiente: regla vieja 1299/1282/475-406-401/807; D36-1 1333/1316/491-417-408/825.
+R-14 T2: D14, base de la vista con 142353 filas, 2008 con simbología y 0 en ceros.
+R-15 T2: la nota de filas de la vista cita 610 resultados con simbología incluidos (2,1%).
+R-16 T3: VMOTOR T3 11/11; M9 55/1194 y 54/1184 con m9_ctl_detecta TRUE; M10 1 fila; M11 sin desborde.
+R-17 T4: grep «supresión» en README = 0; archivos con «D36-1» = 2; decisión copiada con md5 2b89f14e2fd4498e379cb5941699f3d7.
+R-18 Commits: 4 de tarea (9d190b0, c36ae35, f0b8ba5, e4652b6) más docs(encargo) eee2b50, con los mensajes del encargo.
+R-19 Alcance global: diff hash_inicial..HEAD dentro de la unión de los ALCANCE; árbol sin residuo fuera del log y anexos.
+R-20 md5 del encargo = encargo_md5 5a0afe4d2c5e1685c0044abcf56621f9.
+R-21 Invariante 1: datos versionados 28 y 0 agregados.
+R-22 Invariante 2: docs/ intacto (0).
+R-23 Invariante 3: origin/main d32ad14.
+R-24 Invariante 4: alcance (0).
+R-25 Invariante 5: sin atribución (0 0).
+R-26 Invariante 6: encargo, insumos y sondas intactos (0).
+R-27 Invariante 7: ceros_json 0 y ceros 8216.
+R-28 Invariante 8: M3 y M8 PASA (2) y R4 PASA (1).
+R-29 Invariante 9: md5 del directorio 80be2b37bf1879dd47875422641bd297 y 20_insumos sin cambios (0).
