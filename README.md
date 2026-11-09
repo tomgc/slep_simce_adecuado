@@ -98,6 +98,10 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
    ```
 2. Abrir `slep_simce_adecuado.Rproj` en Positron. Esto ancla `here::here()`
    a la raíz del proyecto automáticamente.
+   Antes de la primera corrida, copiar la línea `LANG` de `.Renviron.example`
+   al `.Renviron` que lee R (su ruta la da `path.expand("~/.Renviron")` en la
+   consola de R; en Windows suele estar en la carpeta Documentos) y reiniciar R,
+   para que arranque con locale UTF-8 (ver "Portabilidad cross-OS").
 3. Descargar el **directorio oficial MINEDUC** (no versionado, ver "Datos de
    entrada") y colocarlo en `20_insumos/auxiliares/directorio_oficial_ee.csv`.
    Sin este archivo, los pasos 30 y 31 del pipeline fallan.
@@ -119,7 +123,7 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
    Rscript 30_procesamiento/36_verificar_trayectorias.R
    ```
 8. Publicar: correr antes las dos baterías (decisión D35-21 en
-   `50_documentacion/activa/decisiones/20260924_decision_referente_traspasos.md`)
+   `50_documentacion/activa/decisiones/20260925_decision_cierre_pendientes_v34.md`)
    y copiar las dos salidas, íntegras, a `docs/index.html` y
    `docs/trayectorias.html` (procedimiento en
    `50_documentacion/activa/publicacion_github_pages.md`).
@@ -282,7 +286,7 @@ de terceros.
 
 ## Portabilidad cross-OS
 
-Este proyecto se clona, configura y ejecuta igual en macOS y en Windows. El contrato completo está en `gobernanza/protocolo_portabilidad_cross_os.md` del repositorio privado `herramientas_dev`.
+Este proyecto se clona, configura y ejecuta igual en macOS y en Windows. El contrato completo está en `gobernanza/protocolo_portabilidad_cross_os.md` de `herramientas_dev`, repositorio privado del Área de Monitoreo. No hace falta para clonar, configurar ni correr este proyecto: bastan los pasos de abajo.
 
 ### Configuración de una máquina nueva
 

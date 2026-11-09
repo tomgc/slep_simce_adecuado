@@ -40,7 +40,7 @@ motor. Ninguna de las dos carga nada por red.
   sigue siendo solo agregado público (invariante metodológico del pipeline).
 - Antes de cada copia a `docs/`, las dos baterías deben pasar completas, con
   código 0 (decisiones D35-21 y D35-25, en
-  `decisiones/20260924_decision_referente_traspasos.md`): la del motor
+  `decisiones/20260925_decision_cierre_pendientes_v34.md`): la del motor
   (`Rscript 30_procesamiento/33_verificar_motor.R`) y la de la vista
   (`Rscript 30_procesamiento/36_verificar_trayectorias.R`). Leen las salidas de
   `40_salidas/` y necesitan Google Chrome.
