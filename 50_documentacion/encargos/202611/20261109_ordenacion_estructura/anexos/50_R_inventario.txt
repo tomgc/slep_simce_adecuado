@@ -1,0 +1,21 @@
+Inventario de afirmaciones auditables (FASE R, ordenacion_estructura)
+Derivado de las lineas de verificacion del log (FASE 0 y T1), los invariantes del encargo y el alcance global.
+
+R-01 | FASE 0 H1: origin slep_simce_adecuado, HEAD y origin/main en 3c108fc, rama main, sin stash ni staging
+R-02 | FASE 0 arbol: solo las 3 lineas ?? del expediente (encargo, log, insumo)
+R-03 | FASE 0 H2: md5 del insumo d956559cd4e80985bab369d48877caba; md5 de <CENSO> e3d1a31fc655424b9646f258a2aeb4a9; destino inexistente; .gitkeep de 0 bytes; Rscript y kit presentes
+R-04 | FASE 0 censo de partida: exceptuados 0, estructurales 5, menores 7, rc 1, con las 5 lineas de §4 paso 2
+R-05 | FASE 0 punto de retorno: hash_inicial 7d1e989 = docs(encargo) con exactamente el encargo y el insumo, hijo de 3c108fc
+R-06 | T1 copia: contenido del destino identico al insumo
+R-07 | T1 retiro: 50_documentacion/traspasos/.gitkeep fuera del indice
+R-08 | T1 staging y NUMSTAT: el commit da56d29 agrega el destino (12 lineas) y borra el .gitkeep (0 lineas), nada mas
+R-09 | T1 censo: exceptuados 4, estructurales 0, menores 7, rc 0
+R-10 | T1 commit: da56d29 con su titulo, arbol limpio despues
+R-11 | 🔒1 solo cambian destino, .gitkeep, expediente e indice
+R-12 | 🔒2 sin atribucion (0 0)
+R-13 | 🔒3 encargo e insumo intactos desde hash_inicial (0)
+R-14 | 🔒4 nada de datos, codigo del pipeline ni publicacion (0)
+R-15 | alcance global: git diff --name-only 7d1e989..HEAD dentro de los ALCANCE; arbol sin rutas fuera del log y anexos
+R-16 | md5 de <EXP>/50_encargo.md = encargo_md5 de la ficha (de8288868d605bd6f058fad0f48138c7)
+R-17 | regresion: sin arnes de pruebas (declarado por el encargo)
+R-18 | control positivo: una copia del insumo con una linea agregada da md5 distinto de d956559cd4e80985bab369d48877caba
