@@ -1,0 +1,19 @@
+Inventario de afirmaciones auditables (FASE R, mapa_hashes), derivado del log antes de auditar.
+
+R-01  H1 de partida: HEAD y origin/main en 7a43615, rama main, remoto slep_simce_adecuado (FASE 0).
+R-02  Arbol de partida: solo el expediente sin versionar; el punto de retorno 99757f8 contiene solo el encargo (FASE 0).
+R-03  H2: d501236 es commit y dd01260 no es ancestro de HEAD (FASE 0).
+R-04  md5 de <MAPA> c00dc3ceb166eda06197ad3089f0e067 y el blob versionado en 08d54d9 es el mismo archivo (FASE 0 y T1).
+R-05  <FILAS> = 284 (T1).
+R-06  <RESUELVE> = 0: todo hash_nuevo es ancestro de HEAD (T1).
+R-07  <HUERFANOS> = 0: ningun hash_anterior es ancestro de HEAD (T1).
+R-08  <ASUNTOS> = 0: cada asunto coincide con el de su hash_nuevo (T1).
+R-09  <COBERTURA> = 0 277 (T1).
+R-10  Commit de T1 08d54d9 con solo <MAPA>, y <ARBOL> 0 (T1).
+R-11  Invariante 1: nada cambia fuera de encargos/.
+R-12  Invariante 2: sin atribucion (<ATRIB> 0 0).
+R-13  Invariante 3: encargo y mapa intactos (md5).
+R-14  Invariante 4: nada de datos, codigo ni publicacion.
+R-15  Alcance global: diff 99757f8..HEAD solo <MAPA>; status sin rutas fuera del log y los anexos; md5 del encargo = encargo_md5.
+R-16  Regresion: sin arnes de pruebas (declarado en PRUEBAS).
+R-17  Control positivo sobre copia plantada: <ASUNTOS> 1, <RESUELVE> 1, <HUERFANOS> 1.
