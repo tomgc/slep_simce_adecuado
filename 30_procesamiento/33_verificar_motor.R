@@ -40,13 +40,16 @@
 #       establecimientos con simbología de los territorios en pantalla, con su
 #       motivo, y ninguno de otro territorio (D36-1).
 #   M11 A 375 px, la fila de acciones con la casilla no desborda (criterio de M4).
+#   M12 El modal lista exactamente los establecimientos que cuenta el «‡»: en
+#       cada comuna, con y sin dependencia, nivel, prueba y año, los RBD de
+#       filasSimbologia() son tantos como el n_simb de la serie (D36-13).
 #
 # Insumos:  40_salidas/motor_comparacion.html (correr antes el paso 33), o la
 #           ruta que se pase como primer argumento;
 #           20_insumos/simce/{2m,4b}/ (M3);
 #           30_procesamiento/33_motor_template.html, 33_fragmento_sitio.html y
 #           10_utils/10_html.R (M2).
-# Requiere: chromote y Chrome (M4 a M11 leen el motor en el navegador).
+# Requiere: chromote y Chrome (M4 a M12 leen el motor en el navegador).
 # Salida:   el informe en consola, una línea por prueba. No escribe archivos en
 #           el árbol; M7 y M8 escriben un HTML de control en tempdir() y lo
 #           borran al leerlo.
@@ -750,8 +753,9 @@ comprobar(
 # con dependencia Servicio Local) y el nivel y la prueba por defecto (4° básico,
 # Lectura): marca la casilla, elige ANIO_SIMB en el modal y abre la lista. Cada
 # fila listada se coteja con DATA: su RBD tiene simbología en ese año, nivel y
-# prueba, su comuna y dependencia del directorio son las de algún territorio en
-# pantalla y su motivo es el de meta.motivos_simbologia para su código.
+# prueba, la comuna y la dependencia de esa fila de DATA.simbologia (las de la
+# fila Simce, D36-13) son las de algún territorio en pantalla y su motivo es el
+# de meta.motivos_simbologia para su código.
 JS_M10_ABRIR <- "(() => {
   document.querySelector('.results-head .casilla-simb input').click();
   return true; })()"
@@ -760,14 +764,12 @@ JS_M10_ANIO <- sprintf("(() => {
   if (!b) return false; b.click(); const d = document.querySelector('.modal-simb details'); if (d) d.open = true; return true; })()", ANIO_SIMB)
 JS_M10_LEER <- sprintf("(() => {
   const C = DATA.simbologia, M = DATA.meta.motivos_simbologia;
-  const estab = new Map(DATA.establecimientos.map(r => [String(r.rbd), r]));
   const filas = Array.from(document.querySelectorAll('.modal-simb .simb-fila')).map(tr => {
     const rbd = tr.dataset.rbd, celdas = Array.from(tr.querySelectorAll('td')).map(td => td.textContent);
-    let cod = null;
-    for (let i = 0; i < C.rbd.length; i++) if (String(C.rbd[i]) === rbd && C.anio[i] === %d && C.nivel[i] === '4b' && C.prueba[i] === 'lect') cod = C.cod[i];
-    const e = estab.get(rbd);
+    let cod = null, fila = -1;
+    for (let i = 0; i < C.rbd.length; i++) if (String(C.rbd[i]) === rbd && C.anio[i] === %d && C.nivel[i] === '4b' && C.prueba[i] === 'lect') { cod = C.cod[i]; fila = i; }
     return { rbd, cod, motivo_ok: cod != null && celdas[celdas.length - 1] === M[cod],
-             en_territorio: !!e && String(e.cod_depe2) === '5' && window.__M10_COMUNAS.includes(String(e.cod_com_rbd)) };
+             en_territorio: fila >= 0 && String(C.depe[fila]) === '5' && window.__M10_COMUNAS.includes(String(C.com[fila])) };
   });
   const activo = (document.querySelector('.modal-simb .simb-anios button.is-active') || {}).textContent || '';
   return JSON.stringify({ modal: !!document.querySelector('.modal-simb'), activo, filas,
@@ -778,33 +780,36 @@ JS_M10_COMUNAS <- "(() => {
   const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
   const sl = SimceData.SLEPS.find(x => norm(x.nombre).includes('costa central'));
   window.__M10_COMUNAS = sl ? sl.comunas.map(String) : []; return window.__M10_COMUNAS.length; })()"
-# Control: una fila de un establecimiento de otro territorio (el primero del
-# directorio fuera de esas comunas) plantada en la lista abierta.
-JS_M10_PLANTAR <- "(() => {
-  const ajeno = DATA.establecimientos.find(r => !window.__M10_COMUNAS.includes(String(r.cod_com_rbd)));
+# Control: una fila de otro territorio plantada en la lista abierta, con el RBD
+# de la primera fila de DATA.simbologia de ese año, nivel y prueba cuya comuna
+# no es ninguna de esas. Devuelve false si no hay tal fila.
+JS_M10_PLANTAR <- sprintf("(() => {
+  const C = DATA.simbologia; let ajeno = null;
+  for (let i = 0; i < C.rbd.length && ajeno == null; i++) if (C.anio[i] === %d && C.nivel[i] === '4b' && C.prueba[i] === 'lect' && !window.__M10_COMUNAS.includes(String(C.com[i]))) ajeno = String(C.rbd[i]);
+  if (ajeno == null) return false;
   const tr = document.querySelector('.modal-simb .simb-fila').cloneNode(true);
-  tr.dataset.rbd = String(ajeno.rbd); tr.classList.add('m10-plantada');
-  document.querySelector('.modal-simb .simb-fila').parentNode.appendChild(tr); return true; })()"
+  tr.dataset.rbd = ajeno; tr.classList.add('m10-plantada');
+  document.querySelector('.modal-simb .simb-fila').parentNode.appendChild(tr); return true; })()", ANIO_SIMB)
 m10_eval <- function(m) {
   f <- m$filas
   n <- if (is.null(f) || length(f) == 0) 0L else NROW(f)
   list(n = n, todos_ok = n > 0 && all(f$en_territorio) && all(f$motivo_ok) && all(!is.na(f$cod)))
 }
-m10_ctl <- NULL
+m10_ctl <- NULL; m10_plantada <- FALSE
 m10 <- intentar(con_motor(RUTA_MOTOR, ANCHO_PNG, ALTO_VENTANA, function(s) {
   js(s, JS_M10_COMUNAS)
   js(s, JS_M10_ABRIR)
   esperar(s, "!!document.querySelector('.modal-simb')", 10); cuadro(s)
   js(s, JS_M10_ANIO); Sys.sleep(ESPERA_CLIC_S); cuadro(s)
   m <- js_json(s, JS_M10_LEER)
-  js(s, JS_M10_PLANTAR); cuadro(s)
+  m10_plantada <<- isTRUE(js(s, JS_M10_PLANTAR)); cuadro(s)
   m10_ctl <<- js_json(s, JS_M10_LEER)
   m
 }))
 m10_r <- if (es_error(m10)) NULL else m10_eval(m10)
 m10_ok_real <- !es_error(m10) && isTRUE(m10$modal) && startsWith(m10$activo, as.character(ANIO_SIMB)) &&
   m10_r$n == ESPERADO_M10_FILAS && m10_r$todos_ok && m10$signos == 0
-m10_ctl_detecta <- !is.null(m10_ctl) && !m10_eval(m10_ctl)$todos_ok
+m10_ctl_detecta <- m10_plantada && !is.null(m10_ctl) && !m10_eval(m10_ctl)$todos_ok
 comprobar(
   "M10", sprintf("Con la casilla marcada, el modal en %d lista exactamente el establecimiento con simbología de los territorios en pantalla, con su motivo, y ninguno de otro territorio", ANIO_SIMB),
   m10_ok_real && m10_ctl_detecta,
@@ -853,7 +858,102 @@ comprobar(
                                                           if (m11_ctl_detecta) "FALLA, detectado" else "no detectado"))
 )
 
-# Cierra el navegador que abrió chromote para M4 a M11.
+# ---- M12. El modal lista exactamente los establecimientos que cuenta el «‡» ----------------
+
+# Con la casilla desmarcada, para cada comuna de DATA.comunas, sin dependencia y
+# con cada dependencia de "1" a "5", cada nivel, cada prueba y cada año de
+# SimceData.YEARS: los RBD distintos de filasSimbologia() en ese año se comparan
+# con el n_simb de ese año en la serie del panorama (generateSeriesGseCombinado;
+# un año sin punto, o con n_simb ausente o nulo, cuenta 0). `casos` son las
+# combinaciones con n_simb > 0 o con filas en el modal; `difieren`, las
+# distintas. Además: las filas de DATA.simbologia cuyo RBD no está en
+# DATA.establecimientos (`sin_directorio`), las que de ellas devuelve
+# filasSimbologia() para el territorio de su propia comuna, sin dependencia
+# (`sin_directorio_ubicadas`), y la misma comparación para el nacional, solo
+# como dato. La medición, el nacional y el control van en llamadas separadas
+# para no agotar el tiempo de Runtime.evaluate. El detalle no lleva RBD ni
+# nombres.
+JS_M12_PREP <- "(() => {
+  window.__m12Territorios = cod => [{ kind: 'comuna', comunas: [cod] }]
+    .concat(['1', '2', '3', '4', '5'].map(d => ({ kind: 'comuna', comunas: [cod], depe2: d })));
+  window.__m12Comparar = territorios => {
+    let casos = 0, difieren = 0;
+    for (const t of territorios) for (const nv of ['4b', '2m']) for (const pr of ['lect', 'mate']) {
+      const modal = new Map();
+      for (const f of filasSimbologia([t], nv, [pr])) {
+        if (!modal.has(f.anio)) modal.set(f.anio, new Set());
+        modal.get(f.anio).add(String(f.rbd));
+      }
+      const serie = SimceData.generateSeriesGseCombinado(t, DATA.meta.niveles[nv], DATA.meta.pruebas[pr]);
+      for (const y of SimceData.YEARS) {
+        const p = serie.find(q => q.year === y);
+        const nSimb = (p && p.n_simb) || 0, nModal = modal.has(y) ? modal.get(y).size : 0;
+        if (nSimb > 0 || nModal > 0) casos++;
+        if (nSimb !== nModal) difieren++;
+      }
+    }
+    return { casos, difieren };
+  };
+  window.__m12Desmarcada = f => { const antes = SimceData.getExcluirSimb(); SimceData.setExcluirSimb(false);
+    try { return f(); } finally { SimceData.setExcluirSimb(antes); } };
+  return true;
+})()"
+JS_M12_REAL <- "(() => JSON.stringify(window.__m12Desmarcada(() => {
+  const C = DATA.simbologia;
+  const r = window.__m12Comparar(DATA.comunas.flatMap(c => window.__m12Territorios(String(c.cod))));
+  const directorio = new Set(DATA.establecimientos.map(e => String(e.rbd)));
+  let sinDirectorio = 0, ubicadas = 0;
+  for (let i = 0; i < C.rbd.length; i++) {
+    if (directorio.has(String(C.rbd[i]))) continue;
+    sinDirectorio++;
+    if (filasSimbologia([{ kind: 'comuna', comunas: [String(C.com[i])] }], C.nivel[i], [C.prueba[i]])
+          .some(f => f.rbd === String(C.rbd[i]) && f.anio === C.anio[i])) ubicadas++;
+  }
+  return { casos: r.casos, difieren: r.difieren, sin_directorio: sinDirectorio, sin_directorio_ubicadas: ubicadas };
+})))()"
+JS_M12_NACIONAL <- "(() => JSON.stringify(window.__m12Desmarcada(() => window.__m12Comparar([{ kind: 'nacional' }]))))()"
+# Control: en la página abierta, la primera fila de DATA.simbologia cuya comuna
+# tiene n_simb > 0 en su año, nivel y prueba pasa a otra comuna de DATA.comunas;
+# `difieren`, recontado solo para esas dos comunas, tiene que quedar sobre 0 y
+# sobre su valor previo; después se restituye la comuna y se recuenta.
+JS_M12_CONTROL <- "(() => JSON.stringify(window.__m12Desmarcada(() => {
+  const C = DATA.simbologia; let fila = -1;
+  for (let i = 0; i < C.rbd.length && fila < 0; i++) {
+    if (C.com[i] == null) continue;
+    const p = SimceData.generateSeriesGseCombinado({ kind: 'comuna', comunas: [String(C.com[i])] },
+      DATA.meta.niveles[C.nivel[i]], DATA.meta.pruebas[C.prueba[i]]).find(q => q.year === C.anio[i]);
+    if (p && p.n_simb > 0) fila = i;
+  }
+  if (fila < 0) return { plantado: false };
+  const original = C.com[fila];
+  const otra = DATA.comunas.map(c => String(c.cod)).find(c => c !== String(original));
+  const terr = window.__m12Territorios(String(original)).concat(window.__m12Territorios(otra));
+  const previo = window.__m12Comparar(terr).difieren;
+  C.com[fila] = otra;
+  const conPlantado = window.__m12Comparar(terr).difieren;
+  C.com[fila] = original;
+  return { plantado: true, previo, difieren: conPlantado, repuesto: window.__m12Comparar(terr).difieren };
+})))()"
+m12 <- intentar(con_motor(RUTA_MOTOR, ANCHO_PNG, ALTO_VENTANA, function(s) {
+  js(s, JS_M12_PREP)
+  list(real = js_json(s, JS_M12_REAL), nacional = js_json(s, JS_M12_NACIONAL),
+       control = js_json(s, JS_M12_CONTROL))
+}))
+m12_ok_real <- !es_error(m12) && isTRUE(m12$real$casos > 0) && isTRUE(m12$real$difieren == 0) &&
+  isTRUE(m12$real$sin_directorio == m12$real$sin_directorio_ubicadas)
+m12_ctl_detecta <- !es_error(m12) && isTRUE(m12$control$plantado) &&
+  isTRUE(m12$control$difieren > 0) && isTRUE(m12$control$difieren > m12$control$previo) &&
+  isTRUE(m12$control$repuesto == m12$control$previo)
+comprobar(
+  "M12", "El modal lista exactamente los establecimientos que cuenta el «‡» en cada comuna, con y sin dependencia, nivel, prueba y año",
+  m12_ok_real && m12_ctl_detecta,
+  if (es_error(m12)) mensaje(m12) else sprintf(
+    "m12: casos=%d difieren=%d sin_directorio=%d sin_directorio_ubicadas=%d nacional_difieren=%d control=%s",
+    m12$real$casos, m12$real$difieren, m12$real$sin_directorio, m12$real$sin_directorio_ubicadas,
+    m12$nacional$difieren, if (m12_ctl_detecta) "detectado" else "no_detectado")
+)
+
+# Cierra el navegador que abrió chromote para M4 a M12.
 if (requireNamespace("chromote", quietly = TRUE) && chromote::has_default_chromote_object()) {
   try(chromote::default_chromote_object()$close(), silent = TRUE)
 }

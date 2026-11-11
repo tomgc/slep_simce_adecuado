@@ -4894,27 +4894,64 @@ code {
       );
     }
 
-    // RBD de los establecimientos de un territorio, con la misma regla que el
-    // popup de establecimientos: un SLEP por su lista de RBD, un establecimiento
-    // por su RBD, el nacional sin filtro (null) y los demás por comuna y, si la
-    // tiene, dependencia (directorio oficial, DATA.establecimientos).
-    function rbdsDeTerritorio(entity) {
-      if (entity.kind === "slep") return new Set((entity.rbds || []).map(String));
-      if (entity.kind === "estab") return new Set([String(entity.rbd)]);
-      if (entity.kind === "nacional" && !entity.depe2) return null;
-      const setCom = entity.kind === "nacional" ? null : new Set(entity.comunas || []);
-      return new Set((DATA.establecimientos || []).filter(r =>
-        (!setCom || setCom.has(String(r.cod_com_rbd))) &&
-        (!entity.depe2 || String(r.cod_depe2) === String(entity.depe2))
-      ).map(r => String(r.rbd)));
+    // Resultados con simbología adicional (filas de DATA.simbologia) del nivel y
+    // las pruebas dados, por código, que están en al menos un territorio de
+    // `entities`. Regla de D36-13, la misma de las cifras: un SLEP por su lista
+    // de RBD y un establecimiento por su RBD; los demás (comuna, región, grupo y
+    // nacional) por la comuna de la fila Simce (el nacional no filtra comuna),
+    // su GSE, que tiene que existir (32_agregar_comunal.R deja fuera las filas
+    // sin GSE), y su dependencia si el territorio la filtra. Función pura y sin
+    // caché: cada llamada recorre DATA.simbologia tal como está (la llama la
+    // prueba M12 de 33_verificar_motor.R). Cada fila trae anio, rbd, prueba (el
+    // código), nom (directorio vigente; si el RBD no está, la base de la
+    // Agencia), com (DATA.comunas por el código de la fila; si no, el
+    // directorio), nalu y cod.
+    function filasSimbologia(entities, nivelCod, pruebasCod) {
+      const C = DATA.simbologia;
+      if (!C || !C.rows) return [];
+      const prs = new Set(pruebasCod);
+      const reglas = (entities || []).map(e => {
+        if (e.kind === "slep") return { rbds: new Set((e.rbds || []).map(String)) };
+        if (e.kind === "estab") return { rbds: new Set([String(e.rbd)]) };
+        return {
+          comunas: e.kind === "nacional" ? null : new Set((e.comunas || []).map(String)),
+          depe2: e.depe2 ? String(e.depe2) : null,
+        };
+      });
+      const calza = (r, i) => {
+        if (r.rbds) return r.rbds.has(String(C.rbd[i]));
+        if (C.grupo[i] == null) return false;
+        if (r.comunas && (C.com[i] == null || !r.comunas.has(String(C.com[i])))) return false;
+        if (r.depe2 && (C.depe[i] == null || String(C.depe[i]) !== r.depe2)) return false;
+        return true;
+      };
+      let estab = null;   // directorio vigente por RBD; se arma con la primera fila que calza
+      const out = [];
+      for (let i = 0; i < C.rbd.length; i++) {
+        if (C.nivel[i] !== nivelCod || !prs.has(C.prueba[i])) continue;
+        if (!reglas.some(r => calza(r, i))) continue;
+        if (!estab) estab = new Map((DATA.establecimientos || []).map(r => [String(r.rbd), r]));
+        const rbd = String(C.rbd[i]);
+        const e = estab.get(rbd);
+        const c = C.com[i] != null ? SimceData.COMUNA_BY_COD.get(String(C.com[i])) : null;
+        out.push({
+          anio: C.anio[i], rbd, prueba: C.prueba[i],
+          nom: (e && e.nom_rbd) || C.nom[i] || "-",
+          com: (c && c.nom) ? aNombrePropio(c.nom)
+            : (e && e.nom_com_rbd) ? aNombrePropio(e.nom_com_rbd) : "-",
+          nalu: C.nalu[i], cod: C.cod[i],
+        });
+      }
+      return out;
     }
 
     // Modal «Resultados excluidos del cálculo»: un año a la vez, con los
     // establecimientos con simbología adicional de los territorios en pantalla,
-    // del nivel y las pruebas activos (DATA.simbologia; nombre y comuna desde
-    // DATA.establecimientos; motivo desde meta.motivos_simbologia). Estilos y
-    // conducta del modal «Agregar territorio»: cierra con la ×, con Escape y con
-    // un clic fuera.
+    // del nivel y las pruebas activos (filasSimbologia; motivo desde
+    // meta.motivos_simbologia). Estilos y conducta del modal «Agregar
+    // territorio»: cierra con la ×, con Escape y con un clic fuera.
+    // D36-13: cada resultado se ubica con la comuna, la dependencia y el GSE de
+    // su fila Simce, como las cifras; se nombra con el directorio o con la base.
     function ModalSimbologia({ entities, nivel, pruebas, onClose }) {
       React.useEffect(() => {
         const alTeclear = e => { if (e.key === "Escape") onClose(); };
@@ -4923,27 +4960,15 @@ code {
       }, [onClose]);
 
       const filas = React.useMemo(() => {
-        const C = DATA.simbologia;
-        if (!C || !C.rows) return [];
-        const nv = SimceData.NIVEL_LABEL_TO_COD[nivel];
-        const prs = new Set(pruebas.map(p => SimceData.PRUEBA_LABEL_TO_COD[p]));
-        const sets = entities.map(rbdsDeTerritorio);
-        const enPantalla = rbd => sets.some(s => s === null || s.has(rbd));
-        const estab = new Map((DATA.establecimientos || []).map(r => [String(r.rbd), r]));
         const nomPrueba = DATA.meta.pruebas;
-        const out = [];
-        for (let i = 0; i < C.rbd.length; i++) {
-          if (C.nivel[i] !== nv || !prs.has(C.prueba[i])) continue;
-          const rbd = String(C.rbd[i]);
-          if (!enPantalla(rbd)) continue;
-          const e = estab.get(rbd);
-          out.push({
-            anio: C.anio[i], rbd, prueba: nomPrueba[C.prueba[i]] || C.prueba[i],
-            nom: e ? e.nom_rbd : "—", com: e ? aNombrePropio(e.nom_com_rbd) : "—",
-            nalu: C.nalu[i], motivo: (DATA.meta.motivos_simbologia || {})[C.cod[i]] || C.cod[i],
-          });
-        }
-        return out.sort((a, b) => a.prueba.localeCompare(b.prueba, "es") || a.nom.localeCompare(b.nom, "es"));
+        const motivos = DATA.meta.motivos_simbologia || {};
+        return filasSimbologia(
+          entities, SimceData.NIVEL_LABEL_TO_COD[nivel],
+          pruebas.map(p => SimceData.PRUEBA_LABEL_TO_COD[p])
+        ).map(f => ({
+          anio: f.anio, rbd: f.rbd, prueba: nomPrueba[f.prueba] || f.prueba,
+          nom: f.nom, com: f.com, nalu: f.nalu, motivo: motivos[f.cod] || f.cod,
+        })).sort((a, b) => a.prueba.localeCompare(b.prueba, "es") || a.nom.localeCompare(b.nom, "es"));
       }, [entities, nivel, pruebas]);
 
       const porAnio = SimceData.YEARS.map(y => ({ y, n: filas.filter(f => f.anio === y).length }));
