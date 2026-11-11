@@ -1,0 +1,28 @@
+Inventario de afirmaciones auditables de FASE R (encargo 20261111_modal_simbologia_sin_directorio)
+Derivado del log antes de auditar. Sin RBD ni nombres de establecimientos.
+
+R-01 FASE 0, H1: repo slep_simce_adecuado, HEAD y origin/main en 2eb0483, rama main, 0 stash, 0 en staging.
+R-02 FASE 0, árbol: 5 rutas sin versionar, todas del expediente, antes del commit del encargo.
+R-03 FASE 0, H3: md5 de las tres sondas iguales a los de la sección 10 del encargo.
+R-04 FASE 0, H2: los 18 xlsx traen la columna nom_rbd (18 1).
+R-05 FASE 0, línea base: BUILD rc 0; TAGREG 9/9; VMOTOR 11/11; VTRAY 35/35.
+R-06 FASE 0, CAT f0: rows=2008, los cuatro vectores ausentes, largos_iguales=TRUE, sin_directorio=25.
+R-07 FASE 0, encargo_md5 37a4967706ee3a32b1a37238e529b803.
+R-08 FASE 0, hash_inicial 3c405e9: commit docs(encargo) con 4 archivos.
+R-09 T1, BUILD T1 rc 0 y TAGREG T1 9/9.
+R-10 T1, CAT T1: com, depe, grupo y nom con 2008 valores no nulos; sin_directorio=25.
+R-11 T1, commit d32d433 con exactamente las 3 rutas de su ALCANCE.
+R-12 T1, textos: 31_leer_normalizar.R declara 17 columnas (ya no 16) y los cinco archivos de T1 y T2 citan D36-13.
+R-13 T2, BUILD T2 rc 0 y VMOTOR T2 12 pruebas, 12 pasan.
+R-14 T2, M12: casos=2946, difieren=0, sin_directorio=25, sin_directorio_ubicadas=25, nacional_difieren=0, control detectado.
+R-15 T2, commit 248ff75 con exactamente las 2 rutas de su ALCANCE.
+R-16 T2, textos: rbdsDeTerritorio ya no existe en la plantilla; la batería dice M4 a M12.
+R-17 Commits del encargo: 3c405e9, d32d433 y 248ff75 sobre 2eb0483, sin otros.
+R-18 Alcance global: solo cambian los archivos de T1 y T2 y el expediente; árbol sin residuo.
+R-19 md5 del encargo igual a encargo_md5 al cierre.
+R-20 Invariante 1: las cifras no cambian (JSON igual sin el catálogo; VTRAY igual a su línea base).
+R-21 Invariante 2: sin atribución a la herramienta.
+R-22 Invariante 3: solo cambian los archivos de T1 y T2, el expediente y el índice.
+R-23 Invariante 4: docs/ y 20_insumos/ intactos.
+R-24 Contrato de arranque: lecturas previas al testigo declaradas (ninguna además del encargo).
+R-25 Errores propios de forma registrados en FASE 0 (2).
