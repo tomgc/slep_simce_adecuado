@@ -218,6 +218,7 @@ establecimientos educacionales) y se coloca en `20_insumos/auxiliares/`. Detalle
 | nivel         | character | "4b" o "2m"                          |
 | prueba        | character | "lect" o "mate"                      |
 | rbd           | character | ID establecimiento                   |
+| nom_rbd       | character | Nombre del establecimiento en la base de la Agencia (D36-13) |
 | cod_com_rbd   | character | Código comuna                        |
 | nom_com_rbd   | character | Nombre comuna                        |
 | cod_grupo     | character | "1".."5" (GSE)                       |

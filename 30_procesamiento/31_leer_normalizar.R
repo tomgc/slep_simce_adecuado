@@ -12,11 +12,12 @@
 #
 #   40_salidas/intermedios/simce_rbd.parquet
 #
-# Esquema final (16 columnas):
+# Esquema final (17 columnas):
 #   anio          integer    los de los xlsx (hoy 2014-2018, 2022-2025)
 #   nivel         character  "4b" | "2m"
 #   prueba        character  "lect" | "mate"
 #   rbd           character
+#   nom_rbd       character  nombre del establecimiento según la base de la Agencia (D36-13)
 #   cod_com_rbd   character
 #   nom_com_rbd   character
 #   cod_grupo     character  GSE "1".."5"
@@ -251,6 +252,7 @@ extraer_prueba <- function(df_raw, nivel, prueba) {
 
   tibble::tibble(
     rbd          = as.character(df_raw$rbd),
+    nom_rbd      = as.character(df_raw$nom_rbd),
     cod_com_rbd  = as.character(df_raw$cod_com_rbd),
     nom_com_rbd  = as.character(df_raw$nom_com_rbd),
     cod_grupo    = as.character(df_raw$cod_grupo),
@@ -292,7 +294,7 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
   }
 
   # --- Validación de columnas requeridas para este nivel ---
-  cols_base <- c("rbd", "cod_com_rbd", "nom_com_rbd", "cod_grupo")
+  cols_base <- c("rbd", "nom_rbd", "cod_com_rbd", "nom_com_rbd", "cod_grupo")
   cols_por_prueba <- c(
     paste0("nalu_lect", nivel, "_rbd"),
     paste0("nalu_mate", nivel, "_rbd"),
@@ -417,7 +419,7 @@ leer_un_xlsx <- function(path, nivel, anio, estado, archivo) {
 
   # Orden de columnas final.
   df_largo <- df_largo[, c(
-    "anio", "nivel", "prueba", "rbd",
+    "anio", "nivel", "prueba", "rbd", "nom_rbd",
     "cod_com_rbd", "nom_com_rbd", "cod_grupo", "cod_depe2",
     "nalu", "palu_eda_ade", "palu_eda_ele", "palu_eda_ins", "marca", "preliminar",
     "simbologia", "cod_simbologia"
@@ -521,6 +523,6 @@ print(resumen, n = Inf)
 
 message("")
 message(sprintf(
-  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (16 columnas).",
+  "31_leer_normalizar.R: OK. Total %d filas en simce_rbd.parquet (17 columnas).",
   nrow(df_simce_rbd)
 ))

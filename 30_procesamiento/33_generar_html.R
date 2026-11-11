@@ -346,9 +346,9 @@ simce_rbd_lst <- list(
 
 # --- Catálogo de resultados con simbología adicional (D36-1) ---
 # Una fila por establecimiento × año × nivel × prueba con resultado y marca, con
-# el código de su motivo (meta$motivos_simbologia). Solo RBD: el nombre y la
-# comuna se unen en el navegador con `establecimientos`. Lo lista el modal de
-# la casilla de exclusión.
+# el código de su motivo (meta$motivos_simbologia). La comuna, la dependencia,
+# el GSE y el nombre vienen de la fila Simce (D36-13): el modal de la casilla de
+# exclusión ubica cada resultado con ellos, igual que las cifras.
 df_simbologia <- df_simce_valido |>
   dplyr::filter(simbologia) |>
   dplyr::mutate(rbd = as.character(rbd)) |>
@@ -357,6 +357,10 @@ df_simbologia <- df_simce_valido |>
 simbologia_lst <- list(
   rows   = nrow(df_simbologia),
   rbd    = df_simbologia$rbd,
+  com    = as.character(df_simbologia$cod_com_rbd),
+  depe   = as.character(df_simbologia$cod_depe2),
+  grupo  = as.character(df_simbologia$cod_grupo),
+  nom    = as.character(df_simbologia$nom_rbd),
   anio   = as.integer(df_simbologia$anio),
   nivel  = df_simbologia$nivel,
   prueba = df_simbologia$prueba,
