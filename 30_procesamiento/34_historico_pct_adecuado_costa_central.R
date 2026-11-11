@@ -22,7 +22,7 @@
 #   - Prueba lect + mate: se agregan por separado, no se suman entre sí
 #     (evita mezclar dimensiones distintas del SIMCE en una sola cifra).
 #
-# Insumo: 40_salidas/intermedios/simce_rbd.parquet (14 columnas, ver
+# Insumo: 40_salidas/intermedios/simce_rbd.parquet (17 columnas, ver
 # 31_leer_normalizar.R).
 # Salida: 40_salidas/historico_pct_adecuado_costa_central.xlsx
 #   4 hojas: "4b-lect", "4b-mate", "2m-lect", "2m-mate"

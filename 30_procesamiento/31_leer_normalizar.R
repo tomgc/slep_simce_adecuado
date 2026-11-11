@@ -234,7 +234,7 @@ message(sprintf("    OK: %d archivos detectados (%d por nivel), años %s.",
 # Bloque 2 — Helper: extraer formato largo para una prueba
 # ============================================================================
 
-# Extrae las 7 columnas base + asigna prueba="lect" o "mate".
+# Extrae las columnas base (rbd, nom_rbd, comuna y GSE) y las de la prueba, y asigna prueba="lect" o "mate".
 extraer_prueba <- function(df_raw, nivel, prueba) {
   sufijo <- paste0(prueba, nivel)  # p. ej. "lect2m" o "mate4b"
 
