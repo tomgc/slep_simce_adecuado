@@ -1063,3 +1063,128 @@ detectada por git como rename 85%).
 - Simce 2026: bloqueado hasta que la Agencia publique; no depende de este cierre.
 
 **Estado del push:** por publicar (push_autorizado: si).
+
+## v36 — 2026-11-11
+
+**Instrumento:** `cierre_sesion_autonomo_cc_v18.md` | kit `3afb506`
+**kit:** sincronizado (`fetch` + `merge --ff-only`, sin divergencia: `0 0`)
+**normativos:** al día (POLITICA «Versión 6.1 — vigente.» y SETTINGS «Versión 44.», iguales al kit)
+
+### Tabla de severidades
+
+| condicion | severidad | resultado |
+|---|---|---|
+| F0.0.a kit sincronizado | BLOQUEA | pasa |
+| F0.0.b normativos vs kit | REPARA | pasa (iguales, sin copia) |
+| F0.1 `.git` y `traspasos/` existen | BLOQUEA | pasa |
+| F0.1 alias de estación no vacío (`estacion_windows`) | BLOQUEA | pasa |
+| F0.2 paquete único, front matter completo, cuatro delimitadores, cero placeholders | BLOQUEA | pasa (1 candidato del grep: la cita «[pega aquí…]» dentro de ERR-36-01, que es texto citado y no un hueco) |
+| F0.2 campo derivado con valor | ADVIERTE | pasa (ninguno) |
+| F0.3 guardia de repo (`raiz_proyecto` = `pwd`) | BLOQUEA | pasa |
+| F0.4 correlativo triple (v36 = paquete = máx(v35)+1) | BLOQUEA | pasa |
+| F0.5 `n` = `backlog_entradas_nuevas` (13 = 13) | BLOQUEA | pasa |
+| F0.5 numeración provisional contigua (254→266) | BLOQUEA | pasa |
+| F0.5 desplazamiento `k` | REPARA | pasa (k = 0) |
+| F0.5 `sesion_nueva` = último + 1 (35+1=36) | ADVIERTE | pasa |
+| F0.5 `fecha_cierre` = fecha de máquina (2026-11-11) | ADVIERTE | pasa |
+| F0.5bis reparto contra disco, control positivo | BLOQUEA | pasa (13 líneas, números iguales a los del bloque, 6 códigos, todos existentes en disco) |
+| F0.5ter `recuento_tematico` | REPARA | pasa (`vigente` declarado; no aplica) |
+| F0.6 `settings_version` = línea del kit sincronizado | BLOQUEA | pasa |
+| F0.6 `compuerta_dudas`: sección presente | BLOQUEA | pasa |
+| F0.6 `compuerta_dudas`: N coincide (2 = 2) | ADVIERTE | pasa |
+| F0.7 árbol limpio en rutas que el cierre escribe | BLOQUEA | pasa |
+| F0.7bis árbol fuera de esas rutas: > 50 MB o dato sensible | BLOQUEA | pasa (lista vacía) |
+| F0.8 marcadores ESTADO literalmente `<<EJECUTOR>>` | BLOQUEA | pasa |
+| F2 encabezados estructurales únicos y presentes | BLOQUEA | pasa |
+| F2 encabezado de sesión reconocible en el Detalle | BLOQUEA | pasa |
+| F2 fila del paquete normalizada al formato de la tabla | REPARA | pasa (paquete sin fila propia; resumen y delta compuestos por el ejecutor) |
+| F3 rótulo del catálogo aplicable sin disparo | ADVIERTE | pasa (R3 y R12 dispararon) |
+| F3 cifras sin rótulo en zonas declarativas | ADVIERTE | pasa (ninguna nueva) |
+| I1 numeración 1→N contigua | BLOQUEA | pasa |
+| I2 cuadratura del resumen (suma = 266) | BLOQUEA | pasa |
+| I2bis cuadratura temática | BLOQUEA | pasa |
+| I3 filas del resumen (36+1=37) | BLOQUEA | pasa |
+| I4 sin magnitudes viejas sobrevivientes | ADVIERTE | pasa (apariciones listadas abajo, todas históricas) |
+| I5 sin autorreferencias de cifras | ADVIERTE | pasa |
+| I6 gobernanza (RUT, OneDrive, credenciales, atribución, placeholders) | BLOQUEA | pasa |
+| I7 traspaso: exactamente 1 vigente tras archivado | BLOQUEA | pasa |
+| IE1 ningún archivo de encargo fuera de un expediente | ADVIERTE | pasa (0 rutas; `migrado`: sí) |
+| IE2 fichas válidas | ADVIERTE | pasa (fichas: 7, válidas: 7, inválidas: 0, interrumpidas: 0) |
+| IE3 índice de encargos idéntico al regenerado | REPARA | reparada: `20261109_mapa_hashes` auditado → cerrado (índice regenerado, 1 fila cambiada) |
+| IE4 raíz de `andamios/` sin archivos de encargo | ADVIERTE | pasa (0 rutas) |
+| F7.1 staging por rutas explícitas, sin disparo de I6 | BLOQUEA | pasa (lista de F0 7bis vacía; sin commit de trabajo) |
+| F7.2 script del índice con código 0 | ADVIERTE | pasa |
+| F8 diff de distribución de los tres bloques de autoría | BLOQUEA | pasa |
+
+**renumeracion:** sin desplazamiento (k = 0). Patrón de entrada: `^[0-9]+\. ` (la última en disco abre con `253. `).
+
+### F3 — Rótulos
+
+**Catálogo aplicable (de la tabla v35): R3, R12.**
+
+| ID | Rótulo | Disparos | Texto resultante |
+|---|---|---:|---|
+| R3 | Cobertura "sesiones 1 a N" | 2 | `sesiones 1–35 (traspasos v01–v35)` → `sesiones 1–36 (traspasos v01–v36)`; `deltas s11–s35` → `deltas s11–s36` |
+| R12 | Recuento temático: columna N, denominador y porcentajes | 8 | siete filas recalculadas sobre 266 y fila Total 253 → 266 (tabla resultante abajo) |
+
+`catalogo no aplicable: R1, R2, R4, R5, R6, R7, R8, R9, R10, R11, R13 (11 de 13)`.
+
+**Cifras sin rótulo** en zonas declarativas: ninguna nueva detectada.
+
+### F4 — Invariantes
+
+| # | Invariante | Resultado |
+|---|---|---|
+| I1 | Numeración contigua | verde: 1…266 sin huecos ni duplicados, solo sobre el Detalle cronológico |
+| I2 | Cuadratura | verde: las 37 filas del resumen suman 266 |
+| I2bis | Cuadratura temática | verde: la columna N suma 266; los % suman 100,1 (redondeo a un decimal sobre 7 categorías); cada una de las 13 entradas del tramo aparece una vez en `reparto`; ninguna categoría con N < 0 |
+| I3 | Filas del resumen | verde: 36 + 1 = 37 (36 de sesión y la fila «—» entre las sesiones 26 y 27) |
+| I4 | Sin magnitudes viejas | verde: `253` sobrevive en la entrada 253 y en la línea de delta de la Sesión 35 (Detalle cronológico); `v35` sobrevive en la fila de la sesión 35 del resumen. Todas históricas |
+| I5 | Sin autorreferencias | verde: las entradas no declaran cuántas son |
+| I6 | Gobernanza | verde: 0 RUT, 0 rutas absolutas de OneDrive, 0 credenciales, 0 líneas de atribución y 0 marcadores fuera de `ESTADO.md` en los tres archivos de la copia y en lo staged |
+| I7 | Traspaso vigente | verde: v35 archivado con `git mv`, exactamente 1 vigente (v36) |
+
+### Clasificación temática resultante
+
+| Código | N° previo | Asignadas | N° | % |
+|---|---:|---:|---:|---:|
+| P | 21 | 1 | 22 | 8,3% |
+| UI | 97 | 3 | 100 | 37,6% |
+| D | 11 | 2 | 13 | 4,9% |
+| DOC | 60 | 3 | 63 | 23,7% |
+| REPO | 36 | 3 | 39 | 14,7% |
+| Infra | 12 | 1 | 13 | 4,9% |
+| DT | 16 | 0 | 16 | 6,0% |
+| Total | 253 | 13 | 266 | |
+
+### F4.1 y F7.2 — Expediente de encargo
+
+`adopto`: sí (7 expedientes). `migrado`: sí. `script`: sí. Fuera de `encargos/`: 0.
+`indice: regenerado (1 filas cambiadas)`.
+
+### F6 — Escáner
+
+`00_escanear_proyecto.R`: 58 carpetas, 291 archivos; snapshot `20261111_173415`; poda de 2 archivos del sello `20260924_163130`.
+
+### F7 — Commits
+
+**Hash de trabajo (F7.1):** ninguno (árbol limpio al abrir el cierre, lista de F0 7bis vacía).
+
+**Hash de documentación (F7.2):** `c81288f`, 10 rutas: traspaso v36 (nuevo), traspaso v35 (archivado), backlog, índice de encargos y seis salidas del escáner (2 alias modificados, 2 snapshots nuevos, 2 podados).
+
+### F8 — Distribución
+
+| Bloque | Destino | Resultado |
+|---|---|---|
+| TRASPASO | `traspasos/traspaso_cierre_v36.md` | idéntico |
+| BACKLOG_ENTRADAS | bloque `### Sesión 36` del backlog | idéntico (13 líneas) |
+| ESTADO | `activa/ESTADO.md` | idéntico (con marcadores) |
+
+`rm` del paquete ejecutado: única eliminación sancionada.
+
+### Lo que este cierre no verificó
+
+- Las dos dudas de la compuerta del traspaso v36 (pie del modal en el navegador y clon del Mac): registradas, ninguna ejecutada por este cierre.
+- Las cifras y hashes que el traspaso y las entradas declaran como autoría (commits de la sesión, md5 de Pages, baterías): se distribuyen byte a byte, no se recuentan aquí.
+
+**Estado del push:** por publicar (push_autorizado: si).
