@@ -1,6 +1,6 @@
 # Backlog histórico acumulativo — slep_simce_adecuado
 
-- **Cobertura:** sesiones 1–35 (traspasos v01–v35). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s35 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
+- **Cobertura:** sesiones 1–36 (traspasos v01–v36). Consolidado v01–v10 el 2026-06-09 (sesión 11); deltas s11–s36 anexados por su traspaso respectivo (s14–s19 reconstruidos en la sesión 20).
 - **Propósito:** registro acumulativo único de los cambios del proyecto, numerados correlativamente. Resuelve de forma definitiva la nota de continuidad heredada de v09 ("consolidar backlog v01–v08").
 - **Regla de mantenimiento:** este es un documento **vivo**. Cada traspaso de cierre futuro documenta solo su delta y **agrega aquí** sus ítems continuando la numeración. Los traspasos (inmutables) referencian este archivo en su sección 5 en lugar de duplicar el histórico.
 
@@ -48,14 +48,14 @@ detalle.
 
 | Código | Categoría | N° | % | Descripción y ejemplos |
 |--------|-----------|----|---|------------------------|
-| P | Pipeline R | 21 | 8,3% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
-| UI | Motor HTML / React / D3 | 97 | 38,3% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
-| D | Datos / Insumos | 11 | 4,3% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
-| DOC | Documentación | 60 | 23,7% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
-| REPO | Gobernanza del repo / Despliegue | 36 | 14,2% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
-| Infra | Infraestructura (escáner, orquestador, CI) | 12 | 4,7% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
-| DT | Deuda técnica | 16 | 6,3% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
-| **Total** | | **253** | **100,0%** | |
+| P | Pipeline R | 22 | 8,3% | scripts de lectura, normalización, agregación y salidas intermedias. Ej.: entrada 2 (pipeline completo, 185.378 filas brutas a 32.134 agregaciones comunales) y entrada 131 (histórico ponderado de % Adecuado). |
+| UI | Motor HTML / React / D3 | 100 | 37,6% | todo lo que el usuario ve o manipula en el motor. Ej.: entrada 3 (motor de comparación como HTML autocontenido) y entrada 144 (tope de comparación elevado a cinco territorios). |
+| D | Datos / Insumos | 13 | 4,9% | anomalías del insumo y auditorías del universo de datos. Ej.: entrada 4 (cuatro anomalías A1-A4 en datos crudos de la Agencia) y entrada 94 (auditoría del universo `depe=4`). |
+| DOC | Documentación | 63 | 23,7% | traspasos, decisiones, glosas, suite documental y este backlog. Ej.: entrada 21 (nota metodológica sobre Estándares de Aprendizaje) y entrada 146 (criterios de diseño de ramas de detención). |
+| REPO | Gobernanza del repo / Despliegue | 39 | 14,7% | estructura del repositorio, versionado, gobernanza de datos y publicación. Ej.: entrada 1 (creación del repositorio y scaffold) y entrada 152 (despliegues a GitHub Pages). |
+| Infra | Infraestructura (escáner, orquestador, CI) | 13 | 4,9% | herramental que sostiene el trabajo sin ser el producto. Ej.: entrada 13 (orquestador `00_build.R`) y entrada 20 (escáner con cuatro salidas). |
+| DT | Deuda técnica | 16 | 6,0% | limpieza y refactor sin cambio funcional observable. Ej.: entrada 19 (estado sin uso en el tab de comunas) y entrada 147 (escala tipográfica del SVG a constantes JS con valores preservados). |
+| **Total** | | **266** | **100,0%** | |
 
 ## Resumen estadístico por sesión
 
@@ -97,7 +97,8 @@ detalle.
 | 33 | v33 | 5 | no registrado | Vista de trayectorias con la regla de filas del motor, su identidad visual compartida y sin los defectos de forma heredados del mockup |
 | 34 | v34 | 6 | no registrado | Vista de trayectorias publicada y enlazada desde el motor, con guarda de locale, encabezado común y contraste de las cifras rescatadas |
 | 35 | v35 | 37 | no registrado | Referente y cohortes futuras decididos y todos los pendientes de v34 cerrados en encargos autónomos |
-| **Total** | | **253** | | |
+| 36 | v36 | 13 | no registrado | inclusión de los resultados con simbología adicional de la Agencia, modal de simbología igual a las cifras, ordenación y mapa de hashes |
+| **Total** | | **266** | | |
 
 ## Detalle cronológico
 
@@ -523,3 +524,21 @@ detalle.
 253. [DOC] Decisiones D35-1 a D35-27, registro de 29 errores del asistente y 16 encargos con sus logs versionados.
 
 **Delta del backlog:** 37 entradas nuevas (217–253). Sin cambios de taxonomía. Total acumulado: 253. La interfaz concentra la sesión por las pantallas angostas y la tipografía; Infra crece con las dos baterías y el lock, que hacen verificable lo publicado. Pipeline R suma la derivación de años, que deja la actualización anual sin literales.
+
+### Sesión 36 — 2026-11-11
+
+254. [P] Entra al cálculo todo resultado por estándar que publica la Agencia, también con simbología adicional; el umbral de 10 evaluados pasa de filtro a aserción (D36-1). Commits `9d190b0` y `c36ae35`. Resuelve el reporte del titular: Costa Central 4° básico Lectura 2025 pasa de 54 y 1.184 a 55 y 1.194, como la Agencia.
+255. [UI] Signo «‡» en las cifras con resultados con simbología adicional, casilla para excluirlos a la derecha de «Exportar PNG», modal por año con su motivo, columnas `n_estab_simbologia` y `excluye_simbologia` en los CSV y nota metodológica (D36-1). Commit `f0b8ba5`.
+256. [DOC] Decisión D36-1, README y glosas al día con la regla de inclusión. Commit `e4652b6`.
+257. [D] Concordancia de las cifras del motor con las bases de la Agencia verificada por tres caminos (por RBD, agregados comunales y series del motor en el navegador), 0 diferencias.
+258. [REPO] Publicación de D36-1 en GitHub Pages. Commit `338e64f`.
+259. [DOC] README con el paso de `LANG` y la remisión a `herramientas_dev` aclarada; D35-7 a D35-27 en su propio archivo de decisiones (D36-5 a D36-7). Commit `317040d`. Resuelve los pendientes 2 y 3 de v35.
+260. [REPO] Excepciones de estructura para `00_build.R`, `docs/` y `NOTICE`, y retiro de `traspasos/.gitkeep`: el censo queda sin desvíos estructurales (D36-8 a D36-10). Commit `da56d29`.
+261. [DOC] Mapa de hashes de las reescrituras de `main` del 2026-08-24 y del 2026-11-04, verificado contra `HEAD` (D36-11). Commit `08d54d9`.
+262. [UI] El modal de simbología ubica cada resultado con la comuna, la dependencia y el GSE de su fila Simce y lo nombra con la base de la Agencia si el directorio no lo trae (D36-13). Commits `d32d433` y `248ff75`. Resuelve R-30.
+263. [Infra] Batería del motor con M12 (el modal lista lo que cuenta el «‡») y M10 adaptada; pasa de 11 a 12 pruebas. Commit `248ff75`.
+264. [UI] Pie del modal con la base de la Agencia como fuente de nombres y dos comentarios del esquema al día (D36-15). Commit `1223816`.
+265. [REPO] Publicación de D36-13 y D36-15 en GitHub Pages, verificada por md5 en la URL pública. Commit `1e6e707`.
+266. [D] Cortes 2025 y 2026 del directorio oficial, su estructura y sus frecuencias, renombrados con prefijo de fecha en la carpeta de insumos de `slep_directorio_territorio`; este proyecto sigue con el corte 2025 (D36-2).
+
+**Delta del backlog:** 13 entradas nuevas (254–266). Sin cambios de taxonomía. Total acumulado: 266. La sesión se reparte entre una regla de datos con efecto visible (P, UI) y la higiene del repositorio (REPO, DOC); Infra crece con la prueba que fija la regla del modal.
