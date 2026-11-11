@@ -1,0 +1,28 @@
+Inventario de afirmaciones auditables (FASE R, paso 1). Derivado del log, escrito antes de auditar.
+
+R-01 FASE 0, H1: repo slep_simce_adecuado, HEAD 02de98e, origin/main 2eb0483, rama main, stash 0, staging 0.
+R-02 FASE 0, arbol: 2 lineas sin seguimiento (el encargo y el log) antes del commit del encargo.
+R-03 FASE 0, H2: md5 de la sonda 50_sonda_json_igual.R igual a d30362ed33555966894685414e36a06f.
+R-04 FASE 0, H2: los tres textos de partida aparecen una vez cada uno (pie anterior, "7 columnas base", "14 columnas").
+R-05 FASE 0, H2: md5 de docs/index.html 6017a43e10068dacbf998ff69fcca0b3 y de docs/trayectorias.html e0681b9e486428a6ab3cc38e2c531cfc.
+R-06 FASE 0, linea base: BUILD rc 0, TAGREG 9/9, VMOTOR 12/12, M12 casos=2946 difieren=0 25 de 25 nacional 0 control detectado, VTRAY 35/35.
+R-07 FASE 0, linea base: la vista construida es byte a byte la publicada (cmp 0).
+R-08 FASE 0, paso 3: encargo_md5 2d7187981dad394d6cf8dada53e5ac88.
+R-09 FASE 0, paso 4: commit 0b922c4 docs(encargo) con 1 archivo; hash_inicial 0b922c4; ARBOL 0.
+R-10 T1: la plantilla trae el pie de D36-15 una vez y el anterior ninguna (arbol de trabajo, sin commit).
+R-11 T1: el diff de trabajo es de una linea por archivo, en los 3 archivos del ALCANCE.
+R-12 T1: BUILD rc 0, VMOTOR 12/12, M12 igual a la linea base, VTRAY 35/35.
+R-13 T1: los dos comentarios nuevos aparecen una vez cada uno.
+R-14 T1: la verificacion del pie en el motor construido dio 0 (esperado 1, FALLA); el texto esta una vez como cadena de JavaScript, sin etiqueta de cierre.
+R-15 T1: las cifras del motor no cambian (sonda igual TRUE contra la linea base).
+R-16 T1: congelada sin commit; residuo de 3 rutas; las copias de T1 en el temporal no existen.
+R-17 T2: no ejecutada; docs/ sigue como en la partida.
+R-18 Commits del encargo: solo docs(encargo) sobre 02de98e.
+R-19 Alcance global: fuera del expediente no hay cambios commiteados; sin commitear, solo las 3 rutas pendientes de T1.
+R-20 md5 del encargo igual a encargo_md5.
+R-21 Invariante 1 (lo publicado es lo construido y probado en T1): no_medible, no se publico.
+R-22 Invariante 2 (sin atribucion): 0 0.
+R-23 Invariante 3 (solo cambian los archivos de T1 y T2, el expediente y el indice): vacio con T1 sin commit.
+R-24 Invariante 4 (sin cargas por red ni datos en lo publicado): 0 0 0 0 y 0.
+R-25 Contrato de arranque: lecturas previas al testigo declaradas.
+R-26 Errores propios de forma registrados en FASE 0.
