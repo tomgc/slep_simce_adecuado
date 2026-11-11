@@ -1,0 +1,29 @@
+Inventario de afirmaciones auditables (FASE R paso 1), derivado del log y escrito antes de auditar
+R-01 FASE 0 H1: repo slep_simce_adecuado, HEAD de partida 1c2babe, origin/main 2eb0483, rama main, stash 0, staging 0
+R-02 FASE 0 árbol de partida: 5 líneas (3 modificadas heredadas en 30_procesamiento y 2 sin seguimiento, el encargo y el log)
+R-03 FASE 0 H2: md5 de la sonda d30362ed33555966894685414e36a06f
+R-04 FASE 0 H2: md5 de las tres ediciones heredadas (40e250a0..., d59e4e3e..., 0bcc8b66...) y numstat 1 1 en cada una
+R-05 FASE 0 H2: md5 de partida de docs/index.html (6017a43e...) y de docs/trayectorias.html (e0681b9e...)
+R-06 FASE 0 línea base: BUILD rc 0, TAGREG 9/9, VMOTOR 12/12, M12 con casos=2946 difieren=0 y 25 de 25, VTRAY 35/35
+R-07 FASE 0: la vista construida es byte a byte la publicada (cmp 0)
+R-08 FASE 0 paso 3: encargo_md5 1c45082697df0a4abfd3f4f1e8d54626
+R-09 FASE 0 paso 4: commit 76863d3 docs(encargo) con 1 archivo (el encargo); hash_inicial 76863d3; ARBOL 3
+R-10 T1: la plantilla trae el pie nuevo 1 vez y el anterior 0, con el texto aprobado en D36-15
+R-11 T1: los dos comentarios nuevos están 1 vez cada uno (columnas base en 31; 17 columnas en 34)
+R-12 T1: BUILD rc 0, VMOTOR 12/12, M12 igual a f0, VTRAY 35/35
+R-13 T1: el motor construido trae el pie nuevo 1 vez como cadena de JavaScript y el anterior 0
+R-14 T1: las cifras no cambian (sonda igual TRUE contra la línea base)
+R-15 T1: copias guardadas de las salidas probadas (motor_T1 y tray_T1) en el temporal
+R-16 T1: commit 1223816 con exactamente las 3 rutas, 3 inserciones y 3 eliminaciones; T1 no editó (md5 de los tres archivos iguales a los de H2); ARBOL 0
+R-17 T2: docs/ es copia byte a byte de las salidas guardadas; docs/index.html cambió (md5 3734a835...) y docs/trayectorias.html no
+R-18 T2: sin cargas por red en lo publicado (0 0 0 0)
+R-19 T2: commit 1e6e707 con exactamente docs/index.html (85 inserciones y 52 eliminaciones); ARBOL 0
+R-20 global: 3 commits del encargo sobre 1c2babe (docs(encargo), fix(motor), deploy(pages)); sin push (origin/main en 2eb0483)
+R-21 global: alcance (paso 4 y candado 3)
+R-22 global: md5 del encargo igual a encargo_md5 al cierre
+R-23 candado 1: lo publicado es lo construido y probado en T1
+R-24 candado 2: sin atribución a la herramienta
+R-25 candado 3: solo cambian los archivos de T1 y T2, el expediente y el índice
+R-26 candado 4: sin cargas por red ni datos en lo publicado; 20_insumos sin cambios
+R-27 contrato de arranque: lecturas previas al testigo (declaradas en FASE 0)
+R-28 errores propios de forma: 1 registrado en T1 (una cifra escrita antes de contarla, corregida con línea nueva)
